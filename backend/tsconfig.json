@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    /* Structure des fichiers */
+    "rootDir": "./src",            // Ton code source en TypeScript
+    "outDir": "./dist",            // Où mettre le code compilé en JS
+
+    /* Environnement */
+    "target": "ES2020",            // Version JS générée (compatible Node 14+)
+    "module": "commonjs",          // Format utilisé par Node.js
+    "moduleResolution": "node",    // Résolution des modules à la façon Node
+    "esModuleInterop": true,       // Permet d'importer 'express' correctement
+    "forceConsistentCasingInFileNames": true, // Sensible à la casse
+
+    /* Librairies */
+    "lib": ["es2020"],             // Fonctions modernes (Promise, Map…)
+    "types": ["node"],             // Active les types Node.js
+    /* (⚠️ n'oublie pas : npm install -D @types/node @types/express) */
+
+    /* Vérifications strictes */
+    "strict": true,                // Active toutes les vérifications strictes
+    "noImplicitAny": true,         // Interdit les variables sans type
+    "strictNullChecks": true,      // Vérifie null / undefined
+    "noUnusedLocals": true,        // Erreur si variable déclarée mais non utilisée
+    "noUnusedParameters": true,    // Erreur si paramètre jamais utilisé
+    "noImplicitReturns": true,     // Toutes les fonctions doivent retourner qqch
+    "noFallthroughCasesInSwitch": true, // Pas de "case" qui tombe au suivant
+
+    /* Debug */
+    "sourceMap": true              // Génère les .map pour déboguer en TS
+  },
+  "include": ["src"],              // Inclut uniquement ton dossier src
+  "exclude": ["node_modules", "dist"] // Ignore build + dépendances
+}
