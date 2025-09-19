@@ -1,6 +1,8 @@
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Register from "../features/auth/register/Register";
+import Home from "../features/auth/register/Home";
+import "./app.css";
 
 function App() {
   
@@ -8,7 +10,7 @@ function App() {
       <BrowserRouter>
       <Routes>
         {/* Redirection de la racine vers /register */}
-        <Route path="/" element={<Navigate to="/register" />} />
+        <Route path="/" element={<Home />} />
 
         {/* Inscription multi-étapes */}
         <Route path="/register" element={<Register />} />

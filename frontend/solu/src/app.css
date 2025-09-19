@@ -1,0 +1,12 @@
+@import "./styles/variables.css";
+ html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-primary);
+}
+
+button, select, .dropdown {
+  font-family: var(--font-secondary);
+}

@@ -16,8 +16,13 @@ import next from "../../../src/assets/icons/next.png";
 import close from "../../../src/assets/icons/close.png";
 import { div } from "framer-motion/client";
 
+import artisan from "../../../src/assets/icons/artisan.svg";
+import fournisseur from "../../../src/assets/icons/fournisseur.svg";
+import annonceur from "../../../src/assets/icons/annonceur.svg";
+import solutravo from "../../../src/assets/images/solutravo.png";
+
 function Register() {
-    const roles = ["Artisan", "Annonceur", "Fournisseur", "Particulier"];
+    const roles = ["Artisan", "Annonceur", "Fournisseur"];
     const [selectedRole, setSelectedRole] = useState<string | null>(null);
     const [companyStatus, setCompanyStatus] = useState<string | null>(null);
     const [selectedSize, setSelectedSize] = useState<string | null>("Je suis seul");
@@ -25,10 +30,34 @@ function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [eyes, setEyes] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentStep, setCurrentStep] = useState(1);
     const [fade, setFade] = useState(true);
+    const [showRoleError, setShowRoleError] = useState(false);
+
+
+
+    // Variants pour les deux côtés
+    const sideVariants = {
+        hidden: { scale: 0.8, opacity: 0 },
+        visible: {
+            scale: 1,
+            opacity: 1,
+            transition: { duration: 0.6, ease: "easeOut" },
+        },
+    };
+
+    // Variants pour les éléments en cascade
+    const containerVariants = {
+        visible: {
+            transition: { staggerChildren: 0.4 },
+        },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: -40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+    };
     const slides = [
         {
             image: step1,
@@ -235,22 +264,93 @@ function Register() {
 
     return (
         <div className="register_container">
-            {/* Partie gauche = Slider */}
-            <div className="composant_statique">
-                <div className={`slide_content ${fade ? "fade-in" : "fade-out"}`}>
-                    <div className="image_section">
-                        <img src={slides[currentIndex].image} alt="illustration" />
-                    </div>
 
-                    <div className="text_section">
-                        <h1 className="text_section_title">{slides[currentIndex].title}</h1>
-                        <div className="text_section_subtitle">
-                            {slides[currentIndex].subtitle.map((line, idx) => (
-                                <span key={idx}>{line}</span>
-                            ))}
+            {currentStep === 1 && (<AnimatePresence>
+                <motion.div
+                    className="composant_statique_left"
+                    variants={sideVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                >
+                    <motion.div
+                        className="sous_contenair_mail"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        {/* Logo + phrase */}
+                        <motion.div className="info_logo" variants={itemVariants}>
+                            <img src={solutravo} alt="solutravaux" className="solutravaux" />
+                            <p className="info_logo_p">
+                                Votre univers connecté 100% bâtiment
+                            </p>
+                        </motion.div>
+
+                        {/* Liste des rôles */}
+                        <motion.div className="information_solutravaux" variants={containerVariants}>
+                            <motion.div className="role_user" variants={itemVariants}>
+                                <div className="sous_role_user">
+                                    <img src={artisan} alt="artisan" />
+                                    <span className="sous_role_user_span">Artisans</span>
+                                </div>
+                                <span>
+                                    Pilotez et développez votre activité en toute simplicité tout
+                                    en profitant d’avantages toute l’année.
+                                </span>
+                            </motion.div>
+
+                            <motion.div className="role_user" variants={itemVariants}>
+                                <div className="sous_role_user">
+                                    <img src={fournisseur} alt="fournisseur" />
+                                    <span className="sous_role_user_span">Fournisseurs</span>
+                                </div>
+                                <span>
+                                    Rejoignez l’environnement Solutravo et permettez aux artisans
+                                    d’intégrer vos produits à leurs devis en un clic !
+                                </span>
+                            </motion.div>
+
+                            <motion.div className="role_user" variants={itemVariants}>
+                                <div className="sous_role_user">
+                                    <img src={annonceur} alt="annonceur" />
+                                    <span className="sous_role_user_span">Annonceurs</span>
+                                </div>
+                                <span>
+                                    Présentez vos produits et services en avant-première aux
+                                    artisans Solutravo !
+                                </span>
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
+                </motion.div>
+            </AnimatePresence>)}
+            {/* Partie gauche = Slider */}
+            {currentStep > 1 && (<div className="composant_statique">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentIndex}
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="slide_content"
+                    >
+                        <div className="image_section">
+                            <img src={slides[currentIndex].image} alt="illustration" />
                         </div>
-                    </div>
-                </div>
+                        <div className="text_section">
+                            <h1 className="text_section_title">
+                                {slides[currentIndex].title}
+                            </h1>
+                            <div className="text_section_subtitle">
+                                {slides[currentIndex].subtitle.map((line, idx) => (
+                                    <span key={idx}>{line}</span>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
 
                 {/* Petits points indicateurs */}
                 <div className="dots_container">
@@ -261,7 +361,7 @@ function Register() {
                         ></span>
                     ))}
                 </div>
-            </div>
+            </div>)}
             <AnimatePresence>
                 {showPopup && (
                     <>
@@ -296,9 +396,9 @@ function Register() {
                                     <span>Compléter mon profil</span>
                                     <img src={next} alt="" />
                                 </div>
-                                <div className="popup_buttons2">
+                                {/* <div className="popup_buttons2">
                                     <span className="popup_buttons_span">Pas maintenant</span>
-                                </div>
+                                </div> */}
                             </div>
 
                             <img
@@ -325,10 +425,10 @@ function Register() {
                         Vous êtes ?
                     </div>
                     <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
-                        Données entreprise
+                        Informations entreprise
                     </div>
                     <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
-                        Vérification OTP
+                        Validation
                     </div>
                     <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
                         Terminé
@@ -362,6 +462,12 @@ function Register() {
                         <button
                             className="register_btn"
                             onClick={() => {
+                                if (currentStep === 1 && !selectedRole) {
+                                    // ⚠️ Aucun rôle choisi
+                                    setShowRoleError(true);
+                                    setTimeout(() => setShowRoleError(false), 4000); // disparaît après 4s
+                                    return;
+                                }
                                 setDirection("next");
                                 setCurrentStep((s) => s + 1);
                             }}
@@ -380,7 +486,33 @@ function Register() {
                         </button>
                     )}
                 </div>
+
+
             </div>
+            <AnimatePresence>
+                {showRoleError && (
+                    <motion.div
+                        className="role_error_sidebar top_right"
+                        role="alert"
+                        initial={{ x: "100%", opacity: 0 }}
+                        animate={{
+                            x: [0, -120, 0],
+                            opacity: [0, 1, 1]
+                        }}
+                        exit={{ x: "100%", opacity: 0 }}
+                        transition={{
+                            duration: 2,
+                            ease: "easeInOut"
+                        }}
+                    >
+                        Veuillez choisir un rôle
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+
+
+
         </div>
     );
 }

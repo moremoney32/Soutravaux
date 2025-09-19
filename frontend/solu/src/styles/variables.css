@@ -2,6 +2,76 @@
   --color-primary: #E67131;
   --color-secondary: #FFFFFF;
   --color-background:#E67131;
-  --font-main: "Arial", sans-serif;
   --spacing-md: 16px;
 }
+
+/* === Gotham Rounded === */
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_lightitalic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bookitalic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_mediumitalic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bolditalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* === Montserrat depuis Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* === FontAwesome === */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* === Variables globales === */
+:root {
+  --font-primary: 'Gotham Rounded', sans-serif;
+  --font-secondary: 'Montserrat', sans-serif;
+}
+
+
