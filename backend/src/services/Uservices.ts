@@ -46,37 +46,79 @@ export async function UserRegister(data: UserRegisterInput) {
   try {
     await conn.beginTransaction();
 
-    const [exists] = await conn.query("SELECT id FROM users WHERE email = ?", [email]);
+    // Vérifier si le couple (email + role) existe déjà
+    const [exists] = await conn.query(
+      "SELECT id FROM users WHERE email = ? AND role = ?",
+      [email, role]
+    );
     if ((exists as any).length) {
-      throw new Error("Cet email existe déjà");
+      throw new Error("Ce rôle est déjà associé à cet email.");
     }
 
+    // Gestion de la société
     let companyId: number | null = null;
-    if (!siret && companyName) {
+    if (siret) {
+      // Cas : la personne a un SIRET → on cherche la société
+      const [rows] = await conn.query("SELECT id FROM companies WHERE siret = ?", [siret]);
+      if ((rows as any).length) {
+        companyId = (rows as any)[0].id;
+      } else {
+        // si SIRET n’existe pas → on crée une nouvelle société avec tous les champs
+        const [res] = await conn.query(
+          "INSERT INTO companies (name, size, legal_form, siret) VALUES (?, ?, ?, ?)",
+          [companyName || null, companySize || null, legalForm || null, siret]
+        );
+        companyId = (res as any).insertId;
+      }
+    } else {
+      // Cas : pas de SIRET → création société sans siret
+      if (!companyName) {
+        throw new Error("Le nom de la société est requis si pas de SIRET.");
+      }
       const [res] = await conn.query(
         "INSERT INTO companies (name, size, legal_form) VALUES (?, ?, ?)",
         [companyName, companySize || null, legalForm || null]
       );
       companyId = (res as any).insertId;
-    } else if (siret) {
-      const [rows] = await conn.query("SELECT id FROM companies WHERE siret = ?", [siret]);
-      if ((rows as any).length) {
-        companyId = (rows as any)[0].id;
-      } else {
-        throw new Error("SIRET introuvable");
-      }
     }
+
 
     const otp = genOTP();
     const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    // Appel API PHP pour envoyer le mail
-    const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
-      receiver: email,
-      sender: "noreply@yahoo.fr",
-      subject: "Votre code de vérification",
-      message: `Votre code est ${otp}`
-    });
+const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
+  receiver: email,
+  sender: "no-reply@elyft.tech",
+  subject: "🔑 Vérifiez votre adresse email - Solutravo",
+  message: `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+    <h2 style="color: #1E3A8A;">Bienvenue sur Solutravo 👷‍♂️</h2>
+    <p>Bonjour <strong>${firstName || "cher utilisateur"}</strong>,</p>
+
+    <p>Merci de nous rejoindre sur <strong>Solutravo</strong>, votre partenaire de confiance dans le domaine du BTP.</p>
+
+    <p>Pour <strong>finaliser votre inscription</strong> et sécuriser votre compte, veuillez saisir le code de vérification ci-dessous :</p>
+
+    <div style="text-align: center; margin: 20px 0;">
+      <span style="display: inline-block; padding: 15px 30px; font-size: 22px; font-weight: bold; color: #fff; background-color: #F97316; border-radius: 8px;">
+        ${otp}
+      </span>
+    </div>
+
+    <p style="color: #d9534f;"><strong>⚠️ Attention :</strong> ce code est valable pendant <strong>5 minutes</strong>.</p>
+
+    <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer ce message.</p>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+
+    <p style="font-size: 12px; color: #777;">
+      Merci de faire confiance à <strong>Solutravo</strong> pour vos projets dans le bâtiment et les travaux publics.<br>
+      <em>L’équipe Solutravo</em>
+    </p>
+  </div>
+  `
+});
+
 
     if (response.status !== 201) {
       throw new Error("Erreur lors de l'envoi de l'email");
@@ -89,7 +131,7 @@ export async function UserRegister(data: UserRegisterInput) {
     );
 
     await conn.commit();
-    return { email, otp }; // ⚠️ en prod tu ne renvoies pas l’OTP
+    return { email, otp }; 
   } catch (err) {
     await conn.rollback();
     throw err;
@@ -146,5 +188,77 @@ export async function CompleteRegistration({ email, password }: CompleteRegistra
   const [updatedRows] = await pool.query("SELECT id, email, firstName, lastName FROM users WHERE email = ?", [email]);
   return (updatedRows as any)[0];  // contient bien user.id
 }
+
+
+export async function ResendVerificationCode(email: string) {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // Vérifier si l’utilisateur existe
+    const [rows] = await conn.query("SELECT * FROM users WHERE email = ?", [email]);
+    const user: any = (rows as any)[0];
+    if (!user) {
+      throw new Error("Utilisateur introuvable");
+    }
+    if (user.isVerified) {
+      throw new Error("Utilisateur déjà vérifié");
+    }
+
+    // Nouveau OTP + nouvelle date d’expiration
+    const otp = genOTP();
+    const expiry = new Date(Date.now() + 5 * 60 * 1000);
+
+    // Envoi de l’email
+    const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
+      receiver: email,
+      sender: "no-reply@elyft.tech",
+      subject: "🔄 Nouveau code de vérification - Solutravo",
+      message: `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #1E3A8A;">Nouveau code de vérification 🔑</h2>
+        <p>Bonjour <strong>${user.firstName || "cher utilisateur"}</strong>,</p>
+
+        <p>Vous avez demandé un <strong>nouveau code de vérification</strong> pour sécuriser votre inscription.</p>
+
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="display: inline-block; padding: 15px 30px; font-size: 22px; font-weight: bold; color: #fff; background-color: #F97316; border-radius: 8px;">
+            ${otp}
+          </span>
+        </div>
+
+        <p style="color: #d9534f;"><strong>⚠️ Attention :</strong> ce code est valable pendant <strong>5 minutes</strong>.</p>
+
+        <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer ce message.</p>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        <p style="font-size: 12px; color: #777;">
+          Merci de faire confiance à <strong>Solutravo</strong> pour vos projets dans le bâtiment et les travaux publics.<br>
+          <em>L’équipe Solutravo</em>
+        </p>
+      </div>
+      `
+    });
+
+    if (response.status !== 201) {
+      throw new Error("Erreur lors de l'envoi de l'email");
+    }
+
+    // Mise à jour du code + expiry dans la BDD
+    await conn.query(
+      "UPDATE users SET verificationCode = ?, verificationExpiry = ? WHERE email = ?",
+      [otp, expiry, email]
+    );
+
+    await conn.commit();
+    return { email, otp }; // ⚠️ en prod ne renvoie pas otp
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+}
+
 
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 // import { UserRegister, VerifyCode, UserLogin } from "../controllers/UserControllers";
 import jwt from "jsonwebtoken";
-import { CompleteRegistration,UserRegister, VerifyCode } from "../services/Uservices";
+import { CompleteRegistration,ResendVerificationCode,UserRegister, VerifyCode } from "../services/Uservices";
 
 export const UserControllers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -36,6 +36,17 @@ export const completeController = async (req: Request, res: Response, next: Next
       message: "Inscription complétée. Vous pouvez vous connecter.",
       user, // tu peux même renvoyer le user pour debug
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// 4. 🔄 Renvoi du code OTP
+export const resendCodeController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const result = await ResendVerificationCode(email);
+    res.status(200).json({ message: "Nouveau code envoyé par email", result });
   } catch (err) {
     next(err);
   }

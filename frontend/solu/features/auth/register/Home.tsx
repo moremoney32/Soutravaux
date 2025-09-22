@@ -6,12 +6,13 @@ import annonceur from "../../../src/assets/icons/annonceur.svg";
 import solutravo from "../../../src/assets/images/solutravo.png";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Variants } from "framer-motion";
 
 function Home() {
   const navigate = useNavigate();
 
   // Variants pour les deux côtés
-  const sideVariants = {
+  const sideVariants: Variants = {
     hidden: { scale: 0.8, opacity: 0 },
     visible: {
       scale: 1,
