@@ -34,6 +34,7 @@ function Register() {
     const [currentStep, setCurrentStep] = useState(1);
     const [fade, setFade] = useState(true);
     const [showRoleError, setShowRoleError] = useState(false);
+     const [subStep, setSubStep] = useState(1);
 
 
 
@@ -127,70 +128,176 @@ function Register() {
                         </div>
                     </>
                 );
-            case 2:
+            // case 2:
+            //     return (
+            //         <div className="step2_container">
+            //             {/* Question principale */}
+            //             <h3 className="register_question1">Où en est votre entreprise ?</h3>
+
+            //             {/* Choix entreprise existante ou nouvelle */}
+            //             <div className="choice_container">
+            //                 <button className={`choice_btn ${companyStatus === "existante" ? "active" : ""}`}
+            //                     onClick={() => setCompanyStatus("existante")}>Elle est existante</button>
+            //                 <button className={`choice_btn ${companyStatus === "nouvelle" ? "active" : ""}`}
+            //                     onClick={() => setCompanyStatus("nouvelle")}>Je crée mon entreprise</button>
+            //             </div>
+
+            //             {/* Taille de l’entreprise */}
+            //             <h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>
+            //             <div className="size_container">
+            //                 {sizes.map((size) => (
+            //                     <button
+            //                         key={size}
+            //                         className={`size_btn ${selectedSize === size ? "active" : ""}`}
+            //                         onClick={() => setSelectedSize(size)}
+            //                     >
+            //                         {size}
+            //                     </button>
+            //                 ))}
+            //             </div>
+
+            //             {/* Inputs texte */}
+            //             <div className="form_group_column">
+            //                 <div className="sous_form_group">
+            //                     <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
+            //                     <input type="text" placeholder="Exp:Solutravo" />
+            //                 </div>
+
+            //                 {companyStatus === "existante" && (
+            //                     <div className="sous_form_group">
+            //                         <label htmlFor="siren">Numéro de SIREN</label>
+            //                         <input type="text" placeholder="Exp:GTAMLOUEBFJ4524" />
+            //                     </div>
+            //                 )}
+            //             </div>
+
+
+            //             <span className="register_question1">Forme juridique</span>
+            //             <div className="radio_group">
+            //                 <label><input type="radio" name="forme" /> SASU</label>
+            //                 <label><input type="radio" name="forme" /> EIRL</label>
+            //                 <label><input type="radio" name="forme" /> EURL</label>
+            //                 <label><input type="radio" name="forme" /> Je ne sais pas</label>
+            //             </div>
+
+
+            //             <div className="form_group">
+            //                 <input type="text" placeholder="Nom et prénom" />
+            //                 <input type="text" placeholder="Adresse du siège social" />
+            //             </div>
+
+
+            //             <div className="form_group">
+            //                 <input type="text" placeholder="Numéro de téléphone" />
+            //                 <input type="email" placeholder="Adresse Email" />
+            //             </div>
+
+            //         </div>
+            //     );
+
+              case 2:
                 return (
                     <div className="step2_container">
-                        {/* Question principale */}
-                        <h3 className="register_question1">Où en est votre entreprise ?</h3>
-
-                        {/* Choix entreprise existante ou nouvelle */}
-                        <div className="choice_container">
-                            <button className={`choice_btn ${companyStatus === "existante" ? "active" : ""}`}
-                                onClick={() => setCompanyStatus("existante")}>Elle est existante</button>
-                            <button className={`choice_btn ${companyStatus === "nouvelle" ? "active" : ""}`}
-                                onClick={() => setCompanyStatus("nouvelle")}>Je crée mon entreprise</button>
-                        </div>
-
-                        {/* Taille de l’entreprise */}
-                        <h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>
-                        <div className="size_container">
-                            {sizes.map((size) => (
-                                <button
-                                    key={size}
-                                    className={`size_btn ${selectedSize === size ? "active" : ""}`}
-                                    onClick={() => setSelectedSize(size)}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Inputs texte */}
-                        <div className="form_group_column">
-                            <div className="sous_form_group">
-                                <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
-                                <input type="text" placeholder="Exp:Solutravo" />
-                            </div>
-
-                            {companyStatus === "existante" && (
-                                <div className="sous_form_group">
-                                    <label htmlFor="siren">Numéro de SIREN</label>
-                                    <input type="text" placeholder="Exp:GTAMLOUEBFJ4524" />
+                        {subStep === 1 && (
+                            <>
+                                <h3 className="register_question1">Où en est votre entreprise ?</h3>
+                                <div className="choice_container">
+                                    <button className={`choice_btn ${companyStatus === "existante" ? "active" : ""}`}
+                                        onClick={() => setCompanyStatus("existante")}>Elle est existante</button>
+                                    <button className={`choice_btn ${companyStatus === "nouvelle" ? "active" : ""}`}
+                                        onClick={() => setCompanyStatus("nouvelle")}>Je crée mon entreprise</button>
                                 </div>
+
+                                <h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>
+                                <div className="size_container">
+                                    {sizes.map((size) => (
+                                        <button
+                                            key={size}
+                                            className={`size_btn ${selectedSize === size ? "active" : ""}`}
+                                            onClick={() => setSelectedSize(size)}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="form_group_column">
+                                    <div className="sous_form_group">
+                                        <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
+                                        <input type="text" placeholder="Exp:Solutravo" />
+                                    </div>
+                                    {companyStatus === "existante" && (
+                                        <div className="sous_form_group">
+                                            <label htmlFor="siren">Numéro de SIREN</label>
+                                            <input type="text" placeholder="Exp:GTAMLOUEBFJ4524" />
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {subStep === 2 && (
+                            <>
+                                <span className="register_question1">Forme juridique</span>
+                                <div className="radio_group">
+                                    <label><input type="radio" name="forme" /> SASU</label>
+                                    <label><input type="radio" name="forme" /> EIRL</label>
+                                    <label><input type="radio" name="forme" /> EURL</label>
+                                    <label><input type="radio" name="forme" /> Je ne sais pas</label>
+                                </div>
+
+                                <div className="form_group">
+                                    <input type="text" placeholder="Nom et prénom" />
+                                    <input type="text" placeholder="Adresse du siège social" />
+                                </div>
+
+                                <div className="form_group">
+                                    <input type="text" placeholder="Numéro de téléphone" />
+                                    <input type="email" placeholder="Adresse Email" />
+                                </div>
+                            </>
+                        )}
+
+                        <div id="sous_buttons_container">
+                            {subStep === 1 ? (
+                                <>
+                                    <button
+                                        className="register_btn1"
+                                        onClick={() => {
+                                            setDirection("prev");
+                                            setCurrentStep((s) => s - 1);
+                                        }}
+                                    >
+                                        Retour
+                                    </button>
+                                    <button
+                                        className="register_btn"
+                                        onClick={() => setSubStep(2)}
+                                    >
+                                        Suivant
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        className="register_btn1"
+                                        onClick={() => setSubStep(1)}
+                                    >
+                                        Revenir
+                                    </button>
+                                    <button
+                                        className="register_btn"
+                                        onClick={() => {
+                                            setDirection("next");
+                                            setCurrentStep(3);
+                                            setSubStep(1);
+                                        }}
+                                    >
+                                        Continuer
+                                    </button>
+                                </>
                             )}
                         </div>
-
-                        {/* Forme juridique */}
-                        <span className="register_question1">Forme juridique</span>
-                        <div className="radio_group">
-                            <label><input type="radio" name="forme" /> SASU</label>
-                            <label><input type="radio" name="forme" /> EIRL</label>
-                            <label><input type="radio" name="forme" /> EURL</label>
-                            <label><input type="radio" name="forme" /> Je ne sais pas</label>
-                        </div>
-
-                        {/* Nom et adresse */}
-                        <div className="form_group">
-                            <input type="text" placeholder="Nom et prénom" />
-                            <input type="text" placeholder="Adresse du siège social" />
-                        </div>
-
-                        {/* Téléphone et email */}
-                        <div className="form_group">
-                            <input type="text" placeholder="Numéro de téléphone" />
-                            <input type="email" placeholder="Adresse Email" />
-                        </div>
-                        {/*  */}
                     </div>
                 );
 
@@ -447,9 +554,53 @@ function Register() {
                         {renderStep()}
                     </motion.div>
                 </AnimatePresence>
+                {/* Boutons navigation globaux */}
+{currentStep !== 2 && (
+  <div className={`buttons_container ${currentStep === 1 ? "single" : "finish"}`}>
+    {currentStep > 1 && (
+      <button
+        onClick={() => {
+          setDirection("prev");
+          setCurrentStep((s) => s - 1);
+        }}
+        className="register_btn1"
+      >
+        Retour
+      </button>
+    )}
+
+    {currentStep < 4 ? (
+      <button
+        className="register_btn"
+        onClick={() => {
+          if (currentStep === 1 && !selectedRole) {
+            setShowRoleError(true);
+            setTimeout(() => setShowRoleError(false), 4000);
+            return;
+          }
+          setDirection("next");
+          setCurrentStep((s) => s + 1);
+        }}
+      >
+        Continuer
+      </button>
+    ) : (
+      <button
+        className="register_btn"
+        onClick={() => {
+          setShowPopup(true);
+          console.log("Inscription terminée !");
+        }}
+      >
+        Terminer
+      </button>
+    )}
+  </div>
+)}
+
 
                 {/* Boutons navigation */}
-                <div className={`buttons_container ${currentStep === 1 ? "single" : "finish"
+                {/* <div className={`buttons_container ${currentStep === 1 ? "single" : "finish"
                     }`}>
                     {currentStep > 1 && (
                         <button onClick={() => {
@@ -485,7 +636,7 @@ function Register() {
                             Terminer
                         </button>
                     )}
-                </div>
+                </div> */}
 
 
             </div>
