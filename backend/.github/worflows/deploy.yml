@@ -1,0 +1,55 @@
+name: 🚀 Deploy Backend to O2switch
+
+on:
+  push:
+    branches:
+      - main   # ou develop selon ta branche
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Aller dans le dossier backend
+      - name: Move to backend folder
+        working-directory: ./backend
+        run: echo "Working in backend/"
+
+      # 3. Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: ./backend/package-lock.json
+
+      # 4. Installer les dépendances
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm install
+
+      # 5. Compiler le projet TypeScript
+      - name: Build project
+        working-directory: ./backend
+        run: npm run build
+
+      # 6. Déployer uniquement le backend compilé
+      - name: Upload backend via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./backend/dist/   # 👉 seul ton backend compilé
+          server-dir: ./
+          exclude: |
+            **/.git*
+            **/node_modules/**
+            **/.github/**
+            **/tests/**
