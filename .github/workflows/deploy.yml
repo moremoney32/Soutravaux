@@ -58,7 +58,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./backend/dist/           # 📂 seulement le bundle final
-          server-dir: solutravo.zeta-app.fr/
+          server-dir: ./
           exclude: |
             **/.git*
             **/node_modules/**
