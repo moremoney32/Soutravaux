@@ -1,9 +1,10 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application, Request, Response} from "express";
 import dotenv from "dotenv";
 import path from "path";
 import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
+import {errorHandler} from "./src/Middleware/errorHandler";
 
 // Charger les variables d’env
 dotenv.config({ path: "./.env" });
@@ -12,7 +13,7 @@ const app: Application = express();
 
 // CORS
 const corsOptions: CorsOptions = {
-  origin: "*",
+  origin: "http://localhost:5173",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: [
@@ -40,11 +41,13 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api", routes);
 
 // Gestion erreurs
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("❌", err);
-  res
-    .status(err.statusCode || 500)
-    .json({ error: err.message || "Erreur serveur" });
-});
+// app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+//   console.error("❌", err);
+//   res
+//     .status(err.statusCode || 500)
+//     .json({ error: err.message || "Erreur serveur" });
+// });
+// ✅ Middleware global erreurs (toujours en dernier)
+app.use(errorHandler);
 
 export default app;

@@ -5,8 +5,7 @@ import fournisseur from "../../../src/assets/icons/fournisseur.svg";
 import annonceur from "../../../src/assets/icons/annonceur.svg";
 import solutravo from "../../../src/assets/images/solutravo.png";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 function Home() {
   const navigate = useNavigate();
@@ -22,13 +21,14 @@ function Home() {
   };
 
   // Variants pour les éléments en cascade
-  const containerVariants = {
+  const containerVariants: Variants = {
+    hidden: {},
     visible: {
       transition: { staggerChildren: 0.4 },
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: -40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
@@ -98,26 +98,26 @@ function Home() {
       </AnimatePresence>
 
       {/* Partie droite */}
-<AnimatePresence>
-  <motion.div
-    className="composant_dynamique_right"
-    variants={sideVariants}
-    initial="hidden"
-    animate="visible"
-    exit="hidden"
-  >
-    {/* Le bouton suit le logo avec 0.2s de retard */}
-    <motion.button
-      variants={itemVariants}
-      initial="hidden"
-      animate="visible"
-      transition={{ duration: 0.6, delay: 0.4 }}
-      onClick={() => navigate("/register")}
-    >
-      Démarrer
-    </motion.button>
-  </motion.div>
-</AnimatePresence>
+      <AnimatePresence>
+        <motion.div
+          className="composant_dynamique_right"
+          variants={sideVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+        >
+          {/* Le bouton suit le logo avec 0.2s de retard */}
+          <motion.button
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            onClick={() => navigate("/register")}
+          >
+            Démarrer
+          </motion.button>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

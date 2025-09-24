@@ -5,6 +5,20 @@
   --spacing-md: 16px;
 }
 
+ ::-webkit-scrollbar {
+    width: 4px !important;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #e6d4f8 !important;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #E77131;
+  }
+
 /* === Gotham Rounded === */
 @font-face {
   font-family: 'Gotham Rounded';

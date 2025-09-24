@@ -7,7 +7,8 @@ type UserRegisterInput = {
   role: string;
   email: string;
   firstName: string;
-  lastName: string;
+  phone: string;
+  address: string,
   companyName?: string;
   companySize?: string;
   legalForm?: string;
@@ -24,12 +25,15 @@ type CompleteRegistrationInput = {
   password: string;
 };
 
+// function genOTP(): string {
+//   return String(Math.floor(100000 + Math.random() * 900000)); // 6 chiffres
+// }
 function genOTP(): string {
-  return String(Math.floor(100000 + Math.random() * 900000)); // 6 chiffres
+  return String(Math.floor(1000 + Math.random() * 9000)); // 4 chiffres
 }
 
 export async function UserRegister(data: UserRegisterInput) {
-  const { role, email, firstName, lastName, companyName, companySize, legalForm, siret } = data;
+  const { role, email, firstName,phone,address,companyName, companySize, legalForm, siret } = data;
 
   if (!role || !email) {
     const err = new Error("Role et email obligatoires");
@@ -84,12 +88,12 @@ export async function UserRegister(data: UserRegisterInput) {
 
 
     const otp = genOTP();
-    const expiry = new Date(Date.now() + 5 * 60 * 1000);
+    const expiry = new Date(Date.now() + 3 * 60 * 1000);
 
 const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
   receiver: email,
   sender: "no-reply@elyft.tech",
-  subject: "🔑 Vérifiez votre adresse email - Solutravo",
+  subject: "🔑 Vérifiez votre addresse email - Solutravo",
   message: `
   <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
     <h2 style="color: #1E3A8A;">Bienvenue sur Solutravo 👷‍♂️</h2>
@@ -125,9 +129,9 @@ const response = await axios.post("https://mail.api.elyft.tech/send-email.php", 
     }
 
     await conn.query(
-      `INSERT INTO users (email, firstName, lastName, role, company_id, verificationCode, verificationExpiry)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [email, firstName, lastName, role, companyId, otp, expiry]
+      `INSERT INTO users (email, firstName,phone,address, role, company_id, verificationCode, verificationExpiry)
+       VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
+      [email, firstName,phone,address, role, companyId, otp, expiry]
     );
 
     await conn.commit();
@@ -185,7 +189,7 @@ export async function CompleteRegistration({ email, password }: CompleteRegistra
   );
 
   // 🔑 On relit l’utilisateur mis à jour pour renvoyer son id
-  const [updatedRows] = await pool.query("SELECT id, email, firstName, lastName FROM users WHERE email = ?", [email]);
+  const [updatedRows] = await pool.query("SELECT id, email, firstName FROM users WHERE email = ?", [email]);
   return (updatedRows as any)[0];  // contient bien user.id
 }
 
@@ -207,7 +211,7 @@ export async function ResendVerificationCode(email: string) {
 
     // Nouveau OTP + nouvelle date d’expiration
     const otp = genOTP();
-    const expiry = new Date(Date.now() + 5 * 60 * 1000);
+    const expiry = new Date(Date.now() + 3 * 60 * 1000);
 
     // Envoi de l’email
     const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
@@ -251,7 +255,7 @@ export async function ResendVerificationCode(email: string) {
     );
 
     await conn.commit();
-    return { email, otp }; // ⚠️ en prod ne renvoie pas otp
+    return { email}; // ⚠️ en prod ne renvoie pas otp
   } catch (err) {
     await conn.rollback();
     throw err;

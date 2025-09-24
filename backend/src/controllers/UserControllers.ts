@@ -26,7 +26,7 @@ export const completeController = async (req: Request, res: Response, next: Next
   try {
     const user = await CompleteRegistration(req.body);
 
-    // ✅ Maintenant user contient { id, email, firstName, lastName }
+    // ✅ Maintenant user contient { id, email, firstName}
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
       expiresIn: "1d",
     });
