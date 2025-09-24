@@ -4,7 +4,7 @@ import path from "path";
 import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
-import {errorHandler} from "./src/Middleware/errorHandler";
+import {errorHandler} from "./src/middleware/errorHandler";
 
 // Charger les variables d’env
 dotenv.config({ path: "./.env" });

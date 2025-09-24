@@ -41,6 +41,7 @@ jobs:
             --target=node20 \
             --minify \
             --sourcemap \
+            --external:mock-aws-s3 \
             --outfile=dist/server.js
 
       # 6. Déployer uniquement le bundle final
