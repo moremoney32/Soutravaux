@@ -44,6 +44,7 @@ jobs:
             --external:aws-sdk \
             --external:mock-aws-s3 \
             --external:nock \
+            --external:node-pre-gyp \
             --loader:.html=text \
             --outfile=dist/server.js
 
@@ -57,7 +58,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./backend/dist/           # 📂 seulement le bundle final
-          server-dir: ./
+          server-dir: solutravo.zeta-app.fr/
           exclude: |
             **/.git*
             **/node_modules/**

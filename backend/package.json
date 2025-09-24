@@ -2,13 +2,16 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "dist/server.js",
+  
+  
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node server.ts",
-    "migrate": "\"C:/Program Files/MySQL/MySQL Server 8.0/bin/mysql\" -u root -p lca < ./models/init.sql"
-,
-    "build": "tsc",
+    "build:tsc": "tsc",
+    "build:esbuild": "npx esbuild server.ts --bundle --platform=node --target=node20 --minify --sourcemap --external:aws-sdk --external:mock-aws-s3 --external:nock --loader:.html=text --outfile=dist/server.js",
+    "build": "npm run build:esbuild",
     "start": "node dist/server.js"
   },
+
   "dependencies": {
     "axios": "^1.7.4",
     "bcrypt": "^5.1.1",
