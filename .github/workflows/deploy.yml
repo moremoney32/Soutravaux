@@ -14,30 +14,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Aller dans le dossier backend
-      - name: Move to backend folder
-        working-directory: ./backend
-        run: echo "Working in backend/"
-
-      # 3. Installer Node.js
+      # 2. Installer Node.js 20.19.4
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20.19.4
           cache: npm
           cache-dependency-path: ./backend/package-lock.json
 
-      # 4. Installer les dépendances
+      # 3. Installer les dépendances (backend)
       - name: Install dependencies
         working-directory: ./backend
         run: npm install
 
-      # 5. Compiler le projet TypeScript
-      - name: Build project
-        working-directory: ./backend
-        run: npm run build
+      # 4. Installer esbuild (en global, au cas où pas déjà dans devDependencies)
+      - name: Install esbuild
+        run: npm install --global esbuild
 
-      # 6. Déployer uniquement le backend compilé
+      # 5. Bundler ton projet avec esbuild
+      - name: Bundle project with esbuild
+        working-directory: ./backend
+        run: |
+          npx esbuild src/server.ts \
+            --bundle \
+            --platform=node \
+            --target=node20 \
+            --minify \
+            --sourcemap \
+            --outfile=dist/server.js
+
+      # 6. Déployer uniquement le backend bundlé
       - name: Upload backend via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
@@ -46,10 +52,11 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./backend/dist/   # 👉 seul ton backend compilé
-          server-dir: ./
+          local-dir: ./backend/dist/           # 📂 seulement le bundle final
+          server-dir: ./solutravo.zeta-app.fr/ # 📂 dossier cible sur O2switch
           exclude: |
             **/.git*
             **/node_modules/**
             **/.github/**
             **/tests/**
+          dangerous-clean-slate: true          # 🔥 supprime tout avant upload
