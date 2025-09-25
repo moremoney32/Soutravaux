@@ -118,10 +118,10 @@ function Register() {
             const payload = {
                 role: data.role,
                 email: data.email,
-                firstName: data.firstName,
+                prenom: data.firstName,
                 companyName: data.companyName,
-                address: data.address,
-                phone: data.phone,
+                lieu: data.address,
+                numero: data.phone,
                 companySize: selectedSize,
                 legalForm: data.legalForm || "Inconnu",
                 siret: data.siret || "",
@@ -240,6 +240,7 @@ function Register() {
 
     // quand on choisit une suggestion
     const handleSelectCompany = (company: any) => {
+        console.log(company)
         setCompanyName(company.nom);
         setCheckSiret(company.siret); // stockage du siret/siren
         setValue("siret", company.siret, { shouldValidate: true });
@@ -351,7 +352,7 @@ function Register() {
             setLoading3(true);
             const result = await fetchData("register/complete", "POST", {
                 email: watch("email"),
-                password: watch("password"),
+                passe: watch("password"),
             });
 
             console.log("Inscription finalisée :", result);
@@ -456,7 +457,12 @@ function Register() {
                                                                 className="suggestion_item"
                                                                 onClick={() => handleSelectCompany(company)}
                                                             >
-                                                                {company.nom}
+                                                                <strong>{company.nom}</strong> &nbsp;
+                                                                <span>({company.siren})</span>
+                                                                <br />
+                                                                <small>
+                                                                    {company.activite} • {company.cp} {company.ville}
+                                                                </small>
                                                             </span>
                                                         ))}
                                                     </div>
@@ -465,7 +471,7 @@ function Register() {
                                             {/* {errors.companyName && <span className="error">Nom requis</span>} */}
                                             {companyStatus === "existante" && (
                                                 <div className="sous_form_group">
-                                                    <label htmlFor="siren">Numéro de SIREN</label>
+                                                    <label htmlFor="siren">Numéro de SIRET</label>
                                                     <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number" readOnly />
                                                 </div>
                                             )}

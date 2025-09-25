@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     /* Structure des fichiers */
-    "rootDir": "./src",            // Ton code source en TypeScript
-    "outDir": "./dist",            // Où mettre le code compilé en JS
+     "rootDir": "./",              // compile tout à partir de la racine backend/
+    "outDir": "./dist",           // sort tout dans dist/
 
     /* Environnement */
     "target": "ES2020",            // Version JS générée (compatible Node 14+)
@@ -28,6 +28,6 @@
     /* Debug */
     "sourceMap": true              // Génère les .map pour déboguer en TS
   },
-  "include": ["src"],              // Inclut uniquement ton dossier src
+  "include": ["src", "server.ts"],              // Inclut uniquement ton dossier src
   "exclude": ["node_modules", "dist"] // Ignore build + dépendances
 }

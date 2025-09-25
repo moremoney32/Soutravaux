@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node server.ts",
     "build:tsc": "tsc",
-    "build:esbuild": "npx esbuild server.ts --bundle --platform=node --target=node20 --minify --sourcemap --external:aws-sdk --external:mock-aws-s3 --external:nock --loader:.html=text --outfile=dist/server.js",
-    "build": "npm run build:esbuild",
+      "build": "npm run build:tsc",
     "start": "node dist/server.js"
   },
 
