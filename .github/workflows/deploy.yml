@@ -1,9 +1,10 @@
+
 name: 🚀 Deploy Backend to O2switch
 
 on:
   push:
     branches:
-      - main   # déploiement automatique sur main
+      - main  
 
 jobs:
   build-and-deploy:
@@ -14,7 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Installer Node.js
+      - name: Move to backend folder
+        working-directory: ./backend
+        run: echo "Working in backend/"
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -22,32 +26,15 @@ jobs:
           cache: npm
           cache-dependency-path: ./backend/package-lock.json
 
-      # 3. Installer les dépendances (backend)
       - name: Install dependencies
         working-directory: ./backend
         run: npm install
 
-      # 4. Installer esbuild
-      - name: Install esbuild
-        run: npm install --global esbuild
-
-      # 5. Bundler ton projet avec esbuild
-      - name: Bundle project with esbuild
+      - name: Build project
         working-directory: ./backend
-        run: |
-          npx esbuild server.ts \
-            --bundle \
-            --platform=node \
-            --target=node20 \
-            --minify \
-            --sourcemap \
-            --external:aws-sdk \
-            --external:mock-aws-s3 \
-            --external:nock \
-            --external:node-pre-gyp \
-            --loader:.html=text \
-            --outfile=dist/server.js
-      # 6. Créer le fichier .env depuis les secrets GitHub
+        run: npm run build
+
+        # 6. Créer le fichier .env depuis les secrets GitHub
       - name: Create .env file
         working-directory: ./backend/dist
         run: |
@@ -62,7 +49,7 @@ jobs:
           echo "SECRET_KEY=${{ secrets.COOKIE_MAX_AGE }}" >> .env
           echo "SECRET_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
 
-      # 7. Déployer uniquement le bundle final
+      # 7. Déployer uniquement le backend compilé
       - name: Upload backend via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
@@ -71,11 +58,11 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./backend/dist/           # 📂 seulement le bundle final
+          local-dir: ./backend/dist/   #  seul mon backend compilé
           server-dir: ./
           exclude: |
-            **/.git*
-            **/node_modules/**
-            **/.github/**
-            **/tests/**
+            */.git
+            */node_modules/*
+            */.github/*
+            */tests/*
           dangerous-clean-slate: true
