@@ -1,85 +1,56 @@
--- 1. Créer la base si elle n’existe pas
--- CREATE DATABASE IF NOT EXISTS lca;
--- USE lca;
 
--- -- 2. Table des sociétés
--- DROP TABLE IF EXISTS companies;
--- CREATE TABLE companies (
---     id INT AUTO_INCREMENT PRIMARY KEY,
---     name VARCHAR(150) NOT NULL,
---     size VARCHAR(50),              -- ex: "2-5", "6-10"
---     legal_form VARCHAR(50),        -- ex: "SARL", "SASU"
---     siret VARCHAR(50) UNIQUE,      -- peut être NULL si nouvelle société
---     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- -- 3. Table des utilisateurs
--- DROP TABLE IF EXISTS users;
--- CREATE TABLE users (
---     id INT AUTO_INCREMENT PRIMARY KEY,
---     role ENUM('artisan','fournisseur','annonceur') NOT NULL,
---     email VARCHAR(100) UNIQUE NOT NULL,
---     password VARCHAR(255),
---     firstName VARCHAR(100),
---     lastName VARCHAR(100),
---     company_id INT,
---     isVerified BOOLEAN DEFAULT FALSE,
---     verificationCode VARCHAR(10),
---     verificationExpiry DATETIME,
---     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
---     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
--- );
-
-
--- 1. Créer la base si elle n’existe pas (⚠️ à n’utiliser qu’en local, pas en prod)
--- CREATE DATABASE IF NOT EXISTS lca;
--- USE lca;
 CREATE DATABASE IF NOT EXISTS u839546084_solutravo;
 USE u839546084_solutravo;
 
--- 2. Table des sociétés (presociete)
-DROP TABLE IF EXISTS presociete;
-CREATE TABLE presociete (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,
-    size VARCHAR(50),               -- ex: "2-5", "6-10"
-    legal_form VARCHAR(50),         -- ex: "SARL", "SASU"
-    siret VARCHAR(50) UNIQUE,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Index pour accélérer les recherches
-    INDEX (siret),
-    INDEX (name)
-);
+CREATE TABLE `membres` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,          -- Identifiant unique du membre
+  `ref` VARCHAR(36) DEFAULT NULL,                -- Identifiant externe (UUID optionnel)
+  `email` VARCHAR(100) NOT NULL,                 -- Email unique
+  `nom` VARCHAR(50) DEFAULT NULL,                -- Nom de famille (optionnel)
+  `prenom` VARCHAR(50) NOT NULL,                 -- Prénom (obligatoire)
+  `passe` VARCHAR(255) NOT NULL,                 -- Mot de passe hashé
+  `statut` ENUM('actif','bloque') NOT NULL DEFAULT 'actif',  -- État du compte
+  `isVerified` TINYINT(1) DEFAULT 0,             -- Compte vérifié (0 = non, 1 = oui)
+  `verificationCode` VARCHAR(10) DEFAULT NULL,   -- Code de vérification
+  `verificationExpiry` DATETIME DEFAULT NULL,    -- Expiration du code de vérification
+  `type` ENUM('admin','membre') DEFAULT 'membre',-- Type de compte
+  `date_creation` TIMESTAMP NOT NULL DEFAULT current_timestamp(), -- Date d'inscription
+  `date_modification` TIMESTAMP NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(), -- Dernière maj
+  `reset_token` VARCHAR(64) DEFAULT NULL,        -- Token pour reset mot de passe
+  `reset_expiry` DATETIME DEFAULT NULL,          -- Expiration du reset
+  `date_suspension` DATETIME DEFAULT NULL,       -- Date éventuelle de suspension
+  `seen_modal_version` VARCHAR(10) DEFAULT NULL, -- Version du modal vu par l'utilisateur
+  
+  -- Contraintes
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),                  -- Email unique
+  UNIQUE KEY `ref` (`ref`)                       -- UUID unique si présent
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- 3. Table des membres
-DROP TABLE IF EXISTS membres;
-CREATE TABLE membres (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ref VARCHAR(36) DEFAULT NULL,   -- identifiant externe (UUID si besoin)
-    email VARCHAR(100) NOT NULL UNIQUE,
-    passe VARCHAR(255),    -- mot de passe hashé
-    prenom VARCHAR(50) NOT NULL,
-    role ENUM('artisan','fournisseur','annonceur','admin','membre') DEFAULT 'membre',
-    presociete_id INT DEFAULT NULL,
-    statut ENUM('actif','bloque') NOT NULL DEFAULT 'actif',
-    isVerified BOOLEAN DEFAULT FALSE,
-    verificationCode VARCHAR(10),
-    verificationExpiry DATETIME,
-    reset_token VARCHAR(64) DEFAULT NULL,
-    reset_expiry DATETIME DEFAULT NULL,
-    date_suspension DATETIME DEFAULT NULL,
-    seen_modal_version VARCHAR(10) DEFAULT NULL,
-    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_modification TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    -- Clé étrangère : lien vers presociete
-    FOREIGN KEY (presociete_id) REFERENCES presociete(id) ON DELETE SET NULL,
 
-    -- Index pour les recherches fréquentes
-    INDEX (email),
-    INDEX (role),
-    INDEX (statut),
-    INDEX (presociete_id)
-);
+CREATE TABLE `presocietes` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(150) NOT NULL,
+  `size` VARCHAR(50) DEFAULT NULL,   -- taille de l'entreprise (ex: "2 à 5 personnes")
+  `legal_form` ENUM(
+      'EI',
+      'EIRL',
+      'EURL',
+      'SARL',
+      'SAS',
+      'SASU',
+      'SA',
+      'SNC',
+      'SELARL'
+  ) NOT NULL DEFAULT 'EI',           -- forme juridique
+  `siret` VARCHAR(50) DEFAULT NULL,  -- numéro de SIRET (peut être NULL si pas encore attribué)
+  `role` ENUM('artisan','fournisseur','annonceur') NOT NULL DEFAULT 'artisan',
+  `address` VARCHAR(255) DEFAULT NULL,
+  `phonenumber` VARCHAR(20) DEFAULT NULL,
+  `createdAt` TIMESTAMP NULL DEFAULT current_timestamp(),
+  `membre_id` INT(11) DEFAULT NULL,  -- référence vers la table membres
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `siret` (`siret`),
+  KEY `idx_presocietes_membre_id` (`membre_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

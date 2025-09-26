@@ -16,6 +16,8 @@ declare module "*.jpg" {
   export default value;
 }
 
+
+
 // === Variables d'environnement Vite ===
 interface ImportMetaEnv {
   readonly VITE_SOLUTRAVO_API_URL: string;

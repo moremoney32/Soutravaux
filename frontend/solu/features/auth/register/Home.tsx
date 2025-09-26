@@ -5,7 +5,9 @@ import fournisseur from "../../../src/assets/icons/fournisseur.svg";
 import annonceur from "../../../src/assets/icons/annonceur.svg";
 import solutravo from "../../../src/assets/images/solutravo.png";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import type { Variants } from "framer-motion";
+
 
 function Home() {
   const navigate = useNavigate();

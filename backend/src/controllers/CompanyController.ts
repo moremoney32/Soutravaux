@@ -3,16 +3,16 @@ import axios from "axios";
 
 export const SearchCompanies = async (req: Request, res: Response): Promise<void> => {
     try {
-        const nom = req.query.nom as string;
+        const siret = req.query.siret as string;
 
-        if (!nom || nom.length < 3) {
+        if (!siret || siret.length < 3) {
             res.status(400).json({ error: "Veuillez saisir au moins 3 caractères." });
             return;
         }
 
         const apiKey = process.env.INSEE_API_KEY;
         // Encodage du paramètre
-        const query = encodeURIComponent(`denominationUniteLegale:${nom}*`);
+        const query = encodeURIComponent(`siret:${siret}*`);
 
         const response = await axios.get(
             `https://api.insee.fr/api-sirene/3.11/siret?q=${query}`,
@@ -28,8 +28,13 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
             siren: e.siren,
             siret: e.siret,
             activite: e.uniteLegale?.activitePrincipaleUniteLegale,
-            ville: e.adresseEtablissement?.libelleCommuneEtablissement,
-            cp: e.adresseEtablissement?.codePostalEtablissement,
+            rue: e.adresseEtablissement?.typeVoieEtablissement,
+            ville: e.adresseEtablissement?.libelleVoieEtablissement,
+            cp: e.adresseEtablissement?.numeroVoieEtablissement,
+            libelle: e.adresseEtablissement?.libelleCommuneEtablissement,
+            type: e.adresseEtablissement?.typeVoieEtablissement,
+            code: e.adresseEtablissement?.codePostalEtablissement,
+            pays: e.adresseEtablissement?.libellePaysEtablissement,
         })) || [];
 
         res.json(results);

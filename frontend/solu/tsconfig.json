@@ -1,9 +1,35 @@
-
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "include": ["src", "declarations.d.ts"]
+  "compilerOptions": {
+    /* Compilation de base */
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Résolution des modules pour Vite */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+
+    /* Pas besoin d'output TS, Vite gère tout */
+    "noEmit": true,
+
+    /* JSX avec React 17+ (automatique) */
+    "jsx": "react-jsx",
+
+    /* Linting strict */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": [
+    "src",
+    "features",
+    "declarations.d.ts",
+    "vite.config.ts"
+  ]
 }

@@ -255,14 +255,14 @@ gap:35px;
 /* Question */
 .register_question {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 550;
   /* margin-bottom: 20px; */
-  color: #141416 !important;
+  color: #505050 !important;
 }
 .register_question1{
     font-size: 18px;
-    font-weight: 600;
-     color: #141416 !important;
+    font-weight: 550;
+     color: #505050 !important;
   }
 
 /* Rôles */
@@ -345,7 +345,7 @@ gap:35px;
 .step2_container{
     display: flex;
     flex-direction: column;
-    gap:15px;  
+    gap:8px;  
 }
 .choice_container {
   display: flex;
@@ -393,7 +393,7 @@ gap:35px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .form_group_column {
@@ -450,7 +450,7 @@ gap:35px;
   display: flex;
   /* flex-direction: column; */
   gap: 8px;
-  /* margin-bottom: 20px; */
+   margin-top: 10px; 
 }
 .radio_group input[type="radio"] {
   accent-color: var(--color-primary, #E77131);
@@ -677,13 +677,17 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
      background:white;
      position: absolute;
      width: 100%;
-     transform: translate3d(0,4.25rem,0);
+     transform: translate3d(0,4.45rem,0);
      border: 1px solid rgba(0,0,0,0.05);
      z-index: 1000;
      max-height:100px !important;
      overflow-y: auto;
 }
 .suggestion_item_input{
+  font-size: 12px !important;
+  color: #505050;
+}
+.adresse_sociale{
   font-size: 12px !important;
   color: #505050;
 }

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 // import { UserRegister, VerifyCode, UserLogin } from "../controllers/UserControllers";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config({ path: "../../.env" });
 import { CompleteRegistration,ResendVerificationCode,UserRegister, VerifyCode } from "../services/Uservices";
 
 export const UserControllers = async (req: Request, res: Response, next: NextFunction) => {
@@ -22,27 +24,51 @@ export const UserControllersVerifyCode = async (req: Request, res: Response, nex
 };
 
 
+// export const completeController = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const user = await CompleteRegistration(req.body);
+
+//     // ✅ Maintenant user contient { id, email, firstName}
+    // const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
+    //   expiresIn: "1d",
+    // });
+
+//     res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });
+//     res.status(200).json({
+//       message: "Inscription complétée. Vous pouvez vous connecter.",
+//       user, // tu peux même renvoyer le user pour debug
+//       token
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+
+
 export const completeController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await CompleteRegistration(req.body);
 
-    // ✅ Maintenant user contient { id, email, firstName}
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
-      expiresIn: "1d",
-    });
+    // Génération du token
+    const token =  jwt.sign({ userId: user.id }, process.env.secretKey as string, { expiresIn: "1d" })
 
+    // Cookie + réponse JSON
     res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });
+
     res.status(200).json({
+      success: true,
       message: "Inscription complétée. Vous pouvez vous connecter.",
-      user, // tu peux même renvoyer le user pour debug
-      token
+      user,
+      token, 
     });
   } catch (err) {
     next(err);
   }
 };
 
-// 4. 🔄 Renvoi du code OTP
+
+// 4.  Renvoi du code OTP
 export const resendCodeController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;

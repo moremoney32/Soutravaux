@@ -1,5 +1,5 @@
 
-name: 🚀 Deploy Backend to O2switch
+name:  Deploy Backend to O2switch
 
 on:
   push:
