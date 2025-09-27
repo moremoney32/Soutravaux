@@ -10,7 +10,6 @@ dotenv.config({ path: "./.env" });
 
 const app: Application = express();
 
-// CORS
 const corsOptions: CorsOptions = {
   origin: "https://frontend.staging.solutravo-compta.fr",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
