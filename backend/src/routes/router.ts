@@ -2,7 +2,6 @@ import express, { Router } from "express";
 import { UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
 import { SearchCompanies } from "../controllers/CompanyController";
 
-
 const router: Router = express.Router();
 
 router.post("/register", UserControllers);
