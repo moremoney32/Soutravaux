@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
 import {errorHandler} from "./src/middleware/errorHandler";
 
-// Charger les variables d’env
 dotenv.config({ path: "./.env" });
 
 const app: Application = express();
