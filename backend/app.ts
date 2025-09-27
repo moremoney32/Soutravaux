@@ -13,7 +13,7 @@ const app: Application = express();
 
 // CORS
 const corsOptions: CorsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://frontend.staging.solutravo-compta.fr",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: [
