@@ -40,14 +40,7 @@ app.get("/", (_req: Request, res: Response) => {
 // Routes API
 app.use("/api", routes);
 
-// Gestion erreurs
-// app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-//   console.error("❌", err);
-//   res
-//     .status(err.statusCode || 500)
-//     .json({ error: err.message || "Erreur serveur" });
-// });
-// ✅ Middleware global erreurs (toujours en dernier)
+// Middleware global erreurs
 app.use(errorHandler);
 
 export default app;

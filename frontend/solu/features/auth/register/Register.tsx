@@ -398,46 +398,58 @@ function Register() {
             setLoading3(false);
         }
     };
-const handleCompleteProfileNext = () => {
-  const token = localStorage.getItem("jwtToken"); 
-  if (!token) {
-    alert("Token introuvable, veuillez vous reconnecter.");
-    return;
-  }
-  setLoading2(true)
-
-  // ✅ Redirection directe vers le microservice
- return window.location.href = `https://staging.solutravo-compta.fr/connexion-microservice?token=${token}`;
-};
-//       const handleCompleteProfileNext = async () => {
-//   const token = localStorage.getItem("jwtToken"); // ou ton state/cookie
+// const handleCompleteProfileNext = () => {
+//   const token = localStorage.getItem("jwtToken"); 
 //   if (!token) {
 //     alert("Token introuvable, veuillez vous reconnecter.");
 //     return;
 //   }
+//   setLoading2(true)
 
-//   try {
-//     // 🔎 1. Test avec fetch pour logger la réponse
-//     const response = await fetch(
-//       `https://staging.solutravo-compta.fr/connexion-microservice?token=${token}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           Accept: "application/json",
-//         },
-//       }
-//     );
-
-//     const data = await response.json();
-//     console.log("Réponse microservice :", data);
-
-//     // 2. Redirection vers PHP qui va gérer la modal
-//     // window.location.href = `https://staging.solutravo-compta.fr/connexion-microservice?token=${token}`;
-//   } catch (err) {
-//     console.error("Erreur connexion microservice :", err);
-//     alert("Impossible de contacter le microservice.");
-//   }
+//   // Redirection directe vers le microservice
+//  return window.location.href = `https://staging.solutravo-compta.fr/connexion-microservice?token=${token}`;
 // };
+ const handleCompleteProfileNext = async () => {
+  const token = localStorage.getItem("jwtToken"); 
+  if (!token) {
+    console.log("Token introuvable, veuillez vous reconnecter.");
+    return;
+  }
+
+  try {
+     setLoading2(true)
+    const response = await fetch(
+      "https://staging.solutravo-compta.fr/connexion-microservice",
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erreur ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Réponse microservice :", data);
+
+    // if (data.redirectUrl) {
+    //   window.location.href = data.redirectUrl;
+    // } else {
+    //   alert("Connexion validée, mais aucune URL de redirection reçue.");
+    // }
+
+  } catch (err) {
+    console.error("Erreur connexion microservice :", err);
+    alert("Impossible de contacter le microservice.");
+  }finally{
+    setLoading2(false)
+  }
+};
+
 
 
     const renderStep = () => {
