@@ -32,7 +32,7 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Ping route
 app.get("/", (_req: Request, res: Response) => {
-  res.send("API Solutravo tout pret!!");
+  res.send(process.env.DB_HOST);
 });
 
 // Routes API
