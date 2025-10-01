@@ -753,3 +753,137 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   100% { opacity: 0; }
 }
 
+
+
+
+/**responsive mobile***/
+@media (max-width: 768px) {
+  .register_container {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+  }
+
+  .composant_statique,
+  .composant_statique_left,
+  .composant_dynamique {
+    width: 100% !important;
+    padding: 20px !important;
+    max-height: none;
+  }
+
+  .composant_statique_left {
+    padding: 20px !important;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .sous_contenair_mail {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .roles_container {
+    grid-template-columns: 1fr; /* une seule colonne */
+    gap: 10px;
+  }
+
+  .form_group {
+    grid-template-columns: 1fr; /* champs empilés */
+  }
+
+  .form_group_password {
+    width: 100% !important;
+  }
+
+  .image_section {
+    max-width: 250px;
+    margin: 0 auto;
+  }
+
+  .register_title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .register_subtitle {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .progress_container {
+    font-size: 12px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .buttons_container,
+  #sous_buttons_container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .register_btn,
+  .register_btn1 {
+    width: 100%;
+    text-align: center;
+  }
+}
+/*****tablette****/
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .register_container {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+  }
+
+  .composant_statique,
+  .composant_statique_left,
+  .composant_dynamique {
+    width: 100% !important;
+    padding: 30px !important;
+  }
+
+  .roles_container {
+    grid-template-columns: repeat(2, 1fr); /* deux colonnes */
+    gap: 15px;
+  }
+
+  .form_group {
+    grid-template-columns: 1fr; /* champs empilés pour éviter les soucis */
+  }
+
+  .form_group_password {
+    width: 80% !important;
+    margin: 0 auto;
+  }
+
+  .image_section {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .register_title {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  .register_subtitle {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .progress_container {
+    font-size: 13px;
+    gap: 15px;
+  }
+
+  .buttons_container {
+    justify-content: center;
+    gap: 20px;
+  }
+}
+
+

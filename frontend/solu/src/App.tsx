@@ -1,8 +1,9 @@
 
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import Register from "../features/auth/register/Register";
-import Home from "../features/auth/register/Home";
+// import Home from "../features/auth/register/Home";
 import "./app.css";
+import SubscriptionPage from "./components/SubscriptionPage";
 
 function App() {
   
@@ -10,10 +11,11 @@ function App() {
       <BrowserRouter>
       <Routes>
         {/* Redirection de la racine vers /register */}
-        <Route path="/" element={<Home />} />
+        {/* <Route path="/" element={<Home />} /> */}
 
         {/* Inscription multi-étapes */}
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Register />} />
+         <Route path="/subscription" element={<SubscriptionPage />} />
 
       </Routes>
     </BrowserRouter>

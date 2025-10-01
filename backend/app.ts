@@ -9,9 +9,38 @@ import {errorHandler} from "./src/middleware/errorHandler";
 dotenv.config({ path: "./.env" });
 
 const app: Application = express();
+// "http://127.0.0.1:5500"
+// origin: "https://frontend.staging.solutravo-compta.fr",
+//https://gilded-sunflower-4c737b.netlify.app/
+// const corsOptions: CorsOptions = {
+//   origin: "https://gilded-sunflower-4c737b.netlify.app",
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true,
+//   allowedHeaders: [
+//     "Origin",
+//     "X-Requested-With",
+//     "Content-Type",
+//     "Accept",
+//     "Authorization",
+//     "Custom-Header"
+//   ],
+// };
+
+const allowedOrigins = [
+  "https://gilded-sunflower-4c737b.netlify.app",
+  "http://localhost:5173",
+  "https://frontend.staging.solutravo-compta.fr",
+  "http://127.0.0.1:5500"
+];
 
 const corsOptions: CorsOptions = {
-  origin: "https://frontend.staging.solutravo-compta.fr",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // autorisé
+    } else {
+      callback(new Error("CORS non autorisé"));
+    }
+  },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders: [
@@ -23,6 +52,7 @@ const corsOptions: CorsOptions = {
     "Custom-Header"
   ],
 };
+
 
 // Middlewares
 app.use(cors(corsOptions));

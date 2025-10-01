@@ -3,6 +3,18 @@
   --color-secondary: #FFFFFF;
   --color-background:#E77131;
   --spacing-md: 16px;
+  /*****/
+  --color-dark: #505050;
+  --color-light-gray: #F8F9FA;
+  --color-border: #E0E0E0;
+  --shadow-light: 0 4px 20px rgba(231, 113, 49, 0.1);
+  --shadow-medium: 0 8px 30px rgba(231, 113, 49, 0.15);
+  --shadow-heavy: 0 12px 40px rgba(231, 113, 49, 0.2);
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 20px;
+  --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
  ::-webkit-scrollbar {
