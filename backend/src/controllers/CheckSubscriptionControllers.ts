@@ -4,29 +4,6 @@ import pool from "../config/db";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 
-// export const CheckSubscription = async (req: Request, res: Response) => {
-//   try {
-//     const authHeader = req.headers?.authorization;
-//     if (!authHeader) return res.status(401).json({ error: "Token manquant" });
-
-//     const token = authHeader.split(" ")[1];
-//     const decoded: any = jwt.verify(token, process.env.secretKey!);
-
-//     const [rows] = await pool.query("SELECT id FROM membres WHERE id = ?", [
-//       decoded.userId,
-//     ]);
-
-//     if ((rows as any).length === 0) {
-//       return res.status(401).json({ error: "Utilisateur introuvable" });
-//     }
-
-
-//     return res.json({ redirectUrl: "http://localhost:5173/subscription"});
-//   } catch (err) {
-//     return res.status(401).json({ error: "Token invalide" });
-//   }
-// };
-
 export const CheckSubscription = async (req: Request, res: Response) => {
   try {
     const authHeader = req.headers?.authorization;

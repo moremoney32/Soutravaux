@@ -8,8 +8,9 @@ export interface Plan {
 //   unlockedFeatures: number;
   popular: boolean;
   color: string;
-  stripeLink: string;
+  stripe_link: string;
 }
+
 
 export interface Subscription {
   id: string;

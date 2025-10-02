@@ -22,6 +22,7 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
                 },
             }
         );
+        console.log( response.data.etablissements)
 
         const results = response.data.etablissements?.map((e: any) => ({
             nom: e.uniteLegale?.denominationUniteLegale,

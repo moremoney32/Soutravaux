@@ -15,13 +15,13 @@ export const GetPlansByRole = async (req: Request, res: Response) => {
 
 export const updatePlan = async (req: Request, res: Response) => {
   try {
-    const { id, name, price, period, description, features, popular, color } = req.body;
+    const { id, name, price, period, description, features, popular, color, stripe_link } = req.body;
 
     await pool.query(
       `UPDATE plans 
-       SET name=?, price=?, period=?, description=?, features=?, popular=?, color=?
+       SET name=?, price=?, period=?, description=?, features=?, popular=?, color=?, stripe_link=?
        WHERE id=?`,
-      [name, price, period, description, JSON.stringify(features), popular, color, id]
+      [name, price, period, description, JSON.stringify(features), popular, color, stripe_link, id]
     );
 
     res.json({ message: "Plan mis à jour avec succès" });
@@ -35,12 +35,12 @@ export const updatePlan = async (req: Request, res: Response) => {
 // controllers/PlanRoleControllers.ts
 export const createPlan = async (req: Request, res: Response) => {
   try {
-    const { name, price, period, description, features, popular, color } = req.body;
+    const { name, price, period, description, features, popular, color, stripe_link } = req.body;
 
     const [result]: any = await pool.query(
-      `INSERT INTO plans (name, price, period, description, features, popular, color)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, price, period, description, JSON.stringify(features), popular ? 1 : 0, color]
+      `INSERT INTO plans (name, price, period, description, features, popular, color, stripe_link)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, price, period, description, JSON.stringify(features), popular ? 1 : 0, color, stripe_link]
     );
 
     res.json({
@@ -53,7 +53,8 @@ export const createPlan = async (req: Request, res: Response) => {
         description,
         features,
         popular,
-        color
+        color,
+        stripe_link
       }
     });
   } catch (err) {

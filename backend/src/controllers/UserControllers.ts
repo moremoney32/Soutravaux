@@ -24,25 +24,7 @@ export const UserControllersVerifyCode = async (req: Request, res: Response, nex
 };
 
 
-// export const completeController = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const user = await CompleteRegistration(req.body);
 
-//     // ✅ Maintenant user contient { id, email, firstName}
-    // const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
-    //   expiresIn: "1d",
-    // });
-
-//     res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });
-//     res.status(200).json({
-//       message: "Inscription complétée. Vous pouvez vous connecter.",
-//       user, // tu peux même renvoyer le user pour debug
-//       token
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 
 
@@ -51,7 +33,7 @@ export const completeController = async (req: Request, res: Response, next: Next
     const user = await CompleteRegistration(req.body);
 
     // Génération du token
-    const token =  jwt.sign({ userId: user.id }, process.env.secretKey as string, { expiresIn: "1d" })
+    const token =  jwt.sign({ userId: user.id }, process.env.secretKey as string, { expiresIn: "1h"})
 
     // Cookie + réponse JSON
     res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });

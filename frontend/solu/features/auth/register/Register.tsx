@@ -26,6 +26,7 @@ import { useInputState } from "../../../src/customHooks/useInputState";
 
 
 
+
 function Register() {
     const roles = ["Artisan", "Annonceur", "Fournisseur"];
     const [loading3, setLoading3] = useState(false);
@@ -40,8 +41,8 @@ function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentStep, setCurrentStep] = useState(1);
-   const [fade, setFade] = useState<any>(true);
-   void fade;
+    const [fade, setFade] = useState<any>(true);
+    void fade;
     const [showRoleError, setShowRoleError] = useState(false);
     const [subStep, setSubStep] = useState(1);
     const [checkSiret, setCheckSiret] = useState("");
@@ -58,6 +59,10 @@ function Register() {
     const [canResend, setCanResend] = useState(false);
     const [address, setAddress] = useState("");
     const [otp, setOtp] = useState(["", "", "", ""]);
+    const [isSelectingSearch, setIsSelectingSearch] = useState(true);
+       const [cp, setCp] = useState("");
+       const [ville, setVille] = useState("");
+       const [rue, setRue] = useState("");
 
     // fonction pour formater mm:ss
 
@@ -73,36 +78,36 @@ function Register() {
 
 
     const {
-  inputBorderColor: inputBorderColorCompany,
-  handleFocus: handleFocusCompany,
-  handleBlur: handleBlurCompany,
-} = useInputState(false, errors.companyName as any); 
+        inputBorderColor: inputBorderColorCompany,
+        handleFocus: handleFocusCompany,
+        handleBlur: handleBlurCompany,
+    } = useInputState(false, errors.companyName as any);
     const {
         inputBorderColor: inputBorderColorFirstName,
         handleFocus: handleFocusFirstName,
         handleBlur: handleBlurFirstName,
-    } = useInputState(false,  errors.firstName as any);
+    } = useInputState(false, errors.firstName as any);
     const {
         inputBorderColor: inputBorderColorAdresseSocial,
         handleFocus: handleFocusFirstAdresseSocial,
         handleBlur: handleBlurFirstAdresseSocial,
-    } = useInputState(false,  errors.firstAddresseSocial as any);
-    
+    } = useInputState(false, errors.firstAddresseSocial as any);
+
     const {
         inputBorderColor: inputBorderColorEmail,
         handleFocus: handleFocusEmail,
         handleBlur: handleBlurEmail,
-    } = useInputState(false,  errors.email as any);
+    } = useInputState(false, errors.email as any);
     const {
         inputBorderColor: inputBorderColorPhone,
         handleFocus: handleFocusPhone,
         handleBlur: handleBlurPhone,
-    } = useInputState(false,  errors.Phone as any);
+    } = useInputState(false, errors.Phone as any);
     const {
         inputBorderColor: inputBorderColorPassword,
         handleFocus: handleFocusPassword,
         handleBlur: handleBlurPassword,
-    } = useInputState(false,  errors.password as any);
+    } = useInputState(false, errors.password as any);
     const {
         inputBorderColor: inputBorderColorConfirm,
         handleFocus: handleFocusConfirm,
@@ -110,42 +115,48 @@ function Register() {
     } = useInputState(false, errors.confirm as any);
 
     const onSubmitRegister = async (data: any) => {
-        console.log(data)
-        console.log(companyName)
-        console.log(address)
         setLoading(true);
         try {
             let payload;
-    if (companyStatus === "existante") {
-      //  Cas société déjà existante
-      console.log("Entreprise existante:", companyName);
-      payload = {
-        role: data.role,
-        email: data.email,
-        prenom: data.prenom,
-        name:companyName,         
-        address:address, // vient de la suggestion
-        phonenumber: data.phonenumber,
-        size: selectedSize,
-        legal_form: data.legal_form || "Inconnu",
-        siret: data.siret || "",    // on garde le siret
-      };
-    } else {
-      //  Cas nouvelle société
-      payload = {
-        role: data.role,
-        email: data.email,
-        prenom: data.prenom,
-        name: data.name,            // vient du formulaire
-        address: data.address,
-        phonenumber: data.phonenumber,
-        size: selectedSize,
-        legal_form: data.legal_form || "Inconnu",
-        siret: "",                  // pas de siret
-      };
-    }
+           
+            if (companyStatus === "existante") {
+                //  Cas société déjà existante
+                payload = {
+                    role: data.role,
+                    email: data.email,
+                    prenom: data.prenom,
+                    name: companyName,
+                    address: address, // vient de la suggestion
+                    phonenumber: data.phonenumber,
+                    size: selectedSize,
+                    legal_form: data.legal_form || "Inconnu",
+                    siret: data.siret || "",    // on garde le siret
+                    cp: cp,
+                    ville: ville,
+                    rue: rue,
+                    nom:data.nom,
+                    capital:data.capital ? parseFloat(data.capital) : null
+                };
+            } else {
+                //  Cas nouvelle société
+                payload = {
+                    role: data.role,
+                    email: data.email,
+                    prenom: data.prenom,
+                    name: data.name,            // vient du formulaire
+                    address: data.address,
+                    phonenumber: data.phonenumber,
+                    size: selectedSize,
+                    legal_form: data.legal_form || "Inconnu",
+                    siret: "",                  // pas de siret
+                    cp: cp,
+                    ville: ville,
+                    rue: rue,
+                    nom:data.nom,
+                      capital:data.capital ? parseFloat(data.capital) : null
+                };
+            }
             const result = await fetchData('register', 'POST', payload);
-            console.log(result)
             if (result.status === 201) {
                 setDirection("next");
                 setCurrentStep(3);
@@ -220,7 +231,7 @@ function Register() {
         "Plus de 10 personnes",
     ];
     const newSizes = [
-         "Je ne sais pas encore",
+        "Je ne sais pas encore",
         "Je serais seul",
         "2 à 5 Personnes",
         "Plus de 5 personnes",
@@ -241,36 +252,45 @@ function Register() {
         return () => clearInterval(interval);
     }, [slides.length]);
 
+
     useEffect(() => {
-        if (checkSiret.length >= 3 && companyStatus === "existante") {
+        if (checkSiret.length >= 3 && companyStatus === "existante" && isSelectingSearch) {
             const timer = setTimeout(async () => {
                 try {
                     const { result } = await fetchData(`entreprises?siret=${checkSiret}`, "GET", null, "");
-                    console.log(result)
                     setSuggestions(result || []);
                 } catch (err) {
                     console.error("Erreur API entreprises:", err);
                     setSuggestions([]);
                 }
-            }, 400); // debounce 400ms
+            }, 400);
 
             return () => clearTimeout(timer);
-        }  
-            setSuggestions([]);
+        }
 
-    }, [checkSiret]);
+        if (checkSiret.length === 0) {
+            setSuggestions([]);
+        }
+    }, [checkSiret, companyStatus, isSelectingSearch]);
+
 
     // quand on choisit une suggestion
     const handleSelectCompany = (company: any) => {
-        console.log(company.nom)
         setCompanyName(company.nom);
         setCheckSiret(company.siret); // stockage du siret/siren
-        setAddress(`${company.cp} ${company.rue} ${company.ville} ${company.code} ${company.libelle}`);
+        setIsSelectingSearch(false);
+        setCp(company.code);
+        setVille(company.libelle);
+        setRue(`${company.rue} ${company.ville}`);
+        setAddress(`${company.type} ${company.ville} ${company.code} ${company.libelle}`);
         setValue("siret", company.siret, { shouldValidate: true });
         setValue("name", company.nom, { shouldValidate: true });
         setSuggestions([]); // on cache la liste
-        setValue("address", `${company.cp} ${company.rue} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
+        setValue("address", `${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
     };
+
+
+
     const handleNextStep1 = () => {
         if (!companyStatus || !selectedSize) {
             setErrorPopup("Veuillez remplir toutes les cases.");
@@ -281,6 +301,13 @@ function Register() {
 
         if (!watch("siret") && companyStatus === "existante") {
             setErrorPopup("Veuillez mettre le siret de l'entreprise.");
+            setTimeout(() => setErrorPopup(null), 3000);
+            setIsValidStep2(false);
+            return;
+        }
+
+        if (!watch("name")) {
+            setErrorPopup("Veuillez mettre le nom de l'entreprise.");
             setTimeout(() => setErrorPopup(null), 3000);
             setIsValidStep2(false);
             return;
@@ -382,7 +409,7 @@ function Register() {
                 passe: watch("password"),
             });
             console.log(result)
-            if(result.status === 200){
+            if (result.status === 200) {
                 localStorage.setItem("jwtToken", result.result.token);
                 setShowPopup(true);
             }
@@ -399,59 +426,59 @@ function Register() {
         }
     };
 
- const handleCompleteProfileNext = async () => {
-   const token = localStorage.getItem("jwtToken"); 
-  if (!token) {
-    console.log("Token introuvable, veuillez vous reconnecter.");
-    return;
-  }
+    // const handleCompleteProfileNext = async () => {
+    //     const token = localStorage.getItem("jwtToken");
+    //     if (!token) {
+    //         console.log("Token introuvable, veuillez vous reconnecter.");
+    //         return;
+    //     }
 
-  try {
-     setLoading2(true)
-    const response = await fetch(
-      "https://staging.solutravo-compta.fr/connexion-microservice",
-      {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json",
-        },
+    //     try {
+    //         setLoading2(true)
+    //         const response = await fetch(
+    //             "https://staging.solutravo-compta.fr/connexion-microservice",
+    //             {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Authorization": `Bearer ${token}`,
+    //                     "Accept": "application/json",
+    //                 },
+    //             }
+    //         );
+
+    //         if (!response.ok) {
+    //             throw new Error(`Erreur ${response.status}`);
+    //         }
+    //         const data = await response.json();
+    //         console.log("Réponse microservice :", data);
+    //         if (data?.redirect_url) {
+    //             return window.location.href = "https://staging.solutravo-compta.fr/ma-societe";
+    //         }
+    //     } catch (err) {
+    //         console.error("Erreur connexion microservice :", err);
+    //         setErrorPopup("Impossible de contacter le microservice.");
+    //     } finally {
+    //         setLoading2(false);
+    //     }
+    // };
+
+
+    const handleCompleteProfileNext = () => {
+      setLoading2(true)
+      const token = localStorage.getItem("jwtToken"); 
+      if (!token) {
+        console.log("Token introuvable, veuillez vous reconnecter.");
+        setLoading2(false);
+        return;
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Erreur ${response.status}`);
-    }
-    const data = await response.json();
-    console.log("Réponse microservice :", data);
-    if(data?.redirect_url){
-      return  window.location.href ="https://staging.solutravo-compta.fr/ma-societe";
-    }
-  } catch (err) {
-    console.error("Erreur connexion microservice :", err);
-    setErrorPopup("Impossible de contacter le microservice.");
-  }finally{
-    setLoading2(false);
-  }
-};
+      const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
 
-
-// const handleCompleteProfileNext = () => {
-//   setLoading2(true)
-//   const token = localStorage.getItem("jwtToken"); 
-//   if (!token) {
-//     console.log("Token introuvable, veuillez vous reconnecter.");
-//     setLoading2(false);
-//     return;
-//   }
-
-//   const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
-
-//   setLoading2(false);
-//   setTimeout(() => {
-//     window.location.href = redirectUrl;
-//   }, 300); 
-// };
+      setLoading2(false);
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 300); 
+    };
 
 
 
@@ -509,7 +536,7 @@ function Register() {
                                             </button>
                                         </div>
 
-                                        {companyStatus === "existante" ?(<h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>):(<h3 className="register_question1">Quelle taille fera votre entreprise ?</h3>)}
+                                        {companyStatus === "existante" ? (<h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>) : (<h3 className="register_question1">Quelle taille fera votre entreprise ?</h3>)}
                                         <div className="size_container">
                                             {companyStatus === "existante" ? (sizes.map((size) => (
                                                 <button
@@ -523,7 +550,7 @@ function Register() {
                                                 >
                                                     {size}
                                                 </button>
-                                            ))):(newSizes.map((size) => (
+                                            ))) : (newSizes.map((size) => (
                                                 <button
                                                     type="button"
                                                     key={size}
@@ -543,8 +570,14 @@ function Register() {
                                                 <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number"
                                                     onChange={(e) => {
                                                         setCheckSiret(e.target.value);
-                                                        setValue("siret", e.target.value, { shouldValidate: true });
+                                                        if (!isSelectingSearch) {
+                                                            setIsSelectingSearch(true);
+                                                        }
+                                                        // setValue("siret", e.target.value, { shouldValidate: true });
                                                     }} />
+                                                {/* {errors.siret && (
+                                            <span className="error">{errors.siret.message as string}</span>
+                                        )} */}
                                                 {suggestions.length > 0 && companyStatus === "existante" && (
                                                     <div className="suggestions_list">
                                                         {suggestions.map((company, idx) => (
@@ -568,22 +601,21 @@ function Register() {
                                         )}
 
                                         <div className="form_group_column">
-                                            {companyStatus === "existante" ?(<div className="sous_form_group">
+                                            {companyStatus === "existante" ? (<div className="sous_form_group">
                                                 <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
-                                                <input type="text" placeholder="Exp:Solutravo"  value={companyName} className="suggestion_item_input"  readOnly/>
-                                            </div>):(<div className="sous_form_group">
+                                                <input type="text" placeholder="Exp:Solutravo" value={companyName} className="suggestion_item_input" readOnly />
+                                            </div>) : (<div className="sous_form_group">
                                                 <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
                                                 <input type="text" placeholder="Exp:Solutravo" className="suggestion_item_input"
-                                                 {...register("name", { required: "Veuillez entrer le nom adresse de votre entreprise" })}
+                                                    {...register("name", { required: "Veuillez entrer le nom adresse de votre entreprise" })}
                                                     //  onChange={(e)=>setCompanyName(e.target.value)}
-                                                     onFocus={handleFocusCompany}
-                                                     onBlur={handleBlurCompany}
-                                                    style={{ borderColor: inputBorderColorCompany }}  />
+                                                    onFocus={handleFocusCompany}
+                                                    onBlur={handleBlurCompany}
+                                                    style={{ borderColor: inputBorderColorCompany }} />
                                             </div>)}
-                                            {/* {errors.companyName && <span className="error">Nom requis</span>} */}
 
                                         </div>
-                                       
+
                                     </>
                                 )}
 
@@ -615,45 +647,120 @@ function Register() {
                                             <label>
                                                 <input
                                                     type="radio"
+                                                    value="AE"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> AE
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="EI"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> EI
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="SNC"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> SNC
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="SELARL"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> SELARL
+                                            </label>
+                                            {/* <label>
+                                                <input
+                                                    type="radio"
+                                                    value="SAS"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> SAS
+                                            </label>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    value="SARL"
+                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                /> SARL
+                                            </label> */}
+                                            <label>
+                                                <input
+                                                    type="radio"
                                                     value="Inconnu"
                                                     {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
                                                 /> Je ne sais pas
                                             </label>
                                         </div>
-                                        {errors.legalForm && (
-                                            <span className="error">{errors.legalForm.message as string}</span>
+                                        {errors.legal_form && (
+                                            <span className="error">{errors.legal_form.message as string}</span>
                                         )}
 
                                         <div className="form_group">
                                             <div className="sous_form_group">
+                                                <label htmlFor="prenom">Nom</label>
                                                 <input
                                                     type="text"
-                                                    placeholder="Nom et prénom"
-                                                    {...register("prenom", { required: "Veuillez entrer votre nom complet" })}
+                                                    placeholder="Nom"
+                                                    {...register("nom", { required: "Veuillez entrer votre nom complet" })}
                                                     onFocus={handleFocusFirstName}
                                                     onBlur={handleBlurFirstName}
                                                     style={{ borderColor: inputBorderColorFirstName }} />
-                                                {errors.firstName && (
-                                                    <span className="error">{errors.firstName.message as string}</span>
+                                                {errors.nom && (
+                                                    <span className="error">{errors.nom.message as string}</span>
                                                 )}
                                             </div>
-                                            {companyStatus === "existante" ? (<div className="sous_form_group">
+                                            <div className="sous_form_group">
+                                                <label htmlFor="prenom">Prénom</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Prénom"
+                                                    {...register("prenom", { required: "Veuillez entrer votre prénom" })}
+                                                    onFocus={handleFocusFirstName}
+                                                    onBlur={handleBlurFirstName}
+                                                    style={{ borderColor: inputBorderColorFirstName }} />
+                                                {errors.prenom && (
+                                                    <span className="error">{errors.prenom.message as string}</span>
+                                                )}
+                                            </div>
+                                             <div className="sous_form_group">
+                                                <label htmlFor="capital">Capital</label>
+                                                <input
+                                                    type="number"
+                                                    min="2"
+                                                    // step="15"
+                                                    placeholder="Montant du capital"
+                                                    {...register("capital", { required: "Veuillez entrer le montant du capital" })}
+                                                    onFocus={handleFocusFirstName}
+                                                    onBlur={handleBlurFirstName}
+                                                    style={{ borderColor: inputBorderColorFirstName }} />
+                                                      <span className="euro-symbol">€</span>
+                                                {errors.capital && (
+                                                    <span className="error">{errors.capital.message as string}</span>
+                                                )}
+                                            </div>
+                                            {companyStatus === "existante" ? (
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="adresse">Adresse</label>
                                                 <input
                                                     type="text"
                                                     value={address}
                                                     className="adresse_sociale"
                                                     placeholder="Adresse Postal"
                                                     readOnly />
-                                            </div>):(<div className="sous_form_group">
+                                            </div>) : (<div className="sous_form_group">
+                                                 <label htmlFor="adresse">Adresse</label>
                                                 <input
                                                     type="text"
                                                     // className="adresse_sociale"
                                                     placeholder="Adresse Postal"
                                                     {...register("address", { required: "Veuillez entrer l'adresse du siège social" })}
-                                                      onFocus={handleFocusFirstAdresseSocial}
+                                                    onFocus={handleFocusFirstAdresseSocial}
                                                     onBlur={handleBlurFirstAdresseSocial}
                                                     style={{ borderColor: inputBorderColorAdresseSocial }}
-                                                 />
+                                                />
                                                 {errors.address && (
                                                     <span className="error">{errors.address.message as string}</span>
                                                 )}
@@ -662,6 +769,7 @@ function Register() {
 
                                         <div className="form_group">
                                             <div className="sous_form_group">
+                                                <label htmlFor="telephone">Téléphone</label>
                                                 <input
                                                     type="text"
                                                     placeholder="Numéro de téléphone"
@@ -676,11 +784,12 @@ function Register() {
                                                     onBlur={handleBlurPhone}
                                                     style={{ borderColor: inputBorderColorPhone }}
                                                 />
-                                                {errors.phone && (
-                                                    <span className="error">{errors.phone.message as string}</span>
+                                                {errors.phonenumber && (
+                                                    <span className="error">{errors.phonenumber.message as string}</span>
                                                 )}
                                             </div>
                                             <div className="sous_form_group">
+                                                <label htmlFor="email">Email</label>
                                                 <input
                                                     type="email"
                                                     placeholder="Adresse Email"
@@ -755,21 +864,21 @@ function Register() {
                         <AnimatePresence>
                             {errorPopup && (
                                 <motion.div
-                        className="role_error_sidebar top_right"
-                        role="alert"
-                        initial={{ x: "100%", opacity: 0 }}
-                        animate={{
-                            x: [0, -120, 0],
-                            opacity: [0, 1, 1]
-                        }}
-                        exit={{ x: "100%", opacity: 0 }}
-                        transition={{
-                            duration: 2,
-                            ease: "easeInOut"
-                        }}
-                    >
-                        {errorPopup}
-                    </motion.div>
+                                    className="role_error_sidebar top_right"
+                                    role="alert"
+                                    initial={{ x: "100%", opacity: 0 }}
+                                    animate={{
+                                        x: [0, -120, 0],
+                                        opacity: [0, 1, 1]
+                                    }}
+                                    exit={{ x: "100%", opacity: 0 }}
+                                    transition={{
+                                        duration: 2,
+                                        ease: "easeInOut"
+                                    }}
+                                >
+                                    {errorPopup}
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </form>
@@ -1076,7 +1185,7 @@ function Register() {
 
                             <div className="popup_buttons">
                                 <div className="popup_buttons1" onClick={handleCompleteProfileNext}>
-                                   {loading2 ? <span>En Cours ...</span>:<span>Compléter mon profil</span>} 
+                                    {loading2 ? <span>En Cours ...</span> : <span>Compléter mon profil</span>}
                                     <img src={next} alt="" />
                                 </div>
                             </div>

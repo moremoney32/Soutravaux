@@ -22,7 +22,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
     const handleSubscribe = () => {
         if (!loading && !isCurrentPlan) {
-            onSubscribe(plan.id, plan.stripeLink);
+            onSubscribe(plan.id, plan.stripe_link);
         }
     };
 
@@ -44,7 +44,8 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
             {isCurrentPlan && (
                 <div className="current-badge" style={{ backgroundColor: plan.color }}>
-                    <span>✓ Votre plan actuel</span>
+                    <span>✓</span>
+                    <span>Votre plan actuel</span>
                 </div>
             )}
 

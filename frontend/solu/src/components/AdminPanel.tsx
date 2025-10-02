@@ -56,7 +56,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     .catch(err => console.error("Erreur chargement settings:", err));
             }
             // alert(" Titre et sous-titre mis à jour !");
-             setSnackbar({ message: "Titre et sous-titre mis à jour !", type: "success" });
+            setSnackbar({ message: "Titre et sous-titre mis à jour !", type: "success" });
         } catch (err) {
             console.error("Erreur maj settings:", err);
             setSnackbar({ message: "Échec de la mise à jour", type: "error" });
@@ -72,6 +72,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
     const handleSavePlan = async () => {
         if (editingPlan) {
+            console.log("Saving plan:", editingPlan);
 
             try {
                 const res = await fetch(`http://localhost:3000/api/plans/${editingPlan.id}`, {
@@ -106,7 +107,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             features: ['Fonctionnalité 1'],
             popular: false,
             color: '#E77131',
-            stripeLink: ''
+            stripe_link:''
         };
         setEditingPlan(newPlan);
         setShowAddForm(true);
@@ -309,6 +310,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             onChange={(e) => updateEditingPlan('color', e.target.value)}
                                         />
                                     </div>
+                                    <div className="form-group">
+                                        <label>Lien Stripe</label>
+                                        <input
+                                            type="url"
+                                            value={editingPlan.stripe_link} 
+                                            onChange={(e) => updateEditingPlan('stripe_link', e.target.value)}
+                                            // placeholder="https://buy.stripe.com/..."
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="form-group">
@@ -383,20 +393,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
             </div>
             <AnimatePresence>
-  {snackbar && (
-    <motion.div
-      key="snackbar"
-      initial={{ y: 50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 50, opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className={`snackbar ${snackbar.type}`}
-      onClick={() => setSnackbar(null)} // clique pour fermer
-    >
-      {snackbar.message}
-    </motion.div>
-  )}
-</AnimatePresence>
+                {snackbar && (
+                    <motion.div
+                        key="snackbar"
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 50, opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className={`snackbar ${snackbar.type}`}
+                        onClick={() => setSnackbar(null)} // clique pour fermer
+                    >
+                        {snackbar.message}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </div>
     );

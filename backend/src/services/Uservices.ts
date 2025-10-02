@@ -14,12 +14,17 @@ type UserRegisterInput = {
   role: string;
   email: string;
   prenom: string;
+  nom: string;
   phonenumber?: string;    // pas encore dans la table, à ajouter si besoin
   address?: string;  //  pas encore dans la table, à ajouter si besoin
   size?: string;
   name?: string;
   legal_form?: string;
   siret?: string;
+  cp?: string;
+  ville?: string;
+  rue?: string;
+  capital?: number;
 };
 
 type VerifyInput = {
@@ -39,7 +44,7 @@ function genOTP(): string {
 
 // ======================== REGISTER ========================
 export async function UserRegister(data: UserRegisterInput) {
-  const { email, prenom, role, phonenumber, address, size, legal_form, siret, name } = data;
+  const { email, prenom, role, phonenumber, address, size, legal_form, siret, name, nom, cp, ville, rue, capital } = data;
 
   // Vérifications de base
   if (!email) {
@@ -173,12 +178,13 @@ export async function UserRegister(data: UserRegisterInput) {
 //Insertion du membre
 const [resMembre] = await conn.query(
   `INSERT INTO membres (
-    email, prenom, passe, type, statut,
+    email, prenom, nom, passe, type, statut,
     verificationCode, verificationExpiry, ref
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, UUID())`,
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, UUID())`,
   [
     email,
     prenom,
+    nom,
     tempPassword,
     "membre",
     "actif",
@@ -191,22 +197,31 @@ const membreId = (resMembre as any).insertId;
 // Insertion de la société liée (si info fournie)
 let societeId: number | null = null;
 if (siret || name) {
-  const [resSociete] = await conn.query(
-    `INSERT INTO presocietes (
-      name, size, legal_form, siret, role,
-      address, phonenumber, membre_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      name || null,
-      size || null,
-      legal_form || "EI",
-      siret || null,
-      role || "artisan",
-      address || null,
-      phonenumber || null,
-      membreId
-    ]
-  );
+  // ✅ 12 colonnes  ⇔  12 valeurs, dans le MÊME ordre
+const [resSociete] = await conn.query(
+  `INSERT INTO presocietes (
+     name, size, legal_form, siret, role,
+     cp, ville, rue, capital,
+     address, phonenumber, membre_id
+   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  [
+    name ?? null,
+    size ?? null,
+    (legal_form ?? 'EI') as any,
+    siret ?? null,
+    (role ?? 'artisan') as any,
+
+    cp ?? null,          // ← ici seulement le code postal (ex: "84250")
+    ville ?? null,       // ← "LE THOR"
+    rue ?? null,         // ← "COURS GAMBETTA" (ou ce que tu as)
+    capital ?? null,     // ← number ou null
+
+    address ?? null,     // ← adresse complète optionnelle
+    phonenumber ?? null,
+    membreId
+  ]
+);
+
   societeId = (resSociete as any).insertId;
 
   //  Trouver le plan gratuit par défaut correspondant au rôle

@@ -359,6 +359,7 @@ gap:35px;
   background: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: #505050;
 }
 
 .choice_btn.active {
@@ -373,6 +374,16 @@ gap:35px;
   justify-content: space-between;
 }
 
+.euro-symbol {
+  position: absolute;
+  right: 40px;
+  top: 70%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #555;
+  pointer-events: none; /* empêche de cliquer dessus */
+}
+
 .size_btn {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -380,6 +391,7 @@ gap:35px;
   cursor: pointer;
   background: white;
   transition: all 0.3s ease;
+  color: #505050;
 }
 
 .size_btn.active {
