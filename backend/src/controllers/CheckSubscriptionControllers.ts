@@ -54,9 +54,9 @@ const plansParsed = plans.map((p: any) => ({
     ? JSON.parse(p.features) 
     : p.features
 }));
-
+// "https://solutravo.zeta-app.fr/subscription",
     return res.json({
-      redirectUrl: "http://localhost:5173/subscription",
+      redirectUrl: "https://frontend.staging.solutravo-compta.fr/subscription",
       role: societe.role,
       type: membre.type,
       subscription,      // le plan actif
