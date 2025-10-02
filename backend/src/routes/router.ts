@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import { UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
 import { SearchCompanies } from "../controllers/CompanyController";
 import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, updateSettings } from "../controllers/PlanRoleContollers";
-import { CheckSubscription } from "../controllers/checkSubscriptionControllers";
+import { CheckSubscription } from "../controllers/CheckSubscriptionControllers";
 
 const router: Router = express.Router();
 
