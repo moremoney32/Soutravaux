@@ -17,7 +17,7 @@ const [currentSubscription, setCurrentSubscription] = useState<Subscription | nu
 const [pageSubtitle, setPageSubtitle] = useState("");
 
  useEffect(() => {
-    fetch("http://localhost:3000/api/subscription-settings")
+    fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
       .then(res => res.json())
       .then(data => {
         console.log("Données settings:", data);
@@ -30,7 +30,7 @@ const [pageSubtitle, setPageSubtitle] = useState("");
   const token = localStorage.getItem("jwtToken"); 
   const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/check_subscription", {
+      const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

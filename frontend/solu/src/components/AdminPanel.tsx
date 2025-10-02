@@ -37,7 +37,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             hero_subtitle: pageSubtitle
         }
         try {
-            const res = await fetch("http://localhost:3000/api/subscription-settings", {
+            const res = await fetch("https://solutravo.zeta-app.fr/api/subscription-settings", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -47,7 +47,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
             const result = await res.json();
             if (result) {
-                fetch("http://localhost:3000/api/subscription-settings")
+                fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
                     .then(res => res.json())
                     .then(data => {
                         setPageTitle(data.hero_title);
@@ -75,7 +75,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             console.log("Saving plan:", editingPlan);
 
             try {
-                const res = await fetch(`http://localhost:3000/api/plans/${editingPlan.id}`, {
+                const res = await fetch(`https://solutravo.zeta-app.fr/api/plans/${editingPlan.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -118,7 +118,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     const handleCreatePlan = async () => {
         if (editingPlan) {
             try {
-                const res = await fetch("http://localhost:3000/api/plans", {
+                const res = await fetch("https://solutravo.zeta-app.fr/api/plans", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(editingPlan),
@@ -143,7 +143,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     const handleDeletePlan = async (planId: string | number) => {
         if (window.confirm("Êtes-vous sûr de vouloir supprimer ce plan ?")) {
             try {
-                const res = await fetch(`http://localhost:3000/api/plans/${planId}`, {
+                const res = await fetch(`https://solutravo.zeta-app.fr/api/plans/${planId}`, {
                     method: "DELETE"
                 });
                 if (!res.ok) throw new Error("Erreur suppression");
