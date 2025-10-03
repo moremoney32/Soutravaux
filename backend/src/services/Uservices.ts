@@ -1,10 +1,6 @@
 
 
 
-
-
-
-
 import pool from "../config/db";
 import bcrypt from "bcrypt";
 import validator from "validator";
@@ -15,8 +11,8 @@ type UserRegisterInput = {
   email: string;
   prenom: string;
   nom: string;
-  phonenumber?: string;    // pas encore dans la table, à ajouter si besoin
-  address?: string;  //  pas encore dans la table, à ajouter si besoin
+  phonenumber?: string;   
+  address?: string;  
   size?: string;
   name?: string;
   legal_form?: string;
@@ -39,14 +35,13 @@ type CompleteRegistrationInput = {
 
 // Générateur OTP
 function genOTP(): string {
-  return String(Math.floor(1000 + Math.random() * 9000)); // 4 chiffres
+  return String(Math.floor(1000 + Math.random() * 9000));
 }
 
-// ======================== REGISTER ========================
+//REGISTER
 export async function UserRegister(data: UserRegisterInput) {
   const { email, prenom, role, phonenumber, address, size, legal_form, siret, name, nom, cp, ville, rue, capital } = data;
 
-  // Vérifications de base
   if (!email) {
     const err = new Error("Email obligatoire");
     (err as any).statusCode = 400;
@@ -57,6 +52,7 @@ export async function UserRegister(data: UserRegisterInput) {
     (err as any).statusCode = 422;
     throw err;
   }
+
   if (!prenom) {
     const err = new Error("Le prénom est obligatoire");
     (err as any).statusCode = 400;
@@ -67,13 +63,25 @@ export async function UserRegister(data: UserRegisterInput) {
   try {
     await conn.beginTransaction();
 
-    // Vérifier si l’email existe déjà
     const [exists] = await conn.query("SELECT id FROM membres WHERE email = ?", [email]);
     if ((exists as any).length > 0) {
       throw new Error("Cet email est déjà utilisé.");
     }
 
-    // Génération OTP
+    // siret déjà utilisé ?
+if (siret) {
+  const [siretExists]: any = await conn.query(
+    "SELECT id FROM presocietes WHERE siret = ?",
+    [siret]
+  );
+  if (siretExists.length > 0) {
+    const err = new Error("Ce SIRET est déjà associé à une société.");
+    (err as any).statusCode = 409;
+    throw err;
+  }
+}
+
+   
     const otp = genOTP();
     const expiry = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
@@ -118,62 +126,7 @@ export async function UserRegister(data: UserRegisterInput) {
       throw new Error("Erreur lors de l'envoi de l'email");
     }
 
-//     // 1️⃣ Insertion du membre
-//     const [resMembre] = await conn.query(
-//       `INSERT INTO membres (
-//         email, prenom, passe, type, statut,
-//         verificationCode, verificationExpiry, ref
-//       ) VALUES (?, ?, ?, ?, ?, ?, ?, UUID())`,
-//       [
-//         email,
-//         prenom,
-//         tempPassword,
-//         "membre",
-//         "actif",
-//         otp,
-//         expiry
-//       ]
-//     );
-//     const membreId = (resMembre as any).insertId;
 
-//     // 2️⃣ Insertion de la société liée (si info fournie)
-//     if (siret || name) {
-//       await conn.query(
-//         `INSERT INTO presocietes (
-//           name, size, legal_form, siret, role,
-//           address, phonenumber, membre_id
-//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-//         [
-//           name || null,
-//           size || null,
-//           legal_form || "EI",
-//           siret || null,
-//           role || "artisan",
-//           address || null,
-//           phonenumber || null,
-//           membreId
-//         ]
-//       );
-//     }
-
-//     await conn.commit();
-//     return { email };
-//   } catch (err: any) {
-//     await conn.rollback();
-//     // Gestion spécifique des doublons MySQL
-   
-//    // Gestion spécifique des doublons MySQL
-//   if (err && err.code === "ER_DUP_ENTRY") {
-//     const customErr = new Error("Ce SIRET est déjà associé à une société.");
-//     (customErr as any).statusCode = 409;
-//     throw customErr;
-//   }
-
-//   throw err;
-//   } finally {
-//     conn.release();
-//   }
-// }
 
 //Insertion du membre
 const [resMembre] = await conn.query(
@@ -245,14 +198,6 @@ await conn.commit();
 return { email };
 } catch (err: any) {
   await conn.rollback();
-
-  // Gestion spécifique des doublons MySQL
-  if (err && err.code === "ER_DUP_ENTRY") {
-    const customErr = new Error("Ce SIRET est déjà associé à une société.");
-    (customErr as any).statusCode = 409;
-    throw customErr;
-  }
-
   throw err;
 } finally {
   conn.release();
@@ -262,7 +207,7 @@ return { email };
 
 
 
-// ======================== VERIFY ========================
+// VERIFY 
 export async function VerifyCode({ email, code }: VerifyInput) {
   const [rows] = await pool.query("SELECT * FROM membres WHERE email = ?", [email]);
   const user: any = (rows as any)[0];
@@ -278,7 +223,7 @@ export async function VerifyCode({ email, code }: VerifyInput) {
   return { email };
 }
 
-// ======================== COMPLETE REGISTRATION ========================
+//  COMPLETE REGISTRATION 
 export async function CompleteRegistration({ email, passe }: CompleteRegistrationInput) {
   if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
     const err = new Error("Mot de passe trop faible");
@@ -311,7 +256,7 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
   return (updatedRows as any)[0];
 }
 
-// ======================== RESEND OTP ========================
+//RESEND OTP 
 export async function ResendVerificationCode(email: string) {
   const conn = await pool.getConnection();
   try {
@@ -368,6 +313,7 @@ export async function ResendVerificationCode(email: string) {
     return { email };
   } catch (err) {
     await conn.rollback();
+    
     throw err;
   } finally {
     conn.release();

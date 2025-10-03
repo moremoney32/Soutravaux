@@ -165,6 +165,7 @@ function Register() {
 
         } catch (err: unknown) {
             if (err instanceof Error) {
+                console.error("Erreur inscription:", err.message);
                 setErrorPopup(err.message); // 
             } else {
                 setErrorPopup("Erreur inconnue");
@@ -425,42 +426,6 @@ function Register() {
             setLoading3(false);
         }
     };
-
-    // const handleCompleteProfileNext = async () => {
-    //     const token = localStorage.getItem("jwtToken");
-    //     if (!token) {
-    //         console.log("Token introuvable, veuillez vous reconnecter.");
-    //         return;
-    //     }
-
-    //     try {
-    //         setLoading2(true)
-    //         const response = await fetch(
-    //             "https://staging.solutravo-compta.fr/connexion-microservice",
-    //             {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Authorization": `Bearer ${token}`,
-    //                     "Accept": "application/json",
-    //                 },
-    //             }
-    //         );
-
-    //         if (!response.ok) {
-    //             throw new Error(`Erreur ${response.status}`);
-    //         }
-    //         const data = await response.json();
-    //         console.log("Réponse microservice :", data);
-    //         if (data?.redirect_url) {
-    //             return window.location.href = "https://staging.solutravo-compta.fr/ma-societe";
-    //         }
-    //     } catch (err) {
-    //         console.error("Erreur connexion microservice :", err);
-    //         setErrorPopup("Impossible de contacter le microservice.");
-    //     } finally {
-    //         setLoading2(false);
-    //     }
-    // };
 
 
     const handleCompleteProfileNext = () => {
