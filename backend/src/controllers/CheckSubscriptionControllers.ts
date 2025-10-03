@@ -23,10 +23,14 @@ export const CheckSubscription = async (req: Request, res: Response) => {
     const membre = membreRows[0];
 
     // Vérifier la société liée
+    // const [societeRows]: any = await pool.query(
+    //   "SELECT id, role FROM societes WHERE membre_id = ?",
+    //   [membre.id]
+    // );
     const [societeRows]: any = await pool.query(
-      "SELECT id, role FROM presocietes WHERE membre_id = ?",
-      [membre.id]
-    );
+  "SELECT id, role FROM societes WHERE refmembre = ?",
+  [membre.ref]
+);
     if (societeRows.length === 0) {
       return res.status(401).json({ error: "Société introuvable" });
     }
