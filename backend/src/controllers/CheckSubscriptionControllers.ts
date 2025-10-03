@@ -13,10 +13,15 @@ export const CheckSubscription = async (req: Request, res: Response) => {
     const decoded: any = jwt.verify(token, process.env.secretKey!);
 
     // Vérifier le membre
+    // const [membreRows]: any = await pool.query(
+    //   "SELECT id, type FROM membres WHERE id = ?",
+    //   [decoded.userId]
+    // );
     const [membreRows]: any = await pool.query(
-      "SELECT id, type FROM membres WHERE id = ?",
-      [decoded.userId]
-    );
+  "SELECT id, type, ref FROM membres WHERE id = ?",
+  [decoded.userId]
+);
+
     if (membreRows.length === 0) {
       return res.status(401).json({ error: "Utilisateur introuvable" });
     }
