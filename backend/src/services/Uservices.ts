@@ -198,6 +198,29 @@ await conn.commit();
 return { email };
 } catch (err: any) {
   await conn.rollback();
+  if (err.code === "ER_DUP_ENTRY") {
+    if (err.sqlMessage.includes("membres.email")) {
+      const e = new Error("Cet email est déjà utilisé.");
+      (e as any).statusCode = 409;
+      throw e;
+    }
+    if (err.sqlMessage.includes("presocietes.siret")) {
+      const e = new Error("Ce SIRET est déjà associé à une société.");
+      (e as any).statusCode = 409;
+      throw e;
+    }
+    if (err.code === "ER_DATA_TOO_LONG") {
+    const e = new Error("Une donnée est trop longue pour un champ (ex: code postal trop long).");
+    (e as any).statusCode = 400;
+    throw e;
+  }
+
+  if (err.code === "ER_BAD_NULL_ERROR") {
+    const e = new Error("Un champ obligatoire est manquant.");
+    (e as any).statusCode = 400;
+    throw e;
+  }
+  }
   throw err;
 } finally {
   conn.release();
