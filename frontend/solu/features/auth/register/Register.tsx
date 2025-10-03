@@ -130,7 +130,7 @@ function Register() {
                     phonenumber: data.phonenumber,
                     size: selectedSize,
                     legal_form: data.legal_form || "Inconnu",
-                    siret: data.siret || "",    // on garde le siret
+                    siret: data.siret,    // on garde le siret
                     cp: cp,
                     ville: ville,
                     rue: rue,
@@ -148,7 +148,7 @@ function Register() {
                     phonenumber: data.phonenumber,
                     size: selectedSize,
                     legal_form: data.legal_form || "Inconnu",
-                    siret: "",                  // pas de siret
+                    siret: data.siret && data.siret.trim() !== "" ? data.siret : null,
                     cp: cp,
                     ville: ville,
                     rue: rue,
