@@ -5,6 +5,7 @@ export interface Plan {
   period: string;
   description: string;
   features: string[];
+  
 //   unlockedFeatures: number;
   popular: boolean;
   color: string;

@@ -8,43 +8,43 @@ import '../styles/SubscriptionPage.css';
 
 
 const SubscriptionPage: React.FC = () => {
- const [plans, setPlans] = useState<Plan[]>([]);
- const [userType, setUserType] = useState<string | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [userType, setUserType] = useState<string | null>(null);
   const [isAdminMode, setIsAdminMode] = useState(false);
-const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
-const [pageSubtitle, setPageSubtitle] = useState("");
+  const [pageSubtitle, setPageSubtitle] = useState("");
 
- useEffect(() => {
+  useEffect(() => {
     fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
       .then(res => res.json())
       .then(data => {
         console.log("Données settings:", data);
-       setPageTitle(data.hero_title); 
-      setPageSubtitle(data.hero_subtitle);
+        setPageTitle(data.hero_title);
+        setPageSubtitle(data.hero_subtitle);
       })
       .catch(err => console.error("Erreur chargement settings:", err));
   }, []);
-   useEffect(() => {
-  const token = localStorage.getItem("jwtToken"); 
-  const fetchData = async () => {
-    try {
-      const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      console.log("Données API:", data);
-      setUserType(data.type) // rôle de l'utilisateur
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    const fetchData = async () => {
+      try {
+        const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        console.log("Données API:", data);
+        setUserType(data.type) // rôle de l'utilisateur
 
-      setCurrentSubscription(data.subscription); // plan actif
-      setPlans(data.plans); // tous les plans du rôle
-    } catch (err) {
-      console.error("Erreur API:", err);
-    }
-  };
-  fetchData();
-}, []);
+        setCurrentSubscription(data.subscription); // plan actif
+        setPlans(data.plans); // tous les plans du rôle
+      } catch (err) {
+        console.error("Erreur API:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
 
 
@@ -90,8 +90,8 @@ const [pageSubtitle, setPageSubtitle] = useState("");
   };
 
   const handleUpdatePlan = (updatedPlan: Plan) => {
-    setPlans(prevPlans => 
-      prevPlans.map(plan => 
+    setPlans(prevPlans =>
+      prevPlans.map(plan =>
         plan.id === updatedPlan.id ? updatedPlan : plan
       )
     );
@@ -103,18 +103,18 @@ const [pageSubtitle, setPageSubtitle] = useState("");
 
   return (
     <div className="subscription-page">
-      <Header 
-        isAdminMode={isAdminMode} 
+      <Header
+        isAdminMode={isAdminMode}
         onToggleAdmin={toggleAdminMode}
         currentSubscription={currentSubscription}
         userType={userType}
       />
-      
+
       <main className="main-content">
         <div className="hero-section">
           <div className="container">
             <h1 className="hero-title fade-in-up">{pageTitle}</h1>
-<p className="hero-subtitle fade-in-up">{pageSubtitle}</p>
+            <p className="hero-subtitle fade-in-up">{pageSubtitle}</p>
           </div>
         </div>
 
@@ -124,7 +124,7 @@ const [pageSubtitle, setPageSubtitle] = useState("");
               {plans.map((plan, index) => (
                 <PricingCard
                   key={plan.id}
-                  plan={plan}
+                   plan={plan}
                   onSubscribe={handleSubscribe}
                   isCurrentPlan={currentSubscription?.planId === plan.id}
                   loading={loading}
@@ -142,9 +142,9 @@ const [pageSubtitle, setPageSubtitle] = useState("");
             onAddPlan={(newPlan) => setPlans([...plans, newPlan])}
             onDeletePlan={(planId) => setPlans(plans.filter(p => p.id !== planId))}
             pageTitle={pageTitle}
-  pageSubtitle={pageSubtitle}
-  setPageTitle={setPageTitle}      // 🔹 On passe les setters
-  setPageSubtitle={setPageSubtitle}
+            pageSubtitle={pageSubtitle}
+            setPageTitle={setPageTitle}      // 🔹 On passe les setters
+            setPageSubtitle={setPageSubtitle}
           />
         )}
       </main>

@@ -73,7 +73,7 @@ export const resendCodeController = async (req: Request, res: Response, next: Ne
 //   VerifyCode,
 // } from "../services/Uservices";
 
-// // 1. 🆕 Inscription
+// // 1.Inscription
 // export const UserControllers = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const user = await UserRegister(req.body);
@@ -83,7 +83,7 @@ export const resendCodeController = async (req: Request, res: Response, next: Ne
 //   }
 // };
 
-// // 2. ✅ Vérification du code OTP
+// // 2. Vérification du code OTP
 // export const UserControllersVerifyCode = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     await VerifyCode(req.body);
@@ -93,12 +93,12 @@ export const resendCodeController = async (req: Request, res: Response, next: Ne
 //   }
 // };
 
-// // 3. 🔑 Complétion de l'inscription (ajout du mot de passe + JWT)
+// // 3. Complétion de l'inscription (ajout du mot de passe + JWT)
 // export const completeController = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const user = await CompleteRegistration(req.body);
 
-//     // ✅ Maintenant user contient { id, email, prenom, nom }
+//     // Maintenant user contient { id, email, prenom, nom }
 //     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
 //       expiresIn: "1d",
 //     });
@@ -113,7 +113,7 @@ export const resendCodeController = async (req: Request, res: Response, next: Ne
 //   }
 // };
 
-// // 4. 🔄 Renvoi du code OTP
+// // 4. Renvoi du code OTP
 // export const resendCodeController = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { email } = req.body;

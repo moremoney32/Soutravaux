@@ -30,7 +30,8 @@ const allowedOrigins = [
   "https://gilded-sunflower-4c737b.netlify.app",
   "http://localhost:5173",
   "https://frontend.staging.solutravo-compta.fr",
-  "http://127.0.0.1:5500"
+  "http://127.0.0.1:5500",
+  "https://staging.solutravo-compta.fr"
 ];
 
 const corsOptions: CorsOptions = {

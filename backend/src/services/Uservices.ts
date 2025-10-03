@@ -197,7 +197,7 @@ const membreId = (resMembre as any).insertId;
 // Insertion de la société liée (si info fournie)
 let societeId: number | null = null;
 if (siret || name) {
-  // ✅ 12 colonnes  ⇔  12 valeurs, dans le MÊME ordre
+  //  12 colonnes  ⇔  12 valeurs, dans le MÊME ordre
 const [resSociete] = await conn.query(
   `INSERT INTO presocietes (
      name, size, legal_form, siret, role,
@@ -210,13 +210,11 @@ const [resSociete] = await conn.query(
     (legal_form ?? 'EI') as any,
     siret ?? null,
     (role ?? 'artisan') as any,
-
-    cp ?? null,          // ← ici seulement le code postal (ex: "84250")
-    ville ?? null,       // ← "LE THOR"
-    rue ?? null,         // ← "COURS GAMBETTA" (ou ce que tu as)
-    capital ?? null,     // ← number ou null
-
-    address ?? null,     // ← adresse complète optionnelle
+    cp ?? null,         
+    ville ?? null,      
+    rue ?? null,       
+    capital ?? null,  
+    address ?? null,     
     phonenumber ?? null,
     membreId
   ]
