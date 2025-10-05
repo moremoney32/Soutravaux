@@ -55,7 +55,15 @@ const [plans]: any = await pool.query(
 );
 
 // 3️⃣ Identifier le plan actif à partir du plan_id de la société
-const subscription = plans.find((p: any) => p.id === societe.plan_id) || null;
+let subscription = null;
+
+if (societe.plan_id !== 1) {
+  // La société a déjà changé de plan, donc on peut se baser sur plan_id
+  subscription = plans.find((p: any) => p.id === societe.plan_id) || null;
+} else {
+  // La société est encore sur le plan par défaut (Gratuit / Découverte / Essai)
+  subscription = plans.find((p: any) => p.is_default === 1) || null;
+}
 
 const plansParsed = plans.map((p: any) => ({
   ...p,
