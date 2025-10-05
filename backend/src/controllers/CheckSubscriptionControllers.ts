@@ -4,17 +4,17 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 export const CheckSubscription = async (req: Request, res: Response) => {
+    const authHeader = req.headers.authorization;
+if (!authHeader) return res.status(401).json({ error: "Token manquant" });
+
+const token = authHeader.split(" ")[1];
   try {
-     const societe_id = req.query.societe_id;
-     if (!societe_id) {
-      return res.status(400).json({ error: "societe_id manquant" });
-    }
-        const authHeader = req.headers?.authorization;
-    if (!authHeader) return res.status(401).json({ error: "Token manquant" });
+     const decoded: any = jwt.verify(token, process.env.secretKey!); // utilise la clé partagée
+  const userId = decoded.userId;
+  const societe_id = decoded.societe_id;
 
-    const token = authHeader.split(" ")[1];
-    const decoded: any = jwt.verify(token, process.env.secretKey!);
-
+  console.log("userId:", userId);
+  console.log("societe_id:", societe_id);
     // Vérifier le membre
     const [membreRows]: any = await pool.query(
   "SELECT id, type, ref FROM membres WHERE id = ?",

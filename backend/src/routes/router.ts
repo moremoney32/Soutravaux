@@ -11,7 +11,7 @@ router.post("/verifyCode", UserControllersVerifyCode);
 router.post("/register/complete", completeController);
 router.post("/users/resend-code", resendCodeController);
 router.get("/entreprises", SearchCompanies);
- router.get("/check_subscription/:id", CheckSubscription);
+ router.get("/check_subscription", CheckSubscription);
 router.get("/plans", GetPlansByRole);
 router.put("/plans/:id", updatePlan);
 router.post("/plans", createPlan);
