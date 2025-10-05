@@ -5,6 +5,7 @@ import AdminPanel from './AdminPanel';
 // import Footer from './Footer';
 import type { Plan, Subscription } from '../types/subscription';
 import '../styles/SubscriptionPage.css';
+import { useSearchParams } from "react-router-dom";
 
 
 const SubscriptionPage: React.FC = () => {
@@ -16,9 +17,13 @@ const SubscriptionPage: React.FC = () => {
   const [pageTitle, setPageTitle] = useState("");
   const [pageSubtitle, setPageSubtitle] = useState("");
    const token = localStorage.getItem("jwtToken");
+   const [searchParams] = useSearchParams();
+
+  const membre_id = searchParams.get("membre_id");
+  const societe_id = searchParams.get("societe_id");
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/subscription-settings")
+    fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
       .then(res => res.json())
       .then(data => {
         console.log("Données settings:", data);
@@ -27,25 +32,61 @@ const SubscriptionPage: React.FC = () => {
       })
       .catch(err => console.error("Erreur chargement settings:", err));
   }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/api/check_subscription", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        console.log("Données API:", data);
-        console.log(data.subscription);
-        setUserType(data.type) // rôle de l'utilisateur
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const res = await fetch("http://localhost:3000/api/check_subscription", {
+//           // headers: { Authorization: `Bearer ${token}` }
+//           method:"post",
+//           headers: {
+//   "Content-Type": "application/json",
+//   "Authorization": `Bearer ${token}`
+// }
+//         });
+//         const data = await res.json();
+//         console.log("Données API:", data);
+//         console.log(data.subscription);
+//         setUserType(data.type) // rôle de l'utilisateur
 
-        setCurrentSubscription(data.subscription); // plan actif
-        setPlans(data.plans); // tous les plans du rôle
-      } catch (err) {
-        console.error("Erreur API:", err);
-      }
-    };
-    fetchData();
-  }, []);
+//         setCurrentSubscription(data.subscription); // plan actif
+//         setPlans(data.plans); // tous les plans du rôle
+//       } catch (err) {
+//         console.error("Erreur API:", err);
+//       }
+//     };
+//     fetchData();
+//   }, []);
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription",{
+        method: "POST", 
+       headers: {
+  "Content-Type": "application/json",
+  "Authorization": `Bearer ${token}`
+},
+        body: JSON.stringify({
+          userId:membre_id , 
+          societe_id:societe_id    
+        })
+      });
+
+      const data = await res.json();
+      console.log("Données API:", data);
+
+      // utilisation des données reçues
+      setUserType(data.type);                 // rôle de l'utilisateur
+      setCurrentSubscription(data.subscription); // plan actif
+      setPlans(data.plans);                   // tous les plans
+    } catch (err) {
+      console.error("Erreur API:", err);
+    }
+  };
+
+  fetchData();
+}, []);
 
 
 

@@ -8,10 +8,11 @@ const router: Router = express.Router();
 
 router.post("/register", UserControllers);
 router.post("/verifyCode", UserControllersVerifyCode);
+ router.post("/check_subscription", CheckSubscription);
 router.post("/register/complete", completeController);
 router.post("/users/resend-code", resendCodeController);
 router.get("/entreprises", SearchCompanies);
- router.get("/check_subscription", CheckSubscription);
+//  router.post("/check_subscription", CheckSubscription);
 router.get("/plans", GetPlansByRole);
 router.put("/plans/:id", updatePlan);
 router.post("/plans", createPlan);

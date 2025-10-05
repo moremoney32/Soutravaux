@@ -1,24 +1,26 @@
 import { Request, Response } from "express";
 import pool from "../config/db";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 export const CheckSubscription = async (req: Request, res: Response) => {
-    const authHeader = req.headers.authorization;
-if (!authHeader) return res.status(401).json({ error: "Token manquant" });
+    const userId = req.body.userId
+    const societe_id =req.body.societe_id
+//     const authHeader = req.headers.authorization;
+// if (!authHeader) return res.status(401).json({ error: "Token manquant" });
 
-const token = authHeader.split(" ")[1];
+// const token = authHeader.split(" ")[1];
   try {
-     const decoded: any = jwt.verify(token, process.env.secretKey!); // utilise la clé partagée
-  const userId = decoded.userId;
-  const societe_id = decoded.societe_id;
+//      const decoded: any = jwt.verify(token, process.env.secretKey!); 
+//   const userId = decoded.userId;
+//   const societe_id = decoded.societe_id;
 
   console.log("userId:", userId);
   console.log("societe_id:", societe_id);
     // Vérifier le membre
     const [membreRows]: any = await pool.query(
   "SELECT id, type, ref FROM membres WHERE id = ?",
-  [decoded.userId]
+  [userId]
 );
 
     if (membreRows.length === 0) {
@@ -35,17 +37,6 @@ const token = authHeader.split(" ")[1];
       return res.status(401).json({ error: "Société introuvable pour ce membre" });
     }
     const societe = societeRows[0];
-
-    // Récupérer le plan correspondant au role et plan_id de la société
-    // const [plans]: any = await pool.query(
-    //   "SELECT * FROM plans WHERE role = ? AND is_default = 1"
-    //   [societe.role, societe.plan_id]
-    // );
-
-    // const plansParsed = plans.map((p: any) => ({
-    //   ...p,
-    //   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
-    // }));
 
     const [plans]: any = await pool.query(
   `
@@ -65,7 +56,7 @@ const plansParsed = plans.map((p: any) => ({
 
     // 4️⃣ Retourner la réponse
     return res.json({
-      redirectUrl:"https://frontend.staging.solutravo-compta.fr/subscription",
+    //   redirectUrl:"https://frontend.staging.solutravo-compta.fr/subscription",
       role: societe.role,
       type: membre.type,
       plans: plansParsed // plan correspondant au role et plan_id de la société

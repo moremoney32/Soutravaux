@@ -37,7 +37,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             hero_subtitle: pageSubtitle
         }
         try {
-            const res = await fetch("http://localhost:3000/api/subscription-settings", {
+            const res =  await fetch("https://solutravo.zeta-app.fr/api/subscription-settings", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -47,7 +47,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
             const result = await res.json();
             if (result) {
-                fetch("http://localhost:3000/api/subscription-settings")
+                fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
                     .then(res => res.json())
                     .then(data => {
                         setPageTitle(data.hero_title);
@@ -75,7 +75,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             console.log("Saving plan:", editingPlan);
 
             try {
-                const res = await fetch(`http://localhost:3000/api/plans/${editingPlan.id}`, {
+                const res = await fetch(`https://solutravo.zeta-app.fr/api/plans/${editingPlan.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
