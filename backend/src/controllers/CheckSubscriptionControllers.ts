@@ -26,7 +26,7 @@ const token = authHeader.split(" ")[1];
     }
     const membre = membreRows[0];
 
-    // 2️⃣ Récupérer la société correspondant à cette ref et societe_id
+    // 2 Récupérer la société correspondant à cette ref et societe_id
     const [societeRows]: any = await pool.query(
       "SELECT id, role, plan_id FROM societes WHERE refmembre = ? AND id = ?",
       [membre.ref, societe_id]
@@ -36,16 +36,31 @@ const token = authHeader.split(" ")[1];
     }
     const societe = societeRows[0];
 
-    // 3️⃣ Récupérer le plan correspondant au role et plan_id de la société
-    const [plans]: any = await pool.query(
-      "SELECT * FROM plans WHERE role = ? AND id = ?",
-      [societe.role, societe.plan_id]
-    );
+    // Récupérer le plan correspondant au role et plan_id de la société
+    // const [plans]: any = await pool.query(
+    //   "SELECT * FROM plans WHERE role = ? AND is_default = 1"
+    //   [societe.role, societe.plan_id]
+    // );
 
-    const plansParsed = plans.map((p: any) => ({
-      ...p,
-      features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
-    }));
+    // const plansParsed = plans.map((p: any) => ({
+    //   ...p,
+    //   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
+    // }));
+
+    const [plans]: any = await pool.query(
+  `
+  SELECT * 
+  FROM plans 
+  WHERE role = ? 
+    AND (id = ? OR (is_default = 1 AND ? = 1))
+  `,
+  [societe.role, societe.plan_id, societe.plan_id]
+);
+
+const plansParsed = plans.map((p: any) => ({
+  ...p,
+  features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
+}));
     console.log("https://solutravo.zeta-app.fr/subscription")
 
     // 4️⃣ Retourner la réponse
