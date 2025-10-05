@@ -15,9 +15,10 @@ const SubscriptionPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
   const [pageSubtitle, setPageSubtitle] = useState("");
+   const token = localStorage.getItem("jwtToken");
 
   useEffect(() => {
-    fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
+    fetch("http://localhost:3000/api/subscription-settings")
       .then(res => res.json())
       .then(data => {
         console.log("Données settings:", data);
@@ -27,14 +28,14 @@ const SubscriptionPage: React.FC = () => {
       .catch(err => console.error("Erreur chargement settings:", err));
   }, []);
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
     const fetchData = async () => {
       try {
-        const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
+        const res = await fetch("http://localhost:3000/api/check_subscription", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
         console.log("Données API:", data);
+        console.log(data.subscription);
         setUserType(data.type) // rôle de l'utilisateur
 
         setCurrentSubscription(data.subscription); // plan actif
@@ -135,7 +136,7 @@ const SubscriptionPage: React.FC = () => {
           </div>
         </div>
 
-        {isAdminMode && (
+        {isAdminMode  && (
           <AdminPanel
             plans={plans}
             onUpdatePlan={handleUpdatePlan}
@@ -143,7 +144,7 @@ const SubscriptionPage: React.FC = () => {
             onDeletePlan={(planId) => setPlans(plans.filter(p => p.id !== planId))}
             pageTitle={pageTitle}
             pageSubtitle={pageSubtitle}
-            setPageTitle={setPageTitle}      // 🔹 On passe les setters
+            setPageTitle={setPageTitle}      
             setPageSubtitle={setPageSubtitle}
           />
         )}

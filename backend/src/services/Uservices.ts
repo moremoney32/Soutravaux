@@ -71,7 +71,7 @@ export async function UserRegister(data: UserRegisterInput) {
     // siret déjà utilisé ?
 if (siret && siret.trim() !== "") {
       const [siretExists]: any = await conn.query(
-        "SELECT id FROM presocietes WHERE siret = ?",
+        "SELECT id FROM societes WHERE siret = ?",
         [siret]
       );
       if (siretExists.length > 0) {
@@ -106,8 +106,14 @@ const [resMembre] = await conn.query(
   ]
 );
 const membreId = (resMembre as any).insertId;
+//  Récupérer le ref généré
+    // const [[membreRow]]: any = await conn.query(
+    //   "SELECT ref FROM membres WHERE id = ?",
+    //   [membreId]
+    // );
+    // const refMembre = membreRow.ref;
 
-let societeId: number | null = null;
+// let societeId: number | null = null;
 if (siret || name) {
   //  12 colonnes  ⇔  12 valeurs, dans le MÊME ordre
 const [resSociete] = await conn.query(
@@ -131,68 +137,15 @@ const [resSociete] = await conn.query(
     membreId
   ]
 );
+console.log(resSociete)
 
-  societeId = (resSociete as any).insertId;
-
-  //  Trouver le plan gratuit par défaut correspondant au rôle
-  const [defaultPlan] = await conn.query(
-    "SELECT id FROM plans WHERE role = ? AND is_default = TRUE LIMIT 1",
-    [role || "artisan"]
-  );
-
-  if ((defaultPlan as any).length > 0) {
-    const planId = (defaultPlan as any)[0].id;
-
-    //  Créer l'abonnement gratuit
-    await conn.query(
-      `INSERT INTO subscriptions (
-        societe_id, plan_id, status, start_date
-      ) VALUES (?, ?, 'active', NOW())`,
-      [societeId, planId]
-    );
-  }
 }
 
 await conn.commit();
 
 
     // Envoi email OTP
-//     const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
-//   receiver: email,
-//   sender: "no-reply@elyft.tech",
-//   subject: "🔑 Vérifiez votre addresse email - Solutravo",
-//   message: `
-//   <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-//     <h2 style="color: #1E3A8A;">Bienvenue sur Solutravo 👷‍♂️</h2>
-//     <p>Bonjour <strong>${prenom || "cher utilisateur"}</strong>,</p>
 
-//     <p>Merci de nous rejoindre sur <strong>Solutravo</strong>, votre partenaire de confiance dans le domaine du BTP.</p>
-
-//     <p>Pour <strong>finaliser votre inscription</strong> et sécuriser votre compte, veuillez saisir le code de vérification ci-dessous :</p>
-
-//     <div style="text-align: center; margin: 20px 0;">
-//       <span style="display: inline-block; padding: 15px 30px; font-size: 22px; font-weight: bold; color: #fff; background-color: #F97316; border-radius: 8px;">
-//         ${otp}
-//       </span>
-//     </div>
-
-//     <p style="color: #d9534f;"><strong>⚠️ Attention :</strong> ce code est valable pendant <strong>3 minutes</strong>.</p>
-
-//     <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer ce message.</p>
-
-//     <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-
-//     <p style="font-size: 12px; color: #777;">
-//       Merci de faire confiance à <strong>Solutravo</strong> pour vos projets dans le bâtiment et les travaux publics.<br>
-//       <em>L’équipe Solutravo</em>
-//     </p>
-//   </div>
-//   `
-// });
-
-    // if (response.status !== 201) {
-    //   throw new Error("Erreur lors de l'envoi de l'email");
-    // }
 try {
    const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
   receiver: email,
