@@ -61,11 +61,11 @@ const plansParsed = plans.map((p: any) => ({
   ...p,
   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
 }));
-    console.log("https://solutravo.zeta-app.fr/subscription")
+    console.log("https://frontend.staging.solutravo-compta.fr/subscription")
 
     // 4️⃣ Retourner la réponse
     return res.json({
-      redirectUrl:"https://solutravo.zeta-app.fr/subscription",
+      redirectUrl:"https://frontend.staging.solutravo-compta.fr/subscription",
       role: societe.role,
       type: membre.type,
       plans: plansParsed // plan correspondant au role et plan_id de la société
