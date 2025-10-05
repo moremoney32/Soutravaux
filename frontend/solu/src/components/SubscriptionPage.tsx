@@ -16,8 +16,8 @@ const SubscriptionPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pageTitle, setPageTitle] = useState("");
   const [pageSubtitle, setPageSubtitle] = useState("");
-   const token = localStorage.getItem("jwtToken");
-   const [searchParams] = useSearchParams();
+  const token = localStorage.getItem("jwtToken");
+  const [searchParams] = useSearchParams();
 
   const membre_id = searchParams.get("membre_id");
   const societe_id = searchParams.get("societe_id");
@@ -32,61 +32,61 @@ const SubscriptionPage: React.FC = () => {
       })
       .catch(err => console.error("Erreur chargement settings:", err));
   }, []);
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const res = await fetch("http://localhost:3000/api/check_subscription", {
-//           // headers: { Authorization: `Bearer ${token}` }
-//           method:"post",
-//           headers: {
-//   "Content-Type": "application/json",
-//   "Authorization": `Bearer ${token}`
-// }
-//         });
-//         const data = await res.json();
-//         console.log("Données API:", data);
-//         console.log(data.subscription);
-//         setUserType(data.type) // rôle de l'utilisateur
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       try {
+  //         const res = await fetch("http://localhost:3000/api/check_subscription", {
+  //           // headers: { Authorization: `Bearer ${token}` }
+  //           method:"post",
+  //           headers: {
+  //   "Content-Type": "application/json",
+  //   "Authorization": `Bearer ${token}`
+  // }
+  //         });
+  //         const data = await res.json();
+  //         console.log("Données API:", data);
+  //         console.log(data.subscription);
+  //         setUserType(data.type) // rôle de l'utilisateur
 
-//         setCurrentSubscription(data.subscription); // plan actif
-//         setPlans(data.plans); // tous les plans du rôle
-//       } catch (err) {
-//         console.error("Erreur API:", err);
-//       }
-//     };
-//     fetchData();
-//   }, []);
+  //         setCurrentSubscription(data.subscription); // plan actif
+  //         setPlans(data.plans); // tous les plans du rôle
+  //       } catch (err) {
+  //         console.error("Erreur API:", err);
+  //       }
+  //     };
+  //     fetchData();
+  //   }, []);
 
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription",{
-        method: "POST", 
-       headers: {
-  "Content-Type": "application/json",
-  "Authorization": `Bearer ${token}`
-},
-        body: JSON.stringify({
-          userId:membre_id , 
-          societe_id:societe_id    
-        })
-      });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            userId: membre_id,
+            societe_id: societe_id
+          })
+        });
 
-      const data = await res.json();
-      console.log("Données API:", data);
+        const data = await res.json();
+        console.log("Données API:", data);
 
-      // utilisation des données reçues
-      setUserType(data.type);                 // rôle de l'utilisateur
-      setCurrentSubscription(data.subscription); // plan actif
-      setPlans(data.plans);                   // tous les plans
-    } catch (err) {
-      console.error("Erreur API:", err);
-    }
-  };
+        // utilisation des données reçues
+        setUserType(data.type);                 // rôle de l'utilisateur
+        setCurrentSubscription(data.subscription); // plan actif
+        setPlans(data.plans);                   // tous les plans
+      } catch (err) {
+        console.error("Erreur API:", err);
+      }
+    };
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
 
 
@@ -166,7 +166,7 @@ useEffect(() => {
               {plans.map((plan, index) => (
                 <PricingCard
                   key={plan.id}
-                   plan={plan}
+                  plan={plan}
                   onSubscribe={handleSubscribe}
                   isCurrentPlan={currentSubscription?.planId === plan.id}
                   loading={loading}
@@ -177,7 +177,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {isAdminMode  && (
+        {isAdminMode && (
           <AdminPanel
             plans={plans}
             onUpdatePlan={handleUpdatePlan}
@@ -185,7 +185,7 @@ useEffect(() => {
             onDeletePlan={(planId) => setPlans(plans.filter(p => p.id !== planId))}
             pageTitle={pageTitle}
             pageSubtitle={pageSubtitle}
-            setPageTitle={setPageTitle}      
+            setPageTitle={setPageTitle}
             setPageSubtitle={setPageSubtitle}
           />
         )}

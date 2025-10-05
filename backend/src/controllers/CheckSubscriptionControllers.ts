@@ -28,7 +28,7 @@ export const CheckSubscription = async (req: Request, res: Response) => {
     }
     const membre = membreRows[0];
 
-    // 2 Récupérer la société correspondant à cette ref et societe_id
+//     // 2 Récupérer la société correspondant à cette ref et societe_id
     const [societeRows]: any = await pool.query(
       "SELECT id, role, plan_id FROM societes WHERE refmembre = ? AND id = ?",
       [membre.ref, societe_id]
@@ -38,15 +38,24 @@ export const CheckSubscription = async (req: Request, res: Response) => {
     }
     const societe = societeRows[0];
 
-    const [plans]: any = await pool.query(
-  `
-  SELECT * 
-  FROM plans 
-  WHERE role = ? 
-    AND (id = ? OR (is_default = 1 AND ? = 1))
-  `,
-  [societe.role, societe.plan_id, societe.plan_id]
+//     const [plans]: any = await pool.query(
+//   `
+//   SELECT * 
+//   FROM plans 
+//   WHERE role = ? 
+//     AND (id = ? OR (is_default = 1 AND ? = 1))
+//   `,
+//   [societe.role, societe.plan_id, societe.plan_id]
+// );
+
+// 2️⃣ Récupérer tous les plans disponibles pour ce rôle
+const [plans]: any = await pool.query(
+  "SELECT * FROM plans WHERE role = ?",
+  [societe.role]
 );
+
+// 3️⃣ Identifier le plan actif à partir du plan_id de la société
+const subscription = plans.find((p: any) => p.id === societe.plan_id) || null;
 
 const plansParsed = plans.map((p: any) => ({
   ...p,
@@ -59,6 +68,7 @@ const plansParsed = plans.map((p: any) => ({
     //   redirectUrl:"https://frontend.staging.solutravo-compta.fr/subscription",
       role: societe.role,
       type: membre.type,
+       subscription,      // le plan actif
       plans: plansParsed // plan correspondant au role et plan_id de la société
     });
 
@@ -112,14 +122,14 @@ const plansParsed = plans.map((p: any) => ({
 //     }
 //     const societe = societeRows[0];
 
-//     // Vérifier la souscription active
-//     // const [subRows]: any = await pool.query(
-//     //   `SELECT s.id, s.status, p.id as planId, p.name as planName, p.price, p.is_default
-//     //    FROM subscriptions s
-//     //    JOIN plans p ON p.id = s.plan_id
-//     //    WHERE s.societe_id = ? AND s.status = 'active'`,
-//     //   [societe.id]
-//     // );
+    // Vérifier la souscription active
+//     const [subRows]: any = await pool.query(
+//       `SELECT s.id, s.status, p.id as planId, p.name as planName, p.price, p.is_default
+//        FROM subscriptions s
+//        JOIN plans p ON p.id = s.plan_id
+//        WHERE s.societe_id = ? AND s.status = 'active'`,
+//       [societe.id]
+//     );
 
 //     // 3. Récupérer la souscription active et le plan
 // const [subRows]: any = await pool.query(
