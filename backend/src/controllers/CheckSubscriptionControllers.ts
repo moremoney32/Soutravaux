@@ -49,7 +49,7 @@ const token = authHeader.split(" ")[1];
 
     // 4️⃣ Retourner la réponse
     return res.json({
-      redirectUrl: "http://localhost:5174/subscription",
+      redirectUrl:"https://solutravo.zeta-app.fr/subscription",
       role: societe.role,
       type: membre.type,
       plans: plansParsed // plan correspondant au role et plan_id de la société
