@@ -46,6 +46,7 @@ const token = authHeader.split(" ")[1];
       ...p,
       features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
     }));
+    console.log("https://solutravo.zeta-app.fr/subscription")
 
     // 4️⃣ Retourner la réponse
     return res.json({
