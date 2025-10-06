@@ -19,7 +19,7 @@ export interface Subscription {
   status: 'active' | 'cancelled' | 'past_due';
   startDate: Date;
   nextBilling: Date;
-  planName?: string;
+  name?: string;
 }
 
 export interface StripeConfig {

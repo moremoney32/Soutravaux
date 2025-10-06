@@ -6,6 +6,7 @@ import AdminPanel from './AdminPanel';
 import type { Plan, Subscription } from '../types/subscription';
 import '../styles/SubscriptionPage.css';
 import { useSearchParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 
 const SubscriptionPage: React.FC = () => {
@@ -32,31 +33,6 @@ const SubscriptionPage: React.FC = () => {
       })
       .catch(err => console.error("Erreur chargement settings:", err));
   }, []);
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const res = await fetch("http://localhost:3000/api/check_subscription", {
-  //           // headers: { Authorization: `Bearer ${token}` }
-  //           method:"post",
-  //           headers: {
-  //   "Content-Type": "application/json",
-  //   "Authorization": `Bearer ${token}`
-  // }
-  //         });
-  //         const data = await res.json();
-  //         console.log("Données API:", data);
-  //         console.log(data.subscription);
-  //         setUserType(data.type) // rôle de l'utilisateur
-
-  //         setCurrentSubscription(data.subscription); // plan actif
-  //         setPlans(data.plans); // tous les plans du rôle
-  //       } catch (err) {
-  //         console.error("Erreur API:", err);
-  //       }
-  //     };
-  //     fetchData();
-  //   }, []);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,11 +51,9 @@ const SubscriptionPage: React.FC = () => {
 
         const data = await res.json();
         console.log("Données API:", data);
-
-        // utilisation des données reçues
-        setUserType(data.type);                 // rôle de l'utilisateur
-        setCurrentSubscription(data.subscription); // plan actif
-        setPlans(data.plans);                   // tous les plans
+        setUserType(data.type);               
+        setCurrentSubscription(data.subscription); 
+        setPlans(data.plans);                  
       } catch (err) {
         console.error("Erreur API:", err);
       }
@@ -87,8 +61,6 @@ const SubscriptionPage: React.FC = () => {
 
     fetchData();
   }, []);
-
-
 
 
   useEffect(() => {
@@ -142,6 +114,13 @@ const SubscriptionPage: React.FC = () => {
   const toggleAdminMode = () => {
     setIsAdminMode(!isAdminMode);
   };
+  const handleNext = () => {
+      
+      const redirectUrl = "https://staging.solutravo-compta.fr/dashboard"
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 300); 
+    };
 
   return (
     <div className="subscription-page">
@@ -151,28 +130,37 @@ const SubscriptionPage: React.FC = () => {
         currentSubscription={currentSubscription}
         userType={userType}
       />
-
       <main className="main-content">
         <div className="hero-section">
           <div className="container">
             <h1 className="hero-title fade-in-up">{pageTitle}</h1>
             <p className="hero-subtitle fade-in-up">{pageSubtitle}</p>
+            <button
+              onClick={handleNext}
+              className="back-button"
+            >
+              <ArrowLeft size={25} />
+              {/* <span className="text-sm font-medium">Retour</span> */}
+            </button>
           </div>
         </div>
 
         <div className="pricing-section">
           <div className="container">
             <div className="pricing-grid">
-              {plans.map((plan, index) => (
-                <PricingCard
-                  key={plan.id}
-                  plan={plan}
-                  onSubscribe={handleSubscribe}
-                  isCurrentPlan={currentSubscription?.planId === plan.id}
-                  loading={loading}
-                  animationDelay={index * 100}
-                />
-              ))}
+              {plans.map((plan, index) => {
+
+                return (
+                  <PricingCard
+                    key={plan.id}
+                    plan={plan}
+                    onSubscribe={handleSubscribe}
+                    isCurrentPlan={currentSubscription?.id === plan.id}
+                    loading={loading}
+                    animationDelay={index * 100}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>

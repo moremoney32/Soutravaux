@@ -28,20 +28,20 @@ const Header: React.FC<HeaderProps> = ({ isAdminMode, onToggleAdmin, currentSubs
             {currentSubscription && (
               <div className="subscription-status">
                 <span className="status-badge">
-                  Abonné • {currentSubscription.planName}
+                  Abonné • {currentSubscription.name}
                 </span>
               </div>
             )}
             
-         <button 
+         {/* <button 
               className={`admin-toggle ${isAdminMode ? 'active' : ''}`}
               onClick={onToggleAdmin}
             >
               <span className="toggle-icon">⚙️</span>
               {isAdminMode ? 'Mode Utilisateur' : 'Mode Admin'}
-            </button> 
+            </button>  */}
             {/* Bouton admin visible uniquement si userType = admin */}
-            {/* {userType === "admin" && (
+             {userType === "admin" && (
               <button 
                 className={`admin-toggle ${isAdminMode ? "active" : ""}`}
                 onClick={onToggleAdmin}
@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ isAdminMode, onToggleAdmin, currentSubs
                 <span className="toggle-icon">⚙️</span>
                 {isAdminMode ? "Mode Utilisateur" : "Mode Admin"}
               </button>
-            )} */}
+            )} 
           </nav>
         </div>
       </div>

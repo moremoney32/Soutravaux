@@ -23,6 +23,8 @@ import { useForm } from "react-hook-form";
 import { fetchData } from "../../../src/helpers/fetchData";
 import type { Variants } from "framer-motion";
 import { useInputState } from "../../../src/customHooks/useInputState";
+import { div } from "framer-motion/client";
+import AnnonceurRegistration from "./AnnonceurRegistration";
 
 
 
@@ -463,6 +465,7 @@ function Register() {
                                     onClick={() => {
                                         setSelectedRole(role);
                                         setValue("role", role.toLowerCase(), { shouldValidate: true });
+                                        
                                     }}
                                 >
                                     {role}
@@ -472,6 +475,8 @@ function Register() {
                     </>
                 );
             case 2:
+                if(selectedRole === "Artisan") {
+
                 return (
                     <form onSubmit={handleSubmit(onSubmitRegister)} className="step2_container">
                         <AnimatePresence mode="wait">
@@ -872,6 +877,15 @@ function Register() {
                     </form>
                 );
 
+                }else if (selectedRole === "Annonceur") {
+                return   <AnnonceurRegistration/>
+            }else if (selectedRole === "Fournisseur") {
+                return  <h3 className="register_question">
+                            z votre boite mail et entrez le code.
+                            </h3>
+            }
+            return null;
+
             case 3:
                 return (
                     <>
@@ -1044,7 +1058,6 @@ function Register() {
 
     return (
         <div className="register_container">
-
             {currentStep === 1 && (<AnimatePresence>
                 <motion.div
                     className="composant_statique_left"
@@ -1196,21 +1209,42 @@ function Register() {
                 </div>
                 <span className="register_subtitle">Veuillez suivre chaque étape.</span>
 
+                
+
                 {/* Étapes */}
-                <div className="progress_container">
-                    <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
-                        Vous êtes ?
-                    </div>
-                    <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
-                        Informations entreprise
-                    </div>
-                    <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
-                        Validation
-                    </div>
-                    <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
-                        Terminé
-                    </div>
-                </div>
+
+                {selectedRole?.toLowerCase() === "artisan" && (
+    <div className="progress_container">
+      <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+        Vous êtes ?
+      </div>
+      <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
+        Informations entreprise
+      </div>
+      <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
+        Validation
+      </div>
+      <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
+        Terminé
+      </div>
+    </div>
+  )}
+  {selectedRole?.toLowerCase() === "annonceur" && (
+    <div className="progress_container">
+      <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+        Vous êtes ?
+      </div>
+      <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
+        Votre activicté
+      </div>
+      <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
+        Informations entreprise
+      </div>
+      <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
+        Validation
+      </div>
+    </div>
+  )}
 
                 {/* AnimatePresence pour transition douce */}
                 <AnimatePresence mode="wait" custom={direction}>

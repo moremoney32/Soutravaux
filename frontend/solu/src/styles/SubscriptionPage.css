@@ -7,6 +7,27 @@
 .main-content {
   padding-top: 60px;
 }
+.container{
+  position: relative;
+  cursor: pointer;
+}
+.back-button{
+  position: absolute;
+  left: 30px;
+  top: 0px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+   color:#fff;
+  padding: 4px;
+  padding-left:10px;
+  padding-right: 10px;
+  border-radius:10px;
+  cursor:pointer !important;
+  border: none;
+  background-color:var(--color-primary);
+  z-index: 20 !important;
+}
 
 .hero-section {
   padding: 25px 0 20px 0;

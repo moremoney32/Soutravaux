@@ -16,9 +16,12 @@
   cursor: pointer;
 }
 .pricing-card:hover {
-  transform: translateY(-8px); /* la carte se soulève */
-  /* box-shadow: 0 8px 20px rgba(80, 80, 80, 0.25);  */
-   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  /* transform: translateY(-8px); 
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); */
+   transform: translateY(-15px) scale(1.03);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(3px);
 }
 
 .pricing-card.fade-in-up {
