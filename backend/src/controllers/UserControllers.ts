@@ -3,12 +3,35 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
-import { CompleteRegistration,ResendVerificationCode,UserRegister, VerifyCode } from "../services/Uservices";
+import { AnnonceurRegister, CompleteRegistration,FournisseurRegister,ResendVerificationCode,UserRegister, VerifyCode } from "../services/Uservices";
 
 export const UserControllers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await UserRegister(req.body);
     res.status(201).json({ message: "Inscription réussie, code envoyé", user });
+  } catch (err: any) {
+    next(err);
+  }
+};
+export const AnnonceurControllers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const annonceur = await AnnonceurRegister(req.body);
+    res.status(201).json({ 
+      message: "Inscription annonceur réussie, code envoyé", 
+      annonceur 
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const FournisseurControllers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const fournisseur = await FournisseurRegister(req.body);
+    res.status(201).json({ 
+      message: "Demande de contact fournisseur envoyée avec succès", 
+      fournisseur 
+    });
   } catch (err: any) {
     next(err);
   }

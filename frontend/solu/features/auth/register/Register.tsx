@@ -23,8 +23,9 @@ import { useForm } from "react-hook-form";
 import { fetchData } from "../../../src/helpers/fetchData";
 import type { Variants } from "framer-motion";
 import { useInputState } from "../../../src/customHooks/useInputState";
-import { div } from "framer-motion/client";
+// import { div } from "framer-motion/client";
 import AnnonceurRegistration from "./AnnonceurRegistration";
+import FournisseurRegistration from "./FournisseurRegistration";
 
 
 
@@ -62,9 +63,11 @@ function Register() {
     const [address, setAddress] = useState("");
     const [otp, setOtp] = useState(["", "", "", ""]);
     const [isSelectingSearch, setIsSelectingSearch] = useState(true);
-       const [cp, setCp] = useState("");
-       const [ville, setVille] = useState("");
-       const [rue, setRue] = useState("");
+    const [cp, setCp] = useState("");
+    const [ville, setVille] = useState("");
+    const [rue, setRue] = useState("");
+    const [annonceurInternalStep, setAnnonceurInternalStep] = useState(1);
+    const [fournisseurInternalStep, setFournisseurInternalStep] = useState(1);
 
     // fonction pour formater mm:ss
 
@@ -120,7 +123,7 @@ function Register() {
         setLoading(true);
         try {
             let payload;
-           
+
             if (companyStatus === "existante") {
                 //  Cas société déjà existante
                 payload = {
@@ -136,8 +139,8 @@ function Register() {
                     cp: cp,
                     ville: ville,
                     rue: rue,
-                    nom:data.nom,
-                    capital:data.capital ? parseFloat(data.capital) : null
+                    nom: data.nom,
+                    capital: data.capital ? parseFloat(data.capital) : null
                 };
             } else {
                 //  Cas nouvelle société
@@ -154,8 +157,8 @@ function Register() {
                     cp: cp,
                     ville: ville,
                     rue: rue,
-                    nom:data.nom,
-                      capital:data.capital ? parseFloat(data.capital) : null
+                    nom: data.nom,
+                    capital: data.capital ? parseFloat(data.capital) : null
                 };
             }
             const result = await fetchData('register', 'POST', payload);
@@ -287,11 +290,11 @@ function Register() {
         setVille(company.libelle);
         setRue(`${company.rue} ${company.ville}`);
         // setAddress(`${company.type} ${company.ville} ${company.code} ${company.libelle}`);
-         setAddress(`${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`);
+        setAddress(`${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`);
         setValue("siret", company.siret, { shouldValidate: true });
         setValue("name", company.nom, { shouldValidate: true });
         setSuggestions([]); // on cache la liste
-         setValue("address", ` ${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
+        setValue("address", ` ${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
     };
 
 
@@ -433,20 +436,20 @@ function Register() {
 
 
     const handleCompleteProfileNext = () => {
-      setLoading2(true)
-      const token = localStorage.getItem("jwtToken"); 
-      if (!token) {
-        console.log("Token introuvable, veuillez vous reconnecter.");
+        setLoading2(true)
+        const token = localStorage.getItem("jwtToken");
+        if (!token) {
+            console.log("Token introuvable, veuillez vous reconnecter.");
+            setLoading2(false);
+            return;
+        }
+
+        const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
+
         setLoading2(false);
-        return;
-      }
-
-      const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
-
-      setLoading2(false);
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 300); 
+        setTimeout(() => {
+            window.location.href = redirectUrl;
+        }, 300);
     };
 
 
@@ -465,7 +468,7 @@ function Register() {
                                     onClick={() => {
                                         setSelectedRole(role);
                                         setValue("role", role.toLowerCase(), { shouldValidate: true });
-                                        
+
                                     }}
                                 >
                                     {role}
@@ -475,416 +478,378 @@ function Register() {
                     </>
                 );
             case 2:
-                if(selectedRole === "Artisan") {
+                if (selectedRole === "Artisan") {
 
-                return (
-                    <form onSubmit={handleSubmit(onSubmitRegister)} className="step2_container">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={subStep}
-                                className="step2_container"
-                                initial={{ x: 100, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: -100, opacity: 0 }}
-                                transition={{ duration: 0.4 }}
-                            >
-                                {subStep === 1 && (
-                                    <>
-                                        <h3 className="register_question1">Où en est votre entreprise ?</h3>
-                                        <div className="choice_container">
-                                            <button
-                                                type="button"
-                                                className={`choice_btn ${companyStatus === "existante" ? "active" : ""}`}
-                                                onClick={() => setCompanyStatus("existante")}
-                                            >
-                                                Elle est existante
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={`choice_btn ${companyStatus === "nouvelle" ? "active" : ""}`}
-                                                onClick={() => setCompanyStatus("nouvelle")}
-                                            >
-                                                Je crée mon entreprise
-                                            </button>
-                                        </div>
-
-                                        {companyStatus === "existante" ? (<h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>) : (<h3 className="register_question1">Quelle taille fera votre entreprise ?</h3>)}
-                                        <div className="size_container">
-                                            {companyStatus === "existante" ? (sizes.map((size) => (
+                    return (
+                        <form onSubmit={handleSubmit(onSubmitRegister)} className="step2_container">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={subStep}
+                                    className="step2_container"
+                                    initial={{ x: 100, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    exit={{ x: -100, opacity: 0 }}
+                                    transition={{ duration: 0.4 }}
+                                >
+                                    {subStep === 1 && (
+                                        <>
+                                            <h3 className="register_question1">Où en est votre entreprise ?</h3>
+                                            <div className="choice_container">
                                                 <button
                                                     type="button"
-                                                    key={size}
-                                                    className={`size_btn ${selectedSize === size ? "active" : ""}`}
-                                                    onClick={() => {
-                                                        setSelectedSize(size);
-                                                        setValue("size", size, { shouldValidate: true }); // update react-hook-form
-                                                    }}
+                                                    className={`choice_btn ${companyStatus === "existante" ? "active" : ""}`}
+                                                    onClick={() => setCompanyStatus("existante")}
                                                 >
-                                                    {size}
+                                                    Elle est existante
                                                 </button>
-                                            ))) : (newSizes.map((size) => (
                                                 <button
                                                     type="button"
-                                                    key={size}
-                                                    className={`size_btn ${selectedSize === size ? "active" : ""}`}
-                                                    onClick={() => {
-                                                        setSelectedSize(size);
-                                                        setValue("size", size, { shouldValidate: true }); // update react-hook-form
-                                                    }}
+                                                    className={`choice_btn ${companyStatus === "nouvelle" ? "active" : ""}`}
+                                                    onClick={() => setCompanyStatus("nouvelle")}
                                                 >
-                                                    {size}
+                                                    Je crée mon entreprise
                                                 </button>
-                                            )))}
-                                        </div>
-                                        {companyStatus === "existante" && (
-                                            <div className="sous_form_group">
-                                                <label htmlFor="siren">Numéro de SIRET</label>
-                                                <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number"
-                                                    onChange={(e) => {
-                                                        setCheckSiret(e.target.value);
-                                                        if (!isSelectingSearch) {
-                                                            setIsSelectingSearch(true);
-                                                        }
-                                                        // setValue("siret", e.target.value, { shouldValidate: true });
-                                                    }} />
-                                                {/* {errors.siret && (
+                                            </div>
+
+                                            {companyStatus === "existante" ? (<h3 className="register_question1">Quelle taille fait votre entreprise ?</h3>) : (<h3 className="register_question1">Quelle taille fera votre entreprise ?</h3>)}
+                                            <div className="size_container">
+                                                {companyStatus === "existante" ? (sizes.map((size) => (
+                                                    <button
+                                                        type="button"
+                                                        key={size}
+                                                        className={`size_btn ${selectedSize === size ? "active" : ""}`}
+                                                        onClick={() => {
+                                                            setSelectedSize(size);
+                                                            setValue("size", size, { shouldValidate: true }); // update react-hook-form
+                                                        }}
+                                                    >
+                                                        {size}
+                                                    </button>
+                                                ))) : (newSizes.map((size) => (
+                                                    <button
+                                                        type="button"
+                                                        key={size}
+                                                        className={`size_btn ${selectedSize === size ? "active" : ""}`}
+                                                        onClick={() => {
+                                                            setSelectedSize(size);
+                                                            setValue("size", size, { shouldValidate: true }); // update react-hook-form
+                                                        }}
+                                                    >
+                                                        {size}
+                                                    </button>
+                                                )))}
+                                            </div>
+                                            {companyStatus === "existante" && (
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="siren">Numéro de SIRET</label>
+                                                    <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number"
+                                                        onChange={(e) => {
+                                                            setCheckSiret(e.target.value);
+                                                            if (!isSelectingSearch) {
+                                                                setIsSelectingSearch(true);
+                                                            }
+                                                            // setValue("siret", e.target.value, { shouldValidate: true });
+                                                        }} />
+                                                    {/* {errors.siret && (
                                             <span className="error">{errors.siret.message as string}</span>
                                         )} */}
-                                                {suggestions.length > 0 && companyStatus === "existante" && (
-                                                    <div className="suggestions_list">
-                                                        {suggestions.map((company, idx) => (
-                                                            <span
-                                                                key={idx}
-                                                                className="suggestion_item"
-                                                                onClick={() => handleSelectCompany(company)}
-                                                            >
-                                                                <strong>{company.nom}</strong> &nbsp;
-                                                                <span>({company.siren})</span>
-                                                                <br />
-                                                                <small>
-                                                                    {company.activite} • {company.cp} {company.ville}
-                                                                </small>
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                    {suggestions.length > 0 && companyStatus === "existante" && (
+                                                        <div className="suggestions_list">
+                                                            {suggestions.map((company, idx) => (
+                                                                <span
+                                                                    key={idx}
+                                                                    className="suggestion_item"
+                                                                    onClick={() => handleSelectCompany(company)}
+                                                                >
+                                                                    <strong>{company.nom}</strong> &nbsp;
+                                                                    <span>({company.siren})</span>
+                                                                    <br />
+                                                                    <small>
+                                                                        {company.activite} • {company.cp} {company.ville}
+                                                                    </small>
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                            )}
+
+                                            <div className="form_group_column">
+                                                {companyStatus === "existante" ? (<div className="sous_form_group">
+                                                    <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
+                                                    <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input" readOnly />
+                                                </div>) : (<div className="sous_form_group">
+                                                    <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
+                                                    <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input"
+                                                        {...register("name", { required: "Veuillez entrer le nom adresse de votre entreprise" })}
+                                                        //  onChange={(e)=>setCompanyName(e.target.value)}
+                                                        onFocus={handleFocusCompany}
+                                                        onBlur={handleBlurCompany}
+                                                        style={{ borderColor: inputBorderColorCompany }} />
+                                                </div>)}
+
                                             </div>
 
-                                        )}
+                                        </>
+                                    )}
 
-                                        <div className="form_group_column">
-                                            {companyStatus === "existante" ? (<div className="sous_form_group">
-                                                <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
-                                                <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input" readOnly />
-                                            </div>) : (<div className="sous_form_group">
-                                                <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
-                                                <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input"
-                                                    {...register("name", { required: "Veuillez entrer le nom adresse de votre entreprise" })}
-                                                    //  onChange={(e)=>setCompanyName(e.target.value)}
-                                                    onFocus={handleFocusCompany}
-                                                    onBlur={handleBlurCompany}
-                                                    style={{ borderColor: inputBorderColorCompany }} />
-                                            </div>)}
+                                    {subStep === 2 && (
+                                        <>
+                                            <span className="register_question1">Forme juridique</span>
+                                            <div className="radio_group">
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="SASU"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> Auto Entrepreneur (AE)
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="EIRL"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> Entreprise Individuelle (EI)
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="EURL"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> EIRL
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="AE"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> EURL
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="EI"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> SARL
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="SNC"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> SAS
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="SELARL"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> SASU
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="SAS"
+                                                        {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
+                                                    /> SAS
+                                                </label>
+                                            </div>
+                                            {errors.legal_form && (
+                                                <span className="error">{errors.legal_form.message as string}</span>
+                                            )}
 
-                                        </div>
+                                            <div className="form_group">
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="prenom">Nom</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Nom"
+                                                        {...register("nom", { required: "Veuillez entrer votre nom complet" })}
+                                                        onFocus={handleFocusFirstName}
+                                                        onBlur={handleBlurFirstName}
+                                                        style={{ borderColor: inputBorderColorFirstName }} />
+                                                    {errors.nom && (
+                                                        <span className="error">{errors.nom.message as string}</span>
+                                                    )}
+                                                </div>
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="prenom">Prénom</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Prénom"
+                                                        {...register("prenom", { required: "Veuillez entrer votre prénom" })}
+                                                        onFocus={handleFocusFirstName}
+                                                        onBlur={handleBlurFirstName}
+                                                        style={{ borderColor: inputBorderColorFirstName }} />
+                                                    {errors.prenom && (
+                                                        <span className="error">{errors.prenom.message as string}</span>
+                                                    )}
+                                                </div>
+                                            </div>
 
-                                    </>
-                                )}
+                                            <div className="form_group">
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="telephone">Téléphone de Connexion </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Numéro de téléphone"
+                                                        {...register("phonenumber", {
+                                                            required: "Veuillez entrer un numéro de téléphone",
+                                                            pattern: {
+                                                                value: /^(?:\+33|0)[1-9]\d{8}$/,
+                                                                message: "Numéro de téléphone français invalide",
+                                                            },
+                                                        })}
+                                                        onFocus={handleFocusPhone}
+                                                        onBlur={handleBlurPhone}
+                                                        style={{ borderColor: inputBorderColorPhone }}
+                                                    />
+                                                    {errors.phonenumber && (
+                                                        <span className="error">{errors.phonenumber.message as string}</span>
+                                                    )}
+                                                </div>
+                                                <div className="sous_form_group">
+                                                    <label htmlFor="email">Email de Connexion</label>
+                                                    <input
+                                                        type="email"
+                                                        placeholder="Adresse Email"
+                                                        {...register("email", {
+                                                            required: "Veuillez entrer une adresse email",
+                                                            pattern: {
+                                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                                message: "Adresse email invalide",
+                                                            },
+                                                        })}
+                                                        onFocus={handleFocusEmail}
+                                                        onBlur={handleBlurEmail}
+                                                        style={{ borderColor: inputBorderColorEmail }}
+                                                    />
+                                                    {errors.email && (
+                                                        <span className="error">{errors.email.message as string}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="form_group">
+                                                {companyStatus === "existante" ? (
+                                                    <div className="sous_form_group">
+                                                        <label htmlFor="adresse">Adresse</label>
+                                                        <input
+                                                            type="text"
+                                                            value={address}
+                                                            className="adresse_sociale"
+                                                            placeholder="Adresse Postal"
+                                                            readOnly />
+                                                    </div>) : (<div className="sous_form_group">
+                                                        <label htmlFor="adresse">Adresse</label>
+                                                        <input
+                                                            type="text"
+                                                            // className="adresse_sociale"
+                                                            placeholder="Adresse Postal"
+                                                            {...register("address", { required: "Veuillez entrer l'adresse du siège social" })}
+                                                            onFocus={handleFocusFirstAdresseSocial}
+                                                            onBlur={handleBlurFirstAdresseSocial}
+                                                            style={{ borderColor: inputBorderColorAdresseSocial }}
+                                                        />
+                                                        {errors.address && (
+                                                            <span className="error">{errors.address.message as string}</span>
+                                                        )}
+                                                    </div>)}
 
-                                {subStep === 2 && (
+                                            </div>
+                                        </>
+                                    )}
+
+                                </motion.div>
+                            </AnimatePresence>
+
+
+                            <div id="sous_buttons_container">
+                                {subStep === 1 ? (
                                     <>
-                                        <span className="register_question1">Forme juridique</span>
-                                        <div className="radio_group">
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="SASU"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> Auto Entrepreneur (AE)
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="EIRL"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> Entreprise Individuelle (EI)
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="EURL"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> EIRL
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="AE"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> EURL
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="EI"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> SARL
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="SNC"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> SAS
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="SELARL"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> SASU
-                                            </label>
-                                             <label>
-                                                <input
-                                                    type="radio"
-                                                    value="SAS"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> SAS
-                                            </label>
-                                            {/* <label>
-                                                <input
-                                                    type="radio"
-                                                    value="SARL"
-                                                    {...register("legal_form", { required: "Veuillez choisir une forme juridique" })}
-                                                /> SARL
-                                            </label>  */}
-                                            
-                                        </div>
-                                        {errors.legal_form && (
-                                            <span className="error">{errors.legal_form.message as string}</span>
-                                        )}
+                                        <button
+                                            type="button"
+                                            className="register_btn1"
+                                            onClick={() => {
+                                                setDirection("prev");
+                                                setCurrentStep((s) => s - 1);
+                                            }}
+                                        >
+                                            Retour
+                                        </button>
+                                        <span
 
-                                        <div className="form_group">
-                                            <div className="sous_form_group">
-                                                <label htmlFor="prenom">Nom</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Nom"
-                                                    {...register("nom", { required: "Veuillez entrer votre nom complet" })}
-                                                    onFocus={handleFocusFirstName}
-                                                    onBlur={handleBlurFirstName}
-                                                    style={{ borderColor: inputBorderColorFirstName }} />
-                                                {errors.nom && (
-                                                    <span className="error">{errors.nom.message as string}</span>
-                                                )}
-                                            </div>
-                                            <div className="sous_form_group">
-                                                <label htmlFor="prenom">Prénom</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Prénom"
-                                                    {...register("prenom", { required: "Veuillez entrer votre prénom" })}
-                                                    onFocus={handleFocusFirstName}
-                                                    onBlur={handleBlurFirstName}
-                                                    style={{ borderColor: inputBorderColorFirstName }} />
-                                                {errors.prenom && (
-                                                    <span className="error">{errors.prenom.message as string}</span>
-                                                )}
-                                            </div>
-                                             {/* <div className="sous_form_group">
-                                                <label htmlFor="capital">Capital</label>
-                                                <input
-                                                    type="number"
-                                                    min="2"
-                                                    // step="15"
-                                                    placeholder="Montant du capital"
-                                                    {...register("capital", { required: "Veuillez entrer le montant du capital" })}
-                                                    onFocus={handleFocusFirstName}
-                                                    onBlur={handleBlurFirstName}
-                                                    style={{ borderColor: inputBorderColorFirstName }} />
-                                                      <span className="euro-symbol">€</span>
-                                                {errors.capital && (
-                                                    <span className="error">{errors.capital.message as string}</span>
-                                                )}
-                                            </div> */}
-                                            {/* {companyStatus === "existante" ? (
-                                                <div className="sous_form_group">
-                                                    <label htmlFor="adresse">Adresse</label>
-                                                <input
-                                                    type="text"
-                                                    value={address}
-                                                    className="adresse_sociale"
-                                                    placeholder="Adresse Postal"
-                                                    readOnly />
-                                            </div>) : (<div className="sous_form_group">
-                                                 <label htmlFor="adresse">Adresse</label>
-                                                <input
-                                                    type="text"
-                                                    // className="adresse_sociale"
-                                                    placeholder="Adresse Postal"
-                                                    {...register("address", { required: "Veuillez entrer l'adresse du siège social" })}
-                                                    onFocus={handleFocusFirstAdresseSocial}
-                                                    onBlur={handleBlurFirstAdresseSocial}
-                                                    style={{ borderColor: inputBorderColorAdresseSocial }}
-                                                />
-                                                {errors.address && (
-                                                    <span className="error">{errors.address.message as string}</span>
-                                                )}
-                                            </div>)} */}
-                                        </div>
+                                            className="register_btn"
+                                            onClick={handleNextStep1}
+                                        >
+                                            Suivant
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="register_btn1"
+                                            onClick={() => setSubStep(1)}
+                                        >
+                                            Revenir
+                                        </button>
 
-                                        <div className="form_group">
-                                            <div className="sous_form_group">
-                                                <label htmlFor="telephone">Téléphone de Connexion </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Numéro de téléphone"
-                                                    {...register("phonenumber", {
-                                                        required: "Veuillez entrer un numéro de téléphone",
-                                                        pattern: {
-                                                            value: /^(?:\+33|0)[1-9]\d{8}$/,
-                                                            message: "Numéro de téléphone français invalide",
-                                                        },
-                                                    })}
-                                                    onFocus={handleFocusPhone}
-                                                    onBlur={handleBlurPhone}
-                                                    style={{ borderColor: inputBorderColorPhone }}
-                                                />
-                                                {errors.phonenumber && (
-                                                    <span className="error">{errors.phonenumber.message as string}</span>
-                                                )}
-                                            </div>
-                                            <div className="sous_form_group">
-                                                <label htmlFor="email">Email de Connexion</label>
-                                                <input
-                                                    type="email"
-                                                    placeholder="Adresse Email"
-                                                    {...register("email", {
-                                                        required: "Veuillez entrer une adresse email",
-                                                        pattern: {
-                                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                            message: "Adresse email invalide",
-                                                        },
-                                                    })}
-                                                    onFocus={handleFocusEmail}
-                                                    onBlur={handleBlurEmail}
-                                                    style={{ borderColor: inputBorderColorEmail }}
-                                                />
-                                                {errors.email && (
-                                                    <span className="error">{errors.email.message as string}</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                          <div className="form_group">
-                                            {companyStatus === "existante" ? (
-                                                <div className="sous_form_group">
-                                                    <label htmlFor="adresse">Adresse</label>
-                                                <input
-                                                    type="text"
-                                                    value={address}
-                                                    className="adresse_sociale"
-                                                    placeholder="Adresse Postal"
-                                                    readOnly />
-                                            </div>) : (<div className="sous_form_group">
-                                                 <label htmlFor="adresse">Adresse</label>
-                                                <input
-                                                    type="text"
-                                                    // className="adresse_sociale"
-                                                    placeholder="Adresse Postal"
-                                                    {...register("address", { required: "Veuillez entrer l'adresse du siège social" })}
-                                                    onFocus={handleFocusFirstAdresseSocial}
-                                                    onBlur={handleBlurFirstAdresseSocial}
-                                                    style={{ borderColor: inputBorderColorAdresseSocial }}
-                                                />
-                                                {errors.address && (
-                                                    <span className="error">{errors.address.message as string}</span>
-                                                )}
-                                            </div>)}
-
-                                          </div>
+                                        <button className="register_btn" type="submit" disabled={loading}>
+                                            {loading ? (
+                                                <span className="dots">
+                                                    En cours<span className="dot1">.</span>
+                                                    <span className="dot2">.</span>
+                                                    <span className="dot3">.</span>
+                                                </span>
+                                            ) : (
+                                                "Continuer"
+                                            )}
+                                        </button>
                                     </>
                                 )}
-
-                            </motion.div>
-                        </AnimatePresence>
-
-
-                        <div id="sous_buttons_container">
-                            {subStep === 1 ? (
-                                <>
-                                    <button
-                                        type="button"
-                                        className="register_btn1"
-                                        onClick={() => {
-                                            setDirection("prev");
-                                            setCurrentStep((s) => s - 1);
+                            </div>
+                            <AnimatePresence>
+                                {errorPopup && (
+                                    <motion.div
+                                        className="role_error_sidebar top_right"
+                                        role="alert"
+                                        initial={{ x: "100%", opacity: 0 }}
+                                        animate={{
+                                            x: [0, -120, 0],
+                                            opacity: [0, 1, 1]
+                                        }}
+                                        exit={{ x: "100%", opacity: 0 }}
+                                        transition={{
+                                            duration: 2,
+                                            ease: "easeInOut"
                                         }}
                                     >
-                                        Retour
-                                    </button>
-                                    <span
+                                        {errorPopup}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </form>
+                    );
 
-                                        className="register_btn"
-                                        onClick={handleNextStep1}
-                                    >
-                                        Suivant
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        type="button"
-                                        className="register_btn1"
-                                        onClick={() => setSubStep(1)}
-                                    >
-                                        Revenir
-                                    </button>
-
-                                    <button className="register_btn" type="submit" disabled={loading}>
-                                        {loading ? (
-                                            <span className="dots">
-                                                En cours<span className="dot1">.</span>
-                                                <span className="dot2">.</span>
-                                                <span className="dot3">.</span>
-                                            </span>
-                                        ) : (
-                                            "Continuer"
-                                        )}
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                        <AnimatePresence>
-                            {errorPopup && (
-                                <motion.div
-                                    className="role_error_sidebar top_right"
-                                    role="alert"
-                                    initial={{ x: "100%", opacity: 0 }}
-                                    animate={{
-                                        x: [0, -120, 0],
-                                        opacity: [0, 1, 1]
-                                    }}
-                                    exit={{ x: "100%", opacity: 0 }}
-                                    transition={{
-                                        duration: 2,
-                                        ease: "easeInOut"
-                                    }}
-                                >
-                                    {errorPopup}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </form>
-                );
-
-                }else if (selectedRole === "Annonceur") {
-                return   <AnnonceurRegistration/>
-            }else if (selectedRole === "Fournisseur") {
-                return  <h3 className="register_question">
-                            z votre boite mail et entrez le code.
-                            </h3>
-            }
-            return null;
+                } else if (selectedRole === "Annonceur") {
+                    return (
+                        <AnnonceurRegistration
+                            currentStep={currentStep}
+                            setCurrentStep={setCurrentStep}
+                            internalStep={annonceurInternalStep}
+                            setInternalStep={setAnnonceurInternalStep}
+                        />
+                    );
+                } else if (selectedRole === "Fournisseur") {
+                    return(<FournisseurRegistration
+                     currentStep={currentStep}
+                            setCurrentStep={setCurrentStep}
+                             internalStep={fournisseurInternalStep}
+      setInternalStep={setFournisseurInternalStep}
+                    />)
+                }
+                return null;
 
             case 3:
                 return (
@@ -1209,42 +1174,56 @@ function Register() {
                 </div>
                 <span className="register_subtitle">Veuillez suivre chaque étape.</span>
 
-                
+
 
                 {/* Étapes */}
 
                 {selectedRole?.toLowerCase() === "artisan" && (
+                    <div className="progress_container">
+                        <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+                            Vous êtes ?
+                        </div>
+                        <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
+                            Informations entreprise
+                        </div>
+                        <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
+                            Validation
+                        </div>
+                        <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
+                            Terminé
+                        </div>
+                    </div>
+                )}
+
+                {selectedRole?.toLowerCase() === "annonceur" && (
+                    <div className="progress_container">
+                        <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+                            Vous êtes ?
+                        </div>
+                        <div className={`step ${currentStep >= 2 ? "active" : (currentStep === 2 && annonceurInternalStep >= 1 ? "active" : "")}`}>
+                            Votre activité
+                        </div>
+                        <div className={`step ${currentStep >= 3 ? "active" : (currentStep === 2 && annonceurInternalStep >= 2 ? "active" : "")}`}>
+                            Informations entreprise
+                        </div>
+                        <div className={`step ${currentStep >= 4 ? "active" : (currentStep === 2 && annonceurInternalStep >= 3 ? "active" : "")}`}>
+                            Validation
+                        </div>
+                    </div>
+                )}
+                {selectedRole?.toLowerCase() === "fournisseur" && (
     <div className="progress_container">
-      <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
-        Vous êtes ?
-      </div>
-      <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
-        Informations entreprise
-      </div>
-      <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
-        Validation
-      </div>
-      <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
-        Terminé
-      </div>
+        <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+            Vous êtes ?
+        </div>
+        <div className={`step ${currentStep >= 2 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 1 ? "active" : "")}`}>
+            Secteur d'activité
+        </div>
+        <div className={`step ${currentStep >= 3 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 2 ? "active" : "")}`}>
+            Termine
+        </div>
     </div>
-  )}
-  {selectedRole?.toLowerCase() === "annonceur" && (
-    <div className="progress_container">
-      <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
-        Vous êtes ?
-      </div>
-      <div className={`step ${currentStep >= 2 ? "active" : ""}`}>
-        Votre activicté
-      </div>
-      <div className={`step ${currentStep >= 3 ? "active" : ""}`}>
-        Informations entreprise
-      </div>
-      <div className={`step ${currentStep >= 4 ? "active" : ""}`}>
-        Validation
-      </div>
-    </div>
-  )}
+)}
 
                 {/* AnimatePresence pour transition douce */}
                 <AnimatePresence mode="wait" custom={direction}>

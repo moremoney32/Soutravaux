@@ -27,7 +27,7 @@ const SubscriptionPage: React.FC = () => {
     fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
       .then(res => res.json())
       .then(data => {
-        console.log("Données settings:", data);
+        // console.log("Données settings:", data);
         setPageTitle(data.hero_title);
         setPageSubtitle(data.hero_subtitle);
       })
@@ -41,6 +41,7 @@ const SubscriptionPage: React.FC = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+             "Accept":"application/json",
             "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify({
@@ -50,10 +51,10 @@ const SubscriptionPage: React.FC = () => {
         });
 
         const data = await res.json();
-        console.log("Données API:", data);
-        setUserType(data.type);               
-        setCurrentSubscription(data.subscription); 
-        setPlans(data.plans);                  
+        // console.log("Données API:", data);
+        setUserType(data.type);
+        setCurrentSubscription(data.subscription);
+        setPlans(data.plans);
       } catch (err) {
         console.error("Erreur API:", err);
       }
@@ -91,7 +92,34 @@ const SubscriptionPage: React.FC = () => {
       } else {
         // Plans payants - redirection vers Stripe
         if (stripeLink) {
-          window.location.href = stripeLink;
+          const payload = {
+            price_id: stripeLink,
+            societe_id: societe_id,
+            plan_id: planId
+          }
+          console.log(payload)
+          try {
+            const res = await fetch("https://paiement-api.solutravo-compta.fr/api/stripe/customer", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                // "Accept":"application/json"
+                // "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if(data.url){
+              return window.location.href = data.url;
+            }
+            // setTimeout(() => {
+            //   window.location.href = data.url;
+            // }, 300);
+            // console.log("Données:", data);
+          } catch (err) {
+            console.error("Erreur API:", err);
+          }
         } else {
           console.error('Lien Stripe manquant pour le plan:', planId);
         }
@@ -115,12 +143,12 @@ const SubscriptionPage: React.FC = () => {
     setIsAdminMode(!isAdminMode);
   };
   const handleNext = () => {
-      
-      const redirectUrl = "https://staging.solutravo-compta.fr/dashboard"
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 300); 
-    };
+
+    const redirectUrl = "https://staging.solutravo-compta.fr/dashboard"
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 300);
+  };
 
   return (
     <div className="subscription-page">

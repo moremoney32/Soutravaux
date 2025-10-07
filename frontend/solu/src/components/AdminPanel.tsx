@@ -244,7 +244,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             {plan.popular ? '★ Populaire' : 'Standard'}
                                         </span>
                                     </div>
+                                     <a href="#edit_form_plan">
                                     <div className="plan-actions">
+                                       
                                         <button
                                             className="edit-btn"
                                             onClick={() => handleEditPlan(plan)}
@@ -257,14 +259,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                         >
                                             🗑️ Supprimer
                                         </button>
+                                     
                                     </div>
+                                       </a>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {editingPlan && (
-                        <div className="edit-form">
+                        <div className="edit-form" id="edit_form_plan">
                             <div className="form-header">
                                 <h3>
                                     {showAddForm ? '➕ Créer un nouveau plan' : '✏️ Modifier le plan'}
@@ -316,7 +320,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             type="url"
                                             value={editingPlan.stripe_link} 
                                             onChange={(e) => updateEditingPlan('stripe_link', e.target.value)}
-                                            // placeholder="https://buy.stripe.com/..."
                                         />
                                     </div>
                                 </div>

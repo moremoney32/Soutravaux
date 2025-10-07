@@ -1,12 +1,11 @@
 import React from 'react';
 import type { AnnonceurData } from './AnnonceurRegistration';
-// import { AnnonceurData } from './AnnonceurRegistration';
 
 interface Step1ActivityProps {
   data: AnnonceurData
   onUpdate: (data: Partial<AnnonceurData>) => void;
   onNext: () => void;
-   onPrev: () => void;
+  onPrev: () => void;
 }
 
 const activities = [
@@ -22,13 +21,13 @@ const activities = [
   'Autre'
 ];
 
-const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext,onPrev}) => {
+const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext, onPrev }) => {
   const handleActivitySelect = (activity: string) => {
-    onUpdate({ activity });
+    onUpdate({ activityAnnonceur: activity }); // ← CORRIGÉ ICI
   };
 
   const handleContinue = () => {
-    if (data.activity) {
+    if (data.activityAnnonceur) { // ← CORRIGÉ ICI
       onNext();
     }
   };
@@ -44,7 +43,7 @@ const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext,on
         {activities.map((activity) => (
           <div
             key={activity}
-            className={`activity-card ${data.activity === activity ? 'selected' : ''}`}
+            className={`activity-card ${data.activityAnnonceur === activity ? 'selected' : ''}`} // ← CORRIGÉ ICI
             onClick={() => handleActivitySelect(activity)}
           >
             <div className="activity-icon">
@@ -58,15 +57,14 @@ const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext,on
       <div className="step-actions">
         <button
           className="btn-back"
-            onClick={onPrev}
-          disabled={!data.activity}
+          onClick={onPrev}
         >
           Retour
         </button>
         <button
           className="btn-continue"
           onClick={handleContinue}
-          disabled={!data.activity}
+          disabled={!data.activityAnnonceur} // ← CORRIGÉ ICI
         >
           Continuer
         </button>

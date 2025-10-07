@@ -22,6 +22,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
     const handleSubscribe = () => {
         if (!loading && !isCurrentPlan) {
+            console.log(plan.id, plan.stripe_link);
             onSubscribe(plan.id, plan.stripe_link);
         }
     };
@@ -41,7 +42,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
                     <span>Plus populaire</span>
                 </div>
             )}
-          
+
 
             {isCurrentPlan && (
                 <div className="current-badge" style={{ backgroundColor: plan.color }}>
@@ -63,22 +64,27 @@ const PricingCard: React.FC<PricingCardProps> = ({
                     </span>
                     <span className="period">/{plan.period}</span>
                 </div>
-            </div>
 
-            {/* <div className="features-section">
-                <ul className="features-list">
-                    {plan.features.map((feature, index) => (
-                        <li key={index} className="feature-item">
-                            <span className={`feature-icon ${index >= plan.unlockedFeatures ? 'locked' : ''}`}>
-                                {index >= plan.unlockedFeatures ? '🔒' : '✓'}
-                            </span>
-                            <span className={`feature-text ${index >= plan.unlockedFeatures ? 'locked' : ''}`}>
-                                {feature}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            </div> */}
+                <div className="card-footer">
+                    <button
+                        style={{ backgroundColor: plan.color }}
+                        className={`subscribe-btn ${isCurrentPlan ? 'current' : ''} ${loading ? 'loading' : ''}`}
+                        onClick={handleSubscribe}
+                        disabled={loading || isCurrentPlan}
+                    >
+                        {loading ? (
+                            <>
+                                <span className="loading-spinner">⚡</span>
+                                Traitement...
+                            </>
+                        ) : isCurrentPlan ? (
+                            'Plan actuel'
+                        ) : (
+                            'Activer cette Offre'
+                        )}
+                    </button>
+                </div>
+            </div>
             <div className="features-section">
                 <ul className="features-list">
                     {plan.features.map((feature, index) => (
@@ -90,27 +96,8 @@ const PricingCard: React.FC<PricingCardProps> = ({
                 </ul>
             </div>
 
-            <div className="card-footer">
-                <button
-                    style={{ backgroundColor: plan.color }}
-                    className={`subscribe-btn ${isCurrentPlan ? 'current' : ''} ${loading ? 'loading' : ''}`}
-                    onClick={handleSubscribe}
-                    disabled={loading || isCurrentPlan}
-                >
-                    {loading ? (
-                        <>
-                            <span className="loading-spinner">⚡</span>
-                            Traitement...
-                        </>
-                    ) : isCurrentPlan ? (
-                        'Plan actuel'
-                    ) : (
-                        'Activer cette Offre'
-                    )}
-                </button>
-            </div>
         </div>
-    );
+);
 };
 
 export default PricingCard;

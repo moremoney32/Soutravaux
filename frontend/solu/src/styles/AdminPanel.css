@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .admin-panel {
   background:var(--color-dark);
   color: var(--color-white);
@@ -484,4 +488,8 @@ color:#ffffff;
 
 .snackbar.error {
   background:#E77131; 
+}
+
+a{
+    text-decoration: none;
 }

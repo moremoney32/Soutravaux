@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
+import { AnnonceurControllers, FournisseurControllers, UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
 import { SearchCompanies } from "../controllers/CompanyController";
 import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, updateSettings } from "../controllers/PlanRoleContollers";
  import { CheckSubscription } from "../controllers/CheckSubscriptionControllers";
@@ -7,6 +7,8 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
 const router: Router = express.Router();
 
 router.post("/register", UserControllers);
+router.post("/registerAnnonceur",AnnonceurControllers);
+router.post("/registerFournisseur", FournisseurControllers);
 router.post("/verifyCode", UserControllersVerifyCode);
  router.post("/check_subscription", CheckSubscription);
 router.post("/register/complete", completeController);
