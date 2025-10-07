@@ -69,16 +69,31 @@ export async function UserRegister(data: UserRegisterInput) {
     }
 
     // siret déjà utilisé ?
+// if (siret && siret.trim() !== "") {
+//       const [siretExists]: any = await conn.query(
+//         "SELECT id FROM societes WHERE siret = ?",
+//         [siret]
+//       );
+//       if (siretExists.length > 0) {
+//         const err = new Error("Ce SIRET est déjà associé à une société.");
+//         (err as any).statusCode = 409;
+//         throw err;
+//       }
+// }
 if (siret && siret.trim() !== "") {
-      const [siretExists]: any = await conn.query(
-        "SELECT id FROM societes WHERE siret = ?",
-        [siret]
-      );
-      if (siretExists.length > 0) {
-        const err = new Error("Ce SIRET est déjà associé à une société.");
-        (err as any).statusCode = 409;
-        throw err;
-      }
+  // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
+  const [siretExists]: any = await conn.query(
+    `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
+     UNION ALL 
+     SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
+    [siret, siret]
+  );
+  
+  if (siretExists.length > 0) {
+    const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
+    (err as any).statusCode = 409;
+    throw err;
+  }
 }
 
    
@@ -616,17 +631,32 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     }
 
     // Vérifier si le SIRET est déjà utilisé dans SOCIETES (table principale)
+    // if (siret && siret.trim() !== "") {
+    //   const [siretExists]: any = await conn.query(
+    //     "SELECT id FROM societes WHERE siret = ?",
+    //     [siret]
+    //   );
+    //   if (siretExists.length > 0) {
+    //     const err = new Error("Ce SIRET est déjà associé à une société.");
+    //     (err as any).statusCode = 409;
+    //     throw err;
+    //   }
+    // }
     if (siret && siret.trim() !== "") {
-      const [siretExists]: any = await conn.query(
-        "SELECT id FROM societes WHERE siret = ?",
-        [siret]
-      );
-      if (siretExists.length > 0) {
-        const err = new Error("Ce SIRET est déjà associé à une société.");
-        (err as any).statusCode = 409;
-        throw err;
-      }
-    }
+  // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
+  const [siretExists]: any = await conn.query(
+    `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
+     UNION ALL 
+     SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
+    [siret, siret]
+  );
+  
+  if (siretExists.length > 0) {
+    const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
+    (err as any).statusCode = 409;
+    throw err;
+  }
+}
 
     // Génération OTP
     const otp = genOTP();
