@@ -188,13 +188,13 @@ const Step2CompanyInfo: React.FC<Step2CompanyInfoProps> = ({
     activityAnnonceur: data.activityAnnonceur,
     
 };
-console.log(payload)
+
             const result = await fetchData('registerAnnonceur', 'POST', payload);
             
             if (result.status === 201) {
                 onNext();
             } else {
-                throw new Error(result.message || 'Erreur lors de l\'inscription');
+                throw new Error( 'Erreur lors de l\'inscription');
             }
 
         } catch (err: unknown) {

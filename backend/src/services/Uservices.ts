@@ -189,7 +189,7 @@ return { email };
       (e as any).statusCode = 409;
       throw e;
     }
-    if (err.sqlMessage.includes("presocietes.siret")) {
+    if (err.sqlMessage.includes("societes.siret")) {
       const e = new Error("Ce SIRET est déjà associé à une société.");
       (e as any).statusCode = 409;
       throw e;
@@ -510,7 +510,7 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
         (e as any).statusCode = 409;
         throw e;
       }
-      if (err.sqlMessage.includes("presocietes.siret")) {
+      if (err.sqlMessage.includes("societes.siret")) {
         const e = new Error("Ce SIRET est déjà associé à une société.");
         (e as any).statusCode = 409;
         throw e;
@@ -938,7 +938,7 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
         (e as any).statusCode = 409;
         throw e;
       }
-      if (err.sqlMessage.includes("presocietes.siret")) {
+      if (err.sqlMessage.includes("societes.siret")) {
         const e = new Error("Ce SIRET est déjà associé à une société.");
         (e as any).statusCode = 409;
         throw e;

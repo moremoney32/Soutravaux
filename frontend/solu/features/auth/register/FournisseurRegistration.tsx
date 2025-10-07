@@ -89,28 +89,7 @@ const FournisseurRegistration: React.FC<FournisseurRegistrationProps> = ({
         }
     };
 
-    const handleSubmit = async () => {
-        try {
-            const response = await fetch('/api/fournisseurs/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                console.log('Demande de contact envoyée avec succès');
-                // Affiche la popup au lieu de passer à l'étape suivante
-                setShowSuccessPopup(true);
-            } else {
-                throw new Error('Erreur lors de l\'envoi');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
-        }
-    };
+    
 
     const handleClosePopup = () => {
         setShowSuccessPopup(false);
@@ -145,7 +124,6 @@ const FournisseurRegistration: React.FC<FournisseurRegistrationProps> = ({
                         data={formData}
                         onUpdate={updateFormData}
                         onPrev={prevStep}
-                        onSubmit={handleSubmit}
                         onShowSuccess={() => setShowSuccessPopup(true)} // Nouvelle prop
                     />
                 );

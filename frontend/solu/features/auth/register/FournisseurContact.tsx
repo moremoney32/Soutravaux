@@ -157,7 +157,7 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
             if (result.status === 201) {
                 onShowSuccess(); // ⬅️ Appelle la fonction pour afficher la popup
             } else {
-                throw new Error(result.message || 'Erreur lors de l\'envoi');
+                throw new Error('Erreur lors de l\'envoi');
             }
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : "Erreur lors de l'envoi";
