@@ -403,17 +403,33 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
     }
 
     // Vérifier si le SIRET est déjà utilisé
+    // if (siretAnnonceur && siretAnnonceur.trim() !== "") {
+    //   const [siretExists]: any = await conn.query(
+    //     "SELECT id FROM societes WHERE siret = ?",
+    //     [siretAnnonceur]
+    //   );
+    //   if (siretExists.length > 0) {
+    //     const err = new Error("Ce SIRET est déjà associé à une société.");
+    //     (err as any).statusCode = 409;
+    //     throw err;
+    //   }
+    // }
     if (siretAnnonceur && siretAnnonceur.trim() !== "") {
-      const [siretExists]: any = await conn.query(
-        "SELECT id FROM societes WHERE siret = ?",
-        [siretAnnonceur]
-      );
-      if (siretExists.length > 0) {
-        const err = new Error("Ce SIRET est déjà associé à une société.");
-        (err as any).statusCode = 409;
-        throw err;
-      }
-    }
+  // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
+  const [siretExists]: any = await conn.query(
+    `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
+     UNION ALL 
+     SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
+    [siretAnnonceur,siretAnnonceur]
+  );
+  
+  if (siretExists.length > 0) {
+    const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
+    (err as any).statusCode = 409;
+    throw err;
+  }
+}
+
 
     // Génération OTP
     const otp = genOTP();
@@ -525,11 +541,16 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
         (e as any).statusCode = 409;
         throw e;
       }
-      if (err.sqlMessage.includes("societes.siret")) {
-        const e = new Error("Ce SIRET est déjà associé à une société.");
-        (e as any).statusCode = 409;
-        throw e;
-      }
+      // if (err.sqlMessage.includes("societes.siret")) {
+      //   const e = new Error("Ce SIRET est déjà associé à une société.");
+      //   (e as any).statusCode = 409;
+      //   throw e;
+      // }
+       if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
+      const e = new Error("Ce SIRET est déjà associé à une société.");
+      (e as any).statusCode = 409;
+      throw e;
+    }
     }
     
     if (err.code === "ER_DATA_TOO_LONG") {
@@ -968,11 +989,16 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
         (e as any).statusCode = 409;
         throw e;
       }
-      if (err.sqlMessage.includes("societes.siret")) {
-        const e = new Error("Ce SIRET est déjà associé à une société.");
-        (e as any).statusCode = 409;
-        throw e;
-      }
+      // if (err.sqlMessage.includes("societes.siret")) {
+      //   const e = new Error("Ce SIRET est déjà associé à une société.");
+      //   (e as any).statusCode = 409;
+      //   throw e;
+      // }
+       if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
+      const e = new Error("Ce SIRET est déjà associé à une société.");
+      (e as any).statusCode = 409;
+      throw e;
+    }
     }
     
     if (err.code === "ER_DATA_TOO_LONG") {
