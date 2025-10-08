@@ -65,7 +65,7 @@ const Step1Sector: React.FC<Step1SectorProps> = ({ data, onUpdate, onNext,onPrev
 
       {data.sector === 'autres' && (
         <div className="custom-sector-input">
-          <label htmlFor="customSector">Précisez votre secteur d'activité :</label>
+          <label htmlFor="customSector" className="sector_customer">Précisez votre secteur d'activité :</label>
           <input
             type="text"
             id="customSector"

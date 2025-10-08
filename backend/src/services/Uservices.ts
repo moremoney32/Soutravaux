@@ -158,7 +158,7 @@ try {
    const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
   receiver: email,
   sender: "no-reply@elyft.tech",
-  subject: "🔑 Vérifiez votre addresse email - Solutravo",
+  subject: "🔑 Vérifiez votre Adresse email - Solutravo",
   message: `
   <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
     <h2 style="color: #1E3A8A;">Bienvenue sur Solutravo 👷‍♂️</h2>
@@ -492,7 +492,7 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
       const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
         receiver: emailAnnonceur,
         sender: "no-reply@elyft.tech",
-        subject: "🔑 Vérifiez votre addresse email - Solutravo",
+        subject: "🔑 Vérifiez votre Adresse email - Solutravo",
         message: `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
           <h2 style="color: #1E3A8A;">Bienvenue sur Solutravo 📢</h2>
@@ -646,10 +646,10 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     await conn.beginTransaction();
 
     // Vérifier si l'email existe déjà
-    const [exists] = await conn.query("SELECT id FROM membres WHERE email = ?", [contactEmail]);
-    if ((exists as any).length > 0) {
-      throw new Error("Cet email est déjà utilisé.");
-    }
+    // const [exists] = await conn.query("SELECT id FROM membres WHERE email = ?", [contactEmail]);
+    // if ((exists as any).length > 0) {
+    //   throw new Error("Cet email est déjà utilisé.");
+    // }
 
     // Vérifier si le SIRET est déjà utilisé dans SOCIETES (table principale)
     // if (siret && siret.trim() !== "") {
@@ -663,21 +663,21 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     //     throw err;
     //   }
     // }
-    if (siret && siret.trim() !== "") {
-  // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
-  const [siretExists]: any = await conn.query(
-    `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
-     UNION ALL 
-     SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
-    [siret, siret]
-  );
+  //   if (siret && siret.trim() !== "") {
+  // // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
+  // const [siretExists]: any = await conn.query(
+  //   `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
+  //    UNION ALL 
+  //    SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
+  //   [siret, siret]
+  // );
   
-  if (siretExists.length > 0) {
-    const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
-    (err as any).statusCode = 409;
-    throw err;
-  }
-}
+  // if (siretExists.length > 0) {
+  //   const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
+  //   (err as any).statusCode = 409;
+  //   throw err;
+  // }
+//
 
     // Génération OTP
     const otp = genOTP();
@@ -983,23 +983,18 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     await conn.rollback();
     
     // Gestion des erreurs spécifiques
-    if (err.code === "ER_DUP_ENTRY") {
-      if (err.sqlMessage.includes("membres.email")) {
-        const e = new Error("Cet email est déjà utilisé.");
-        (e as any).statusCode = 409;
-        throw e;
-      }
-      // if (err.sqlMessage.includes("societes.siret")) {
-      //   const e = new Error("Ce SIRET est déjà associé à une société.");
-      //   (e as any).statusCode = 409;
-      //   throw e;
-      // }
-       if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
-      const e = new Error("Ce SIRET est déjà associé à une société.");
-      (e as any).statusCode = 409;
-      throw e;
-    }
-    }
+    // if (err.code === "ER_DUP_ENTRY") {
+    //   if (err.sqlMessage.includes("membres.email")) {
+    //     const e = new Error("Cet email est déjà utilisé.");
+    //     (e as any).statusCode = 409;
+    //     throw e;
+    //   }
+    //    if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
+    //   const e = new Error("Ce SIRET est déjà associé à une société.");
+    //   (e as any).statusCode = 409;
+    //   throw e;
+    // }
+    // }
     
     if (err.code === "ER_DATA_TOO_LONG") {
       const e = new Error("Une donnée est trop longue pour un champ (ex: code postal trop long).");

@@ -430,11 +430,11 @@ gap:35px;
 .sous_form_group{
     display: flex;
     flex-direction: column;
-    gap:10px;
+    gap:15px;
     position: relative;
 }
 .sous_form_group label{
-    font-size: 16px;
+    font-size: 14px;
     font-weight:400;
     color: #505050;
 }
@@ -740,11 +740,7 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
 .suggestion_item:hover {
   background-color: #f0f0f0;
 }
-.siret_number{
-  font-size: 12px !important;
-  color: #505050;
 
-}
 .error{
   color: #cc212d;
     font-size: 0.80em;
@@ -781,49 +777,125 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
 
 
 /**responsive mobile***/
+/* === RESPONSIVE MOBILE SEULEMENT (max-width: 768px) === */
 @media (max-width: 768px) {
   .register_container {
     flex-direction: column;
     height: auto;
+    min-height: 100vh !important;
+    height: fit-content !important;
     width: 100%;
+    /* overflow-x: hidden; */
   }
 
   .composant_statique,
-  .composant_statique_left,
-  .composant_dynamique {
-    width: 100% !important;
+  .composant_statique_left{
+    /* width: 100% !important; */
+     width:fit-content;
     padding: 20px !important;
-    max-height: none;
+  height: 50vh !important;
+     display: none; 
+  }
+    .composant_dynamique{
+    /* flex: 1; */
+    display: flex;
+    flex-direction: column;
+     padding-left: 40px !important;
+    padding-right: 40px !important;
+    gap: 15px;
+     /* overflow-y: 0; */
+    min-height:140vh !important;
+    margin:0 auto ;
+    padding-top: 25px;
+    width: 100%;
+    /* overflow-y: auto !important; */
+  } 
+  .siret_number{
+  font-size: 12px !important;
+  color: #505050;
+  width: 50% !important;
+  margin: auto !important;
+
+}
+.label{
+  margin:0 auto;
+}
+
+  /* .role_error_sidebar.top_right {
+  position: fixed !important;
+   top:10px; 
+   bottom: 40px; 
+  right: 20px;      
+  z-index: 9999;
+background: linear-gradient(90deg, #E77131, #FEA16D);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.3;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+} */
+
+ .role_error_sidebar.top_right {
+    /* top: 50%; */
+    /* left: 50%; */
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 280px;
+    padding: 14px 20px;
+    font-size: 13px;
+    bottom:400px;
+
   }
 
+  /* Partie gauche - Centrage */
   .composant_statique_left {
-    padding: 20px !important;
+    padding: 30px 20px !important;
     justify-content: center;
     align-items: center;
     text-align: center;
+    display: none;
   }
 
   .sous_contenair_mail {
-    padding: 20px;
+    padding: 25px 20px;
     width: 100%;
-  }
-
-  .roles_container {
-    grid-template-columns: 1fr; /* une seule colonne */
-    gap: 10px;
-  }
-
-  .form_group {
-    grid-template-columns: 1fr; /* champs empilés */
-  }
-
-  .form_group_password {
-    width: 100% !important;
-  }
-
-  .image_section {
-    max-width: 250px;
+    max-width: 400px;
     margin: 0 auto;
+  }
+
+  .info_logo {
+    text-align: center;
+  }
+
+  .info_logo_p {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .information_solutravaux {
+    gap: 25px;
+  }
+
+  .role_user {
+    gap: 12px;
+  }
+
+  .role_user span {
+    font-size: 14px !important;
+    line-height: 1.4;
+  }
+
+  /* Partie droite - Centrage */
+  .composant_dynamique {
+    padding: 30px 20px !important;
+    /* justify-content: flex-start; */
+  }
+
+  .register_header {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 10px;
   }
 
   .register_title {
@@ -834,24 +906,358 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   .register_subtitle {
     margin-left: 0;
     text-align: center;
+    font-size: 14px;
   }
 
+  /* Progress steps - Centré */
   .progress_container {
     font-size: 12px;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .progress_container::before {
+    display: none; /* Cache la ligne sur mobile */
+  }
+
+  .step {
+    text-align: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  /* Rôles - Centré */
+  .roles_container {
+    display: grid;
+    grid-template-columns: 1fr;
+  transform:translate3d(30px,0,0);
+    gap: 12px;
+    justify-content: center !important;
+    padding: 10px !important;
+    margin: auto 0 !important;
+    
+  }
+
+  .role_card {
+    padding: 15px;
+    text-align: center;
+  }
+
+  /* Formulaires - Centré */
+  .step2_container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .register_question,
+  .register_question1 {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .choice_container {
+    justify-content: center;
     gap: 10px;
   }
 
-  .buttons_container,
-  #sous_buttons_container {
+  .size_container {
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .form_group {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .form_group_column {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .sous_form_group {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    justify-content: center !important;
+  }
+  .sous_form_group_password{
+    width:80% !important;
+    padding-left: 20px;
+    /* justify-content: center !important; */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sous_form_group_password label{
+    font-size: 14px;
+  }
+
+  .sous_form_group input {
+     width: 100%; 
+    box-sizing: border-box;
+  }
+
+  /* Radio group - Centré */
+  .radio_group {
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .radio_group label {
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Password - Centré */
+  .form_group_password {
+    width: 100% !important;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Boutons - Centrés */
+  .buttons_container {
     flex-direction: column;
     gap: 15px;
+    margin-top: 30px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .buttons_container.single {
+    margin-top: 30px;
+    justify-content: center;
+  }
+
+  #sous_buttons_container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    justify-content: center !important;
+    /* margin: 20px auto 0 auto; */
   }
 
   .register_btn,
   .register_btn1 {
-    width: 100%;
+    /* width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    text-align: center; */
+    padding: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
     text-align: center;
+  }
+
+  /* OTP - Centré */
+  .step3_container {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .otp_inputs {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .otp_input {
+    width: 45px;
+    height: 45px;
+  }
+
+  .otp_footer {
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Suggestions - Ajusté pour mobile */
+  .suggestions_list,
+  .suggestions_list1 {
+     position: fixed !important;
+    left: 20px !important;
+    right: 20px !important;
+    width: auto !important;
+    max-height: 150px !important;
+    z-index: 10000;
+    transform: none !important;
+   /* top: 100px !important; */
+    /* top: auto !important;
+    bottom: 20px !important; */
+  }
+
+  .legal-form-suggestions {
+    width: 100% !important;
+  }
+
+  /* Popup - Centré */
+  /* .popup {
+    width: 90%;
+    max-width: 320px;
+    left: 50%;
+  } */
+   .popup{
+    position:absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    padding-bottom: 30px;
+    width: 300px;
+    background: white;
+    z-index: 10;
+    top: 70%;
+    left:30px;
+    right:30px;
+    /* left: 50%; */
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: white;
+}
+
+  /* Error messages - Centré */
+  .error {
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .error-message {
+    text-align: center;
+  }
+
+  /* Images - Responsive */
+  .image_section {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .text_section {
+    text-align: center;
+  }
+
+  .text_section_title {
+    font-size: 24px;
+  }
+
+  .text_section_subtitle {
+    font-size: 14px;
+  }
+}
+
+/* === TRÈS PETITS ÉCRANS (max-width: 480px) === */
+@media (max-width: 480px) {
+  .composant_statique_left,
+  .composant_dynamique {
+    padding: 20px 15px !important;
+  }
+
+  .sous_contenair_mail {
+    padding: 20px 15px;
+  }
+
+  .info_logo_p {
+    font-size: 16px;
+  }
+
+  .register_title {
+    font-size: 22px;
+  }
+
+  .register_subtitle {
+    font-size: 13px;
+  }
+
+  .progress_container {
+    gap: 10px;
+  }
+
+  .step {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .roles_container {
+    max-width: 280px;
+  }
+
+  .step2_container {
+    max-width: 350px;
+  }
+
+  .form_group,
+  .form_group_column {
+    max-width: 350px;
+  }
+
+  .otp_input {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .suggestions_list,
+  .suggestions_list1 {
+    left: 15px !important;
+    right: 15px !important;
+  }
+}
+
+/* === ORIENTATION PAYSAGE MOBILE === */
+@media (max-width: 768px) and (orientation: landscape) {
+  .register_container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .composant_statique_left {
+    padding: 20px !important;
+  }
+
+  .sous_contenair_mail {
+    padding: 20px;
+  }
+
+  .information_solutravaux {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .role_user {
+    flex: 1;
+    min-height: auto;
+  }
+
+  .buttons_container {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .register_btn,
+  .register_btn1 {
+    width: auto;
+    flex: 1;
   }
 }
 /*****tablette****/
@@ -880,9 +1286,17 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   }
 
   .form_group_password {
-    width: 80% !important;
-    margin: 0 auto;
+    width:80% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    padding-right: 20px;
+    /* margin: 0 auto; */
   }
+   .form_group_password input{
+     width: 70% !important;
+   }
 
   .image_section {
     max-width: 300px;

@@ -114,9 +114,11 @@
 .step-content {
   /* padding: 40px; */
 }
-.step-container{
+/* .step-container{
     margin-top: -1.5rem !important;
-}
+    width: fit-content;
+    margin: auto;
+} */
 
 .step-container h2 {
   font-size: 1.2rem !important;
@@ -185,8 +187,8 @@
 
 .form-section h3 {
   font-size: 1rem;
-  font-weight: 600;
-  color: #505050;
+  font-weight: 500;
+  color:#505050 !important;
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid #E77131;
@@ -209,6 +211,7 @@
   flex-direction: column;
   gap: 8px;
    width: 100%;
+   position: relative;
 }
 
 .form-group label {
@@ -221,7 +224,7 @@
     padding: 12px !important;
   border-radius: 8px !important;
   border: 1px solid #D9D9D9 !important;
-  font-size: 14px !important;
+  font-size:12px  !important;
   transition: all 0.3s ease;
 }
 
@@ -432,11 +435,13 @@
      background:white;
      position: absolute;
     /* width: 25% !important; */
-     transform: translate3d(0,-5.2rem,0);
+     /* transform: translate3d(0,-5.2rem,0); */
      border: 1px solid rgba(0,0,0,0.05);
      z-index: 1000;
      max-height:100px !important;
      overflow-y: auto;
+     position: absolute;
+     top:4.5rem;
 }
 .legal-form-suggestions{
     width:50%;
@@ -477,7 +482,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .registration-container {
     margin: 10px;
     border-radius: 15px;
@@ -537,5 +542,263 @@
   .code-input {
     width: 180px;
     font-size: 1.3rem;
+  }
+} */
+
+
+/* === RESPONSIVE MOBILE SEULEMENT === */
+@media (max-width: 768px) {
+  .annonceur-registration {
+    padding: 0;
+  }
+
+  .step2_container1 {
+    padding: 15px !important;
+    gap: 15px;
+  }
+
+  .step-container {
+    margin-top: 0 !important;
+    padding: 0 10px;
+  }
+
+  .step-container h2 {
+    font-size: 1.3rem !important;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .step-description {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .step-content{
+    margin: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 25px !important;
+  } 
+
+  /* Progress Steps - Mobile */
+  .progress_container.internal {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .progress_container.internal .step {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  /* Form Sections - Mobile */
+  .form-section {
+    margin-bottom: 25px;
+    margin: auto !important;
+    margin-right:20px !important;
+  }
+
+  .form-section h3 {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  /* Form Rows - Passage en colonne */
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .form-group label {
+    font-size: 14px !important;
+  }
+
+  .form-group input {
+    padding: 14px !important;
+    font-size: 14px !important;
+    width: 100%;
+  }
+
+  /* Suggestions List - Mobile */
+  .suggestions_list1 {
+    position: fixed !important;
+    top: auto !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-height: 150px !important;
+    z-index: 10000;
+    border: 1px solid #E77131;
+  }
+
+  .legal-form-suggestions {
+    width: 100% !important;
+  }
+
+  .suggestions_list1 span {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* Radio Group - Mobile */
+  .radio-group {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .radio-option {
+    padding: 15px !important;
+    margin-bottom: 5px;
+  }
+
+  .radio-label {
+    font-size: 14px !important;
+  }
+
+  /* Activity Grid - Mobile */
+  .activity-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .activity-card {
+    padding: 15px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 15px;
+  }
+
+  .activity-name {
+    font-size: 14px;
+  }
+
+  /* Step Actions - Mobile */
+  .step-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-back,
+  .btn-continue {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    min-width: auto;
+  }
+
+  /* Error Messages - Mobile */
+  .error-message {
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* Legal Form Input - Mobile */
+  .legal-form-input {
+    width: 100%;
+  }
+
+  /* SIRET Input - Mobile */
+  .siret_number {
+    width: 100%;
+  }
+  .number1{
+    width: fit-content !important;
+    margin-right: 40px !important;
+  }
+
+  /* Code Input - Mobile */
+  .code-input {
+    width: 100%;
+    max-width: 280px;
+    font-size: 1.2rem;
+    padding: 12px;
+  }
+
+  /* Resend Section - Mobile */
+  .resend-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* Popup d'erreur - Mobile */
+  .role_error_sidebar.top_right {
+    left: 10px;
+    right: 10px;
+    transform: none;
+    text-align: center;
+    padding: 15px;
+  }
+}
+
+/* === TRÈS PETITS ÉCRANS === */
+@media (max-width: 480px) {
+  .step2_container1 {
+    padding: 10px !important;
+  }
+
+  .step-container h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .step-description {
+    font-size: 0.85rem;
+  }
+
+  .form-group input {
+    padding: 12px !important;
+    font-size: 13px !important;
+  }
+
+  .activity-card {
+    padding: 12px;
+  }
+
+  .btn-back,
+  .btn-continue {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .suggestions_list1 {
+    left: 5px !important;
+    right: 5px !important;
+  }
+}
+
+/* === ORIENTATION PAYSAGE MOBILE === */
+@media (max-width: 768px) and (orientation: landscape) {
+  .step2_container1 {
+    padding: 10px !important;
+  }
+
+  .suggestions_list1 {
+    max-height: 120px !important;
+  }
+
+  .form-row {
+    gap: 10px;
+  }
+
+  .step-actions {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .btn-back,
+  .btn-continue {
+    width: auto;
+    flex: 1;
   }
 }

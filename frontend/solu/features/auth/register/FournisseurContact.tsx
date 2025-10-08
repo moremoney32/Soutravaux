@@ -28,12 +28,40 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
     const [cp, setCp] = useState("");
     const [ville, setVille] = useState("");
     const [rue, setRue] = useState("");
+    const [showFonctionSuggestions, setShowFonctionSuggestions] = useState(false);
+    const [showAutreInput, setShowAutreInput] = useState(false);
+
+    const fonctionOptions = [
+    'Dirigeant',
+    'Assistant(e) de direction', 
+    'Commercial',
+    'Autre'
+];
 
     const handleInputChange = (field: keyof FournisseurData, value: string) => {
         onUpdate({ [field]: value });
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
+    };
+
+        // Gestion de la sélection de fonction
+    const handleSelectFonction = (fonction: string) => {
+        if (fonction === 'Autre') {
+            // Si "Autre" est sélectionné, on active le champ de précision
+            setShowAutreInput(true);
+            handleInputChange('contactPosition', '');
+        } else {
+            // Si une fonction prédéfinie est sélectionnée
+            setShowAutreInput(false);
+            handleInputChange('contactPosition', fonction);
+        }
+        setShowFonctionSuggestions(false);
+    };
+
+    // Gestion du champ "Autre"
+    const handleAutreInputChange = (value: string) => {
+        handleInputChange('contactPosition', value);
     };
 
     // Quand on choisit une suggestion SIRET
@@ -155,7 +183,7 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
             const result = await fetchData('registerFournisseur', 'POST', payload);
             
             if (result.status === 201) {
-                onShowSuccess(); // ⬅️ Appelle la fonction pour afficher la popup
+                onShowSuccess(); // Appelle la fonction pour afficher la popup
             } else {
                 throw new Error('Erreur lors de l\'envoi');
             }
@@ -196,12 +224,12 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
                 {/* Première ligne : SIRET et Raison sociale */}
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="siret">Numéro de SIRET</label>
+                        <label htmlFor="siret">Numéro de SIRET *</label>
                         <input 
                             type="text" 
                             placeholder="123456789" 
                             value={checkSiret}
-                            className="siret_number"
+                            className="siret_number1"
                             onChange={(e) => {
                                 setCheckSiret(e.target.value);
                                 if (!isSelectingSearch) {
@@ -246,17 +274,17 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
 
                 {/* Deuxième ligne : SIREN et Adresse */}
                 <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="siren">SIREN *</label>
+                   <div className="form-group">
+                        <label htmlFor="postalCode">Code postal *</label>
                         <input
                             type="text"
-                            id="siren"
-                            value={data.siren || ''}
-                            onChange={(e) => handleInputChange('siren', e.target.value)}
-                            placeholder="9 chiffres"
-                            className={errors.siren ? 'error' : ''}
+                            id="postalCode"
+                            value={cp || ''}
+                            //  onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                            placeholder="75001"
+                            className={errors.postalCode ? 'error' : ''}
                         />
-                        {errors.siren && <span className="error-message">{errors.siren}</span>}
+                          {/* {errors.postalCode && <span className="error-message">{errors.postalCode}</span>}   */}
                     </div>
                     
                     <div className="form-group">
@@ -265,39 +293,27 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
                             type="text"
                             id="address"
                             value={data.address || ''}
-                            onChange={(e) => handleInputChange('address', e.target.value)}
+                         onChange={(e) => handleInputChange('address', e.target.value)}
                             placeholder="Adresse complète"
                             className={errors.address ? 'error' : ''}
                         />
-                        {errors.address && <span className="error-message">{errors.address}</span>}
+                         {errors.address && <span className="error-message">{errors.address}</span>} 
                     </div>
                 </div>
 
                 {/* Troisième ligne : Code postal et Ville */}
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="postalCode">Code postal *</label>
-                        <input
-                            type="text"
-                            id="postalCode"
-                            value={cp}
-                            // onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                            placeholder="75001"
-                            className={errors.postalCode ? 'error' : ''}
-                        />
-                        {/* {errors.postalCode && <span className="error-message">{errors.postalCode}</span>} */}
-                    </div>
-                    <div className="form-group">
                         <label htmlFor="city">Ville *</label>
                         <input
                             type="text"
                             id="city"
-                            value={ville}
-                            // onChange={(e) => handleInputChange('city', e.target.value)}
+                            value={ville || ''}
+                        //  onChange={(e) => handleInputChange('city', e.target.value)}
                             placeholder="Paris"
                             className={errors.city ? 'error' : ''}
                         />
-                        {/* {errors.city && <span className="error-message">{errors.city}</span>} */}
+                         {/* {errors.city && <span className="error-message">{errors.city}</span>}  */}
                     </div>
                 </div>
             </div>
@@ -359,7 +375,7 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
                     </div>
                 </div>
 
-                <div className="form-row">
+                {/* <div className="form-row">
                     <div className="form-group">
                         <label htmlFor="contactPosition">Fonction *</label>
                         <input
@@ -372,6 +388,51 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
                         />
                         {errors.contactPosition && <span className="error-message">{errors.contactPosition}</span>}
                     </div>
+                </div> */}
+
+                 {/* NOUVEAU : Sélecteur de fonction */}
+                <div className="form-row">
+                    <div className="form-group">
+                        <label htmlFor="contactPosition">Fonction *</label>
+                        <input
+                            type="text"
+                            id="contactPosition"
+                            value={data.contactPosition || ''}
+                            placeholder="Sélectionnez votre fonction"
+                            readOnly
+                            className={`fonction-input ${errors.contactPosition ? 'error' : ''}`}
+                            onClick={() => setShowFonctionSuggestions(!showFonctionSuggestions)}
+                        />
+                        {showFonctionSuggestions && (
+                            <div className="suggestions_list1 fonction-suggestions">
+                                {fonctionOptions.map((fonction, idx) => (
+                                    <span
+                                        key={idx}
+                                        className="suggestion_item1"
+                                        onClick={() => handleSelectFonction(fonction)}
+                                    >
+                                        {fonction}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        {errors.contactPosition && <span className="error-message">{errors.contactPosition}</span>}
+                    </div>
+                    
+                    {/* Champ "Autre" qui apparaît conditionnellement */}
+                    {showAutreInput && (
+                        <div className="form-group">
+                            <label htmlFor="autreFonction">Précisez votre fonction *</label>
+                            <input
+                                type="text"
+                                id="autreFonction"
+                                value={data.contactPosition || ''}
+                                onChange={(e) => handleAutreInputChange(e.target.value)}
+                                placeholder="Ex: Responsable marketing, Chef de projet..."
+                                className={errors.contactPosition ? 'error' : ''}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className="form-row">

@@ -18,16 +18,16 @@ const activities = [
   'Secrétariat',
   'Service aux entreprises',
   'Services informatiques',
-  'Autre'
+//   'Autre'
 ];
 
 const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext, onPrev }) => {
   const handleActivitySelect = (activity: string) => {
-    onUpdate({ activityAnnonceur: activity }); // ← CORRIGÉ ICI
+    onUpdate({ activityAnnonceur: activity });
   };
 
   const handleContinue = () => {
-    if (data.activityAnnonceur) { // ← CORRIGÉ ICI
+    if (data.activityAnnonceur) { 
       onNext();
     }
   };
@@ -43,7 +43,7 @@ const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext, o
         {activities.map((activity) => (
           <div
             key={activity}
-            className={`activity-card ${data.activityAnnonceur === activity ? 'selected' : ''}`} // ← CORRIGÉ ICI
+            className={`activity-card ${data.activityAnnonceur === activity ? 'selected' : ''}`} 
             onClick={() => handleActivitySelect(activity)}
           >
             <div className="activity-icon">
@@ -64,7 +64,7 @@ const Step1Activity: React.FC<Step1ActivityProps> = ({ data, onUpdate, onNext, o
         <button
           className="btn-continue"
           onClick={handleContinue}
-          disabled={!data.activityAnnonceur} // ← CORRIGÉ ICI
+          disabled={!data.activityAnnonceur} 
         >
           Continuer
         </button>
@@ -83,8 +83,8 @@ const getActivityIcon = (activity: string): string => {
     'Quincaillerie': '🔧',
     'Secrétariat': '📝',
     'Service aux entreprises': '🏢',
-    'Services informatiques': '💻',
-    'Autre': '📦'
+    'Services informatiques': '💻'
+    // 'Autre': '📦'
   };
   return icons[activity] || '📦';
 };

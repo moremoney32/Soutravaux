@@ -68,6 +68,7 @@ function Register() {
     const [rue, setRue] = useState("");
     const [annonceurInternalStep, setAnnonceurInternalStep] = useState(1);
     const [fournisseurInternalStep, setFournisseurInternalStep] = useState(1);
+    console.log(companyName)
 
     // fonction pour formater mm:ss
 
@@ -130,8 +131,11 @@ function Register() {
                     role: data.role,
                     email: data.email,
                     prenom: data.prenom,
-                    name: companyName,
-                    address: address, // vient de la suggestion
+                    // name: companyName,
+                    // address: address, // vient de la suggestion
+                    name: data.name, //  Utilisez data.name au lieu de companyName
+                    address: data.address, //  Utilisez data.address
+
                     phonenumber: data.phonenumber,
                     size: selectedSize,
                     legal_form: data.legal_form || "Inconnu",
@@ -161,6 +165,7 @@ function Register() {
                     capital: data.capital ? parseFloat(data.capital) : null
                 };
             }
+            console.log(payload)
             const result = await fetchData('register', 'POST', payload);
             if (result.status === 201) {
                 setDirection("next");
@@ -232,14 +237,14 @@ function Register() {
     ];
     const sizes = [
         "Je suis seul",
-        "2 à 5 Personnes",
-        "6 à 10 Personnes",
+        "2 à 5 personnes",
+        "6 à 10 personnes",
         "Plus de 10 personnes",
     ];
     const newSizes = [
         "Je ne sais pas encore",
         "Je serais seul",
-        "2 à 5 Personnes",
+        "2 à 5 \personnes",
         "Plus de 5 personnes",
     ];
 
@@ -296,6 +301,36 @@ function Register() {
         setSuggestions([]); // on cache la liste
         setValue("address", ` ${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
     };
+
+    //Synchronisation entre React Hook Form et les états React
+    useEffect(() => {
+        if (companyStatus === "existante") {
+            // Quand le SIRET change, réinitialiser le nom si nécessaire
+            const currentSiret = watch("siret");
+            if (currentSiret !== checkSiret) {
+                setCheckSiret(currentSiret || "");
+            }
+        }
+    }, [watch("siret"), companyStatus, checkSiret]);
+
+    useEffect(() => {
+        if (companyStatus === "existante") {
+            // Réinitialiser les champs pour une entreprise existante
+            setValue("name", "");
+            setValue("siret", "");
+            setValue("address", "");
+            setCheckSiret("");
+            setCp("");
+            setVille("");
+            setRue("");
+            setAddress("");
+        } else {
+            // Réinitialiser pour une nouvelle entreprise
+            setValue("name", "");
+            setValue("siret", "");
+            setValue("address", "");
+        }
+    }, [companyStatus, setValue]);
 
 
 
@@ -541,18 +576,28 @@ function Register() {
                                             </div>
                                             {companyStatus === "existante" && (
                                                 <div className="sous_form_group">
-                                                    <label htmlFor="siren">Numéro de SIRET</label>
+                                                    <label htmlFor="siren" className="label">Numéro de SIRET</label>
                                                     <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number"
-                                                        onChange={(e) => {
-                                                            setCheckSiret(e.target.value);
-                                                            if (!isSelectingSearch) {
+
+
+                                                        {...register("siret", {
+                                                            onChange: (e) => {
+                                                                const value = e.target.value;
+                                                                setCheckSiret(value);
                                                                 setIsSelectingSearch(true);
+
+                                                                // Réinitialiser les champs liés si SIRET change manuellement
+                                                                if (value.length < 3) {
+                                                                    setValue("name", "");
+                                                                    setAddress("");
+                                                                    setCp("");
+                                                                    setVille("");
+                                                                    setRue("");
+                                                                }
                                                             }
-                                                            // setValue("siret", e.target.value, { shouldValidate: true });
-                                                        }} />
-                                                    {/* {errors.siret && (
-                                            <span className="error">{errors.siret.message as string}</span>
-                                        )} */}
+                                                        })}
+                                                    />
+
                                                     {suggestions.length > 0 && companyStatus === "existante" && (
                                                         <div className="suggestions_list">
                                                             {suggestions.map((company, idx) => (
@@ -578,19 +623,17 @@ function Register() {
                                             <div className="form_group_column">
                                                 {companyStatus === "existante" ? (<div className="sous_form_group">
                                                     <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
-                                                    <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input" readOnly />
+                                                    <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input"  {...register("name")} readOnly />
                                                 </div>) : (<div className="sous_form_group">
                                                     <label htmlFor="nom_entreprise">Nom de l'entreprise</label>
                                                     <input type="text" placeholder="Exemple:Solutravo" className="suggestion_item_input"
                                                         {...register("name", { required: "Veuillez entrer le nom adresse de votre entreprise" })}
-                                                        //  onChange={(e)=>setCompanyName(e.target.value)}
                                                         onFocus={handleFocusCompany}
                                                         onBlur={handleBlurCompany}
                                                         style={{ borderColor: inputBorderColorCompany }} />
                                                 </div>)}
 
                                             </div>
-
                                         </>
                                     )}
 
@@ -842,11 +885,11 @@ function Register() {
                         />
                     );
                 } else if (selectedRole === "Fournisseur") {
-                    return(<FournisseurRegistration
-                     currentStep={currentStep}
-                            setCurrentStep={setCurrentStep}
-                             internalStep={fournisseurInternalStep}
-      setInternalStep={setFournisseurInternalStep}
+                    return (<FournisseurRegistration
+                        currentStep={currentStep}
+                        setCurrentStep={setCurrentStep}
+                        internalStep={fournisseurInternalStep}
+                        setInternalStep={setFournisseurInternalStep}
                     />)
                 }
                 return null;
@@ -1212,18 +1255,18 @@ function Register() {
                     </div>
                 )}
                 {selectedRole?.toLowerCase() === "fournisseur" && (
-    <div className="progress_container">
-        <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
-            Vous êtes ?
-        </div>
-        <div className={`step ${currentStep >= 2 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 1 ? "active" : "")}`}>
-            Secteur d'activité
-        </div>
-        <div className={`step ${currentStep >= 3 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 2 ? "active" : "")}`}>
-            Termine
-        </div>
-    </div>
-)}
+                    <div className="progress_container">
+                        <div className={`step ${currentStep >= 1 ? "active" : ""}`}>
+                            Vous êtes ?
+                        </div>
+                        <div className={`step ${currentStep >= 2 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 1 ? "active" : "")}`}>
+                            Secteur d'activité
+                        </div>
+                        <div className={`step ${currentStep >= 3 ? "active" : (currentStep === 2 && fournisseurInternalStep >= 2 ? "active" : "")}`}>
+                            Termine
+                        </div>
+                    </div>
+                )}
 
                 {/* AnimatePresence pour transition douce */}
                 <AnimatePresence mode="wait" custom={direction}>

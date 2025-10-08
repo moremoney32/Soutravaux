@@ -92,18 +92,19 @@ const FournisseurRegistration: React.FC<FournisseurRegistrationProps> = ({
     
 
     const handleClosePopup = () => {
-        setShowSuccessPopup(false);
         // Redirige vers l'étape 1 de register
-        setCurrentStep(1);
-        setInternalStep(1);
+        // setCurrentStep(1);
+        // setInternalStep(1);
+        const redirectUrl ="https://staging.solutravo-compta.fr"
+        return   window.location.href = redirectUrl, setShowSuccessPopup(false);
     };
 
     const handleCompleteProfile = () => {
         setLoadingComplete(true);
-        // Ici vous pouvez ajouter une logique supplémentaire si nécessaire
+       
         setTimeout(() => {
             setLoadingComplete(false);
-            handleClosePopup();
+             handleClosePopup();
         }, 1000);
     };
 
