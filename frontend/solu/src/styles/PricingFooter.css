@@ -3,6 +3,7 @@
   padding: 0 0 40px;
   position: relative;
   overflow: hidden;
+  margin-top:60px !important;
 }
 
 .pricing-footer::before {

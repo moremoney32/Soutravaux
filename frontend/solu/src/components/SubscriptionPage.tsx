@@ -28,8 +28,8 @@ const getIconComponent = (iconName?: string) => {
   return iconMap[iconName as keyof typeof iconMap] || <Building2 className="plan-icon" />;
 };
 
-const getDefaultGradient = (price: string) => {
-  const priceNum = parseFloat(price);
+const getDefaultGradient = (price: string | number) => {
+   const priceNum = Number(price);
   if (priceNum === 0) return 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
   if (priceNum < 50) return 'linear-gradient(135deg, #E77131 0%, #ff8a50 100%)';
   return 'linear-gradient(135deg, #505050 0%, #737373 100%)';
@@ -60,7 +60,7 @@ const transformPlansForFooter = (plans: Plan[]): any[] => {
       id: plan.id,
       title: plan.name,
       subtitle: getSubtitle(),
-      price: plan.price,
+      price: plan.price.toString(),
       period: plan.period || '/mois',
       description: plan.description,
       targetAudience: plan.target_audience || 'Professionnels du secteur',

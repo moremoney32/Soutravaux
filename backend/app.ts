@@ -5,6 +5,8 @@ import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
 import {errorHandler} from "./src/middleware/errorHandler";
+import { setupSwagger } from "./src/config/swagger";
+
 
 dotenv.config({ path: "./.env" });
 
@@ -71,7 +73,12 @@ app.get("/", (_req: Request, res: Response) => {
 // Routes API
 app.use("/api", routes);
 
+//swagger
+setupSwagger(app);
+
 // Middleware global erreurs
 app.use(errorHandler);
+
+
 
 export default app;
