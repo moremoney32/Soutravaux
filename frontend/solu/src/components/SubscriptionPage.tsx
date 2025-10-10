@@ -357,8 +357,15 @@ const SubscriptionPage: React.FC = () => {
           )}
         </AnimatePresence>
 
+      </main>
 
-        {isAdminMode && (
+         {/* {!isAdminMode &&(<PricingFooter/>)}   */}
+
+           {/* {!isAdminMode && footerPlans.length > 0 && ( */}
+        <PricingFooter plans={footerPlans} />
+
+
+         {isAdminMode && (
           <AdminPanel
             plans={plans}
             onUpdatePlan={handleUpdatePlan}
@@ -370,12 +377,6 @@ const SubscriptionPage: React.FC = () => {
             setPageSubtitle={setPageSubtitle}
           />
         )}
-      </main>
-
-         {/* {!isAdminMode &&(<PricingFooter/>)}   */}
-
-           {/* {!isAdminMode && footerPlans.length > 0 && ( */}
-        <PricingFooter plans={footerPlans} />
       {/* )}  */}
 
       {loading && (

@@ -154,7 +154,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         }
         
         if (isDisabled) {
-            return 'Indisponible'; // 🚫 Texte pour gratuit quand on a un payant
+            return 'Indisponible'; // Texte pour gratuit quand on a un payant
         }
         
         return 'Activer cette Offre';

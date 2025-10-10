@@ -65,6 +65,7 @@ import pool from "../config/db";
 
 
 // // DELETE /api/plans/:id
+// DELETE - Supprimer un plan
 export const deletePlan = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -75,16 +76,26 @@ export const deletePlan = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Plan introuvable" });
     }
 
+    // Vérifier si le plan est utilisé par des sociétés
+    const [societeRows]: any = await pool.query("SELECT COUNT(*) as count FROM societes WHERE plan_id = ?", [id]);
+    if (societeRows[0].count > 0) {
+      return res.status(400).json({ 
+        error: "Impossible de supprimer ce plan car il est utilisé par des sociétés" 
+      });
+    }
+
     // Supprime le plan
     await pool.query("DELETE FROM plans WHERE id = ?", [id]);
 
-    return res.json({ message: "Plan supprimé avec succès" });
+    return res.json({ 
+      message: "Plan supprimé avec succès",
+      deletedId: id 
+    });
   } catch (err) {
     console.error("Erreur suppression plan:", err);
-    return res.status(500).json({ error: "Erreur serveur" });
+    return res.status(500).json({ error: "Erreur serveur lors de la suppression" });
   }
 };
-
 export const GetPlansByRole = async (req: Request, res: Response) => {
   try {
     const { role } = req.query;
