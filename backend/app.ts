@@ -5,7 +5,7 @@ import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
 import {errorHandler} from "./src/middleware/errorHandler";
-// import { setupSwagger } from "./src/config/swagger";
+ import { setupSwagger } from "./src/config/swagger";
 
 
 dotenv.config({ path: "./.env" });
@@ -35,7 +35,8 @@ const allowedOrigins = [
   "http://127.0.0.1:5500",
   "https://staging.solutravo-compta.fr",
    "http://localhost:5174",
-   "http://localhost:3000"
+   "http://localhost:3000",
+   "https://solutravo.zeta-app.fr",
 ];
 
 const corsOptions: CorsOptions = {
@@ -74,7 +75,7 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api", routes);
 
 //swagger
-// setupSwagger(app);
+ setupSwagger(app);
 
 // Middleware global erreurs
 app.use(errorHandler);
