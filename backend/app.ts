@@ -74,7 +74,7 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api", routes);
 
 //swagger
-setupSwagger(app);
+// setupSwagger(app);
 
 // Middleware global erreurs
 app.use(errorHandler);
