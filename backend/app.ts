@@ -5,7 +5,7 @@ import cors, { type CorsOptions } from "cors";
 import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
 import {errorHandler} from "./src/middleware/errorHandler";
-import { setupSwagger } from "./src/config/swagger";
+// import { setupSwagger } from "./src/config/swagger";
 
 
 dotenv.config({ path: "./.env" });
