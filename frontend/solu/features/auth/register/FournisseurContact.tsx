@@ -224,7 +224,7 @@ const Step2ContactForm: React.FC<Step2ContactFormProps> = ({
                 {/* Première ligne : SIRET et Raison sociale */}
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="siret">Numéro de SIRET *</label>
+                        <label htmlFor="siret">Numéro de SIRET/SIREN * </label>
                         <input 
                             type="text" 
                             placeholder="123456789" 

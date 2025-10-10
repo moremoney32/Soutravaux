@@ -327,6 +327,9 @@ color:#ffffff;
 .feature-input input {
   flex: 1;
 }
+a{
+    text-decoration: none;
+}
 
 .remove-feature-btn {
   background: #e74c3c;
@@ -408,7 +411,7 @@ color:#ffffff;
 
 
 /* Responsive Design */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .admin-panel {
     padding: 40px 0;
   }
@@ -492,4 +495,274 @@ color:#ffffff;
 
 a{
     text-decoration: none;
+} */
+
+
+@media (max-width: 1200px) {
+  .admin-panel {
+    padding: 50px 20px;
+  }
+  
+  .admin-content,
+  .settings-section {
+    max-width: 100%;
+    gap: 30px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .admin-panel {
+    padding: 40px 15px;
+    margin-top: 50px;
+  }
+  
+  .admin-header {
+    margin-bottom: 40px;
+  }
+  
+  .admin-header h2 {
+    font-size: 2.2rem;
+  }
+  
+  .admin-header p {
+    font-size: 1.1rem;
+  }
+  
+  .plans-list,
+  .edit-form {
+    padding: 25px;
+  }
+  a{
+    text-decoration: none;
+}
+  
+  .form-row {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-panel {
+    padding: 30px 12px;
+    margin-top: 40px;
+  }
+  
+  .admin-header h2 {
+    font-size: 2rem;
+  }
+  
+  .admin-header p {
+    font-size: 1rem;
+  }
+  
+  .plans-list {
+    padding: 20px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .list-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .add-btn {
+    justify-content: center;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .edit-form {
+    padding: 25px 20px;
+  }
+  
+  .form-header h3 {
+    font-size: 1.8rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .cancel-btn, 
+  .save-btn,
+  .save-btn1 {
+    min-width: 100%;
+    padding: 12px 20px;
+  }
+  
+  .plan-actions {
+    flex-direction: column;
+  }
+  
+  .snackbar {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-panel {
+    padding: 25px 10px;
+    margin-top: 35px;
+  }
+  
+  .admin-header {
+    margin-bottom: 30px;
+  }
+  
+  .admin-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .admin-header p {
+    font-size: 0.9rem;
+  }
+  
+  .plans-list {
+    padding: 15px;
+  }
+  
+  .plan-item {
+    padding: 20px;
+  }
+  
+  .plan-info h4 {
+    font-size: 1.2rem;
+  }
+  
+  .plan-info p {
+    font-size: 1rem;
+  }
+  
+  .edit-form {
+    padding: 20px 15px;
+  }
+  
+  .form-header h3 {
+    font-size: 1.6rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .features-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .add-feature-btn {
+    align-self: flex-start;
+  }
+  
+  .feature-input {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .remove-feature-btn {
+    align-self: flex-end;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 400px) {
+  .admin-panel {
+    padding: 20px 8px;
+  }
+  
+  .admin-header h2 {
+    font-size: 1.6rem;
+  }
+  
+  .plans-list,
+  .edit-form {
+    padding: 12px;
+  }
+  
+  .plan-item {
+    padding: 15px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .cancel-btn, 
+  .save-btn,
+  .save-btn1 {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .add-btn,
+  .edit-btn,
+  .delete-btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Gestion du mode paysage sur mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .admin-panel {
+    padding: 20px 15px;
+    margin-top: 40px;
+  }
+  
+  .admin-header {
+    margin-bottom: 25px;
+  }
+  
+  .plans-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+/* Support de l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .plan-item,
+  .add-btn,
+  .edit-btn,
+  .delete-btn,
+  .cancel-btn,
+  .save-btn,
+  .add-feature-btn,
+  .remove-feature-btn {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Support du mode sombre (si applicable) */
+@media (prefers-color-scheme: dark) {
+  .admin-panel {
+    background: #1a1a1a;
+  }
 }

@@ -10,6 +10,18 @@ export interface Plan {
   popular: boolean;
   color: string;
   stripe_link: string;
+
+   // 🎯 NOUVELLES PROPRIÉTÉS POUR LE FOOTER
+    subtitle?: string;
+    target_audience?: string;
+    key_benefits?: string[];
+    detailed_features?: {
+        category: string;
+        features: string[];
+    }[];
+    why_choose?: string;
+    icon_name?: string;
+    gradient?: string;
 }
 
 

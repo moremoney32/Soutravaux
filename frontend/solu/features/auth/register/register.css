@@ -797,18 +797,17 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
      display: none; 
   }
     .composant_dynamique{
-    /* flex: 1; */
-    display: flex;
-    flex-direction: column;
-     padding-left: 40px !important;
-    padding-right: 40px !important;
+     /* flex: 1;  */
+     display: flex !important;
+    flex-direction: column !important;
+     /* padding-left:20px !important; */
+    /* padding-right: 40px !important; */
     gap: 15px;
-     /* overflow-y: 0; */
-    min-height:140vh !important;
-    margin:0 auto ;
+    min-width: 100%;
+    max-height: 100vh;
     padding-top: 25px;
-    width: 100%;
-    /* overflow-y: auto !important; */
+    padding-bottom: 40px;
+     overflow-y: auto !important; 
   } 
   .siret_number{
   font-size: 12px !important;
@@ -817,9 +816,7 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   margin: auto !important;
 
 }
-.label{
-  margin:0 auto;
-}
+
 
   /* .role_error_sidebar.top_right {
   position: fixed !important;
@@ -887,15 +884,13 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   }
 
   /* Partie droite - Centrage */
-  .composant_dynamique {
-    padding: 30px 20px !important;
-    /* justify-content: flex-start; */
-  }
 
   .register_header {
-    justify-content: center;
-    text-align: center;
     margin-bottom: 10px;
+    width: 100% !important;
+    display: flex;
+    justify-content: center !important;
+    transform: translate3d(-30px,0,0) !important;
   }
 
   .register_title {
@@ -907,6 +902,7 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     margin-left: 0;
     text-align: center;
     font-size: 14px;
+    transform: translate3d(-15px,0,0) !important;
   }
 
   /* Progress steps - Centré */
@@ -915,7 +911,7 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     flex-direction: row;
     justify-content: center;
     gap: 15px;
-    margin: 20px 0;
+   margin-right: 40px !important;
     flex-wrap: wrap;
   }
 
@@ -935,11 +931,10 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   .roles_container {
     display: grid;
     grid-template-columns: 1fr;
-  transform:translate3d(30px,0,0);
+  transform:translate3d(25px,0,0) !important;
     gap: 12px;
-    justify-content: center !important;
+    /* justify-content: center !important; */
     padding: 10px !important;
-    margin: auto 0 !important;
     
   }
 
@@ -954,45 +949,78 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     max-width: 400px;
     margin: 0 auto;
   }
+  .size_btn{
+    width: 70%  !important;
+    transform: translate3d(40px,0,0);
+  }
 
   .register_question,
   .register_question1 {
     text-align: center;
     font-size: 16px;
     margin-bottom: 15px;
-  }
+    width: 100% !important;
+    transform: translate3d(-20px,0,0)
+    }
 
   .choice_container {
     justify-content: center;
     gap: 10px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    transform: translate3d(-10px,0,0);
   }
 
   .size_container {
     flex-direction: column;
     gap: 10px;
-    max-width: 300px;
-    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
   }
 
   .form_group {
     grid-template-columns: 1fr;
     gap: 15px;
-    max-width: 400px;
-    margin: 0 auto;
   }
 
   .form_group_column {
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
-  .sous_form_group {
     width: 100%;
-    margin: auto;
     display: flex;
     flex-direction: column;
     gap: 7px;
-    justify-content: center !important;
+    margin-top:10px;
+    
+  }
+   .form_group_column input{
+    width: 75% !important;
+    box-sizing: border-box;
+    transform: translate3d(32px,0,0) !important;
+    
+  }
+  .form_group_column label{
+     transform: translate3d(32px,0,0) !important;
+    
+  }
+
+  .sous_form_group_12{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top:10px;
+  }
+
+    .sous_form_group_12 input{
+     width: 75% !important;
+    box-sizing: border-box;
+    transform: translate3d(-10px,0,0);
+  }
+
+  .sous_form_group_12 label{
+    transform: translate3d(32px,0,0)
   }
   .sous_form_group_password{
     width:80% !important;
@@ -1005,18 +1033,20 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
   .sous_form_group_password label{
     font-size: 14px;
   }
-
-  .sous_form_group input {
-     width: 100%; 
+  .form_group .sous_form_group input {
+     width: 75% !important;
     box-sizing: border-box;
+    transform: translate3d(32px,0,0); }
+ .form_group .sous_form_group label{
+     transform: translate3d(32px,0,0)
   }
 
   /* Radio group - Centré */
   .radio_group {
-    flex-direction: column;
+   display:flex;
+   flex-wrap: wrap;
     gap: 10px;
-    max-width: 400px;
-    margin: 0 auto;
+   transform: translate3d(10px,0,0)
   }
 
   .radio_group label {
@@ -1036,14 +1066,16 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     flex-direction: column;
     gap: 15px;
     margin-top: 30px;
-    max-width: 400px;
+    width: 100%;
+    /* max-width: 400px;
     margin-left: auto;
-    margin-right: auto;
+    margin-right: auto; */
   }
 
   .buttons_container.single {
     margin-top: 30px;
     justify-content: center;
+    width: 100% !important;
   }
 
   #sous_buttons_container {
@@ -1054,17 +1086,37 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     justify-content: center !important;
     /* margin: 20px auto 0 auto; */
   }
+  .choice_btn{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+  }
 
-  .register_btn,
   .register_btn1 {
-    /* width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    text-align: center; */
-    padding: 20px;
+    padding:10px;
     padding-left: 40px;
     padding-right: 40px;
     text-align: center;
+    width:70%;
+    transform: translate3d(-20px,0,0);
+  }
+  .register_btn{
+     padding:15px;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+    width:70%;
+    transform: translate3d(-20px,0,0);
+
+  }
+  .register_btn_1{
+     padding:10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+    width:50%;
+    transform: translate3d(-20px,0,0);
+
   }
 
   /* OTP - Centré */
@@ -1096,13 +1148,11 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
      position: fixed !important;
     left: 20px !important;
     right: 20px !important;
+    bottom:20px;
     width: auto !important;
     max-height: 150px !important;
     z-index: 10000;
     transform: none !important;
-   /* top: 100px !important; */
-    /* top: auto !important;
-    bottom: 20px !important; */
   }
 
   .legal-form-suggestions {
@@ -1127,9 +1177,9 @@ background: linear-gradient(90deg, #E77131, #FEA16D);
     width: 300px;
     background: white;
     z-index: 10;
-    top: 70%;
-    left:30px;
-    right:30px;
+    top: 20%;
+    left:15px;
+    right:30px !important;
     /* left: 50%; */
     transform: translate(-50%, -50%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

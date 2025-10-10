@@ -51,10 +51,51 @@ if (societe.plan_id !== 1) {
   subscription = plans.find((p: any) => p.is_default === 1) || null;
 }
 
-const plansParsed = plans.map((p: any) => ({
-  ...p,
-  features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
-}));
+// const plansParsed = plans.map((p: any) => ({
+//   ...p,
+//   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
+// }));
+
+// Dans CheckSubscription - s'assurer que les nouvelles colonnes sont parsées
+// const plansParsed = plans.map((p: any) => ({
+//   ...p,
+//   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features,
+//   key_benefits: typeof p.key_benefits === "string" ? JSON.parse(p.key_benefits) : p.key_benefits,
+//   detailed_features: typeof p.detailed_features === "string" ? JSON.parse(p.detailed_features) : p.detailed_features
+// }));
+const plansParsed = plans.map((p: any) => {
+            try {
+                const parsedPlan = {
+                    ...p,
+                    features: safeJsonParse(p.features, []),
+                    key_benefits: safeJsonParse(p.key_benefits, ['Solution complète', 'Support inclus']),
+                    detailed_features: safeJsonParse(p.detailed_features, [{
+                        category: 'Fonctionnalités principales',
+                        features: safeJsonParse(p.features, [])
+                    }])
+                };
+                
+                console.log(`📄 Plan ${p.name} - features:`, parsedPlan.features?.length || 0, 'éléments');
+                console.log(`📄 Plan ${p.name} - key_benefits:`, parsedPlan.key_benefits?.length || 0, 'éléments');
+                console.log(`📄 Plan ${p.name} - detailed_features:`, parsedPlan.detailed_features?.length || 0, 'catégories');
+                
+                return parsedPlan;
+            } catch (error) {
+                console.error(`❌ Erreur parsing plan ${p.name}:`, error);
+                // Retourner le plan avec des valeurs par défaut en cas d'erreur
+                return {
+                    ...p,
+                    features: [],
+                    key_benefits: ['Solution complète', 'Support inclus'],
+                    detailed_features: [{
+                        category: 'Fonctionnalités principales',
+                        features: []
+                    }]
+                };
+            }
+        });
+
+
     console.log("https://frontend.staging.solutravo-compta.fr/subscription")
 
     // 4 Retourner la réponse
@@ -70,4 +111,17 @@ const plansParsed = plans.map((p: any) => ({
     console.error(err);
     return res.status(500).json({ error: "Erreur interne serveur" });
   }
+};
+// Fonction helper pour parser JSON en toute sécurité
+const safeJsonParse = (str: any, defaultValue: any) => {
+    if (!str) return defaultValue;
+    if (typeof str === 'object') return str; // Déjà parsé
+    if (typeof str !== 'string') return defaultValue;
+    
+    try {
+        return JSON.parse(str);
+    } catch (error) {
+        console.warn("❌ Erreur parsing JSON:", str, "-> utilisation valeur par défaut");
+        return defaultValue;
+    }
 };

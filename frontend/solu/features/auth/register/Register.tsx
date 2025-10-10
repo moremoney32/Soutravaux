@@ -575,7 +575,7 @@ function Register() {
                                                 )))}
                                             </div>
                                             {companyStatus === "existante" && (
-                                                <div className="sous_form_group">
+                                                <div className="sous_form_group sous_form_group_12">
                                                     <label htmlFor="siren" className="label">Numéro de SIRET</label>
                                                     <input type="text" placeholder="123456789" value={checkSiret} {...register("siret")} className="siret_number"
 
@@ -806,7 +806,6 @@ function Register() {
                                 </motion.div>
                             </AnimatePresence>
 
-
                             <div id="sous_buttons_container">
                                 {subStep === 1 ? (
                                     <>
@@ -822,7 +821,7 @@ function Register() {
                                         </button>
                                         <span
 
-                                            className="register_btn"
+                                            className="register_btn register_btn_1"
                                             onClick={handleNextStep1}
                                         >
                                             Suivant
