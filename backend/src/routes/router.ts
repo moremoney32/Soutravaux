@@ -13,6 +13,7 @@ router.post("/verifyCode", UserControllersVerifyCode);
  router.post("/check_subscription", CheckSubscription);
 router.post("/register/complete", completeController);
 router.post("/users/resend-code", resendCodeController);
+
 router.get("/entreprises", SearchCompanies);
 router.get("/plans", GetPlansByRole);
 router.put("/plans/:id", updatePlan);
@@ -20,6 +21,591 @@ router.post("/plans", createPlan);
 router.delete("/plans/:id", deletePlan);
 router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
+
+
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Inscription d'un nouvel utilisateur
+ *     description: |
+ *       Crée un nouveau compte utilisateur avec envoi d'un code OTP par email.
+ *       Processus en 3 étapes : 
+ *       1. Inscription → 2. Vérification OTP → 3. Définition du mot de passe
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserRegisterInput'
+ *     responses:
+ *       201:
+ *         description: Inscription réussie, code OTP envoyé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Inscription réussie, code envoyé"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     email:
+ *                       type: string
+ *                       example: "john.doe@example.com"
+ *       400:
+ *         description: Données manquantes ou invalides
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Email ou SIRET déjà utilisé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       422:
+ *         description: Email invalide
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erreur serveur interne
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post("/register", UserControllers);
+
+/**
+ * @swagger
+ * /api/verifyCode:
+ *   post:
+ *     summary: Vérification du code OTP
+ *     description: Vérifie le code OTP envoyé par email pour valider l'inscription
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/VerifyInput'
+ *     responses:
+ *       200:
+ *         description: Code vérifié avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Code vérifié avec succès"
+ *       400:
+ *         description: Code invalide ou expiré
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post("/verifyCode", UserControllersVerifyCode);
+
+/**
+ * @swagger
+ * /api/register/complete:
+ *   post:
+ *     summary: Finalisation de l'inscription
+ *     description: Définit le mot de passe final après vérification OTP réussie
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CompleteRegistrationInput'
+ *     responses:
+ *       200:
+ *         description: Inscription complétée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Inscription complétée. Vous pouvez vous connecter."
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: "john.doe@example.com"
+ *                     prenom:
+ *                       type: string
+ *                       example: "John"
+ *                 token:
+ *                   type: string
+ *                   description: JWT token d'authentification
+ *       410:
+ *         description: Compte non vérifié (OTP manquant)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       422:
+ *         description: Mot de passe trop faible
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post("/register/complete", completeController);
+/**
+ * @swagger
+ * /api/users/resend-code:
+ *   post:
+ *     summary: Renvoi du code OTP
+ *     description: Envoie un nouveau code OTP par email
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "john.doe@example.com"
+ *     responses:
+ *       200:
+ *         description: Nouveau code envoyé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Nouveau code envoyé par email"
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     email:
+ *                       type: string
+ *                       example: "john.doe@example.com"
+ *       404:
+ *         description: Utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       400:
+ *         description: Utilisateur déjà vérifié
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post("/users/resend-code", resendCodeController);
+/**
+ * @swagger
+ * /api/check_subscription:
+ *   post:
+ *     summary: Vérification de l'abonnement utilisateur
+ *     description: |
+ *       Récupère les informations d'abonnement d'un utilisateur, le plan actif et tous les plans disponibles pour son rôle.
+ *       Cette route est utilisée pour afficher les abonnements dans l'interface utilisateur.
+ *     tags:
+ *       - Subscriptions
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SubscriptionCheckInput'
+ *           examples:
+ *             example1:
+ *               summary: Exemple de requête
+ *               value:
+ *                 userId: "123"
+ *                 societe_id: "456"
+ *     responses:
+ *       200:
+ *         description: Informations d'abonnement récupérées avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 role:
+ *                   type: string
+ *                   example: "artisan"
+ *                   description: Rôle de l'utilisateur
+ *                 type:
+ *                   type: string
+ *                   example: "membre"
+ *                   description: Type de compte
+ *                 subscription:
+ *                   $ref: '#/components/schemas/Plan'
+ *                   description: Plan d'abonnement actif
+ *                 plans:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Plan'
+ *                   description: Liste de tous les plans disponibles pour ce rôle
+ *             examples:
+ *               successResponse:
+ *                 summary: Réponse réussie
+ *                 value:
+ *                   role: "artisan"
+ *                   type: "membre"
+ *                   subscription:
+ *                     id: "18"
+ *                     name: "TPE"
+ *                     price: 49
+ *                     period: "mois"
+ *                     description: "Solution complète pour les artisans"
+ *                     features: ["Gestion multi-chantiers", "Facturation professionnelle"]
+ *                     popular: true
+ *                     color: "#E77131"
+ *                     stripe_link: "price_abc123"
+ *                   plans:
+ *                     - id: "17"
+ *                       name: "Gratuit"
+ *                       price: 0
+ *                       period: "mois"
+ *                       description: "Plan de découverte"
+ *                       features: ["1 chantier simultané", "Devis simples"]
+ *                     - id: "18"
+ *                       name: "TPE"
+ *                       price: 49
+ *                       period: "mois"
+ *                       description: "Solution complète pour les artisans"
+ *                       features: ["Gestion multi-chantiers", "Facturation professionnelle"]
+ *       401:
+ *         description: Non authentifié ou utilisateur non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               userNotFound:
+ *                 summary: Membre introuvable
+ *                 value:
+ *                   success: false
+ *                   message: "Membre introuvable"
+ *                   error: "Aucun membre correspondant à l'ID fourni"
+ *                   statusCode: 401
+ *               societeNotFound:
+ *                 summary: Société introuvable
+ *                 value:
+ *                   success: false
+ *                   message: "Société introuvable pour ce membre"
+ *                   error: "Aucune société correspondant aux critères"
+ *                   statusCode: 401
+ *       500:
+ *         description: Erreur serveur interne
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               serverError:
+ *                 summary: Erreur serveur
+ *                 value:
+ *                   success: false
+ *                   message: "Erreur interne serveur"
+ *                   error: "Erreur de base de données"
+ *                   statusCode: 500
+ */
+router.post("/check_subscription", CheckSubscription);
+/**
+ * @swagger
+ * /api/registerAnnonceur:
+ *   post:
+ *     summary: Inscription d'un annonceur
+ *     description: Crée un compte annonceur avec envoi d'un code OTP par email
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AnnonceurRegisterInput'
+ *     responses:
+ *       201:
+ *         description: Inscription réussie
+ *       400:
+ *         description: Données invalides
+ *       409:
+ *         description: Email ou SIRET déjà utilisé
+ *       422:
+ *         description: Email invalide
+ *       500:
+ *         description: Erreur serveur
+ */
+router.post("/registerAnnonceur", AnnonceurControllers);
+
+/**
+ * @swagger
+ * /api/registerFournisseur:
+ *   post:
+ *     summary: Demande de contact fournisseur
+ *     description: Enregistre une demande de contact de fournisseur
+ *     tags: [Suppliers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/FournisseurRegisterInput'
+ *     responses:
+ *       201:
+ *         description: Demande envoyée avec succès
+ *       400:
+ *         description: Données invalides
+ *       422:
+ *         description: Email invalide
+ *       500:
+ *         description: Erreur serveur
+ */
+router.post("/registerFournisseur", FournisseurControllers);
+
+/**
+ * @swagger
+ * /api/entreprises:
+ *   get:
+ *     summary: Recherche d'entreprises par SIRET dans la base SIRENE
+ *     description: |
+ *       Recherche des entreprises dans la base de données SIRENE de l'INSEE à partir d'un numéro SIRET.
+ *       Cette API interroge directement l'API officielle de l'INSEE pour obtenir des informations fiables
+ *       et à jour sur les entreprises françaises.
+ *       
+ *       **Fonctionnalités :**
+ *       - Recherche par numéro SIRET (partiel ou complet)
+ *       - Retourne les informations détaillées de l'entreprise
+ *       - Données officielles de l'INSEE
+ *       - Validation en temps réel des entreprises
+ *     tags:
+ *       - Companies
+ *     parameters:
+ *       - in: query
+ *         name: siret
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 3
+ *           maxLength: 14
+ *           pattern: '^[0-9]+$'
+ *         description: |
+ *           Numéro SIRET ou début du numéro SIRET (minimum 3 chiffres)
+ *           
+ *           **Format :** 14 chiffres (9 pour SIREN + 5 pour NIC)
+ *           
+ *           **Exemples :**
+ *           - Recherche complète : `12345678901234`
+ *           - Recherche partielle : `123456789`
+ *         example: "123456789"
+ *     responses:
+ *       200:
+ *         description: Liste des entreprises trouvées avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nom:
+ *                     type: string
+ *                     example: "ENTREPRISE EXAMPLE SARL"
+ *                     description: Dénomination sociale de l'entreprise
+ *                   siren:
+ *                     type: string
+ *                     example: "123456789"
+ *                     description: Numéro SIREN (9 chiffres)
+ *                   siret:
+ *                     type: string
+ *                     example: "12345678901234"
+ *                     description: Numéro SIRET complet (14 chiffres)
+ *                   activite:
+ *                     type: string
+ *                     example: "62.01Z"
+ *                     description: Code APE/NAF de l'activité principale
+ *                   rue:
+ *                     type: string
+ *                     example: "RUE"
+ *                     description: Type de voie (RUE, AVENUE, BOULEVARD, etc.)
+ *                   ville:
+ *                     type: string
+ *                     example: "DE L EXAMPLE"
+ *                     description: Libellé de la voie
+ *                   cp:
+ *                     type: string
+ *                     example: "123"
+ *                     description: Numéro dans la voie
+ *                   libelle:
+ *                     type: string
+ *                     example: "PARIS"
+ *                     description: Libellé de la commune
+ *                   type:
+ *                     type: string
+ *                     example: "RUE"
+ *                     description: Type de voie (identique à rue)
+ *                   code:
+ *                     type: string
+ *                     example: "75001"
+ *                     description: Code postal
+ *                   pays:
+ *                     type: string
+ *                     example: "FRANCE"
+ *                     description: Libellé du pays
+ *             examples:
+ *               singleResult:
+ *                 summary: Une entreprise trouvée
+ *                 value:
+ *                   - nom: "BOULANGERIE DU CENTRE SARL"
+ *                     siren: "123456789"
+ *                     siret: "12345678900012"
+ *                     activite: "47.11C"
+ *                     rue: "RUE"
+ *                     ville: "DE LA BOULANGERIE"
+ *                     cp: "25"
+ *                     libelle: "PARIS"
+ *                     type: "RUE"
+ *                     code: "75001"
+ *                     pays: "FRANCE"
+ *               multipleResults:
+ *                 summary: Plusieurs entreprises trouvées
+ *                 value:
+ *                   - nom: "ENTREPRISE A SARL"
+ *                     siren: "123456789"
+ *                     siret: "12345678900012"
+ *                     activite: "62.01Z"
+ *                     rue: "AVENUE"
+ *                     ville: "DES CHAMPS ELYSEES"
+ *                     cp: "123"
+ *                     libelle: "PARIS"
+ *                     type: "AVENUE"
+ *                     code: "75008"
+ *                     pays: "FRANCE"
+ *                   - nom: "ENTREPRISE B SAS"
+ *                     siren: "987654321"
+ *                     siret: "98765432100098"
+ *                     activite: "70.21Z"
+ *                     rue: "BOULEVARD"
+ *                     ville: "SAINT GERMAIN"
+ *                     cp: "456"
+ *                     libelle: "PARIS"
+ *                     type: "BOULEVARD"
+ *                     code: "75006"
+ *                     pays: "FRANCE"
+ *               noResults:
+ *                 summary: Aucune entreprise trouvée
+ *                 value: []
+ *       400:
+ *         description: Paramètre SIRET invalide ou manquant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               siretTooShort:
+ *                 summary: SIRET trop court
+ *                 value:
+ *                   success: false
+ *                   message: "Veuillez saisir au moins 3 caractères."
+ *                   error: "Paramètre siret manquant ou trop court"
+ *                   statusCode: 400
+ *               invalidFormat:
+ *                 summary: Format SIRET invalide
+ *                 value:
+ *                   success: false
+ *                   message: "Le SIRET doit contenir uniquement des chiffres"
+ *                   error: "SIRET contient des caractères non numériques"
+ *                   statusCode: 400
+ *       500:
+ *         description: Erreur lors de la recherche dans l'API INSEE
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               inseeApiError:
+ *                 summary: Erreur API INSEE
+ *                 value:
+ *                   success: false
+ *                   message: "Erreur lors de la recherche d'entreprises"
+ *                   error: "API INSEE indisponible ou clé API invalide"
+ *                   statusCode: 500
+ *               networkError:
+ *                 summary: Erreur réseau
+ *                 value:
+ *                   success: false
+ *                   message: "Erreur lors de la recherche d'entreprises"
+ *                   error: "Problème de connexion à l'API INSEE"
+ *                   statusCode: 500
+ *       502:
+ *         description: L'API INSEE est temporairement indisponible
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       503:
+ *         description: Service temporairement indisponible
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+// router.get("/entreprises", SearchCompanies);
+
+
+
+
+
+
 
 
 export default router;
