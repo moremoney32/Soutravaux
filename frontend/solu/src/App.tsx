@@ -4,6 +4,7 @@ import Register from "../features/auth/register/Register";
 // import Home from "../features/auth/register/Home";
 import "./app.css";
 import SubscriptionPage from "./components/SubscriptionPage";
+import BibliothequesDashboard from "./components/BibiothequeDashboard";
 
 function App() {
   
@@ -16,6 +17,7 @@ function App() {
         {/* Inscription multi-étapes */}
         <Route path="/" element={<Register />} />
          <Route path="/subscription" element={<SubscriptionPage />} />
+         <Route path="/catalogue" element={<BibliothequesDashboard />} />
 
       </Routes>
     </BrowserRouter>

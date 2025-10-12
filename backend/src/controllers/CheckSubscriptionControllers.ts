@@ -51,18 +51,7 @@ if (societe.plan_id !== 1) {
   subscription = plans.find((p: any) => p.is_default === 1) || null;
 }
 
-// const plansParsed = plans.map((p: any) => ({
-//   ...p,
-//   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features
-// }));
 
-// Dans CheckSubscription - s'assurer que les nouvelles colonnes sont parsées
-// const plansParsed = plans.map((p: any) => ({
-//   ...p,
-//   features: typeof p.features === "string" ? JSON.parse(p.features) : p.features,
-//   key_benefits: typeof p.key_benefits === "string" ? JSON.parse(p.key_benefits) : p.key_benefits,
-//   detailed_features: typeof p.detailed_features === "string" ? JSON.parse(p.detailed_features) : p.detailed_features
-// }));
 const plansParsed = plans.map((p: any) => {
             try {
                 const parsedPlan = {

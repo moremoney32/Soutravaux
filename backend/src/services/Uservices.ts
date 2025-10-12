@@ -69,17 +69,6 @@ export async function UserRegister(data: UserRegisterInput) {
     }
 
     // siret déjà utilisé ?
-// if (siret && siret.trim() !== "") {
-//       const [siretExists]: any = await conn.query(
-//         "SELECT id FROM societes WHERE siret = ?",
-//         [siret]
-//       );
-//       if (siretExists.length > 0) {
-//         const err = new Error("Ce SIRET est déjà associé à une société.");
-//         (err as any).statusCode = 409;
-//         throw err;
-//       }
-// }
 if (siret && siret.trim() !== "") {
   // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
   const [siretExists]: any = await conn.query(
@@ -645,39 +634,7 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
   try {
     await conn.beginTransaction();
 
-    // Vérifier si l'email existe déjà
-    // const [exists] = await conn.query("SELECT id FROM membres WHERE email = ?", [contactEmail]);
-    // if ((exists as any).length > 0) {
-    //   throw new Error("Cet email est déjà utilisé.");
-    // }
-
-    // Vérifier si le SIRET est déjà utilisé dans SOCIETES (table principale)
-    // if (siret && siret.trim() !== "") {
-    //   const [siretExists]: any = await conn.query(
-    //     "SELECT id FROM societes WHERE siret = ?",
-    //     [siret]
-    //   );
-    //   if (siretExists.length > 0) {
-    //     const err = new Error("Ce SIRET est déjà associé à une société.");
-    //     (err as any).statusCode = 409;
-    //     throw err;
-    //   }
-    // }
-  //   if (siret && siret.trim() !== "") {
-  // // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
-  // const [siretExists]: any = await conn.query(
-  //   `SELECT 'societes' as source, id FROM societes WHERE siret = ? 
-  //    UNION ALL 
-  //    SELECT 'presocietes' as source, id FROM presocietes WHERE siret = ?`,
-  //   [siret, siret]
-  // );
-  
-  // if (siretExists.length > 0) {
-  //   const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
-  //   (err as any).statusCode = 409;
-  //   throw err;
-  // }
-//
+    
 
     // Génération OTP
     const otp = genOTP();
@@ -982,19 +939,6 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
   } catch (err: any) {
     await conn.rollback();
     
-    // Gestion des erreurs spécifiques
-    // if (err.code === "ER_DUP_ENTRY") {
-    //   if (err.sqlMessage.includes("membres.email")) {
-    //     const e = new Error("Cet email est déjà utilisé.");
-    //     (e as any).statusCode = 409;
-    //     throw e;
-    //   }
-    //    if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
-    //   const e = new Error("Ce SIRET est déjà associé à une société.");
-    //   (e as any).statusCode = 409;
-    //   throw e;
-    // }
-    // }
     
     if (err.code === "ER_DATA_TOO_LONG") {
       const e = new Error("Une donnée est trop longue pour un champ (ex: code postal trop long).");

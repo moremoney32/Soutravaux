@@ -1,0 +1,172 @@
+.bibliotheques-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bibliotheques-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.section-title {
+  font-family: 'Gotham Rounded', 'Montserrat', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #505050;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-input-main {
+  padding: 10px 40px 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  width: 200px;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.search-input-main:focus {
+  outline: none;
+  border-color: #E77131;
+  box-shadow: 0 0 0 3px rgba(231, 113, 49, 0.1);
+}
+
+.search-icon-main {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #505050;
+  font-size: 1rem;
+}
+
+.add-button {
+  background: #E77131;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-button:hover {
+  background: #d0611f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 113, 49, 0.3);
+}
+
+.bibliotheques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.bibliotheque-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.bibliotheque-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #E77131;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  background: #f8f9fa;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-placeholder {
+  font-size: 1.8rem;
+  color: #E77131;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-family: 'Gotham Rounded', 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #505050;
+  margin: 0 0 8px 0;
+}
+
+.card-badge {
+  background: #E77131;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .bibliotheques-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    justify-content: space-between;
+  }
+  
+  .search-input-main {
+    width: 150px;
+  }
+  
+  .bibliotheques-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-input-main {
+    width: 100%;
+  }
+  
+  .add-button {
+    width: 100%;
+  }
+}
