@@ -451,7 +451,7 @@ export async function ResendVerificationCode(email: string){
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          timeout: 100000000000 
+          timeout: 10000 // 10 secondes timeout
         }
       );
 
