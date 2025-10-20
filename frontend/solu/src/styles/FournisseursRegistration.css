@@ -521,7 +521,7 @@
   grid-column: 1 / -1;
 }
 textarea{
-     resize: none; 
+     /* resize: none;  */
     border: 1px solid #505050 !important;
 }
 

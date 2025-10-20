@@ -500,6 +500,9 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
+  .section-toggle h4 {
+  line-height:1.2;
+}
 }
 
 @media (max-width: 480px) {

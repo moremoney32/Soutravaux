@@ -169,16 +169,13 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
                     ))
                 )}
             </div>
-
-            {/* Pagination Style Google */}
-            {pagination && pagination.last_page > 0 && (
+             {pagination && pagination.last_page > 0 && (
                 <>
                     <div className="pagination">
                         <div className="pagination-info">
                             Page {pagination.current_page} sur {pagination.last_page} •
                             {pagination.total} résultat{pagination.total > 1 ? 's' : ''}
                         </div>
-                        {/* Bouton Précédent */}
                         <div className='parent_button'>
                             <button
                                 className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
@@ -220,7 +217,7 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
                     </div>
 
                 </>
-            )}
+            )} 
         </div>
     );
 };

@@ -392,6 +392,7 @@ import Header from './HeaderBibiotheque';
 import BibliothequesList from './BibliothequeList';
 import AddBibliothequeModal from './AddBibliothequeModal';
 import BibliothequeNavigationModal from './BibiothequeNavigationModal';
+import { useSearchParams } from "react-router-dom";
 
 export interface Bibliotheque {
     id: string;
@@ -494,10 +495,12 @@ const BibliothequesDashboard: React.FC = () => {
     const [loadingAllLibraries, setLoadingAllLibraries] = useState(false);
     const [pagination, setPagination] = useState<PaginationInfo | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+     const [searchParams] = useSearchParams();
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const baseUrlTest = "https://laravel-api.solutravo-compta.fr/api";
+     const societe_id = searchParams.get("societe_id");
 
     const transformApiDataToBibliotheque = (apiData: any[]): Bibliotheque[] => {
         return apiData.map(lib => ({
@@ -530,7 +533,7 @@ const BibliothequesDashboard: React.FC = () => {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
                 },
-                body: JSON.stringify({ societe_id: 36 })
+                body: JSON.stringify({ societe_id: societe_id || 36 })
             });
 
             const data = await res.json();
@@ -685,9 +688,9 @@ const BibliothequesDashboard: React.FC = () => {
 
     return (
         <div className="dashboard">
-            <Sidebar />
+            {/* <Sidebar /> */}
             <div className="main-content2">
-                <Header />
+                {/* <Header /> */}
                 <div className="content-area">
                     <BibliothequesList
                         bibliotheques={userBibliotheques}
