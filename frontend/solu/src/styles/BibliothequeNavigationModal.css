@@ -1,4 +1,4 @@
-.navigation-modal-overlay {
+ .navigation-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -38,7 +38,7 @@
   gap: 15px;
 }
 
-.back-button1 {
+.button_nav {
   background: #E77131;
   border: none;
   font-size: 1.3rem;
@@ -54,10 +54,89 @@
   transition: all 0.3s ease;
 }
 
-.back-button:hover {
+.loading-state{
+    display: flex;
+    justify-content: center !important;
+    align-items: center;
+    color: #E77131;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.button_nav:hover {
   background: #e0e0e0;
   color: #505050;
 }
+/* Styles pour les images dans la modal */
+.imageCompile {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.famille-icon,
+.categorie-icon,
+.sous-categorie-icon {
+  width: 30px !important;
+  height: 30px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: var(--color-light-gray);
+  border-radius: 6px;
+}
+
+/* Assurer que les conteneurs d'images ont la bonne taille */
+.item-card > img,
+.item-card > div[class*="-icon"] {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+}
+
+/* Styles pour la recherche dans les modals */
+/* .search-box-modal {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input-modal {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 2px solid var(--color-light-gray);
+  border-radius: var(--radius-medium);
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input-modal:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.search-icon-modal {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray);
+} */
+
+/* Styles pour les états vides */
+/* .empty-state-modal {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-gray);
+}
+
+.empty-icon-modal {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+} */
 
 .navigation-header h3 {
   font-family: 'Gotham Rounded', 'Montserrat', sans-serif;
@@ -121,7 +200,7 @@
 
 .items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 20px;
 }
 
@@ -145,7 +224,7 @@
 .famille-card h4,
 .categorie-card h4,
 .sous-categorie-card h4 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #505050;
   margin: 0 0 10px 0;
@@ -154,19 +233,18 @@
 .famille-card p,
 .categorie-card p,
 .sous-categorie-card p {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color:#505050;
   margin: 0;
   line-height: 1.4;
 }
 
 .famille-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-bottom: 15px;
   text-align: center;
 }
 
-/* Section produits */
 .produits-section {
   display: flex;
   flex-direction: column;
@@ -182,7 +260,7 @@
 }
 
 .produits-header h3 {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #505050;
   margin: 0;
@@ -252,7 +330,7 @@
 
 .produit-image {
   position: relative;
-  height: 150px;
+  height: 100px;
   overflow: hidden;
 }
 
@@ -308,6 +386,145 @@
   color: #505050;
   font-style: italic;
 }
+/*****recherche globales***/
+
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Card pour résultats de recherche */
+.search-result-card {
+  position: relative;
+  transition: all 0.3s ease;
+  border: 2px solid #e0e0e0;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: #E77131;
+}
+
+/* Header du résultat avec badges */
+.search-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Badge de type (Famille, Catégorie, etc.) */
+.type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Couleurs selon le type */
+.search-result-card.famille-card .type-badge {
+  background:#505151;
+  color: white;
+  opacity: 0.6;
+}
+
+.search-result-card.categorie-card .type-badge {
+   background:#505151;
+  color: white;
+  opacity: 0.6;
+}
+
+.search-result-card.sous-categorie-card .type-badge {
+   background:#505151;
+  color: white;
+  opacity: 0.6;
+}
+
+.search-result-card.produit-card .type-badge {
+   background:#505151;
+  color: white;
+  opacity: 0.6;
+}
+
+/* Badge compteur de produits */
+.product-count-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #515050;
+}
+
+/* Chemin de navigation (breadcrumb) */
+.search-result-path {
+  font-size: 12px;
+  color: #515050;
+  margin-top: 4px;
+  /* font-style: italic; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Prix dans les résultats produits */
+.search-result-card .produit-price {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #515050;
+}
+
+/* Animation pour l'état vide de recherche */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #E77131;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  .search-results-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .search-result-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/*****/
 
 @media (max-width: 768px) {
   .navigation-modal-content {
@@ -359,4 +576,4 @@
   .search-produits input {
     width: 100%;
   }
-}
+} 

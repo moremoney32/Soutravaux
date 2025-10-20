@@ -1,6 +1,8 @@
-.bibliotheques-container {
-  max-width: 1200px;
-  margin: 0 auto;
+ .bibliotheques-container {
+  /* max-width: 1200px;
+  margin: 0 auto; */
+  position: relative;
+  height: 85vh;
 }
 
 .bibliotheques-header {
@@ -31,13 +33,17 @@
 }
 
 .search-input-main {
-  padding: 10px 40px 10px 15px;
+   padding: 15px 10px 10px 25px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 0.9rem;
-  width: 200px;
+   font-size: 0.9rem; 
+  width: 300px;
   background: #ffffff;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; 
+  font-family: var(--font-montserrat);
+--tw-font-weight: var(--font-weight-medium);
+/* font-size: 13px; */
+font-weight: var(--font-weight-medium);
 }
 
 .search-input-main:focus {
@@ -48,11 +54,12 @@
 
 .search-icon-main {
   position: absolute;
-  right: 12px;
-  top: 50%;
+  left: 5px;
+  top: 55%;
   transform: translateY(-50%);
   color: #505050;
   font-size: 1rem;
+  cursor: pointer;
 }
 
 .add-button {
@@ -109,7 +116,22 @@
   justify-content: center;
   flex-shrink: 0;
 }
+.library-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    border-radius: 50%;
+}
 
+.icon-placeholder {
+    font-size: 1.5rem;
+    color: #E77131;
+}
+
+/* Fallback si l'image ne charge pas */
+.card-icon:has(.library-image[style*="display: none"]) .icon-placeholder {
+    display: flex !important;
+}
 .icon-placeholder {
   font-size: 1.8rem;
   color: #E77131;
@@ -122,7 +144,7 @@
 .card-title {
   font-family: 'Gotham Rounded', 'Montserrat', sans-serif;
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #505050;
   margin: 0 0 8px 0;
 }
@@ -136,6 +158,145 @@
   border-radius: 20px;
   display: inline-block;
 }
+
+
+/* Pagination Style Google */
+.pagination {
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  /* gap: 8px;
+  margin-top: 40px; */
+  padding: 20px 0;
+  border-top: 1px solid #e8eaed;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}
+.parent_button{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid #dadce0;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #E77131;
+  min-width: 80px;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background: #f8f9fa;
+  border-color: #dadce0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn.disabled {
+  color: #9aa0a6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pagination-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #505050;
+}
+
+.pagination-number:hover:not(.active) {
+  background: #f1f3f4;
+  border-color: #dadce0;
+}
+
+.pagination-number.active {
+  background: #E77131;
+  color: white;
+  border-color: #E77131;
+}
+
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #5f6368;
+  font-size: 14px;
+}
+
+.pagination-info {
+  text-align: center;
+  color: #5f6368;
+  font-size: 13px;
+  margin-top: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+ .empty-state {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 200px;
+  color: #E77131;
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  text-align: center;
+  grid-column: 1 / -1; 
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pagination {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .pagination-numbers {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  
+  .pagination-btn {
+    min-width: 70px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .pagination-number {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+}
+
 
 @media (max-width: 768px) {
   .bibliotheques-header {
@@ -169,4 +330,4 @@
   .add-button {
     width: 100%;
   }
-}
+} 

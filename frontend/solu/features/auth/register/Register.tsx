@@ -269,6 +269,7 @@ function Register() {
             const timer = setTimeout(async () => {
                 try {
                     const { result } = await fetchData(`entreprises?siret=${checkSiret}`, "GET", null, "");
+                    console.log(result)
                     setSuggestions(result || []);
                 } catch (err) {
                     console.error("Erreur API entreprises:", err);

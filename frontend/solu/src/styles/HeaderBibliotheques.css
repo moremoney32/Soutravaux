@@ -1,4 +1,4 @@
-.header {
+.header_biblio {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6,7 +6,6 @@
   /* background: #ffffff; */
   border-bottom: 1px solid #e0e0e0;
   min-height:50px;
-  margin-left: 250px;
 }
 
 .header-left {

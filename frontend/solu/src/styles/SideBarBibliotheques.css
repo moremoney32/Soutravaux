@@ -17,12 +17,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .logo-img {
   height: 32px;
   width: auto;

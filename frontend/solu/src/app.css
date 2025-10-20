@@ -1,11 +1,16 @@
 @import "./styles/variables.css";
+* {
+  font-family: var(--font-primary);
+}
  html, body, #root {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   font-family: var(--font-primary);
+  scroll-behavior: smooth;
 }
+
 
 button, select, .dropdown {
   font-family: var(--font-secondary);

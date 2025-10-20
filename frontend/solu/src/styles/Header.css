@@ -8,14 +8,16 @@
   z-index: 1000;
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-light);
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  min-height: 60px;
+   padding: 12px 0 !important;
+  min-height: 60px; 
 }
 
 .logo-section {
@@ -40,11 +42,14 @@
   transform: scale(1.05);
 }
 
-.logo-icon {
-  height: 32px;
-  width: auto;
-  filter: drop-shadow(0 2px 4px rgba(231, 113, 49, 0.3));
-  transition: var(--transition-fast);
+
+ .logo-icon {
+    height: 45px;
+    width: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+    filter: drop-shadow(0 2px 4px rgba(231, 113, 49, .3));
+    transition: var(--transition-fast);
 }
 
 .logo:hover .logo-icon {
@@ -81,7 +86,7 @@
 
 .status-badge {
   background: linear-gradient(135deg, var(--color-primary) 0%, #ff8c42 100%);
-  color: var(--color-white);
+  color: white;
   padding: 8px 16px;
   border-radius: var(--radius-medium);
   font-size: 0.9rem;

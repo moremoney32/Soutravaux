@@ -1,0 +1,133 @@
+
+:root {
+  --color-green-700: #15803d;
+  --color-green-light: #dcfce7;
+  --color-red-light: #fee2e2;
+  --color-gray-100: #f3f4f6;
+  --color-gray-700: #505151;
+}
+
+.option-row {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease-in-out;
+  color:#505151;
+  font-weight: 0.8;
+}
+.option-row_td{
+  color: #505151;
+  font-size: 0.8rem;
+}
+
+.options-table th:nth-child(2) { width: 30%; }
+
+.option-row:hover {
+  background-color: var(--color-gray-100);
+}
+
+.options-table thead {
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.options-table th {
+  background: #f9fafb; 
+  color: #6b7280;      
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.option-input,
+.price-input {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 8px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.price-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.price-impact {
+  color: var(--color-green-700);
+  font-weight:450 !important;
+ 
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge-green {
+  background-color: var(--color-green-700);
+  color: white;
+}
+
+.badge-gray {
+  background-color: #e5e7eb;
+  color: var(--color-gray-700);
+}
+
+.badge-green-light {
+  background-color: var(--color-green-light);
+  color: var(--color-green-700);
+}
+
+.badge-red-light {
+  background-color: var(--color-red-light);
+  color: #b91c1c;
+}
+
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-save {
+  background-color: var(--color-green-700);
+  color: white;
+  border: none;
+}
+
+.btn-save:hover {
+  background-color: #166534;
+}
+
+.btn-cancel {
+  background-color: #e5e7eb;
+  color: var(--color-gray-700);
+  border: none;
+}
+
+.btn-cancel:hover {
+  background-color: #d1d5db;
+}
+
+.btn-edit {
+  background: none;
+  color: #f6b800;;
+  border: none;
+  font-weight: 500;
+}
+
+.btn-edit:hover {
+  color:  #f6b800;;
+}
+
+
+.actions {
+  display: flex;
+  gap: 8px;
+}

@@ -38,7 +38,7 @@
 
 .footer-subtitle {
   font-size: 1.2rem;
-  color: #737373;
+  color: #505050;
   max-width: 800px;
   margin: 0 auto;
   font-weight: 400;
@@ -429,6 +429,7 @@
   font-size: 1.4rem;
   margin-bottom: 24px;
   font-weight: 600;
+  line-height: normal;
 }
 
 .cta-button {

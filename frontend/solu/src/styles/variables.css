@@ -1,9 +1,9 @@
-:root {
+/* :root {
   --color-primary: #E77131;
   --color-secondary: #FFFFFF;
   --color-background:#E77131;
   --spacing-md: 16px;
-  /*****/
+ 
   --color-dark: #505050;
   --color-light-gray: #F8F9FA;
   --color-border: #E0E0E0;
@@ -21,15 +21,88 @@
     width: 4px !important;
   }
 
-  /* Track */
   ::-webkit-scrollbar-track {
     background: #e6d4f8 !important;
   }
 
-  /* Handle */
   ::-webkit-scrollbar-thumb {
     background: #E77131;
   }
+
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_lightitalic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bookitalic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_mediumitalic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Rounded';
+  src: url('../assets/fonts/gothamrnd_bolditalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+
+:root {
+  --font-primary: 'Gotham Rounded', sans-serif;
+  --font-secondary: 'Montserrat', sans-serif;
+}*/
+
+
+
+
+/* === Importations de polices === */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 
 /* === Gotham Rounded === */
 @font-face {
@@ -88,16 +161,337 @@
   font-style: italic;
 }
 
-/* === Montserrat depuis Google Fonts === */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-
-/* === FontAwesome === */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-
-/* === Variables globales === */
+/* === Variables CSS === */
 :root {
+  /* Couleurs principales */
+  --color-primary: #E77131;
+  --color-secondary: #FFFFFF;
+  --color-background: #E77131;
+  --color-dark: #505050;
+  --color-light-gray: #F8F9FA;
+  --color-border: #E0E0E0;
+  --color-gray-secondary: #6c757d;
+  --color-yellow-primary: #f6b800;
+  --color-orange-primary: #e67131;
+  --color-gray-primary: #505151;
+
+  /* Polices */
   --font-primary: 'Gotham Rounded', sans-serif;
   --font-secondary: 'Montserrat', sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-gotham: "Gotham Rounded", sans-serif;
+
+  /* Espacements */
+  --spacing-md: 16px;
+  --spacing-sm: 8px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Ombres */
+  --shadow-light: 0 4px 20px rgba(231, 113, 49, 0.1);
+  --shadow-medium: 0 8px 30px rgba(231, 113, 49, 0.15);
+  --shadow-heavy: 0 12px 40px rgba(231, 113, 49, 0.2);
+  --shadow-default: 0px 8px 13px -3px rgba(0, 0, 0, .07);
+
+  /* Bordures */
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 20px;
+
+  /* Transitions */
+  --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-medium: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* === Reset et styles de base === */
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
 
+/* === Styles typographiques par défaut (mobile-first) === */
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 17px;
+}
+
+h5 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 15px;
+}
+
+p {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 10px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 10px;
+}
+
+input {
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* input:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+} */
+ input:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow:
+    0 0 0 1px var(--color-yellow-primary),   /* halo jaune proche du bord */
+    0 0 0 2px var(--color-orange-primary);  /* contour orange externe */
+}
+
+select {
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  font-size: 13px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+/* === Styles responsives pour tablettes et laptops === */
+@media (min-width: 768px) {
+  h3 {
+    font-size: 1.875rem;
+    line-height: 22px;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+    line-height: 20px;
+  }
+
+  h5 {
+    font-size: 1.25rem;
+    line-height: 18px;
+  }
+
+  p {
+    font-size: 13px;
+    line-height: 15px;
+  }
+
+  label {
+    font-size: 13px;
+    line-height: 12px;
+  }
+}
+
+/* === Classes utilitaires === */
+.max-container {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-orange-primary);
+  color: var(--color-secondary);
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: var(--radius-small);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-yellow-primary);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-yellow-primary);
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-gray-secondary);
+  color: var(--color-secondary);
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: var(--radius-small);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-gray-primary);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-gray-secondary);
+}
+
+.btn-tertiary {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-gray-secondary);
+  color: var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-tertiary:hover {
+  background-color: var(--color-gray-secondary);
+  color: var(--color-secondary);
+}
+
+.th {
+  padding: 12px 16px;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* === Styles de scrollbar === */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background:var(--color-gray-secondary) !important;
+  border-radius: 8px; 
+}
+
+.over-x {
+  overflow-x: scroll;
+}
+
+.over-y {
+  overflow-y: scroll;
+}
+
+.over-x::-webkit-scrollbar {
+  height: 4px;
+}
+
+.over-y::-webkit-scrollbar {
+  width: 2px;
+}
+
+.over-x::-webkit-scrollbar-track,
+.over-y::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px transparent;
+}
+
+.over-x::-webkit-scrollbar-thumb,
+.over-y::-webkit-scrollbar-thumb {
+  outline: 1px solid #C4C4C4;
+  background: #C4C4C4;
+  border-radius: 8px;
+}
+
+/* === Classes supplémentaires === */
+.shadow-default {
+  box-shadow: var(--shadow-default);
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat);
+}
+
+.font-gotham {
+  font-family: var(--font-gotham);
+}
+
+.fw-semibold {
+  font-weight: 500 !important;
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+/* === Styles de table === */
+.table {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.table thead {
+  font-family: var(--font-gotham) !important;
+  font-size: 13px !important;
+  background: transparent;
+  border-bottom: 2px solid #000;
+}
+
+.table th {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.table-striped thead tr th {
+  background: none !important;
+  border-bottom: 2px solid #000;
+}
+
+.table td,
+.table th {
+  padding-top: .8rem;
+  padding-bottom: .8rem;
+}
+
+/* === États interactifs === */
+.dropdown-item:focus,
+.dropdown-item:hover,
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--color-light-gray);
+  color: inherit;
+}
+
+/* Styles pour les boutons généraux */
+.btn,
+button {
+  font-family: var(--font-montserrat);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+ 

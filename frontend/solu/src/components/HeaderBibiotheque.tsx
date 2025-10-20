@@ -4,7 +4,7 @@ import "../styles/HeaderBibliotheques.css"
 
 const Header: React.FC = () => {
   return (
-    <header className="header">
+    <header className="header_biblio">
       <div className="header-left">
         <div className="breadcrumb">
           <span className="breadcrumb-icon">📚</span>

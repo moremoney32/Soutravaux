@@ -146,13 +146,15 @@
 }
 
 /****/
-.hero-title fade-in-up
+/* .hero-title fade-in-up */
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .pricing-grid {
-    grid-template-columns: repeat(2, 1fr);
-     gap: 15px;
+    /* grid-template-columns: repeat(2, 1fr); */
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+     gap: 50px !important;
     padding: 0 15px; 
   }
   
