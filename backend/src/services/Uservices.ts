@@ -369,7 +369,76 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
 //   }
 // }
 
+function normalizePhoneNumber(phone: string): string {
+  // Enlever tous les caractères non-numériques sauf +
+  let clean = phone.replace(/[\s\-\(\)\.]/g, '');
+  
+  // Convertir format français vers international
+  if (clean.startsWith('0')) {
+    clean = clean.replace(/^0/, '+33');
+  } else if (clean.startsWith('33')) {
+    clean = '+' + clean;
+  }
+  
+  return clean;
+}
+async function sendOTPSMS(
+  phoneNumber: string, 
+  otp: string, 
+  isResend: boolean = false
+): Promise<void> {
+  const message = isResend
+    ? `Nouveau code de vérification Solutravo : ${otp}. Ce code expire dans 3 minutes.`
+    : `Merci de nous rejoindre sur Solutravo, votre partenaire de confiance dans le domaine du BTP. Pour finaliser votre inscription et sécuriser votre compte, veuillez saisir le code de vérification : ${otp}. Attention, il n'est valable que 3 minutes.`;
+
+  console.log(`Envoi SMS vers ${phoneNumber} avec code: ${otp}`);
+
+  try {
+    const response = await axios.post(
+      "https://integrations-api.solutravo-compta.fr/api/send_sms",
+      {
+        phone: [phoneNumber],
+        code: parseInt(otp),
+        message: message
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 10000
+      }
+    );
+
+    // Vérifier la réponse
+    if (response.status !== 200) {
+      throw new Error(`Erreur HTTP ${response.status}`);
+    }
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'SMS non envoyé');
+    }
+
+    console.log(`SMS envoyé avec succès:`, response.data);
+
+  } catch (error: any) {
+    console.error(' Erreur envoi SMS:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+
+    // Relancer avec message détaillé
+    throw new Error(
+      error.response?.data?.message || 
+      error.message ||
+      'Impossible d\'envoyer le SMS'
+    );
+  }
+}
+
 export async function ResendVerificationCode(email: string){
+  // Validation email
   if (!email || !validator.isEmail(email)) {
     const err = new Error("Email invalide");
     (err as any).statusCode = 400;
@@ -381,28 +450,36 @@ export async function ResendVerificationCode(email: string){
   try {
     await conn.beginTransaction();
 
-    // 1. Récupérer l'utilisateur
+    // ============================================
+    // 1. RÉCUPÉRER L'UTILISATEUR
+    // ============================================
     const [rows] = await conn.query(
-      "SELECT id, email, prenom, nom, statut, verificationCode FROM membres WHERE email = ?",
+      `SELECT id, email, prenom, nom, statut, verificationCode, verificationExpiry 
+       FROM membres 
+       WHERE email = ?`,
       [email]
     );
 
     const user: any = (rows as any)[0];
     
     if (!user) {
+      await conn.rollback();
       const err = new Error("Utilisateur introuvable");
       (err as any).statusCode = 404;
       throw err;
     }
 
+    // ⚠️ CORRECTION: Vérifier si code existe ET n'est pas expiré
     if (!user.verificationCode) {
-      const err = new Error("Utilisateur déjà vérifié");
+      await conn.rollback();
+      const err = new Error("Compte déjà vérifié. Vous pouvez vous connecter.");
       (err as any).statusCode = 400;
       throw err;
     }
 
-    // 3. ⚠️ CORRECTION MAJEURE: Récupérer le téléphone depuis presocietes
-    // Dans ton système, phonenumber est dans presocietes, PAS dans membres!
+    // ============================================
+    // 2. RÉCUPÉRER LE TÉLÉPHONE
+    // ============================================
     const [societeRows] = await conn.query(
       "SELECT phonenumber FROM presocietes WHERE membre_id = ?",
       [user.id]
@@ -411,73 +488,44 @@ export async function ResendVerificationCode(email: string){
     const societe: any = (societeRows as any)[0];
     
     if (!societe || !societe.phonenumber) {
-      const err = new Error("Aucun numéro de téléphone associé à cet utilisateur");
+      await conn.rollback();
+      const err = new Error("Aucun numéro de téléphone associé à ce compte");
       (err as any).statusCode = 400;
       throw err;
     }
 
-    // 4. Nettoyer et valider le numéro
-    let cleanPhoneNumber = societe.phonenumber.replace(/[\s\-\(\)\.]/g, '');
-    
-    // Convertir format français vers international si nécessaire
-    if (cleanPhoneNumber.startsWith('0')) {
-      cleanPhoneNumber = cleanPhoneNumber.replace(/^0/, '+33');
-    }
+    // ============================================
+    // 3. NORMALISER LE TÉLÉPHONE
+    // ============================================
+    const cleanPhoneNumber = normalizePhoneNumber(societe.phonenumber);
 
-    // Validation format
-    if (!/^(\+33|0033)[1-9]\d{8}$/.test(cleanPhoneNumber)) {
-      const err = new Error("Format de numéro de téléphone invalide");
+    // Validation format international
+    if (!/^\+33[1-9]\d{8}$/.test(cleanPhoneNumber)) {
+      await conn.rollback();
+      const err = new Error(`Format de téléphone invalide: ${cleanPhoneNumber}`);
       (err as any).statusCode = 400;
       throw err;
     }
 
-    // 5. Générer nouveau code OTP
+    // ============================================
+    // 4. GÉNÉRER NOUVEAU CODE
+    // ============================================
     const otp = genOTP();
     const expiry = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
-    // 6. Envoyer le SMS
-    try {
-      console.log(`📤 Renvoi SMS au numéro: ${cleanPhoneNumber} avec code: ${otp}`);
-      
-      const response = await axios.post(
-        "https://integrations-api.solutravo-compta.fr/api/send_sms",
-        {
-          phone: [cleanPhoneNumber],
-          code: parseInt(otp),
-          message: `Nouveau code de vérification Solutravo : ${otp}. Ce code expire dans 3 minutes.`
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          timeout: 10000 // 10 secondes timeout
-        }
-      );
+    console.log(`🔄 Renvoi code pour ${email}:`, {
+      phone: cleanPhoneNumber,
+      otp: otp,
+      expiry: expiry
+    });
 
-      if (response.status !== 200 || !response.data.success) {
-        console.error("⚠️ Réponse SMS inattendue:", response.data);
-        throw new Error("Le SMS n'a pas pu être envoyé");
-      }
-
-      console.log("✅ SMS renvoyé avec succès");
-
-    } catch (error: any) {
-      console.error("❌ Erreur envoi SMS:", error.response?.data || error.message);
-      
-      await conn.rollback();
-      
-      const err = new Error(
-        error.response?.data?.message || 
-        "Impossible d'envoyer le code par SMS. Réessayez dans quelques instants."
-      );
-      (err as any).statusCode = 500;
-      throw err;
-    }
-
-    // 7. Mettre à jour le code en BD UNIQUEMENT si SMS envoyé avec succès
+    // ============================================
+    // 5. METTRE À JOUR EN BD **AVANT** ENVOI SMS
+    // ============================================
     const [updateResult] = await conn.query(
-      "UPDATE membres SET verificationCode = ?, verificationExpiry = ? WHERE email = ?",
+      `UPDATE membres 
+       SET verificationCode = ?, verificationExpiry = ? 
+       WHERE email = ?`,
       [otp, expiry, email]
     );
 
@@ -488,10 +536,33 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
+    // ============================================
+    // 6. COMMIT **AVANT** ENVOI SMS
+    // ============================================
     await conn.commit();
+    console.log('✅ Code mis à jour en BD');
 
-    // 8. Retourner confirmation (numéro masqué pour sécurité)
-    const displayPhone = cleanPhoneNumber.replace(/^(\+33|0033)/, '0');
+    // ============================================
+    // 7. ENVOYER SMS (APRÈS COMMIT)
+    // ============================================
+    try {
+      await sendOTPSMS(cleanPhoneNumber, otp, true);
+    } catch (smsError: any) {
+      // ⚠️ IMPORTANT: Si SMS échoue, le code est DÉJÀ en BD
+      // On ne fait PAS de rollback ici car déjà commit
+      console.error('❌ SMS non envoyé mais code enregistré:', smsError.message);
+      
+      const err = new Error(
+        `Code généré mais SMS non envoyé: ${smsError.message}. Réessayez dans quelques instants.`
+      );
+      (err as any).statusCode = 500;
+      throw err;
+    }
+
+    // ============================================
+    // 8. RETOURNER SUCCÈS
+    // ============================================
+    const displayPhone = cleanPhoneNumber.replace(/^\+33/, '0');
     const maskedPhone = displayPhone.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 ** ** ** $5');
 
     return {
@@ -501,24 +572,26 @@ export async function ResendVerificationCode(email: string){
     };
 
   } catch (err: any) {
-    await conn.rollback();
+    // Rollback si transaction encore active
+    try {
+      await conn.rollback();
+    } catch (rollbackErr) {
+      // Transaction déjà terminée
+    }
     
-    // Si c'est déjà une erreur avec statusCode, on la relance
+    // Relancer l'erreur avec statusCode
     if (err.statusCode) {
       throw err;
     }
     
-    // Sinon erreur générique
-    const error = new Error("Erreur lors du renvoi du code");
-    (error as any).statusCode = 500;
+    const error = new Error(err.message || "Erreur lors du renvoi du code");
+    (error as any).statusCode = err.statusCode || 500;
     throw error;
     
   } finally {
     conn.release();
   }
 }
-
-
 /*****userAnnonceur **/
 
 export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
