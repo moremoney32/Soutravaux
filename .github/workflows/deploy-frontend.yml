@@ -65,7 +65,7 @@ jobs:
       # 7. Déployer VERS STAGING (si branche franck_staging)
       - name: Deploy to Staging
         if: github.ref == 'refs/heads/franck_staging'
-        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.HOST_FRONT_FRANCK_STADING }}
           username: ${{ secrets.USERNAME_FRONT_FRANCK_STADING }}
@@ -90,7 +90,7 @@ jobs:
       # 8. Déployer VERS PRODUCTION (si branche prod_franck)
       - name: Deploy to Production
         if: github.ref == 'refs/heads/prod_franck'
-        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.HOST_FRONT_FRANCK_PROD }}
           username: ${{ secrets.USERNAME_FRONT_FRANCK_PROD }}
