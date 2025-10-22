@@ -59,6 +59,8 @@ jobs:
             exit 1
           fi
           echo "✅ Build réussie"
+          echo "📊 Contenu du dossier dist :"
+          ls -la dist/
           echo "📊 Taille du build :"
           du -sh dist/
 
@@ -85,7 +87,7 @@ jobs:
             **/docker*
             **/*.dockerfile
             **/.env*
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
 
       # 8. Déployer VERS PRODUCTION (si branche prod_franck)
       - name: Deploy to Production
@@ -98,7 +100,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./frontend/solu/dist/
-          server-dir: ./
+          server-dir: ./public_html/
           exclude: |
             **/.git*
             **/.github/
@@ -110,4 +112,4 @@ jobs:
             **/docker*
             **/*.dockerfile
             **/.env*
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
