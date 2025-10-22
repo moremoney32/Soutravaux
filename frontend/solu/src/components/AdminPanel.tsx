@@ -5,9 +5,9 @@ import type { Plan } from '../types/subscription';
 import '../styles/AdminPanel.css';
 import { AnimatePresence, motion } from "framer-motion";
 
-const baseUrlTest = window.location.hostname === "localhost" 
-  ? "http://localhost:3000/api" 
-  : "https://solutravo.zeta-app.fr/api";
+const baseUrlTest = window.location.hostname === "localhost"
+    ? "http://localhost:3000/api"
+    : "https://solutravo.zeta-app.fr/api";
 
 interface AdminPanelProps {
     plans: Plan[];
@@ -166,67 +166,67 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     };
 
     // Gestion des fonctionnalités détaillées
-    const addFeatureCategory = () => {
-        if (editingPlan) {
-            const currentFeatures = Array.isArray(editingPlan.detailed_features) ? editingPlan.detailed_features : [];
-            setEditingPlan({
-                ...editingPlan,
-                detailed_features: [...currentFeatures, { category: 'Nouvelle catégorie', features: [] }]
-            });
-        }
-    };
+    // const addFeatureCategory = () => {
+    //     if (editingPlan) {
+    //         const currentFeatures = Array.isArray(editingPlan.detailed_features) ? editingPlan.detailed_features : [];
+    //         setEditingPlan({
+    //             ...editingPlan,
+    //             detailed_features: [...currentFeatures, { category: 'Nouvelle catégorie', features: [] }]
+    //         });
+    //     }
+    // };
 
-    const updateFeatureCategory = (categoryIndex: number, field: 'category' | 'features', value: any) => {
-        if (editingPlan && editingPlan.detailed_features) {
-            const newFeatures = [...editingPlan.detailed_features];
-            if (field === 'category') {
-                newFeatures[categoryIndex].category = value;
-            } else {
-                newFeatures[categoryIndex].features = value;
-            }
-            setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
-        }
-    };
+    // const updateFeatureCategory = (categoryIndex: number, field: 'category' | 'features', value: any) => {
+    //     if (editingPlan && editingPlan.detailed_features) {
+    //         const newFeatures = [...editingPlan.detailed_features];
+    //         if (field === 'category') {
+    //             newFeatures[categoryIndex].category = value;
+    //         } else {
+    //             newFeatures[categoryIndex].features = value;
+    //         }
+    //         setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
+    //     }
+    // };
 
-    const addFeatureToCategory = (categoryIndex: number) => {
-        if (editingPlan && editingPlan.detailed_features) {
-            const newFeatures = [...editingPlan.detailed_features];
-            newFeatures[categoryIndex].features.push('Nouvelle fonctionnalité');
-            setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
-        }
-    };
+    // const addFeatureToCategory = (categoryIndex: number) => {
+    //     if (editingPlan && editingPlan.detailed_features) {
+    //         const newFeatures = [...editingPlan.detailed_features];
+    //         newFeatures[categoryIndex].features.push('Nouvelle fonctionnalité');
+    //         setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
+    //     }
+    // };
 
-    const removeFeatureCategory = (categoryIndex: number) => {
-        if (editingPlan && editingPlan.detailed_features) {
-            const newFeatures = editingPlan.detailed_features.filter((_, i) => i !== categoryIndex);
-            setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
-        }
-    };
+    // const removeFeatureCategory = (categoryIndex: number) => {
+    //     if (editingPlan && editingPlan.detailed_features) {
+    //         const newFeatures = editingPlan.detailed_features.filter((_, i) => i !== categoryIndex);
+    //         setEditingPlan({ ...editingPlan, detailed_features: newFeatures });
+    //     }
+    // };
 
-    // Gestion des fonctionnalités simples
-    const addFeature = () => {
-        if (editingPlan) {
-            setEditingPlan({
-                ...editingPlan,
-                features: [...editingPlan.features, 'Nouvelle fonctionnalité']
-            });
-        }
-    };
+    // // Gestion des fonctionnalités simples
+    // const addFeature = () => {
+    //     if (editingPlan) {
+    //         setEditingPlan({
+    //             ...editingPlan,
+    //             features: [...editingPlan.features, 'Nouvelle fonctionnalité']
+    //         });
+    //     }
+    // };
 
-    const updateFeature = (index: number, value: string) => {
-        if (editingPlan) {
-            const newFeatures = [...editingPlan.features];
-            newFeatures[index] = value;
-            setEditingPlan({ ...editingPlan, features: newFeatures });
-        }
-    };
+    // const updateFeature = (index: number, value: string) => {
+    //     if (editingPlan) {
+    //         const newFeatures = [...editingPlan.features];
+    //         newFeatures[index] = value;
+    //         setEditingPlan({ ...editingPlan, features: newFeatures });
+    //     }
+    // };
 
-    const removeFeature = (index: number) => {
-        if (editingPlan) {
-            const newFeatures = editingPlan.features.filter((_, i) => i !== index);
-            setEditingPlan({ ...editingPlan, features: newFeatures });
-        }
-    };
+    // const removeFeature = (index: number) => {
+    //     if (editingPlan) {
+    //         const newFeatures = editingPlan.features.filter((_, i) => i !== index);
+    //         setEditingPlan({ ...editingPlan, features: newFeatures });
+    //     }
+    // };
 
     return (
         <div className="admin-panel fade-in-up">
@@ -384,8 +384,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             />
                                         </div>
                                     </div>
+                                    {/* <div className="form-section">
+                                        <div className="features-header">
+                                            <h4>Fonctionnalités principales (pour les cartes)</h4>
+                                            <button type="button" className="add-feature-btn" onClick={addFeature}>
+                                                ➕ Ajouter
+                                            </button>
+                                        </div>
+                                        <div className="features-list">
+                                            {editingPlan.features.map((feature, index) => (
+                                                <div key={index} className="feature-input">
+                                                    <input
+                                                        type="text"
+                                                        value={feature}
+                                                        onChange={(e) => updateFeature(index, e.target.value)}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="remove-feature-btn"
+                                                        onClick={() => removeFeature(index)}
+                                                    >
+                                                        ❌
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div> */}
 
-                                    <div className="form-group">
+
+                                </div>
+                               
+                                {/* Description */}
+
+                                <div className="form-group">
                                         <label>Description</label>
                                         <textarea
                                             value={editingPlan.description}
@@ -404,15 +435,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                         />
                                     </div>
 
-                                    <div className="form-group">
-                                        <label>Pourquoi choisir</label>
-                                        <textarea
-                                            value={editingPlan.why_choose || ''}
-                                            onChange={(e) => updateEditingPlan('why_choose', e.target.value)}
-                                            rows={3}
-                                            placeholder="Idéal pour tester nos solutions avant de vous engager..."
-                                        />
-                                    </div>
 
                                     <div className="form-group">
                                         <label>Populaire</label>
@@ -426,7 +448,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             Marquer comme plan populaire
                                         </label>
                                     </div>
-                                </div>
 
                                 {/* Avantages clés */}
                                 <div className="form-section">
@@ -458,14 +479,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                 </div>
 
                                 {/* Fonctionnalités détaillées */}
-                                <div className="form-section">
+                                {/* <div className="form-section">
                                     <div className="features-header">
                                         <h4>Fonctionnalités détaillées</h4>
                                         <button type="button" className="add-feature-btn" onClick={addFeatureCategory}>
                                             ➕ Ajouter une catégorie
                                         </button>
                                     </div>
-                                    
+
                                     {(Array.isArray(editingPlan.detailed_features) ? editingPlan.detailed_features : []).map((category, categoryIndex) => (
                                         <div key={categoryIndex} className="feature-category-editor">
                                             <div className="category-header">
@@ -484,16 +505,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                                     ❌ Supprimer la catégorie
                                                 </button>
                                             </div>
-                                            
+
                                             <div className="category-features">
-                                                <button 
-                                                    type="button" 
+                                                <button
+                                                    type="button"
                                                     className="add-feature-btn small"
                                                     onClick={() => addFeatureToCategory(categoryIndex)}
                                                 >
                                                     ➕ Ajouter une fonctionnalité
                                                 </button>
-                                                
+
                                                 {category.features.map((feature, featureIndex) => (
                                                     <div key={featureIndex} className="feature-input">
                                                         <input
@@ -521,36 +542,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                                             </div>
                                         </div>
                                     ))}
-                                </div>
+                                </div> */}
+                                     {/* Pourquoi choisir */}
 
-                                {/* Fonctionnalités simples (pour PricingCard) */}
-                                <div className="form-section">
-                                    <div className="features-header">
-                                        <h4>Fonctionnalités principales (pour les cartes)</h4>
-                                        <button type="button" className="add-feature-btn" onClick={addFeature}>
-                                            ➕ Ajouter
-                                        </button>
-                                    </div>
-                                    <div className="features-list">
-                                        {editingPlan.features.map((feature, index) => (
-                                            <div key={index} className="feature-input">
-                                                <input
-                                                    type="text"
-                                                    value={feature}
-                                                    onChange={(e) => updateFeature(index, e.target.value)}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="remove-feature-btn"
-                                                    onClick={() => removeFeature(index)}
-                                                >
-                                                    ❌
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
+                                <div className="form-group">
+                                        <label>Pourquoi choisir</label>
+                                        <textarea
+                                            value={editingPlan.why_choose || ''}
+                                            onChange={(e) => updateEditingPlan('why_choose', e.target.value)}
+                                            rows={3}
+                                            placeholder="Idéal pour tester nos solutions avant de vous engager..."
+                                        />
+                                    </div> 
                                 <div className="form-actions">
                                     <button className="cancel-btn" onClick={() => { setEditingPlan(null); setShowAddForm(false); }}>
                                         Annuler

@@ -67,8 +67,7 @@ export async function UserRegister(data: UserRegisterInput) {
 
   // Nettoyer le numéro de téléphone (enlever espaces, tirets, etc.)
   let cleanPhoneNumber = phonenumber.replace(/[\s\-\(\)\.]/g, '');
-  
-  // Valider le format (10 chiffres commençant par 0, ou format international)
+
   if (!/^(0[1-9]\d{8}|(\+33|0033)[1-9]\d{8})$/.test(cleanPhoneNumber)) {
     const err = new Error("Numéro de téléphone invalide. Format attendu : 0612345678 ou +33612345678");
     (err as any).statusCode = 422;
@@ -129,7 +128,6 @@ const [resMembre] = await conn.query(
 const membreId = (resMembre as any).insertId;
 
 if (siret || name) {
-  //  12 colonnes  ⇔  12 valeurs, dans le MÊME ordre
 const [resSociete] = await conn.query(
   `INSERT INTO presocietes (
      name, size, legal_form, siret, role,
@@ -159,7 +157,6 @@ await conn.commit();
 
   //ENVOI DU CODE PAR SMS
     try {
-      console.log(`Envoi SMS au numéro: ${cleanPhoneNumber} avec code: ${otp}`);
       
       const response = await axios.post(
         "https://integrations-api.solutravo-compta.fr/api/send_sms", 
@@ -284,90 +281,6 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
   return (updatedRows as any)[0];
 }
 
-//RESEND OTP 
-// export async function ResendVerificationCode(email: string) {
-//   const conn = await pool.getConnection();
-//   try {
-//     await conn.beginTransaction();
-
-//     const [rows] = await conn.query("SELECT * FROM membres WHERE email = ?", [email]);
-//     const user: any = (rows as any)[0];
-//     if (!user) throw new Error("Utilisateur introuvable");
-//     if (user.isVerified) throw new Error("Utilisateur déjà vérifié");
-
-//     const otp = genOTP();
-//     const expiry = new Date(Date.now() + 3 * 60 * 1000);
-
-    
-//     const cleanPhoneNumber = user.phonenumber
-//       ?.replace(/\s+/g, "")
-//       ?.replace(/^0/, "+33"); // Convertir 06... → +336...
-
-//     if (!cleanPhoneNumber) {
-//       throw new Error("Aucun numéro de téléphone associé à cet utilisateur");
-//     }
-
-//     // ✅ Envoi du SMS
-//     try {
-//       console.log(`Envoi SMS au numéro: ${cleanPhoneNumber} avec code: ${otp}`);
-
-//       const response = await axios.post(
-//         "https://integrations-api.solutravo-compta.fr/api/send_sms",
-//         {
-//           phone: [cleanPhoneNumber],
-//           code: parseInt(otp),
-//           message: `Merci de nous rejoindre sur Solutravo, votre partenaire de confiance dans le domaine du BTP.
-// Pour finaliser votre inscription et sécuriser votre compte, veuillez saisir le code de vérification envoyé par SMS ci-dessous : ${otp}, attention, il n'est valable que 3 minutes.`,
-//         },
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//             Accept: "application/json",
-//           },
-//         }
-//       );
-
-//       if (response.status === 200 && response.data.success) {
-//         console.log("✅ SMS envoyé avec succès:", response.data);
-//       } else {
-//         console.error("⚠️ Réponse SMS inattendue:", response.data);
-//         throw new Error("Le SMS n'a pas pu être envoyé");
-//       }
-//     } catch (error: any) {
-//       console.error("❌ Erreur lors de l'envoi du SMS:", error.response?.data || error.message);
-
-//       await conn.rollback();
-
-//       const err = new Error(
-//         error.response?.data?.message ||
-//           "Impossible d'envoyer le code de vérification par SMS. Vérifiez le numéro de téléphone."
-//       );
-//       (err as any).statusCode = 500;
-//       throw err;
-//     }
-
-//     // ✅ Mise à jour du code et expiration dans la base
-//     await conn.query(
-//       "UPDATE membres SET verificationCode = ?, verificationExpiry = ? WHERE email = ?",
-//       [otp, expiry, email]
-//     );
-
-//     await conn.commit();
-
-//     // ✅ Réponse finale
-//     return {
-//       email,
-//       message: "Code de vérification envoyé par SMS",
-//       phone: cleanPhoneNumber.replace(/^(\+33|0033)/, "0"), // Format FR pour affichage
-//     };
-//   } catch (err) {
-//     await conn.rollback();
-    
-//     throw err;
-//   } finally {
-//     conn.release();
-//   }
-// }
 
 function normalizePhoneNumber(phone: string): string {
   // Enlever tous les caractères non-numériques sauf +
@@ -449,10 +362,6 @@ export async function ResendVerificationCode(email: string){
   
   try {
     await conn.beginTransaction();
-
-    // ============================================
-    // 1. RÉCUPÉRER L'UTILISATEUR
-    // ============================================
     const [rows] = await conn.query(
       `SELECT id, email, prenom, nom, statut, verificationCode, verificationExpiry 
        FROM membres 
@@ -469,17 +378,12 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
-    // ⚠️ CORRECTION: Vérifier si code existe ET n'est pas expiré
     if (!user.verificationCode) {
       await conn.rollback();
       const err = new Error("Compte déjà vérifié. Vous pouvez vous connecter.");
       (err as any).statusCode = 400;
       throw err;
     }
-
-    // ============================================
-    // 2. RÉCUPÉRER LE TÉLÉPHONE
-    // ============================================
     const [societeRows] = await conn.query(
       "SELECT phonenumber FROM presocietes WHERE membre_id = ?",
       [user.id]
@@ -494,9 +398,6 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
-    // ============================================
-    // 3. NORMALISER LE TÉLÉPHONE
-    // ============================================
     const cleanPhoneNumber = normalizePhoneNumber(societe.phonenumber);
 
     // Validation format international
@@ -507,21 +408,15 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
-    // ============================================
-    // 4. GÉNÉRER NOUVEAU CODE
-    // ============================================
     const otp = genOTP();
     const expiry = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
-    console.log(`🔄 Renvoi code pour ${email}:`, {
+    console.log(`Renvoi code pour ${email}:`, {
       phone: cleanPhoneNumber,
       otp: otp,
       expiry: expiry
     });
 
-    // ============================================
-    // 5. METTRE À JOUR EN BD **AVANT** ENVOI SMS
-    // ============================================
     const [updateResult] = await conn.query(
       `UPDATE membres 
        SET verificationCode = ?, verificationExpiry = ? 
@@ -536,21 +431,13 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
-    // ============================================
-    // 6. COMMIT **AVANT** ENVOI SMS
-    // ============================================
     await conn.commit();
-    console.log('✅ Code mis à jour en BD');
+    console.log('Code mis à jour en BD');
 
-    // ============================================
-    // 7. ENVOYER SMS (APRÈS COMMIT)
-    // ============================================
     try {
       await sendOTPSMS(cleanPhoneNumber, otp, true);
     } catch (smsError: any) {
-      // ⚠️ IMPORTANT: Si SMS échoue, le code est DÉJÀ en BD
-      // On ne fait PAS de rollback ici car déjà commit
-      console.error('❌ SMS non envoyé mais code enregistré:', smsError.message);
+      console.error('SMS non envoyé mais code enregistré:', smsError.message);
       
       const err = new Error(
         `Code généré mais SMS non envoyé: ${smsError.message}. Réessayez dans quelques instants.`
@@ -559,9 +446,6 @@ export async function ResendVerificationCode(email: string){
       throw err;
     }
 
-    // ============================================
-    // 8. RETOURNER SUCCÈS
-    // ============================================
     const displayPhone = cleanPhoneNumber.replace(/^\+33/, '0');
     const maskedPhone = displayPhone.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 ** ** ** $5');
 
@@ -572,14 +456,10 @@ export async function ResendVerificationCode(email: string){
     };
 
   } catch (err: any) {
-    // Rollback si transaction encore active
     try {
       await conn.rollback();
     } catch (rollbackErr) {
-      // Transaction déjà terminée
     }
-    
-    // Relancer l'erreur avec statusCode
     if (err.statusCode) {
       throw err;
     }
@@ -649,19 +529,6 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
     if ((exists as any).length > 0) {
       throw new Error("Cet email est déjà utilisé.");
     }
-
-    // Vérifier si le SIRET est déjà utilisé
-    // if (siretAnnonceur && siretAnnonceur.trim() !== "") {
-    //   const [siretExists]: any = await conn.query(
-    //     "SELECT id FROM societes WHERE siret = ?",
-    //     [siretAnnonceur]
-    //   );
-    //   if (siretExists.length > 0) {
-    //     const err = new Error("Ce SIRET est déjà associé à une société.");
-    //     (err as any).statusCode = 409;
-    //     throw err;
-    //   }
-    // }
     if (siretAnnonceur && siretAnnonceur.trim() !== "") {
   // Vérifier dans les DEUX tables car un SIRET ne peut pas être réutilisé
   const [siretExists]: any = await conn.query(
@@ -899,7 +766,6 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     const otp = genOTP();
     const expiry = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
-    // Mot de passe temporaire haché
     const tempPassword = await bcrypt.hash("__PENDING__", 10);
 
     // Insertion dans la table MEMBRES
@@ -921,7 +787,6 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
     );
     const membreId = (resMembre as any).insertId;
 
-    // Déterminer le secteur (principal ou custom)
     const finalSector = sector === 'autres' ? customSector : sector;
 
     // Insertion dans PRESOCIETES
@@ -952,7 +817,6 @@ export async function FournisseurRegister(data: FournisseurRegisterInput) {
 
     await conn.commit();
 
-    // Envoi email OTP au fournisseur
 
     // Envoi email professionnel à Solutravo
     try {

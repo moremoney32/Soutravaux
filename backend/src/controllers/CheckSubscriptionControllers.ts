@@ -64,13 +64,13 @@ const plansParsed = plans.map((p: any) => {
                     }])
                 };
                 
-                console.log(`📄 Plan ${p.name} - features:`, parsedPlan.features?.length || 0, 'éléments');
-                console.log(`📄 Plan ${p.name} - key_benefits:`, parsedPlan.key_benefits?.length || 0, 'éléments');
-                console.log(`📄 Plan ${p.name} - detailed_features:`, parsedPlan.detailed_features?.length || 0, 'catégories');
+                console.log(`Plan ${p.name} - features:`, parsedPlan.features?.length || 0, 'éléments');
+                console.log(`Plan ${p.name} - key_benefits:`, parsedPlan.key_benefits?.length || 0, 'éléments');
+                console.log(`Plan ${p.name} - detailed_features:`, parsedPlan.detailed_features?.length || 0, 'catégories');
                 
                 return parsedPlan;
             } catch (error) {
-                console.error(`❌ Erreur parsing plan ${p.name}:`, error);
+                console.error(`Erreur parsing plan ${p.name}:`, error);
                 // Retourner le plan avec des valeurs par défaut en cas d'erreur
                 return {
                     ...p,
@@ -101,16 +101,16 @@ const plansParsed = plans.map((p: any) => {
     return res.status(500).json({ error: "Erreur interne serveur" });
   }
 };
-// Fonction helper pour parser JSON en toute sécurité
+// Fonction helper pour parser JSON 
 const safeJsonParse = (str: any, defaultValue: any) => {
     if (!str) return defaultValue;
-    if (typeof str === 'object') return str; // Déjà parsé
+    if (typeof str === 'object') return str; 
     if (typeof str !== 'string') return defaultValue;
     
     try {
         return JSON.parse(str);
     } catch (error) {
-        console.warn("❌ Erreur parsing JSON:", str, "-> utilisation valeur par défaut");
+        console.warn("Erreur parsing JSON:", str, "-> utilisation valeur par défaut");
         return defaultValue;
     }
 };

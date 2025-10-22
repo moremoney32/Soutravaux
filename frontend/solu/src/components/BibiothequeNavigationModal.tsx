@@ -50,7 +50,7 @@ const BibliothequeNavigationModal: React.FC<BibliothequeNavigationModalProps> = 
     const baseUrlTest = "https://laravel-api.solutravo-compta.fr/api";
     const familles: LibraryCategory[] = bibliotheque.library_categories || [];
 
-    // 🔢 Compter les produits dans une branche
+    // Compter les produits dans une branche
     const countProducts = useCallback((item: LibraryCategory | SubCategory | SubCategory2): number => {
         let count = 0;
 

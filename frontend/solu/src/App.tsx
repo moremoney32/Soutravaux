@@ -5,6 +5,7 @@ import Register from "../features/auth/register/Register";
 import "./app.css";
 import SubscriptionPage from "./components/SubscriptionPage";
 import BibliothequesDashboard from "./components/BibiothequeDashboard";
+import PlanFeatureManager from "./components/PlanFeatureManager";
 
 function App() {
   
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Register />} />
          <Route path="/subscription" element={<SubscriptionPage />} />
          <Route path="/catalogue" element={<BibliothequesDashboard />} />
+         <Route path="/feature" element={<PlanFeatureManager />} />
 
       </Routes>
     </BrowserRouter>

@@ -8,6 +8,7 @@
 }
 
 .option-row {
+  background-color: white;
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.2s ease-in-out;
   color:#505151;
@@ -18,22 +19,24 @@
   font-size: 0.8rem;
 }
 
-.options-table th:nth-child(2) { width: 30%; }
+.options-table th:nth-child(2) { width: 30%;
+ }
 
 .option-row:hover {
   background-color: var(--color-gray-100);
 }
 
 .options-table thead {
-  background-color: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
+  /* background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb; */
 }
 
+
 .options-table th {
-  background: #f9fafb; 
-  color: #6b7280;      
+  /* background: #f9fafb;*/ 
+  color: #515050;      
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .option-input,
@@ -74,6 +77,10 @@
   background-color: #e5e7eb;
   color: var(--color-gray-700);
 }
+td{
+  background-color: #f3f4f6;
+}
+
 
 .badge-green-light {
   background-color: var(--color-green-light);

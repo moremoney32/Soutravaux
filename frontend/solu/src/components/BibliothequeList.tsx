@@ -3,7 +3,7 @@ import React from 'react';
 import '../styles/BibliothequeList.css';
 import type { Bibliotheque } from './BibiothequeDashboard';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faAngleLeft, faAngleRight, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 interface PaginationInfo {
     current_page: number;
@@ -134,7 +134,10 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
                         />
                     </div>
                     <button className="add-button" onClick={onAddBibliotheque}>
-                        Ajouter une Bibliothèque
+                       <FontAwesomeIcon
+                            icon={faAdd}
+                            // className="search-icon-main"
+                        />  Ajouter une Bibliothèque
                     </button>
                 </div>
             </div>
@@ -172,18 +175,17 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
              {pagination && pagination.last_page > 0 && (
                 <>
                     <div className="pagination">
-                        <div className="pagination-info">
+                         <div className='color_transparent'>1</div> 
+                        {/* <div className="pagination-info">
                             Page {pagination.current_page} sur {pagination.last_page} •
                             {pagination.total} résultat{pagination.total > 1 ? 's' : ''}
-                        </div>
+                        </div>  */}
                         <div className='parent_button'>
-                            <button
-                                className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+                            <FontAwesomeIcon
+                            icon={faAngleLeft}
+                             className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
                                 onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                            >
-                                ‹ Précédent
-                            </button>
+                        />
                             <div className="pagination-numbers">
                                 {getPageNumbers().map((page, index) =>
                                     page === '...' ? (
@@ -201,14 +203,11 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
                                     )
                                 )}
                             </div>
-
-                            <button
-                                className={`pagination-btn ${currentPage === pagination.last_page ? 'disabled' : ''}`}
+                             <FontAwesomeIcon
+                            icon={faAngleRight}
+                             className={`pagination-btn ${currentPage === pagination.last_page ? 'disabled' : ''}`}
                                 onClick={() => currentPage < pagination.last_page && onPageChange(currentPage + 1)}
-                                disabled={currentPage === pagination.last_page}
-                            >
-                                Suivant ›
-                            </button>
+                        />
 
 
                         </div>
