@@ -98,7 +98,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./frontend/solu/dist/
-          server-dir: ./public_html/
+          server-dir: ./
           exclude: |
             **/.git*
             **/.github/
