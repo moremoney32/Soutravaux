@@ -18,13 +18,13 @@ jobs:
       # 2. Afficher l'environnement de déploiement
       - name: Display deployment info
         run: |
-          echo "🎯 Branche: ${{ github.ref }}"
+          echo "Branche: ${{ github.ref }}"
           if [ "${{ github.ref }}" == "refs/heads/prod_franck" ]; then
-            echo "🚀 Environnement: PRODUCTION"
+            echo "Environnement: PRODUCTION"
           else
-            echo "🚀 Environnement: STAGING"
+            echo "Environnement: STAGING"
           fi
-          echo "🏗️ Structure du projet :"
+          echo "Structure du projet :"
           find . -name "package.json" -maxdepth 3
 
       # 3. Setup Node.js
@@ -54,17 +54,17 @@ jobs:
         working-directory: ./frontend/solu
         run: |
           if [ ! -d "dist" ]; then
-            echo "❌ ERREUR: Le dossier dist/ n'a pas été créé"
+            echo "ERREUR: Le dossier dist/ n'a pas été créé"
             ls -la
             exit 1
           fi
-          echo "✅ Build réussie"
-          echo "📊 Contenu du dossier dist :"
+          echo "Build réussie"
+          echo "Contenu du dossier dist :"
           ls -la dist/
-          echo "📊 Taille du build :"
+          echo "Taille du build :"
           du -sh dist/
 
-      # 7. Déployer VERS STAGING (si branche franck_staging)
+      # 7. Déployer VERS STAGING (franck_staging)
       - name: Deploy to Staging
         if: github.ref == 'refs/heads/franck_staging'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -75,7 +75,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./frontend/solu/dist/
-          server-dir: ./public_html/
+          server-dir: ./
           exclude: |
             **/.git*
             **/.github/
@@ -89,7 +89,7 @@ jobs:
             **/.env*
           dangerous-clean-slate: true
 
-      # 8. Déployer VERS PRODUCTION (si branche prod_franck)
+      # 8. Déployer VERS PRODUCTION ( prod_franck)
       - name: Deploy to Production
         if: github.ref == 'refs/heads/prod_franck'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
