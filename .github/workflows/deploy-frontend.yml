@@ -1,0 +1,113 @@
+name: Deploy Frontend to Hostinger
+
+on:
+  push:
+    branches:
+      - franck_staging     # Auto → Staging
+      - prod_franck        # Auto → Production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Récupérer le repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Afficher l'environnement de déploiement
+      - name: Display deployment info
+        run: |
+          echo "🎯 Branche: ${{ github.ref }}"
+          if [ "${{ github.ref }}" == "refs/heads/prod_franck" ]; then
+            echo "🚀 Environnement: PRODUCTION"
+          else
+            echo "🚀 Environnement: STAGING"
+          fi
+          echo "🏗️ Structure du projet :"
+          find . -name "package.json" -maxdepth 3
+
+      # 3. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: 'npm'
+          cache-dependency-path: './frontend/solu/package-lock.json'
+
+      # 4. Installer les dépendances
+      - name: Install dependencies
+        working-directory: ./frontend/solu  
+        run: npm ci
+
+      # 5. Build avec les variables d'environnement
+      - name: Build project
+        working-directory: ./frontend/solu
+        run: npm run build
+        env:
+          VITE_SOLUTRAVO_API_URL: ${{ secrets.VITE_SOLUTRAVO_API_URL }}
+          VITE_APP_VERSION: ${{ github.sha }}
+          VITE_APP_ENV: ${{ github.ref == 'refs/heads/prod_franck' && 'production' || 'staging' }}
+
+      # 6. Vérifier la build
+      - name: Verify build output
+        working-directory: ./frontend/solu
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ ERREUR: Le dossier dist/ n'a pas été créé"
+            ls -la
+            exit 1
+          fi
+          echo "✅ Build réussie"
+          echo "📊 Taille du build :"
+          du -sh dist/
+
+      # 7. Déployer VERS STAGING (si branche franck_staging)
+      - name: Deploy to Staging
+        if: github.ref == 'refs/heads/franck_staging'
+        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        with:
+          server: ${{ secrets.HOST_FRONT_FRANCK_STADING }}
+          username: ${{ secrets.USERNAME_FRONT_FRANCK_STADING }}
+          password: ${{ secrets.PASSWORD_FRONT_FRANCK_STADING }}
+          protocol: ftp
+          port: 21
+          local-dir: ./frontend/solu/dist/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.github/
+            **/node_modules/
+            **/README.md
+            **/package*.json
+            **/vite.config.*
+            **/tsconfig.*
+            **/docker*
+            **/*.dockerfile
+            **/.env*
+          dangerous-clean-slate: false
+
+      # 8. Déployer VERS PRODUCTION (si branche prod_franck)
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/prod_franck'
+        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        with:
+          server: ${{ secrets.HOST_FRONT_FRANCK_PROD }}
+          username: ${{ secrets.USERNAME_FRONT_FRANCK_PROD }}
+          password: ${{ secrets.PASSWORD_FRONT_FRANCK_PROD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./frontend/solu/dist/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.github/
+            **/node_modules/
+            **/README.md
+            **/package*.json
+            **/vite.config.*
+            **/tsconfig.*
+            **/docker*
+            **/*.dockerfile
+            **/.env*
+          dangerous-clean-slate: false
