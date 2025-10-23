@@ -3,6 +3,22 @@ import { AnnonceurControllers, FournisseurControllers, UserControllers, UserCont
 import { SearchCompanies } from "../controllers/CompanyController";
 import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, updateSettings } from "../controllers/PlanRoleContollers";
  import { CheckSubscription } from "../controllers/CheckSubscriptionControllers";
+ import {
+  getAllPlansController,
+  getPlansByRoleController,
+  getPlanByIdController,
+  getAllFeaturesController,
+  getFeaturesByPageController,
+  createFeatureController,
+  updateFeatureController,
+  deleteFeatureController,
+  getPlanFeaturesController,
+  addFeatureToPlanController,
+  removeFeatureFromPlanController,
+  syncPlanFeaturesController,
+  getPlansByFeatureController,
+  getFeaturesByRoleController
+} from '../controllers/featuresControllers';
 
 const router: Router = express.Router();
 
@@ -21,6 +37,111 @@ router.post("/plans", createPlan);
 router.delete("/plans/:id", deletePlan);
 router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
+
+
+
+// ROUTES - PLANS
+// ============================================
+
+/**
+ * @route   GET /api/admin/plans
+ * @desc    Récupérer tous les plans
+ * @access  Private/Admin
+ */
+router.get('/plans', getAllPlansController);
+
+/**
+ * @route   GET /api/admin/plans/by-role
+ * @desc    Récupérer les plans par rôle
+ * @access  Private/Admin
+ */
+router.get('/plans/by-role', getPlansByRoleController);
+
+/**
+ * @route   GET /api/admin/plans/:id
+ * @desc    Récupérer un plan par ID
+ * @access  Private/Admin
+ */
+router.get('/plans/:id', getPlanByIdController);
+
+// ============================================
+// ROUTES - FEATURES
+// ============================================
+
+/**
+ * @route   GET /api/admin/features
+ * @desc    Récupérer toutes les fonctionnalités
+ * @access  Private/Admin
+ */
+router.get('/features', getAllFeaturesController);
+
+/**
+ * @route   GET /api/admin/features/by-page
+ * @desc    Récupérer les fonctionnalités par page
+ * @access  Private/Admin
+ */
+router.get('/features/by-page', getFeaturesByPageController);
+
+/**
+ * @route   POST /api/admin/features
+ * @desc    Créer une nouvelle fonctionnalité
+ * @access  Private/Admin
+ */
+router.post('/features', createFeatureController);
+
+/**
+ * @route   PUT /api/admin/features/:id
+ * @desc    Mettre à jour une fonctionnalité
+ * @access  Private/Admin
+ */
+router.put('/features/:id', updateFeatureController);
+
+/**
+ * @route   DELETE /api/admin/features/:id
+ * @desc    Supprimer une fonctionnalité
+ * @access  Private/Admin
+ */
+router.delete('/features/:id', deleteFeatureController);
+
+// ============================================
+// ROUTES - FEATURE-PLAN ASSOCIATIONS
+// ============================================
+
+/**
+ * @route   GET /api/admin/plans/:planId/features
+ * @desc    Récupérer les fonctionnalités d'un plan avec statut
+ * @access  Private/Admin
+ */
+router.get('/plans/:planId/features', getPlanFeaturesController);
+
+/**
+ * @route   POST /api/admin/plans/:planId/features/sync
+ * @desc    Synchroniser les fonctionnalités d'un plan
+ * @access  Private/Admin
+ */
+router.post('/plans/:planId/features/sync', syncPlanFeaturesController);
+
+/**
+ * @route   POST /api/admin/features/:featureId/plans/:planId
+ * @desc    Ajouter une fonctionnalité à un plan
+ * @access  Private/Admin
+ */
+router.post('/features/:featureId/plans/:planId', addFeatureToPlanController);
+
+/**
+ * @route   DELETE /api/admin/features/:featureId/plans/:planId
+ * @desc    Retirer une fonctionnalité d'un plan
+ * @access  Private/Admin
+ */
+router.delete('/features/:featureId/plans/:planId', removeFeatureFromPlanController);
+
+/**
+ * @route   GET /api/admin/features/:featureId/plans
+ * @desc    Récupérer les plans associés à une fonctionnalité
+ * @access  Private/Admin
+ */
+router.get('/features/:featureId/plans', getPlansByFeatureController);
+router.get('/features/by-role', getFeaturesByRoleController);
 
 
 /**

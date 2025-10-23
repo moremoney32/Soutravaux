@@ -13,6 +13,7 @@ export interface Feature {
   name: string;
   page: string;
   parent_feature_id: number | null;
+  role: 'artisan' | 'annonceur';
 }
 
 export interface FeaturePlan {
@@ -24,3 +25,4 @@ export interface FeatureWithStatus extends Feature {
   enabled: boolean;
   inherited?: boolean;
 }
+

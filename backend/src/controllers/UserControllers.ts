@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-// import { UserRegister, VerifyCode, UserLogin } from "../controllers/UserControllers";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
