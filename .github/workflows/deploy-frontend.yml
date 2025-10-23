@@ -75,7 +75,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./frontend/solu/dist/
-          server-dir: ../
+          server-dir: /
           exclude: |
             **/.git*
             **/.github/
@@ -100,7 +100,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./frontend/solu/dist/
-          server-dir: ../
+          server-dir: /
           exclude: |
             **/.git*
             **/.github/
@@ -112,4 +112,3 @@ jobs:
             **/docker*
             **/*.dockerfile
             **/.env*
-          dangerous-clean-slate: true
