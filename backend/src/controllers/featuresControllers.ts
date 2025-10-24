@@ -210,7 +210,7 @@ export const createFeatureController = async (
       return;
     }
 
-    // VALIDATION CRITIQUE : le rôle est OBLIGATOIRE
+    // VALIDATION CRITIQUE : le rôle est OBLIGATOIRE**///
     if (!role || (role !== 'artisan' && role !== 'annonceur')) {
       res.status(400).json({
         success: false,
