@@ -143,12 +143,12 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
             </div>
 
             {loading && bibliotheques.length > 0 && (
-                <div className="loading-overlay">
-                    <div className="loading-spinner-small"></div>
+                <div className="loading-overlay1">
+                    <div className="loading-spinner-small1"></div>
                 </div>
             )}
 
-            <div className={`bibliotheques-grid ${loading ? 'loading' : ''}`}>
+            <div className={`bibliotheques-grid ${loading ? 'loading1' : ''}`}>
                 {bibliotheques.length === 0 ? (
                     <div className="empty-state">
                         <div className="empty-icon">📚</div>
