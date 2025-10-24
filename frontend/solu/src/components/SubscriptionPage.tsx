@@ -214,7 +214,7 @@ const SubscriptionPage: React.FC = () => {
         if (stripeLink) {
           const payload = {
             price_id: stripeLink,
-            societe_id: societe_id,
+            societe_id: Number(societe_id),
             plan_id: planId
           }
           console.log(payload)
