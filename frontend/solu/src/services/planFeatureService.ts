@@ -27,6 +27,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   return data.data || data;
 }
 
+
 export const planFeatureApi = {
   // Plans
   getPlans: async (): Promise<Plan[]> => {
