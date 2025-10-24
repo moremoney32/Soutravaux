@@ -219,7 +219,7 @@ const SubscriptionPage: React.FC = () => {
           }
           console.log(payload)
           try {
-            const res = await fetch("https://paiement-api.solutravo-compta.fr/api/stripe/customer", {
+            const res = await fetch("https://integrations-api.solutravo-compta.fr/api/stripe/customer", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
