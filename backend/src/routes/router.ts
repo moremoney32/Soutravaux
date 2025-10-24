@@ -41,7 +41,7 @@ router.get("/subscription-settings", getSettings);
 
 
 // ROUTES - PLANS
-// ============================================
+
 
 /**
  * @route   GET /api/admin/plans

@@ -191,7 +191,7 @@ export const createFeatureController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { name, page, parent_feature_id, role } = req.body; // ✅ AJOUT du rôle
+    const { name, page, parent_feature_id, role } = req.body; // AJOUT du rôle
 
     // Validation des champs requis
     if (!name || !name.trim()) {
