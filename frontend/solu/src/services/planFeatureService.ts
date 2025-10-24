@@ -4,7 +4,6 @@
 
 import type { Plan, Feature, FeatureWithStatus } from '../types';
 
-// const API_BASE = 'http://localhost:3000/api';
 const API_BASE =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"       // → version locale
@@ -20,7 +19,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: 'Erreur API' }));
+    const errorData = await response.json().catch(() => ({ message: `une erreur s'est produite` }));
     throw new Error(errorData.message || `Erreur ${response.status}`);
   }
 
