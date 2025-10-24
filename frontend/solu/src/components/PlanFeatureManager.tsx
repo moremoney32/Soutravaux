@@ -56,7 +56,7 @@ const PlanFeatureManager = () => {
       
     } catch (err: any) {
       console.error(`Erreur chargement plans ${role}:`, err);
-      setError(`Échec du chargement des plans ${role}: ${err.message}`);
+      setError(`Échec du chargement des plans ${role}`);
       setPlans([]);
     } finally {
       setLoading(false);
@@ -76,13 +76,13 @@ const PlanFeatureManager = () => {
   const counts: {[key: number]: number} = {};
   
   if (!selectedRole) {
-    console.warn('⚠️ Aucun rôle pour le comptage');
+    console.warn('Aucun rôle pour le comptage');
     return;
   }
   
   // Charger les features du rôle une seule fois
   const featuresForRole = await planFeatureApi.getFeaturesByRole(selectedRole);
-  console.log(`📊 Comptage: ${featuresForRole.length} features pour ${selectedRole}`);
+  console.log(`Comptage: ${featuresForRole.length} features pour ${selectedRole}`);
   
   // Pour chaque plan, compter ses fonctionnalités activées
   for (const plan of plansData) {
@@ -98,7 +98,7 @@ const PlanFeatureManager = () => {
       ).length;
       
       counts[plan.id] = enabledCount;
-      console.log(`📈 Plan ${plan.name}: ${enabledCount}/${featuresForRole.length} fonctionnalités`);
+      console.log(`Plan ${plan.name}: ${enabledCount}/${featuresForRole.length} fonctionnalités`);
     } catch (err) {
       console.error(`Erreur comptage plan ${plan.id}:`, err);
       counts[plan.id] = 0;
@@ -122,7 +122,7 @@ const PlanFeatureManager = () => {
   const loadPlanFeatures = async (planId: number) => {
   try {
     setLoading(true);
-    console.log(`🔄 Chargement features pour plan: ${planId}, rôle: ${selectedRole}`);
+    console.log(`Chargement features pour plan: ${planId}, rôle: ${selectedRole}`);
     
     if (!selectedRole) {
       console.warn('⚠️ Aucun rôle sélectionné');
@@ -130,19 +130,19 @@ const PlanFeatureManager = () => {
       return;
     }
     
-    // ✅ CHANGEMENT CRITIQUE : Charger SEULEMENT les features du rôle actuel
+    // CHANGEMENT CRITIQUE : Charger SEULEMENT les features du rôle actuel
     const featuresForRole = await planFeatureApi.getFeaturesByRole(selectedRole);
-    console.log(`📁 Features disponibles pour ${selectedRole}:`, featuresForRole.length);
+    console.log(`Features disponibles pour ${selectedRole}:`, featuresForRole.length);
     
-    // ✅ Récupérer les features activées pour ce plan spécifique
+    // Récupérer les features activées pour ce plan spécifique
     const planFeatures = await planFeatureApi.getPlanFeatures(planId);
     const enabledFeatureIds = planFeatures
       .filter((pf: any) => pf.enabled)
       .map((pf: any) => pf.id);
     
-    console.log(`🔧 Features activées pour plan ${planId}:`, enabledFeatureIds.length);
+    console.log(`Features activées pour plan ${planId}:`, enabledFeatureIds.length);
     
-    // ✅ Combiner les données
+    // Combiner les données
     const featuresWithStatus = featuresForRole.map((feature: any) => ({
       ...feature,
       enabled: enabledFeatureIds.includes(feature.id),
@@ -150,10 +150,10 @@ const PlanFeatureManager = () => {
     }));
     
     setFeaturesWithStatus(featuresWithStatus);
-    console.log(`✅ ${featuresWithStatus.length} features avec statut chargées`);
+    console.log(`${featuresWithStatus.length} features avec statut chargées`);
     
   } catch (err: any) {
-    console.error('💥 Erreur chargement features:', err);
+    console.error('Erreur chargement features:', err);
     setError(`Erreur chargement: ${err.message}`);
     setFeaturesWithStatus([]);
   } finally {
@@ -214,7 +214,7 @@ const PlanFeatureManager = () => {
       await planFeatureApi.addFeatureToPlan(featureId, selectedPlan.id);
     }
 
-    // ✅ CORRECTION : Recharger TOUTES les données
+    // CORRECTION : Recharger TOUTES les données
     await reloadAllData();
     
   } catch (err: any) {
@@ -230,7 +230,7 @@ const handleAddNewFeature = async () => {
 
   try {
     setError(null);
-    console.log(`🎯 Frontend: Début création feature pour rôle: ${selectedRole}`);
+    console.log(`Début création feature pour rôle: ${selectedRole}`);
     setLoading(true);
 
     const newFeature = await planFeatureApi.createFeature({
@@ -240,7 +240,7 @@ const handleAddNewFeature = async () => {
       role: selectedRole
     });
 
-    console.log(`✅ Frontend: Feature créée:`, newFeature);
+    console.log(`Frontend: Feature créée:`, newFeature);
 
     // ✅ CORRECTION : Recharger MANUELLEMENT le comptage
     if (plans.length > 0) {
@@ -257,7 +257,7 @@ const handleAddNewFeature = async () => {
     setShowAddFeatureModal(false);
     
   } catch (err: any) {
-    console.error('Frontend: Erreur création feature:', err);
+    console.error('Erreur création feature:', err);
     setError(`Échec création: ${err.message}`);
   } finally {
     setLoading(false);
@@ -354,7 +354,7 @@ const handleEditModuleFeatures = async () => {
       }
     }
 
-    // ✅ CORRECTION : Recharger TOUTES les données
+    // CORRECTION : Recharger TOUTES les données
     await reloadAllData();
 
     setShowModuleEditModal(false);

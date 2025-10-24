@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ isAdminMode, onToggleAdmin, currentSubs
             <div className="logo">
               <img src={solutravo} alt="Solutravo" className="logo-icon" />
             </div>
-            <span className="tagline">Leader BTP France</span>
+            {/* <span className="tagline">Leader BTP France</span> */}
           </div>
           
           <nav className="navigation">

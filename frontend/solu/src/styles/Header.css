@@ -146,10 +146,11 @@
   
   .logo {
     font-size: 1.5rem;
+    padding: 10px !important;
   }
   
   .logo-icon {
-    height: 28px;
+    height:45px !important;
   }
   
   .tagline {

@@ -82,9 +82,9 @@
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 15px;
-  max-width: 1200px;
+   /* max-width: 1200px;  */
   margin: 0 auto;
   padding: 0 20px;
   height: 100%;

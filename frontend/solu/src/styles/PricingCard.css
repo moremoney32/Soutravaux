@@ -16,7 +16,8 @@
   padding: 15px 12px;
   box-shadow: var(--shadow-light);
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
+   overflow: visible !important;  /* ← OBLIGATOIRE */
   transition: var(--transition-medium);
   border: 2px solid transparent;
  opacity: 0;
@@ -62,7 +63,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, var(--color-primary) 0%, #ff8c42 100%);
-    padding: 8px 24px;
+    padding: 6px 20px;
   border-radius: 0 0 var(--radius-medium) var(--radius-medium);
   font-size: 0.85rem;
   font-weight: 600;
@@ -72,7 +73,7 @@
    display: flex;
   align-items: center !important;
   gap: 4px;
-  width: 160px;
+   width: 180px; 
   justify-content: center;
 }
 .star_black{
@@ -80,17 +81,22 @@
     font-size: 18px;
      transform: translate3d(0,-2px,0); 
 }
+.star_white{
+    color:white;
+    font-size: 18px !important;
+     transform: translate3d(0,-2px,0); 
+}
 .popular-badge :nth-child(2){
     color:#ffffff
 }
 
-.current-badge {
+/* .current-badge {
   position: absolute;
   top: -1px;
   left: 50%;
   transform: translateX(-50%);
   color:#fff;
-  padding: 8px 24px;
+  padding: 6px 20px;
   border-radius: 0 0 var(--radius-medium) var(--radius-medium);
   font-size: 0.85rem;
   font-weight: 600;
@@ -100,9 +106,31 @@
    display: flex;
   align-items: center !important;
   gap: 4px;
-  width: 160px;
+  width: 180px;
   justify-content: center;
-}
+} */
+   .current-badge {
+  position: absolute;
+  top: -20px;
+  left: 25%;
+  transform: translateX(-50%) rotate(-30deg); 
+  color: #fff;
+  padding: 6px 20px;
+  border-radius: 0 0 var(--radius-medium) var(--radius-medium);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-light);
+  z-index: 100 !important;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 180px;
+  justify-content: center;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}   
+
+
 
 .card-header {
   text-align: center;
@@ -374,6 +402,26 @@
         width: 150px;
         font-size: 0.8rem;
     }
+       .current-badge {
+  position: absolute;
+  top: 10px;
+  left: 15%;
+  transform: translateX(-50%) rotate(-30deg); 
+  color: #fff;
+  padding: 6px 20px;
+  border-radius: 0 0 var(--radius-medium) var(--radius-medium);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-light);
+  z-index: 100 !important;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 180px;
+  justify-content: center;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
 }
 
 @media (max-width: 576px) {

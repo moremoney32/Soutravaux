@@ -71,14 +71,14 @@ const BibliothequeNavigationModal: React.FC<BibliothequeNavigationModalProps> = 
         return count;
     }, []);
 
-    // 🔍 RECHERCHE GLOBALE COMPLÈTE - Cherche PARTOUT
+    // RECHERCHE GLOBALE COMPLÈTE - Cherche PARTOUT
     const performGlobalSearch = useCallback((term: string): GlobalSearchResult[] => {
         if (!term.trim()) return [];
 
         const searchLower = term.toLowerCase().trim();
         const results: GlobalSearchResult[] = [];
 
-        // 1️⃣ Recherche dans FAMILLES
+        // 1Recherche dans FAMILLES
         familles.forEach(famille => {
             if (famille.name.toLowerCase().includes(searchLower)) {
                 results.push({

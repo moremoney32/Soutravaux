@@ -174,10 +174,10 @@ const PricingCard: React.FC<PricingCardProps> = ({
                     <span>Plus populaire</span>
                 </div>
             )}
-
+{/* style={{ backgroundColor: plan.color }} */}
             {isCurrentPlan && (
-                <div className="current-badge" style={{ backgroundColor: plan.color }}>
-                    <span>✓</span>
+                <div className="current-badge">
+                    <span className='star_white'>✓</span>
                     <span>Votre plan actuel</span>
                 </div>
             )}

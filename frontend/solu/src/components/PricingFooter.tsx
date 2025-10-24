@@ -460,7 +460,7 @@ const PricingFooter: React.FC<PricingFooterProps> = ({ plans }) => {
                                 <small>{plan.subtitle}</small>
                             </span>
                             <span className="nav-button-price">
-                                {plan.price}€<small>{plan.period}</small>
+                                {plan.price.toString().replace('.00', '')}€<small>{plan.period}</small>
                             </span>
                         </motion.button>
                     ))}
@@ -485,7 +485,7 @@ const PricingFooter: React.FC<PricingFooterProps> = ({ plans }) => {
                                     </div>
                                 </div>
                                 <div className="plan-hero-price">
-                                    <span className="price-value">{activePlan.price}€</span>
+                                    <span className="price-value"> {activePlan.price.toString().replace('.00', '')}€</span>
                                     <span className="price-period">{activePlan.period}</span>
                                 </div>
                             </div>
