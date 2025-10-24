@@ -426,7 +426,7 @@
         width: 150px;
         font-size: 0.8rem;
     }
-.current-badge {
+/* .current-badge {
   position: absolute;
   top: 10px;
   left: 15%;
@@ -445,7 +445,27 @@
   width: 180px;
   justify-content: center;
   background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-}
+} */
+   .current-badge {
+  position: absolute;
+  top: 20px;
+  left: 20%;
+  transform: translateX(-50%) rotate(-30deg); 
+  color: #fff;
+  padding: 6px 20px;
+  border-radius: 0 0 var(--radius-medium) var(--radius-medium);
+  font-size: 0.7rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-light);
+  z-index: 100 !important;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 700px !important;
+  justify-content: center;
+  background: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+} 
 }
 
 @media (max-width: 576px) {
