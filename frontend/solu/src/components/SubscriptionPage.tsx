@@ -1277,7 +1277,7 @@ const SubscriptionPage: React.FC = () => {
                 exit={{ scale: 0.7, opacity: 0, y: -50 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
-                <div className="popup_text2">
+                <div className="popup_text21">
                   <span className="popup_title2">Confirmez votre changement</span>
                   <span className="popup_title_span">
                     {confirmationType === 'downgrade-to-free' && 
