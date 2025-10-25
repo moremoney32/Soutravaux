@@ -1260,7 +1260,7 @@ const SubscriptionPage: React.FC = () => {
         </AnimatePresence>
 
         {/* NOUVELLE POPUP DE CONFIRMATION */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {showConfirmationPopup && (
             <>
               <motion.div
@@ -1271,14 +1271,14 @@ const SubscriptionPage: React.FC = () => {
                 transition={{ duration: 0.3 }}
               />
               <motion.div
-                className="popup1"
+                className="popup21"
                 initial={{ scale: 0.7, opacity: 0, y: -50 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.7, opacity: 0, y: -50 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 <div className="popup_text">
-                  <span className="popup_title">Confirmez votre changement</span>
+                  <span className="popup_title2">Confirmez votre changement</span>
                   <span className="popup_title_span">
                     {confirmationType === 'downgrade-to-free' && 
                       "Vous allez passer à l'offre gratuite. Vous perdrez l'accès à certaines fonctionnalités. Souhaitez-vous continuer ?"}
@@ -1307,7 +1307,55 @@ const SubscriptionPage: React.FC = () => {
               </motion.div>
             </>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
+
+        <AnimatePresence>
+  {showConfirmationPopup && (
+    <>
+      <motion.div
+        className="masque"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.6 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      />
+      <motion.div
+        className="popup21"
+        initial={{ scale: 0.7, opacity: 0, y: -50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.7, opacity: 0, y: -50 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="popup_text14">
+          <span className="popup_title14">Confirmez votre changement</span>
+          <span className="popup_title_span14">
+            {confirmationType === 'downgrade-to-free' && 
+              "Vous allez passer à l'offre gratuite. Vous perdrez l'accès à certaines fonctionnalités. Souhaitez-vous continuer ?"}
+            {confirmationType === 'downgrade' && 
+              "Vous allez passer à une offre inférieure. Certaines fonctionnalités ne seront plus disponibles. Souhaitez-vous continuer ?"}
+          </span>
+        </div>
+        <div className="popup_buttons14">
+          <div className="popup_buttons14" onClick={() => setShowConfirmationPopup(false)}>
+            Annuler
+          </div>
+          <div 
+            className="popup_buttons14" 
+            onClick={confirmSubscriptionChange}
+          >
+            Confirmer
+          </div>
+        </div>
+        <img
+          src={close}
+          alt="Fermer"
+          className="close_icon14"
+          onClick={() => setShowConfirmationPopup(false)}
+        />
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
       </main>
 
       <PricingFooter plans={footerPlans} />
