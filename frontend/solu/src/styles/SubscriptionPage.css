@@ -135,7 +135,6 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
-    backdrop-filter: blur(2px);
 }
 .popup21{
     position:absolute;
@@ -219,14 +218,13 @@
 
 .close_icon14 {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 7px;
+  right: 10px;
   width: 20px;
   height: 20px;
   cursor: pointer;
   opacity: 0.7;
   transition: opacity 0.3s ease;
-  filter: invert(0.5);
 }
 
 .close_icon14:hover {
@@ -399,7 +397,7 @@
     gap: 20px;
     padding: 20px;
     padding-bottom: 30px;
-    width: 250px;
+    width: 300px;
     background: white;
     z-index: 10;
     top: 40%;
