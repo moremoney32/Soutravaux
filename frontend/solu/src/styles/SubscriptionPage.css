@@ -138,11 +138,11 @@
   margin-bottom: 20px;
   display: block;
 }
-.popup_title2{
+/* .popup_title2{
   font-weight: 500 !important;
   font-size: 1.1rem !important;
   color: var(--color-dark) !important;
-}
+} */
 
 .loading-content p {
   font-size: 1.2rem;
