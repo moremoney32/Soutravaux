@@ -119,7 +119,7 @@ export async function CreateFeature(featureData: {
 }): Promise<any> {
   const conn = await pool.getConnection();
   try {
-    console.log('🆕 Service: Création feature avec rôle:', featureData.role);
+    console.log('Service: Création feature avec rôle:', featureData.role);
     
     // 1. Créer la feature
     const [result] = await conn.query(
@@ -128,7 +128,7 @@ export async function CreateFeature(featureData: {
     );
     
     const newFeatureId = (result as any).insertId;
-    console.log('✅ Service: Feature créée avec ID:', newFeatureId);
+    console.log('Service: Feature créée avec ID:', newFeatureId);
     
     // 2. IDs fixes des plans entreprise
     const enterprisePlanIds: { [key: string]: number } = {
@@ -139,7 +139,7 @@ export async function CreateFeature(featureData: {
     const enterprisePlanId = enterprisePlanIds[featureData.role];
     
     if (enterprisePlanId) {
-      // ✅ CORRECTION : Vérifier si la liaison existe déjà
+      //CORRECTION : Vérifier si la liaison existe déjà
       const [existingLink] = await conn.query(
         'SELECT * FROM feature_plans WHERE feature_id = ? AND plan_id = ?',
         [newFeatureId, enterprisePlanId]
@@ -151,9 +151,9 @@ export async function CreateFeature(featureData: {
           'INSERT INTO feature_plans (feature_id, plan_id) VALUES (?, ?)',
           [newFeatureId, enterprisePlanId]
         );
-        console.log(`✅ Service: Feature liée au plan entreprise ${enterprisePlanId} (${featureData.role})`);
+        console.log(`Service: Feature liée au plan entreprise ${enterprisePlanId} (${featureData.role})`);
       } else {
-        console.log('ℹ️  Liaison existe déjà, pas de doublon créé');
+        console.log('ℹLiaison existe déjà, pas de doublon créé');
       }
     } else {
       console.warn('⚠️ Service: Aucun plan entreprise défini pour rôle:', featureData.role);
@@ -164,7 +164,7 @@ export async function CreateFeature(featureData: {
     return (newFeature as any[])[0];
     
   } catch (error: any) {
-    console.error('❌ Service: Erreur création feature:', error);
+    console.error('Service: Erreur création feature:', error);
     throw error;
   } finally {
     conn.release();

@@ -97,7 +97,7 @@ const SubscriptionPage: React.FC = () => {
 
   console.log("Payment Status:", paymentStatus);
   console.log("Show Popup:", showSuccessPopup);
-  console.log(paymentStatus)
+  console.log(paymentStatus);
   console.log(transformPlansForFooter)
   //  TRANSFORMER LES PLANS POUR LE FOOTER
   
@@ -131,11 +131,9 @@ const SubscriptionPage: React.FC = () => {
   }, [paymentStatus, membre_id, societe_id]);
 
   function getSettings() {
-    // fetch("https://solutravo.zeta-app.fr/api/subscription-settings")
      fetch(`${baseUrlTest}/subscription-settings`)
       .then(res => res.json())
       .then(data => {
-        // console.log("Données settings:", data);
         setPageTitle(data.hero_title);
         setPageSubtitle(data.hero_subtitle);
       })
@@ -144,7 +142,6 @@ const SubscriptionPage: React.FC = () => {
   }
   const fetchData = async () => {
     try {
-      // const res = await fetch("https://solutravo.zeta-app.fr/api/check_subscription", {
        const res = await fetch(`${baseUrlTest}/check_subscription`, {
         method: "POST",
         headers: {
@@ -223,8 +220,6 @@ const SubscriptionPage: React.FC = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                // "Accept":"application/json"
-                // "Authorization": `Bearer ${token}`
               },
               body: JSON.stringify(payload)
             });

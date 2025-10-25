@@ -45,9 +45,9 @@ const PricingCard: React.FC<PricingCardProps> = ({
             return 'Plan actuel';
         }
         
-        if (isDisabled) {
-            return 'Indisponible'; // Texte pour gratuit quand on a un payant
-        }
+        // if (isDisabled) {
+        //     return 'Indisponible'; // Texte pour gratuit quand on a un payant
+        // }
         
         return 'Activer cette Offre';
     };
@@ -99,11 +99,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
                     </button>
                     
                     {/* Message d'explication */}
-                    {isDisabled && (
+                    {/* {isDisabled && (
                         <div className="disabled-message">
                             ⚠️ Non disponible pour les abonnés payants
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
             

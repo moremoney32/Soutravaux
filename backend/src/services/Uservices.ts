@@ -249,6 +249,38 @@ export async function VerifyCode({ email, code }: VerifyInput) {
 }
 
 //  COMPLETE REGISTRATION 
+// export async function CompleteRegistration({ email, passe }: CompleteRegistrationInput) {
+//   if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
+//     const err = new Error("Mot de passe trop faible");
+//     (err as any).statusCode = 422;
+//     throw err;
+//   }
+
+//   const [rows] = await pool.query("SELECT * FROM membres WHERE email = ?", [email]);
+//   const user: any = (rows as any)[0];
+//   if (!user) {
+//     const err = new Error("Utilisateur introuvable");
+//     (err as any).statusCode = 404;
+//     throw err;
+//   }
+
+//   if (!user.isVerified) {
+//     const err = new Error("Compte non vérifié (OTP manquant)");
+//     (err as any).statusCode = 410;
+//     throw err;
+//   }
+
+//   const hashed = await bcrypt.hash(passe, 10);
+
+//   await pool.query(
+//     "UPDATE membres SET passe = ?, date_modification = NOW() WHERE email = ?",
+//     [hashed, email]
+//   );
+
+//   const [updatedRows] = await pool.query("SELECT id, email, prenom FROM membres WHERE email = ?", [email]);
+//   return (updatedRows as any)[0];
+// }
+
 export async function CompleteRegistration({ email, passe }: CompleteRegistrationInput) {
   if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
     const err = new Error("Mot de passe trop faible");
@@ -278,9 +310,32 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
   );
 
   const [updatedRows] = await pool.query("SELECT id, email, prenom FROM membres WHERE email = ?", [email]);
-  return (updatedRows as any)[0];
-}
+  const updatedUser = (updatedRows as any)[0];
 
+  // ENVOI DE L'EMAIL DE BIENVENUE APRÈS INSCRIPTION COMPLÈTE
+  try {
+    const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
+      receiver:"vincent@solutravo.fr",
+      sender: "no-reply@elyft.tech",
+      subject: `🎉 Bienvenue sur Solutravo !`,
+      message: `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <h2 style="color: #e67131;">Félicitations à ${updatedUser.prenom || "cher utilisateur"} ! 🎉</h2>
+        
+        <p>Son compte <strong style="color: #e67131;">Solutravo</strong> à été activé avec succès !</p>
+      </div>
+      `
+    });
+
+    if (response.status !== 201) {
+      console.warn("Email de bienvenue non envoyé, mais compte créé");
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi du mail de bienvenue:", error);
+  }
+
+  return updatedUser;
+}
 
 function normalizePhoneNumber(phone: string): string {
   // Enlever tous les caractères non-numériques sauf +

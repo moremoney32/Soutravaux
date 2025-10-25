@@ -264,44 +264,92 @@ function Register() {
     }, [slides.length]);
 
 
+    // useEffect(() => {
+    //     if (checkSiret.length >= 3 && companyStatus === "existante" && isSelectingSearch) {
+    //         const timer = setTimeout(async () => {
+    //             try {
+    //                 const { result } = await fetchData(`entreprises?siret=${checkSiret}`, "GET", null, "");
+    //                 console.log(result)
+    //                 setSuggestions(result || []);
+    //             } catch (err) {
+    //                 console.error("Erreur API entreprises:", err);
+    //                 setSuggestions([]);
+    //             }
+    //         }, 400);
+
+    //         return () => clearTimeout(timer);
+    //     }
+
+    //     if (checkSiret.length === 0) {
+    //         setSuggestions([]);
+    //     }
+    // }, [checkSiret, companyStatus, isSelectingSearch]);
     useEffect(() => {
-        if (checkSiret.length >= 3 && companyStatus === "existante" && isSelectingSearch) {
-            const timer = setTimeout(async () => {
-                try {
-                    const { result } = await fetchData(`entreprises?siret=${checkSiret}`, "GET", null, "");
-                    console.log(result)
-                    setSuggestions(result || []);
-                } catch (err) {
-                    console.error("Erreur API entreprises:", err);
-                    setSuggestions([]);
-                }
-            }, 400);
+    if (checkSiret.length >= 3 && companyStatus === "existante" && isSelectingSearch) {
+        const timer = setTimeout(async () => {
+            try {
+                // DÉTECTER SI C'EST UN SIRET OU UN NOM
+                const isSiret = /^\d+$/.test(checkSiret); // Que des chiffres
+                const paramName = isSiret ? 'siret' : 'nom';
+                
+                const { result } = await fetchData(
+                    `entreprises?${paramName}=${encodeURIComponent(checkSiret)}`, 
+                    "GET", 
+                    null, 
+                    ""
+                );
+                
+                console.log("Résultats recherche:", result);
+                setSuggestions(result || []);
+            } catch (err) {
+                console.error("Erreur API entreprises:", err);
+                setSuggestions([]);
+            }
+        }, 400);
 
-            return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timer);
+    }
 
-        if (checkSiret.length === 0) {
-            setSuggestions([]);
-        }
-    }, [checkSiret, companyStatus, isSelectingSearch]);
+    if (checkSiret.length === 0) {
+        setSuggestions([]);
+    }
+}, [checkSiret, companyStatus, isSelectingSearch]);
 
 
-    // quand on choisit une suggestion
-    const handleSelectCompany = (company: any) => {
-        console.log(company.cp)
+    // // quand on choisit une suggestion
+    // const handleSelectCompany = (company: any) => {
+    //     console.log(company)
+    //     setCompanyName(company.nom);
+    //     setCheckSiret(company.siret); // stockage du siret/siren
+    //     setIsSelectingSearch(false);
+    //     setCp(company.code);
+    //     setVille(company.libelle);
+    //     setRue(`${company.rue} ${company.ville}`);
+    //     // setAddress(`${company.type} ${company.ville} ${company.code} ${company.libelle}`);
+    //     setAddress(`${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`);
+    //     setValue("siret", company.siret, { shouldValidate: true });
+    //     setValue("name", company.nom, { shouldValidate: true });
+    //     setSuggestions([]); // on cache la liste
+    //     setValue("address", ` ${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
+    // };
+
+      const handleSelectCompany = (company: any) => {
+        console.log(company)
         setCompanyName(company.nom);
         setCheckSiret(company.siret); // stockage du siret/siren
         setIsSelectingSearch(false);
-        setCp(company.code);
-        setVille(company.libelle);
-        setRue(`${company.rue} ${company.ville}`);
+        setCp(company.codePostal);
+        setVille(company.ville);
+        setRue(`${company.adresse}`);
         // setAddress(`${company.type} ${company.ville} ${company.code} ${company.libelle}`);
-        setAddress(`${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`);
+        setAddress(`${company.adresse} ${company.codePostal} ${company.ville}`);
         setValue("siret", company.siret, { shouldValidate: true });
         setValue("name", company.nom, { shouldValidate: true });
         setSuggestions([]); // on cache la liste
-        setValue("address", ` ${company.cp} ${company.type} ${company.ville} ${company.code} ${company.libelle}`, { shouldValidate: true });
+        setValue("address", ` ${company.adresse} ${company.codePostal} ${company.ville}`, { shouldValidate: true });
     };
+
+
 
     //Synchronisation entre React Hook Form et les états React
     useEffect(() => {
