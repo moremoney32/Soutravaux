@@ -1336,7 +1336,7 @@ const SubscriptionPage: React.FC = () => {
           </span>
         </div>
         <div className="popup_buttons14">
-          <div className="popup_buttons114" onClick={() => setShowConfirmationPopup(false)}>
+          <div className="popup_buttons14" onClick={() => setShowConfirmationPopup(false)}>
             Annuler
           </div>
           <div 

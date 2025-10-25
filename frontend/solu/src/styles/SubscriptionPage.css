@@ -185,7 +185,7 @@
   margin-top: 10px;
 }
 
-.popup_buttons114 {
+.popup_buttons14 {
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 14px;
@@ -397,11 +397,11 @@
     gap: 20px;
     padding: 20px;
     padding-bottom: 30px;
-    width: 300px;
+    width: 320px;
     background: white;
-    z-index: 10;
+    z-index: 10000;
     top: 40%;
-    left: 4%;
+    left: 7%;
     transform: translate(-50%, -50%);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
