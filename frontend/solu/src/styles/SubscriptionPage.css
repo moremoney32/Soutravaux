@@ -141,6 +141,7 @@
  .popup_title2{
   font-weight: 500 !important;
   font-size: 1rem !important;
+  color: var(--color-dark) !important;
 } 
 
 .loading-content p {
@@ -155,8 +156,8 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .pricing-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px;
+     grid-template-columns: 1fr !important;
+    gap: 25px; 
 
     /* grid-template-columns: repeat(2, 1fr); *
     display: grid !important;
