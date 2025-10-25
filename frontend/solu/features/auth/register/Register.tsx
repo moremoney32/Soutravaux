@@ -288,8 +288,7 @@ function Register() {
     if (checkSiret.length >= 3 && companyStatus === "existante" && isSelectingSearch) {
         const timer = setTimeout(async () => {
             try {
-                // DÉTECTER SI C'EST UN SIRET OU UN NOM
-                const isSiret = /^\d+$/.test(checkSiret); // Que des chiffres
+                const isSiret = /^\d+$/.test(checkSiret);
                 const paramName = isSiret ? 'siret' : 'nom';
                 
                 const { result } = await fetchData(
