@@ -81,11 +81,14 @@
 }
 
 .pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 15px;
-   /* max-width: 1200px;  */
+  display: flex;
+  gap: 30px;
+  align-items: center;
   margin: 0 auto;
+  /* display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px; */
+    /* max-width: 1300px;   */
   padding: 0 20px;
   height: 100%;
   align-items: start;
@@ -123,6 +126,25 @@
     border-radius: 10px;
     color: white;
 }
+.popup2{
+    position:absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    padding-bottom: 30px;
+    width: 350px;
+    background: white;
+    z-index: 10;
+    top: 20%;
+    left: 37%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: white;
+}
 
 
 .loading-content {
@@ -138,11 +160,11 @@
   margin-bottom: 20px;
   display: block;
 }
- .popup_title2{
+  .popup_title2{
   font-weight: 500 !important;
-  font-size: 1rem !important;
+  font-size: 1.1rem !important;
   color: var(--color-dark) !important;
-} 
+}  
 
 .loading-content p {
   font-size: 1.2rem;
@@ -156,6 +178,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .pricing-grid {
+    display: grid !important;
      grid-template-columns: 1fr !important;
     gap: 25px; 
 
@@ -278,6 +301,44 @@
     padding: 60px 0 20px 0; /* Plus d'espace en haut pour le header fixe */
     margin-top: 0;
   }
+  .popup2{
+    position:absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    padding-bottom: 30px;
+    width: 350px;
+    background: white;
+    z-index: 10;
+    top: 40%;
+    left: 4%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: white;
+}
+  .popup1{
+    position:absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    padding-bottom: 30px;
+    width: 300px;
+    background: white;
+    z-index: 10;
+    top: 20%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    color: white;
+}
   
   .hero-title {
     font-size: clamp(1.2rem, 4vw, 1.5rem);
@@ -361,6 +422,7 @@
     top: 55px;
     left: 5px;
     padding: 4px;
+    background-color: #E77131;
   }
   
   .back-button svg {

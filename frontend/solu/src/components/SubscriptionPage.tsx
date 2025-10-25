@@ -1277,11 +1277,11 @@ const SubscriptionPage: React.FC = () => {
                 exit={{ scale: 0.7, opacity: 0, y: -50 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
-                <div className="popup_text">
+                <div className="popup_text2">
                   <span className="popup_title2">Confirmez votre changement</span>
                   <span className="popup_title_span">
                     {confirmationType === 'downgrade-to-free' && 
-                      "Vous allez passer à l'offre gratuite. Vous perdrez l'accès à certaines fonctionnalités premium. Souhaitez-vous continuer ?"}
+                      "Vous allez passer à l'offre gratuite. Vous perdrez l'accès à certaines fonctionnalités. Souhaitez-vous continuer ?"}
                     {confirmationType === 'downgrade' && 
                       "Vous allez passer à une offre inférieure. Certaines fonctionnalités ne seront plus disponibles. Souhaitez-vous continuer ?"}
                   </span>
