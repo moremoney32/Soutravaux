@@ -19,6 +19,7 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
   getPlansByFeatureController,
   getFeaturesByRoleController
 } from '../controllers/featuresControllers';
+import UpdatePlanFree from "../controllers/UpdatePlanFree";
 
 const router: Router = express.Router();
 
@@ -37,6 +38,7 @@ router.post("/plans", createPlan);
 router.delete("/plans/:id", deletePlan);
 router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
+router.post("/downgrade-to-free", UpdatePlanFree);
 
 
 
