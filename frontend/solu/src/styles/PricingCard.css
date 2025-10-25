@@ -22,12 +22,13 @@
  opacity: 0;
    transition: transform 0.3s ease, box-shadow 0.3s ease;
   transform: translateY(30px);
-    height: 100%;
+    height:auto !important;
   display: flex;
   flex-direction: column;
   cursor: pointer;
   justify-content: space-between !important;
    width: 100%; 
+   flex: 1;
 }
 .pricing-card.animate-in {
   opacity: 1;

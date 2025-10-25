@@ -85,13 +85,14 @@
   gap: 30px;
   align-items: center;
   margin: 0 auto;
+  align-items: stretch;
   /* display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 15px; */
     /* max-width: 1300px;   */
   padding: 0 20px;
   height: 100%;
-  align-items: start;
+  /* align-items: start; */
 }
 
 .loading-overlay {
