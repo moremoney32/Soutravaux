@@ -32,6 +32,7 @@ export interface Subscription {
   startDate: Date;
   nextBilling: Date;
   name?: string;
+   price?: string | number;
 }
 
 export interface StripeConfig {
