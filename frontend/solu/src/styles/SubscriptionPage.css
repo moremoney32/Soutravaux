@@ -127,7 +127,7 @@
     border-radius: 10px;
     color: white;
 }
-.popup2{
+.popup21{
     position:absolute;
     display: flex;
     flex-direction: column;
@@ -302,7 +302,7 @@
     padding: 60px 0 20px 0; /* Plus d'espace en haut pour le header fixe */
     margin-top: 0;
   }
-  .popup2{
+  .popup21{
     position:absolute;
     display: flex;
     flex-direction: column;

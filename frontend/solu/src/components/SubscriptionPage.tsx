@@ -1271,7 +1271,7 @@ const SubscriptionPage: React.FC = () => {
                 transition={{ duration: 0.3 }}
               />
               <motion.div
-                className="popup2"
+                className="popup21"
                 initial={{ scale: 0.7, opacity: 0, y: -50 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.7, opacity: 0, y: -50 }}
