@@ -1313,7 +1313,7 @@ const SubscriptionPage: React.FC = () => {
   {showConfirmationPopup && (
     <>
       <motion.div
-        className="masque"
+        className="masque14"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.6 }}
         exit={{ opacity: 0 }}
