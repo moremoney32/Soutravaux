@@ -21,8 +21,10 @@ const allowedOrigins = [
    "http://localhost:3000",
    "https://solutravo.zeta-app.fr",
    "https://authentification-entreprise.solutravo-compta.fr",
-   "https://abonnement.solutravo-compta.fr/"
+   "https://abonnement.solutravo-compta.fr",
+   "https://auth.solutravo-compta.fr"
 ];
+
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
