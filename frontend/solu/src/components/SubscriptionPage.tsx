@@ -1096,7 +1096,7 @@ const SubscriptionPage: React.FC = () => {
   }, [plans]);
 
   useEffect(() => {
-    if (paymentStatus === 'success') {
+    if (paymentStatus === 'success'){
       setShowSuccessPopup(true);
       getSettings();
       fetchData();
@@ -1136,7 +1136,10 @@ const SubscriptionPage: React.FC = () => {
       console.log("Données reçues - Subscription:", data.subscription);
       console.log("Plans disponibles:", data.plans);
       setPlans(data.plans);
+          const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
     } catch (err) {
+        window.location.href ="https://app.solutravo-compta.fr/dashboard"
       console.error("Erreur API:", err);
     }
   };
@@ -1146,8 +1149,15 @@ const SubscriptionPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+  //   const cleanUrl = window.location.pathname;
+  // window.history.replaceState({}, '', cleanUrl);
+  if (!membre_id || !societe_id) {
+      console.log("IDs manquants, redirection vers le dashboard");
+      window.location.href = "https://app.solutravo-compta.fr/dashboard";
+      return;
+    }
     fetchData();
-  }, []);
+  }, [membre_id, societe_id]);
 
   const handleClosePopup = () => {
     setShowSuccessPopup(false);
@@ -1175,7 +1185,7 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    const redirectUrl = "https://staging.solutravo-compta.fr/dashboard";
+    const redirectUrl = " https://app.solutravo-compta.fr/dashboard";
     setTimeout(() => {
       window.location.href = redirectUrl;
     }, 300);
@@ -1377,7 +1387,7 @@ const SubscriptionPage: React.FC = () => {
         <div className="loading-overlay">
           <div className="loading-content">
             <div className="loading-spinner">⚡</div>
-            <p>Traitement de votre abonnement...</p>
+            <p className='loading-text'>Traitement de votre abonnement...</p>
           </div>
         </div>
       )}
