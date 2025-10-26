@@ -1136,10 +1136,10 @@ const SubscriptionPage: React.FC = () => {
       console.log("Données reçues - Subscription:", data.subscription);
       console.log("Plans disponibles:", data.plans);
       setPlans(data.plans);
-          const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, '', cleanUrl);
+      //     const cleanUrl = window.location.pathname;
+      // window.history.replaceState({}, '', cleanUrl);
     } catch (err) {
-        window.location.href ="https://app.solutravo-compta.fr/dashboard"
+        // window.location.href ="https://app.solutravo-compta.fr/dashboard"
       console.error("Erreur API:", err);
     }
   };
