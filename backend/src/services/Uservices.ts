@@ -317,6 +317,8 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
     const response = await axios.post("https://auth.solutravo-compta.fr/send-email.php", {
       receiver:"vincent@solutravo.fr",
       sender: "noreply@solutravo-compta.fr",
+      // receiver:"tflkmc1990@gmail.com",
+      // sender: "francklionelngongangtchouta@gmail.com",
       subject: `🎉 Bienvenue sur Solutravo !`,
       message: `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
@@ -593,7 +595,7 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
     [siretAnnonceur,siretAnnonceur]
   );
   
-  if (siretExists.length > 0) {
+  if (siretExists.length > 0){
     const err = new Error("Ce SIRET est déjà associé à une société (en attente de validation ou active).");
     (err as any).statusCode = 409;
     throw err;
@@ -661,7 +663,7 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
     try {
       const response = await axios.post("https://mail.api.elyft.tech/send-email.php", {
         receiver: emailAnnonceur,
-        sender: "noreply@solutravo-compta.fr",
+         sender: "noreply@solutravo-compta.fr",
         subject: "🔑 Vérifiez votre Adresse email - Solutravo",
         message: `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
