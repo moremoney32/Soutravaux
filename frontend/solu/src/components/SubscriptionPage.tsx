@@ -216,7 +216,7 @@
 //           }
 //           console.log(payload)
 //           try {
-//             const res = await fetch("https://integrations-api.solutravo-compta.fr/api/stripe/customer", {
+//             const res = await fetch("https://integrations-api.solutravo-app.fr/api/stripe/customer", {
 //               method: "POST",
 //               headers: {
 //                 "Content-Type": "application/json",
@@ -1000,7 +1000,7 @@ const SubscriptionPage: React.FC = () => {
         plan_id: planId
       };
       
-      const res = await fetch("https://integrations-api.solutravo-compta.fr/api/stripe/customer", {
+      const res = await fetch("https://integration-api.solutravo-app.fr/api/stripe/customer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -1153,7 +1153,7 @@ const SubscriptionPage: React.FC = () => {
   // window.history.replaceState({}, '', cleanUrl);
   if (!membre_id || !societe_id) {
       console.log("IDs manquants, redirection vers le dashboard");
-      window.location.href = "https://app.solutravo-compta.fr/dashboard";
+      window.location.href = "https://app.solutravo-app.fr/dashboard";
       return;
     }
     fetchData();
@@ -1185,7 +1185,7 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    const redirectUrl = " https://app.solutravo-compta.fr/dashboard";
+    const redirectUrl = "https://app.solutravo-app.fr/dashboard";
     setTimeout(() => {
       window.location.href = redirectUrl;
     }, 300);

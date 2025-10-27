@@ -111,13 +111,14 @@ if (siret && siret.trim() !== "") {
     //Insertion du membre
 const [resMembre] = await conn.query(
   `INSERT INTO membres (
-    email, prenom, nom, passe, type, statut,
+    email, prenom, nom, phonenumber, passe, type, statut,
     verificationCode, verificationExpiry, ref
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, UUID())`,
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, UUID())`,
   [
     email,
     prenom,
     nom,
+    cleanPhoneNumber,
     tempPassword,
     "membre",
     "actif",
@@ -145,7 +146,7 @@ const [resSociete] = await conn.query(
     rue ?? null,       
     capital ?? null,  
     address ?? null,     
-    phonenumber ?? null,
+    cleanPhoneNumber ?? null,
     membreId
   ]
 );
@@ -317,8 +318,6 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
     const response = await axios.post("https://auth.solutravo-compta.fr/send-email.php", {
       receiver:"vincent@solutravo.fr",
       sender: "noreply@solutravo-compta.fr",
-      // receiver:"tflkmc1990@gmail.com",
-      // sender: "francklionelngongangtchouta@gmail.com",
       subject: `🎉 Bienvenue sur Solutravo !`,
       message: `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
