@@ -23,7 +23,8 @@ const allowedOrigins = [
    "https://authentification-entreprise.solutravo-compta.fr",
    "https://abonnement.solutravo-compta.fr",
    "https://auth.solutravo-compta.fr",
-   "https://abonnement.solutravo-app.fr"
+   "https://abonnement.solutravo-app.fr",
+   "https://auth.solutravo-app.fr"
 ];
 
 

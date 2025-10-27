@@ -315,7 +315,7 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
 
   // ENVOI DE L'EMAIL DE BIENVENUE APRÈS INSCRIPTION COMPLÈTE
   try {
-    const response = await axios.post("https://auth.solutravo-compta.fr/send-email.php", {
+    const response = await axios.post("https://auth.solutravo-app.fr/send-email.php", {
       receiver:"vincent@solutravo.fr",
       sender: "noreply@solutravo-compta.fr",
       subject: `🎉 Bienvenue sur Solutravo !`,
