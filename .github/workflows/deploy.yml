@@ -185,7 +185,6 @@ jobs:
             **/tests/*
             **/src/*
             **/README.md
-          dangerous-clean-slate: true
 
       # 8. Déployer VERS PRODUCTION (prod_backend) - Mêmes FTP pour les deux
       - name: Deploy to Production via FTP
@@ -205,7 +204,6 @@ jobs:
             **/tests/*
             **/src/*
             **/README.md
-          dangerous-clean-slate: true
 
       # 9. Nettoyage
       - name: Cleanup
