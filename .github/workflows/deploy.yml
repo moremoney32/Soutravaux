@@ -1,72 +1,72 @@
 
-# name:  Deploy Backend to O2switch
+name:  Deploy Backend to O2switch
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   build-and-deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       # 1. Récupérer le repo
-#       - name: Checkout code
-#         uses: actions/checkout@v3
+    steps:
+      # 1. Récupérer le repo
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-#       - name: Move to backend folder
-#         working-directory: ./backend
-#         run: echo "Working in backend/"
+      - name: Move to backend folder
+        working-directory: ./backend
+        run: echo "Working in backend/"
 
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: 20.19.4
-#           cache: npm
-#           cache-dependency-path: ./backend/package-lock.json
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.19.4
+          cache: npm
+          cache-dependency-path: ./backend/package-lock.json
 
-#       - name: Install dependencies
-#         working-directory: ./backend
-#         run: npm install
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm install
 
-#       - name: Build project
-#         working-directory: ./backend
-#         run: npm run build
+      - name: Build project
+        working-directory: ./backend
+        run: npm run build
 
-#         # 6. Créer le fichier .env depuis les secrets GitHub
-#       - name: Create .env file
-#         working-directory: ./backend/dist
-#         run: |
-#           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-#           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-#           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-#           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-#           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-#           echo "secretKey=${{ secrets.secretKey }}" >> .env
-#           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
-#           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
-#           echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env
-#           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
-#           echo "PORT=${{ secrets.PORT }}" >> .env
+        # 6. Créer le fichier .env depuis les secrets GitHub
+      - name: Create .env file
+        working-directory: ./backend/dist
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "secretKey=${{ secrets.secretKey }}" >> .env
+          echo "expiresInn=${{ secrets.expiresInn }}" >> .env
+          echo "expiresIn=${{ secrets.expiresIn }}" >> .env
+          echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env
+          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
 
-#       # 7. Déployer uniquement le backend compilé
-#       - name: Upload backend via FTP
-#         uses: SamKirkland/FTP-Deploy-Action@4.3.3
-#         with:
-#           server: ${{ secrets.FTP_SERVER }}
-#           username: ${{ secrets.FTP_USERNAME }}
-#           password: ${{ secrets.FTP_PASSWORD }}
-#           protocol: ftp
-#           port: 21
-#           local-dir: ./backend/dist/   #  seul mon backend compilé
-#           server-dir: ./
-#           exclude: |
-#             */.git
-#             */node_modules/*
-#             */.github/*
-#             */tests/*
-#           dangerous-clean-slate: true
+      # 7. Déployer uniquement le backend compilé
+      - name: Upload backend via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          local-dir: ./backend/dist/   #  seul mon backend compilé
+          server-dir: ./
+          exclude: |
+            */.git
+            */node_modules/*
+            */.github/*
+            */tests/*
+          dangerous-clean-slate: true
 
 
 
@@ -212,71 +212,71 @@
 
 
 
-name:  Deploy Backend to O2switch
+# name:  Deploy Backend to O2switch
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      # 1. Récupérer le repo
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       # 1. Récupérer le repo
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Move to backend folder
-        working-directory: ./backend
-        run: echo "Working in backend/"
+#       - name: Move to backend folder
+#         working-directory: ./backend
+#         run: echo "Working in backend/"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.19.4
-          cache: npm
-          cache-dependency-path: ./backend/package-lock.json
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 20.19.4
+#           cache: npm
+#           cache-dependency-path: ./backend/package-lock.json
 
-      - name: Install dependencies
-        working-directory: ./backend
-        run: npm install
+#       - name: Install dependencies
+#         working-directory: ./backend
+#         run: npm install
 
-      - name: Build project
-        working-directory: ./backend
-        run: npm run build
+#       - name: Build project
+#         working-directory: ./backend
+#         run: npm run build
 
-        # 6. Créer le fichier .env depuis les secrets GitHub
-      - name: Create .env file
-        working-directory: ./backend/dist
-        run: |
-          echo "DB_HOST=143.105.152.10" >> .env
-          echo "DB_USERNAME_PROD=u839546084_solutravo" >> .env
-          echo "DB_PASSWORD_PROD=Solutravo@!2025Db_0206+" >> .env
-          echo "DB_DATABASE_PROD=u839546084_solutravo" >> .env
-          echo "DB_PORT_PROD=3306" >> .env
-          echo "secretKey=${{ secrets.secretKey }}" >> .env
-          echo "expiresInn=${{ secrets.expiresInn }}" >> .env
-          echo "expiresIn=${{ secrets.expiresIn }}" >> .env
-          echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env
-          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
-          echo "PORT=${{ secrets.PORT }}" >> .env
+#         # 6. Créer le fichier .env depuis les secrets GitHub
+#       - name: Create .env file
+#         working-directory: ./backend/dist
+#         run: |
+#           echo "DB_HOST=143.105.152.10" >> .env
+#           echo "DB_USERNAME=u839546084_solutravo" >> .env
+#           echo "DB_PASSWORD=Solutravo@!2025Db_0206+" >> .env
+#           echo "DB_DATABASE=u839546084_solutravo" >> .env
+#           echo "DB_PORT=3306" >> .env
+#           echo "secretKey=${{ secrets.secretKey }}" >> .env
+#           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
+#           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
+#           echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env
+#           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
+#           echo "PORT=${{ secrets.PORT }}" >> .env
 
-      # 7. Déployer uniquement le backend compilé
-      - name: Upload backend via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.3
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./backend/dist/   #  seul mon backend compilé
-          server-dir: ./
-          exclude: |
-            */.git
-            */node_modules/*
-            */.github/*
-            */tests/*
-          dangerous-clean-slate: true
+#       # 7. Déployer uniquement le backend compilé
+#       - name: Upload backend via FTP
+#         uses: SamKirkland/FTP-Deploy-Action@4.3.3
+#         with:
+#           server: ${{ secrets.FTP_SERVER }}
+#           username: ${{ secrets.FTP_USERNAME }}
+#           password: ${{ secrets.FTP_PASSWORD }}
+#           protocol: ftp
+#           port: 21
+#           local-dir: ./backend/dist/   #  seul mon backend compilé
+#           server-dir: ./
+#           exclude: |
+#             */.git
+#             */node_modules/*
+#             */.github/*
+#             */tests/*
+#           dangerous-clean-slate: true
