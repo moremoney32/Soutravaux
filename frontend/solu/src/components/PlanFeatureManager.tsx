@@ -33,9 +33,6 @@ const PlanFeatureManager = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
 
-
-  // CE QU'IL FAUT :
-
  const loadPlansByRole = async (role: 'artisan' | 'annonceur') => {
     try {
       setLoading(true);
@@ -125,7 +122,7 @@ const PlanFeatureManager = () => {
     console.log(`Chargement features pour plan: ${planId}, rôle: ${selectedRole}`);
     
     if (!selectedRole) {
-      console.warn('⚠️ Aucun rôle sélectionné');
+      console.warn('Aucun rôle sélectionné');
       setFeaturesWithStatus([]);
       return;
     }
