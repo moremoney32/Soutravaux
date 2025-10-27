@@ -82,6 +82,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 3  # Timeout rapide
 
     steps:
       # 1. Récupérer le repo
@@ -106,10 +107,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './backend/package-lock.json'
 
-      # # 3. Installer les dépendances de PRODUCTION uniquement
-      # - name: Install production dependencies
-      #   working-directory: ./backend
-      #   run: npm ci --only=production
       # 3. Installer toutes les dépendances (production + dev)
       - name: Install all dependencies
         working-directory: ./backend
@@ -159,22 +156,15 @@ jobs:
             echo "APP_ENV=production"
           } > .env
 
-      # 6. Préparer la structure pour le déploiement
+      # 6. Préparer la structure pour le déploiement - CORRIGÉ
       - name: Prepare deployment structure
         working-directory: ./backend
         run: |
           # Créer un dossier de déploiement temporaire
           mkdir -p deployment
-          # Copier tous les fichiers nécessaires
+          # Copier SEULEMENT les fichiers nécessaires (pas node_modules)
           cp -r dist/ package.json package-lock.json .env deployment/
-          # S'assurer que node_modules est présent
-          if [ -d "node_modules" ]; then
-            cp -r node_modules deployment/
-          else
-            echo "ERREUR: node_modules non trouvé!"
-            exit 1
-          fi
-          echo "Structure de déploiement préparée:"
+          echo " Structure de déploiement préparée (sans node_modules):"
           ls -la deployment/
 
       # 7. Déployer VERS STAGING (main) - Mêmes FTP pour les deux
@@ -217,6 +207,6 @@ jobs:
             **/README.md
           dangerous-clean-slate: true
 
-      # 9. Nettoyage (optionnel)
+      # 9. Nettoyage
       - name: Cleanup
         run: rm -rf ./backend/deployment
