@@ -212,7 +212,7 @@
 
 
 
-name:  Deploy Backend to O2switch
+name: Deploy Backend to O2switch
 
 on:
   push:
@@ -247,15 +247,15 @@ jobs:
         working-directory: ./backend
         run: npm run build
 
-        # 6. Créer le fichier .env depuis les secrets GitHub
+      # 6. Créer le fichier .env depuis les secrets GitHub - CORRIGÉ
       - name: Create .env file
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}"
-          echo "DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}"
-          echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}"
-          echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD }}"
-          echo "DB_PORT_PROD=${{ secrets.DB_PORT_PROD }}
+          echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}" >> .env
+          echo "DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}" >> .env
+          echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}" >> .env
+          echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD }}" >> .env
+          echo "DB_PORT_PROD=${{ secrets.DB_PORT_PROD }}" >> .env  # ← GUILLEMET AJOUTÉ
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
@@ -272,7 +272,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./backend/dist/   #  seul mon backend compilé
+          local-dir: ./backend/dist/
           server-dir: ./
           exclude: |
             */.git
