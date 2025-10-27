@@ -251,11 +251,11 @@ jobs:
       - name: Create .env file
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST_PROD=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_USERNAME_PROD=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_DATABASE_PROD=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_PORT_PROD=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_HOST_PROD=localhost" >> .env
+          echo "DB_USERNAME_PROD=u839546084_solutravo" >> .env
+          echo "DB_PASSWORD_PROD=Solutravo@!2025Db_0206+" >> .env
+          echo "DB_DATABASE_PROD=u839546084_solutravo" >> .env
+          echo "DB_PORT_PROD=3306" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
