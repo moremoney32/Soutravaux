@@ -71,105 +71,200 @@
 
 
 
-name: Deploy Backend to O2Switch
+# name: Deploy Backend to O2Switch
+
+# on:
+#   push:
+#     branches:
+#       - main           # Auto → Staging
+#       - prod_backend   # Auto → Production
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 3  # Timeout rapide
+
+#     steps:
+#       # 1. Récupérer le repo
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # 2. Afficher l'environnement de déploiement
+#       - name: Display deployment info
+#         run: |
+#           echo "Branche: ${{ github.ref }}"
+#           if [ "${{ github.ref }}" == "refs/heads/prod_backend" ]; then
+#             echo "Environnement: PRODUCTION"
+#             echo "ATTENTION: Déploiement en production!"
+#           else
+#             echo "Environnement: STAGING (main)"
+#           fi
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 20.19.4
+#           cache: 'npm'
+#           cache-dependency-path: './backend/package-lock.json'
+
+#       # 3. Installer toutes les dépendances (production + dev)
+#       - name: Install all dependencies
+#         working-directory: ./backend
+#         run: npm ci
+
+#       - name: Build project
+#         working-directory: ./backend
+#         run: npm run build
+
+#       # 5. Créer le fichier .env avec les bonnes variables selon l'environnement
+#       - name: Create .env file for Staging
+#         if: github.ref == 'refs/heads/main'
+#         working-directory: ./backend
+#         run: |
+#           {
+#             echo "DB_HOST=${{ secrets.DB_HOST}}"
+#             echo "DB_USER=${{ secrets.DB_USER}}"
+#             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD}}"
+#             echo "DB_NAME=${{ secrets.DB_NAME}}"
+#             echo "DB_PORT=${{ secrets.DB_PORT}}"
+#             echo "secretKey=${{ secrets.secretKey}}"
+#             echo "expiresInn=${{ secrets.expiresInn }}"
+#             echo "expiresIn=${{ secrets.expiresIn}}"
+#             echo "COOKIE_MAX_AGE=${{ secrets.COOKIE }}"
+#             echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY}}"
+#             echo "PORT=${{ secrets.PORT}}"
+#             echo "NODE_ENV=staging"
+#             echo "APP_ENV=staging"
+#           } > .env
+
+#       - name: Create .env file for Production
+#         if: github.ref == 'refs/heads/prod_backend'
+#         working-directory: ./backend
+#         run: |
+#           {
+            # echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}"
+            # echo "DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}"
+            # echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}"
+            # echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD }}"
+            # echo "DB_PORT_PROD=${{ secrets.DB_PORT_PROD }}"
+#             echo "secretKey=${{ secrets.secretKey}}"
+#             echo "expiresInn=${{ secrets.expiresInn}}"
+#             echo "expiresIn=${{ secrets.expiresIn}}"
+#             echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE}}"
+#             echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY}}"
+#             echo "NODE_ENV=production"
+#             echo "APP_ENV=production"
+#           } > .env
+
+#       # 6. Préparer la structure pour le déploiement - CORRIGÉ
+#       - name: Prepare deployment structure
+#         working-directory: ./backend
+#         run: |
+#           # Créer un dossier de déploiement temporaire
+#           mkdir -p deployment
+#           # Copier SEULEMENT les fichiers nécessaires (pas node_modules)
+#           cp -r dist/ package.json package-lock.json .env deployment/
+#           echo " Structure de déploiement préparée (sans node_modules):"
+#           ls -la deployment/
+
+#       # 7. Déployer VERS STAGING (main) - Mêmes FTP pour les deux
+#       - name: Deploy to Staging via FTP
+#         if: github.ref == 'refs/heads/main'
+#         uses: SamKirkland/FTP-Deploy-Action@4.3.3
+#         with:
+#           server: ${{ secrets.FTP_SERVER }}
+#           username: ${{ secrets.FTP_USERNAME }}
+#           password: ${{ secrets.FTP_PASSWORD }}
+#           protocol: ftp
+#           port: 21
+#           local-dir: ./backend/deployment/
+#           server-dir: ./
+#           exclude: |
+#             **/.git*
+#             **/.github/*
+#             **/tests/*
+#             **/src/*
+#             **/README.md
+
+#       # 8. Déployer VERS PRODUCTION (prod_backend) - Mêmes FTP pour les deux
+#       - name: Deploy to Production via FTP
+#         if: github.ref == 'refs/heads/prod_backend'
+#         uses: SamKirkland/FTP-Deploy-Action@4.3.3
+#         with:
+#           server: ${{ secrets.FTP_SERVER }}
+#           username: ${{ secrets.FTP_USERNAME }}
+#           password: ${{ secrets.FTP_PASSWORD }}
+#           protocol: ftp
+#           port: 21
+#           local-dir: ./backend/deployment/
+#           server-dir: ./
+#           exclude: |
+#             **/.git*
+#             **/.github/*
+#             **/tests/*
+#             **/src/*
+#             **/README.md
+
+#       # 9. Nettoyage
+#       - name: Cleanup
+#         run: rm -rf ./backend/deployment
+
+
+
+
+name:  Deploy Backend to O2switch
 
 on:
   push:
     branches:
-      - main           # Auto → Staging
-      - prod_backend   # Auto → Production
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 3  # Timeout rapide
 
     steps:
       # 1. Récupérer le repo
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Afficher l'environnement de déploiement
-      - name: Display deployment info
-        run: |
-          echo "Branche: ${{ github.ref }}"
-          if [ "${{ github.ref }}" == "refs/heads/prod_backend" ]; then
-            echo "Environnement: PRODUCTION"
-            echo "ATTENTION: Déploiement en production!"
-          else
-            echo "Environnement: STAGING (main)"
-          fi
+      - name: Move to backend folder
+        working-directory: ./backend
+        run: echo "Working in backend/"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20.19.4
-          cache: 'npm'
-          cache-dependency-path: './backend/package-lock.json'
+          cache: npm
+          cache-dependency-path: ./backend/package-lock.json
 
-      # 3. Installer toutes les dépendances (production + dev)
-      - name: Install all dependencies
+      - name: Install dependencies
         working-directory: ./backend
-        run: npm ci
+        run: npm install
 
       - name: Build project
         working-directory: ./backend
         run: npm run build
 
-      # 5. Créer le fichier .env avec les bonnes variables selon l'environnement
-      - name: Create .env file for Staging
-        if: github.ref == 'refs/heads/main'
-        working-directory: ./backend
+        # 6. Créer le fichier .env depuis les secrets GitHub
+      - name: Create .env file
+        working-directory: ./backend/dist
         run: |
-          {
-            echo "DB_HOST=${{ secrets.DB_HOST}}"
-            echo "DB_USER=${{ secrets.DB_USER}}"
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD}}"
-            echo "DB_NAME=${{ secrets.DB_NAME}}"
-            echo "DB_PORT=${{ secrets.DB_PORT}}"
-            echo "secretKey=${{ secrets.secretKey}}"
-            echo "expiresInn=${{ secrets.expiresInn }}"
-            echo "expiresIn=${{ secrets.expiresIn}}"
-            echo "COOKIE_MAX_AGE=${{ secrets.COOKIE }}"
-            echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY}}"
-            echo "PORT=${{ secrets.PORT}}"
-            echo "NODE_ENV=staging"
-            echo "APP_ENV=staging"
-          } > .env
+          echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}"
+          echo "DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}"
+          echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}"
+          echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD }}"
+          echo "DB_PORT_PROD=${{ secrets.DB_PORT_PROD }}
+          echo "secretKey=${{ secrets.secretKey }}" >> .env
+          echo "expiresInn=${{ secrets.expiresInn }}" >> .env
+          echo "expiresIn=${{ secrets.expiresIn }}" >> .env
+          echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env
+          echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
 
-      - name: Create .env file for Production
-        if: github.ref == 'refs/heads/prod_backend'
-        working-directory: ./backend
-        run: |
-          {
-            echo "DB_HOST_PROD=${{ secrets.DB_HOST_PROD }}"
-            echo "DB_USERNAME_PROD=${{ secrets.DB_USERNAME_PROD }}"
-            echo "DB_PASSWORD_PROD=${{ secrets.DB_PASSWORD_PROD }}"
-            echo "DB_DATABASE_PROD=${{ secrets.DB_DATABASE_PROD }}"
-            echo "DB_PORT_PROD=${{ secrets.DB_PORT_PROD }}"
-            echo "secretKey=${{ secrets.secretKey}}"
-            echo "expiresInn=${{ secrets.expiresInn}}"
-            echo "expiresIn=${{ secrets.expiresIn}}"
-            echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE}}"
-            echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY}}"
-            echo "NODE_ENV=production"
-            echo "APP_ENV=production"
-          } > .env
-
-      # 6. Préparer la structure pour le déploiement - CORRIGÉ
-      - name: Prepare deployment structure
-        working-directory: ./backend
-        run: |
-          # Créer un dossier de déploiement temporaire
-          mkdir -p deployment
-          # Copier SEULEMENT les fichiers nécessaires (pas node_modules)
-          cp -r dist/ package.json package-lock.json .env deployment/
-          echo " Structure de déploiement préparée (sans node_modules):"
-          ls -la deployment/
-
-      # 7. Déployer VERS STAGING (main) - Mêmes FTP pour les deux
-      - name: Deploy to Staging via FTP
-        if: github.ref == 'refs/heads/main'
+      # 7. Déployer uniquement le backend compilé
+      - name: Upload backend via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -177,34 +272,11 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
-          local-dir: ./backend/deployment/
+          local-dir: ./backend/dist/   #  seul mon backend compilé
           server-dir: ./
           exclude: |
-            **/.git*
-            **/.github/*
-            **/tests/*
-            **/src/*
-            **/README.md
-
-      # 8. Déployer VERS PRODUCTION (prod_backend) - Mêmes FTP pour les deux
-      - name: Deploy to Production via FTP
-        if: github.ref == 'refs/heads/prod_backend'
-        uses: SamKirkland/FTP-Deploy-Action@4.3.3
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./backend/deployment/
-          server-dir: ./
-          exclude: |
-            **/.git*
-            **/.github/*
-            **/tests/*
-            **/src/*
-            **/README.md
-
-      # 9. Nettoyage
-      - name: Cleanup
-        run: rm -rf ./backend/deployment
+            */.git
+            */node_modules/*
+            */.github/*
+            */tests/*
+          dangerous-clean-slate: true
