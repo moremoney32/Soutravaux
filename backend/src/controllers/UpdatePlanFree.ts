@@ -5,13 +5,15 @@ import pool from "../config/db";
 const UpdatePlanFree =  async (req: Request, res: Response) => {
     const {societe_id, plan_id} = req.body;;
     console.log("Received plan_id:", plan_id);
+    const societeId = parseInt(societe_id);
+        const planId = parseInt(plan_id);
 
   try {
     
-    // Mettre à jour la société avec planId = 17 (plan gratuit)
+    // Mise à jour la société avec planId 
     await pool.query(
       "UPDATE societes SET planId = ? WHERE id = ?",
-      [17, societe_id]  // 17 = ID du plan gratuit
+      [planId, societeId]  
     );
     
     res.json({ 
@@ -24,3 +26,5 @@ const UpdatePlanFree =  async (req: Request, res: Response) => {
   }
 }
 export default UpdatePlanFree;
+
+
