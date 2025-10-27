@@ -252,9 +252,9 @@ jobs:
         working-directory: ./backend/dist
         run: |
           echo "DB_HOST=46.202.133.214" >> .env
-          echo "DB_USERNAME=u839546084_solutravo" >> .env
+          echo "DB_USER=u839546084_solutravo" >> .env
           echo "DB_PASSWORD=Solutravo@!2025Db_0206+" >> .env
-          echo "DB_DATABASE=u839546084_solutravo" >> .env
+          echo "DB_NAME=u839546084_solutravo" >> .env
           echo "DB_PORT=3306" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
