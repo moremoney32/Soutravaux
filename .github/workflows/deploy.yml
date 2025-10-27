@@ -106,10 +106,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './backend/package-lock.json'
 
-      # 3. Installer les dépendances de PRODUCTION uniquement
-      - name: Install production dependencies
+      # # 3. Installer les dépendances de PRODUCTION uniquement
+      # - name: Install production dependencies
+      #   working-directory: ./backend
+      #   run: npm ci --only=production
+      # 3. Installer toutes les dépendances (production + dev)
+      - name: Install all dependencies
         working-directory: ./backend
-        run: npm ci --only=production
+        run: npm ci
 
       - name: Build project
         working-directory: ./backend
