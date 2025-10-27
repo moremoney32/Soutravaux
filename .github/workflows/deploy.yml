@@ -179,11 +179,11 @@ jobs:
         if: github.ref == 'refs/heads/main'
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST=${{ secrets.DB_HOST_STAGING }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER_STAGING }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD_STAGING }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME_STAGING }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT_STAGING }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST}}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER}}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD}}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT}}" >> .env
           echo "NODE_ENV=staging" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
