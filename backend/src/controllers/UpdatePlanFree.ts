@@ -12,7 +12,7 @@ const UpdatePlanFree =  async (req: Request, res: Response) => {
     
     // Mise à jour la société avec planId 
     await pool.query(
-      "UPDATE societes SET planId = ? WHERE id = ?",
+      "UPDATE societes SET plan_id = ? WHERE id = ?",
       [planId, societeId]  
     );
     
