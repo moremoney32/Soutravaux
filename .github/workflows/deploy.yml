@@ -174,7 +174,7 @@ jobs:
         working-directory: ./backend
         run: npm run build
 
-      # ENVIRONNEMENT STAGING (main)
+      # ENVIRONNEMENT STAGING (main787)
       - name: Create .env for Staging
         if: github.ref == 'refs/heads/main'
         working-directory: ./backend/dist
