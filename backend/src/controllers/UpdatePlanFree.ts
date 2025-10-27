@@ -8,10 +8,10 @@ const UpdatePlanFree =  async (req: Request, res: Response) => {
 
   try {
     
-    // Mettre à jour la société avec planId = 1
+    // Mettre à jour la société avec planId = 17 (plan gratuit)
     await pool.query(
       "UPDATE societes SET planId = ? WHERE id = ?",
-      [1, societe_id]  // 1 = ID du plan gratuit
+      [17, societe_id]  // 17 = ID du plan gratuit
     );
     
     res.json({ 
