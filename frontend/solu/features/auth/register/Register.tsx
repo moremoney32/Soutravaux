@@ -527,7 +527,8 @@ function Register() {
             return;
         }
 
-        const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
+        // const redirectUrl = `https://staging.solutravo-compta.fr/connexion-microservice?token=${encodeURIComponent(token)}`;
+         const redirectUrl = `https://app.solutravo-compta.fr/connexion-microservice?token==${encodeURIComponent(token)}`;
 
         setLoading2(false);
         setTimeout(() => {
