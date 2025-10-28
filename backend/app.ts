@@ -47,6 +47,36 @@ const corsOptions: CorsOptions = {
     "Custom-Header"
   ],
 };
+const getBackendBaseUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://solutravo.zeta-app.fr';
+  } else {
+    return 'https://staging.solutravo.zeta-app.fr';
+  }
+};
+
+console.log("Configuration Backend:");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("Backend URL:", getBackendBaseUrl());
+// Route qui donne l'URL du backend au frontend
+app.get("/api/config", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    environment: process.env.NODE_ENV,
+    backendUrl: getBackendBaseUrl(),
+    apiBaseUrl: `${getBackendBaseUrl()}/api`,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Ping route
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    message: `API Solutravo ${process.env.NODE_ENV} prête!`,
+    environment: process.env.NODE_ENV,
+    backendUrl: getBackendBaseUrl()
+  });
+});
 
 
 // Middlewares
