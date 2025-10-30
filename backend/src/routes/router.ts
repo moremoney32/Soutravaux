@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import { Request, Response} from "express";
 import { AnnonceurControllers, FournisseurControllers, UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
 import { SearchCompanies } from "../controllers/CompanyController";
 import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, updateSettings } from "../controllers/PlanRoleContollers";
@@ -20,6 +21,7 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
   getFeaturesByRoleController
 } from '../controllers/featuresControllers';
 import UpdatePlanFree from "../controllers/UpdatePlanFree";
+import handleImageUpload from "../middleware/uploadMiddleware";
 
 const router: Router = express.Router();
 
@@ -144,6 +146,24 @@ router.delete('/features/:featureId/plans/:planId', removeFeatureFromPlanControl
  */
 router.get('/features/:featureId/plans', getPlansByFeatureController);
 router.get('/features/by-role', getFeaturesByRoleController);
+
+router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
+  const url = (req as any).fileUrl;
+  
+  if (!url) {
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de l'upload"
+    });
+    return;
+  }
+  
+  res.status(200).json({
+    success: true,
+    message: "Image uploadée avec succès",
+    url: url
+  });
+});
 
 
 /**

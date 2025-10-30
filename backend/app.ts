@@ -58,7 +58,30 @@ const getBackendBaseUrl = () => {
 console.log("Configuration Backend:");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("Backend URL:", getBackendBaseUrl());
-// Route qui donne l'URL du backend au frontend
+
+// Middlewares
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: `API Solutravo ${process.env.NODE_ENV} - Opérationnelle`,
+    environment: process.env.NODE_ENV,
+    backendUrl: getBackendBaseUrl(),
+    endpoints: {
+      config: "/api/config",
+      plans: "/api/plans",
+      features: "/api/features",
+      upload: "/api/upload"
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+//  Route de configuration pour le frontend
 app.get("/api/config", (_req: Request, res: Response) => {
   res.json({
     success: true,
@@ -68,28 +91,6 @@ app.get("/api/config", (_req: Request, res: Response) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// Ping route
-app.get("/", (_req: Request, res: Response) => {
-  res.json({
-    message: `API Solutravo ${process.env.NODE_ENV} prête!`,
-    environment: process.env.NODE_ENV,
-    backendUrl: getBackendBaseUrl()
-  });
-});
-
-
-// Middlewares
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
-
-// Ping route
-app.get("/", (_req: Request, res: Response) => {
-  res.send("API Solutravo tout pret!!");
-});
-
 // Routes API
 app.use("/api", routes);
 

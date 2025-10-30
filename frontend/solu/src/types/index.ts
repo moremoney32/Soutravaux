@@ -14,6 +14,8 @@ export interface Feature {
   page: string;
   parent_feature_id: number | null;
   role: 'artisan' | 'annonceur';
+   description?: string; 
+  image_url?: string;
 }
 
 export interface FeaturePlan {

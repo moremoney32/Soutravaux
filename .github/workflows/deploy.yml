@@ -284,11 +284,11 @@ jobs:
         if: github.ref == 'refs/heads/prod_backend'
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST=46.202.133.214" >> .env
-          echo "DB_USER=u839546084_solutravo" >> .env
-          echo "DB_PASSWORD=Solutravo@!2025Db_0206+" >> .env
-          echo "DB_NAME=u839546084_solutravo" >> .env
-          echo "DB_PORT=3306" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST_PROD1}}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER_PROD1}}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD_PROD1}}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME_PROD1}}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT_PROD1}}" >> .env
           echo "NODE_ENV=production" >> .env
           echo "APP_URL=https://solutravo.zeta-app.fr" >> .env  # ← URL PRODUCTION
           echo "secretKey=${{ secrets.secretKey }}" >> .env
@@ -303,11 +303,11 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.FTP_SERVER_STAGING }}
+          username: ${{ secrets.FTP_USERNAME_STAGING }}
+          password: ${{ secrets.FTP_PASSWORD_STAGING }}
           local-dir: ./backend/dist/
-          server-dir: ./server/staging/  # ← DOSSIER STAGING
+          server-dir: ./  # ← DOSSIER STAGING
           exclude: |
             */.git
             */node_modules/*

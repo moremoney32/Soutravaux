@@ -185,15 +185,79 @@ export const getFeaturesByPageController = async (
  * POST /api/admin/features
  * Créer une nouvelle fonctionnalité
  */
+// export const createFeatureController = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<void> => {
+//   try {
+//     const { name, page, parent_feature_id, role } = req.body; // AJOUT du rôle
+
+//     // Validation des champs requis
+//     if (!name || !name.trim()) {
+//       res.status(400).json({
+//         success: false,
+//         message: 'Le nom de la fonctionnalité est requis'
+//       });
+//       return;
+//     }
+
+//     if (!page || !page.trim()) {
+//       res.status(400).json({
+//         success: false,
+//         message: 'La page/module est requise'
+//       });
+//       return;
+//     }
+
+//     // VALIDATION CRITIQUE : le rôle est OBLIGATOIRE**///
+//     if (!role || (role !== 'artisan' && role !== 'annonceur')) {
+//       res.status(400).json({
+//         success: false,
+//         message: 'Le rôle est requis et doit être "artisan" ou "annonceur"',
+//         received: role
+//       });
+//       return;
+//     }
+
+//     const featureData = {
+//       name: name.trim(),
+//       page: page.trim(),
+//       parent_feature_id: parent_feature_id || null,
+//       role: role //AJOUT du rôle
+//     };
+
+//     console.log('Création feature avec données:', featureData);
+
+//     const newFeature = await CreateFeature(featureData);
+    
+//     res.status(201).json({
+//       success: true,
+//       message: 'Fonctionnalité créée avec succès',
+//       data: newFeature
+//     });
+//   } catch (error: any) {
+//     console.error('Erreur controller création feature:', error);
+    
+//     if (error.code === 'ER_DUP_ENTRY') {
+//       res.status(409).json({
+//         success: false,
+//         message: 'Une fonctionnalité avec ce nom existe déjà'
+//       });
+//       return;
+//     }
+//     next(error);
+//   }
+// };
+
 export const createFeatureController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { name, page, parent_feature_id, role } = req.body; // AJOUT du rôle
+    const { name, page, parent_feature_id, role, description, image_url } = req.body;
 
-    // Validation des champs requis
     if (!name || !name.trim()) {
       res.status(400).json({
         success: false,
@@ -210,12 +274,10 @@ export const createFeatureController = async (
       return;
     }
 
-    // VALIDATION CRITIQUE : le rôle est OBLIGATOIRE**///
     if (!role || (role !== 'artisan' && role !== 'annonceur')) {
       res.status(400).json({
         success: false,
-        message: 'Le rôle est requis et doit être "artisan" ou "annonceur"',
-        received: role
+        message: 'Le rôle est requis et doit être "artisan" ou "annonceur"'
       });
       return;
     }
@@ -223,11 +285,11 @@ export const createFeatureController = async (
     const featureData = {
       name: name.trim(),
       page: page.trim(),
+      description: description?.trim() || undefined,
+      image_url: image_url || undefined,
       parent_feature_id: parent_feature_id || null,
-      role: role //AJOUT du rôle
+      role: role
     };
-
-    console.log('Création feature avec données:', featureData);
 
     const newFeature = await CreateFeature(featureData);
     
@@ -238,14 +300,6 @@ export const createFeatureController = async (
     });
   } catch (error: any) {
     console.error('Erreur controller création feature:', error);
-    
-    if (error.code === 'ER_DUP_ENTRY') {
-      res.status(409).json({
-        success: false,
-        message: 'Une fonctionnalité avec ce nom existe déjà'
-      });
-      return;
-    }
     next(error);
   }
 };
@@ -294,6 +348,79 @@ export const getFeaturesByRoleController = async (
  * PUT /api/admin/features/:id
  * Mettre à jour une fonctionnalité
  */
+// export const updateFeatureController = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ): Promise<void> => {
+//   try {
+//     const featureId = parseInt(req.params.id);
+    
+//     if (isNaN(featureId) || featureId <= 0) {
+//       res.status(400).json({
+//         success: false,
+//         message: 'ID de fonctionnalité invalide',
+//         received: req.params.id
+//       });
+//       return;
+//     }
+
+//     const { name, page, parent_feature_id } = req.body;
+//     const updateData: any = {};
+
+//     if (name !== undefined) {
+//       if (!name.trim()) {
+//         res.status(400).json({
+//           success: false,
+//           message: 'Le nom de la fonctionnalité ne peut pas être vide'
+//         });
+//         return;
+//       }
+//       updateData.name = name.trim();
+//     }
+
+//     if (page !== undefined) {
+//       if (!page.trim()) {
+//         res.status(400).json({
+//           success: false,
+//           message: 'La page/module ne peut pas être vide'
+//         });
+//         return;
+//       }
+//       updateData.page = page.trim();
+//     }
+
+//     if (parent_feature_id !== undefined) {
+//       updateData.parent_feature_id = parent_feature_id;
+//     }
+
+//     if (Object.keys(updateData).length === 0) {
+//       res.status(400).json({
+//         success: false,
+//         message: 'Aucune donnée à mettre à jour'
+//       });
+//       return;
+//     }
+
+//     const updatedFeature = await UpdateFeature(featureId, updateData);
+    
+//     res.status(200).json({
+//       success: true,
+//       message: 'Fonctionnalité mise à jour avec succès',
+//       data: updatedFeature
+//     });
+//   } catch (error: any) {
+//     if (error.message === 'Aucune donnée à mettre à jour') {
+//       res.status(400).json({
+//         success: false,
+//         message: error.message
+//       });
+//       return;
+//     }
+//     next(error);
+//   }
+// };
+
 export const updateFeatureController = async (
   req: Request,
   res: Response,
@@ -305,20 +432,19 @@ export const updateFeatureController = async (
     if (isNaN(featureId) || featureId <= 0) {
       res.status(400).json({
         success: false,
-        message: 'ID de fonctionnalité invalide',
-        received: req.params.id
+        message: 'ID de fonctionnalité invalide'
       });
       return;
     }
 
-    const { name, page, parent_feature_id } = req.body;
+    const { name, page, description, image_url, parent_feature_id } = req.body;
     const updateData: any = {};
 
     if (name !== undefined) {
       if (!name.trim()) {
         res.status(400).json({
           success: false,
-          message: 'Le nom de la fonctionnalité ne peut pas être vide'
+          message: 'Le nom ne peut pas être vide'
         });
         return;
       }
@@ -329,11 +455,20 @@ export const updateFeatureController = async (
       if (!page.trim()) {
         res.status(400).json({
           success: false,
-          message: 'La page/module ne peut pas être vide'
+          message: 'La page ne peut pas être vide'
         });
         return;
       }
       updateData.page = page.trim();
+    }
+
+    // ✅ AJOUT : Gestion de description et image_url
+    if (description !== undefined) {
+      updateData.description = description.trim() || null;
+    }
+
+    if (image_url !== undefined) {
+      updateData.image_url = image_url || null;
     }
 
     if (parent_feature_id !== undefined) {
@@ -356,13 +491,6 @@ export const updateFeatureController = async (
       data: updatedFeature
     });
   } catch (error: any) {
-    if (error.message === 'Aucune donnée à mettre à jour') {
-      res.status(400).json({
-        success: false,
-        message: error.message
-      });
-      return;
-    }
     next(error);
   }
 };
