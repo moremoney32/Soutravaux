@@ -228,7 +228,6 @@
 
 
 
-
 name: Deploy Backend to O2switch
 
 on:
@@ -260,6 +259,13 @@ jobs:
         working-directory: ./backend
         run: npm run build
 
+      # ✅ NOUVEAU : Copier package.json et package-lock.json dans dist/
+      - name: Copy package files to dist
+        working-directory: ./backend
+        run: |
+          cp package.json dist/
+          cp package-lock.json dist/
+
       # ENVIRONNEMENT STAGING (main)
       - name: Create .env for Staging
         if: github.ref == 'refs/heads/main'
@@ -271,7 +277,7 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
           echo "DB_PORT=${{ secrets.DB_PORT}}" >> .env
           echo "NODE_ENV=staging" >> .env
-          echo "APP_URL=https://staging.solutravo-compta.fr" >> .env  # ← URL STAGING
+          echo "APP_URL=https://staging.solutravo-compta.fr" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
@@ -284,13 +290,13 @@ jobs:
         if: github.ref == 'refs/heads/prod_backend'
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST=46.202.133.214" >> .env
-          echo "DB_USER=u839546084_solutravo" >> .env
-          echo "DB_PASSWORD=Solutravo@!2025Db_0206+" >> .env
-          echo "DB_NAME=u839546084_solutravo" >> .env
+          echo "DB_HOST=${{ secrets.PROD_DB_HOST }}" >> .env
+          echo "DB_USER=${{ secrets.PROD_DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.PROD_DB_NAME }}" >> .env
           echo "DB_PORT=3306" >> .env
           echo "NODE_ENV=production" >> .env
-          echo "APP_URL=https://solutravo.zeta-app.fr" >> .env  # ← URL PRODUCTION
+          echo "APP_URL=https://solutravo.zeta-app.fr" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
@@ -298,7 +304,7 @@ jobs:
           echo "INSEE_API_KEY=${{ secrets.INSEE_API_KEY }}" >> .env
           echo "PORT=${{ secrets.PORT }}" >> .env
 
-      # DÉPLOIEMENT STAGING - Dossier séparé
+      # DÉPLOIEMENT STAGING
       - name: Deploy Staging via FTP
         if: github.ref == 'refs/heads/main'
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
@@ -307,7 +313,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./backend/dist/
-          server-dir: ./staging/  # ← DOSSIER STAGING
+          server-dir: ./staging/
           exclude: |
             */.git
             */node_modules/*
@@ -315,7 +321,7 @@ jobs:
             */tests/*
           dangerous-clean-slate: true
 
-      # DÉPLOIEMENT PRODUCTION - Dossier séparé
+      # DÉPLOIEMENT PRODUCTION
       - name: Deploy Production via FTP
         if: github.ref == 'refs/heads/prod_backend'
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
@@ -324,7 +330,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./backend/dist/
-          server-dir: ./  # ← DOSSIER PRODUCTION
+          server-dir: ./solutravo.zeta-app.fr/
           exclude: |
             */.git
             */node_modules/*
