@@ -1,8 +1,8 @@
 /* Wrapper général */
 .image-wrapper {
   position: relative;
-  width:30px;
-  height:30px;
+  width:30px !important;
+  height:30px !important;
   display: flex;
   align-items: center;
   justify-content: center;

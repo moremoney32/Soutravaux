@@ -63,7 +63,8 @@ console.log("Backend URL:", getBackendBaseUrl());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({
