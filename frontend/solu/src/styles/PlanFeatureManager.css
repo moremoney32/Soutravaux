@@ -26,6 +26,7 @@
   border-radius: var(--radius-medium);
   box-shadow: var(--shadow-default);
   margin-bottom: 32px;
+  border: 1px solid var(--color-border);
 }
 
 .role-selector12 label {
