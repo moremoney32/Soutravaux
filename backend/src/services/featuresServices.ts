@@ -110,98 +110,7 @@ export async function GetFeaturesByRole(role: string): Promise<any[]> {
   }
 }
 
-// // MODIFIER CreateFeature pour utiliser le rôle
-// export async function CreateFeature(featureData: { 
-//   name: string; 
-//   page: string; 
-//   role: string;
-//   parent_feature_id?: number | null;
-// }): Promise<any> {
-//   const conn = await pool.getConnection();
-//   try {
-//     console.log('Service: Création feature avec rôle:', featureData.role);
-    
-//     // 1. Créer la feature
-//     const [result] = await conn.query(
-//       'INSERT INTO features (name, page, role, parent_feature_id) VALUES (?, ?, ?, ?)',
-//       [featureData.name, featureData.page, featureData.role, featureData.parent_feature_id || null]
-//     );
-    
-//     const newFeatureId = (result as any).insertId;
-//     console.log('Service: Feature créée avec ID:', newFeatureId);
-    
-//     // 2. IDs fixes des plans entreprise
-//     const enterprisePlanIds: { [key: string]: number } = {
-//       'artisan': 20,    // Plan Entreprise Artisan
-//       'annonceur': 24   // Plan Entreprise Annonceur
-//     };
-    
-//     const enterprisePlanId = enterprisePlanIds[featureData.role];
-    
-//     if (enterprisePlanId) {
-//       //CORRECTION : Vérifier si la liaison existe déjà
-//       const [existingLink] = await conn.query(
-//         'SELECT * FROM feature_plans WHERE feature_id = ? AND plan_id = ?',
-//         [newFeatureId, enterprisePlanId]
-//       );
-      
-//       if ((existingLink as any[]).length === 0) {
-//         // Seulement insérer si la liaison n'existe pas
-//         await conn.query(
-//           'INSERT INTO feature_plans (feature_id, plan_id) VALUES (?, ?)',
-//           [newFeatureId, enterprisePlanId]
-//         );
-//         console.log(`Service: Feature liée au plan entreprise ${enterprisePlanId} (${featureData.role})`);
-//       } else {
-//         console.log('ℹLiaison existe déjà, pas de doublon créé');
-//       }
-//     } else {
-//       console.warn('⚠️ Service: Aucun plan entreprise défini pour rôle:', featureData.role);
-//     }
-    
-//     // 3. Retourner la feature créée
-//     const [newFeature] = await conn.query('SELECT * FROM features WHERE id = ?', [newFeatureId]);
-//     return (newFeature as any[])[0];
-    
-//   } catch (error: any) {
-//     console.error('Service: Erreur création feature:', error);
-//     throw error;
-//   } finally {
-//     conn.release();
-//   }
-// }
-// export async function UpdateFeature(id: number, featureData: Partial<any>): Promise<any> {
-//   const conn = await pool.getConnection();
-//   try {
-//     const updates: string[] = [];
-//     const values: any[] = [];
-
-//     Object.entries(featureData).forEach(([key, value]) => {
-//       if (value !== undefined) {
-//         updates.push(`${key} = ?`);
-//         values.push(value);
-//       }
-//     });
-
-//     if (updates.length === 0) {
-//       throw new Error('Aucune donnée à mettre à jour');
-//     }
-
-//     values.push(id);
-
-//     await conn.query(
-//       `UPDATE features SET ${updates.join(', ')} WHERE id = ?`,
-//       values
-//     );
-
-//     const [updatedFeature] = await conn.query('SELECT * FROM features WHERE id = ?', [id]);
-//     return (updatedFeature as any[])[0];
-//   } finally {
-//     conn.release();
-//   }
-// }
-
-// ✅ MODIFIER CreateFeature pour inclure description + image
+// MODIFIER CreateFeature pour inclure description + image
 export async function CreateFeature(featureData: { 
   name: string; 
   page: string; 
@@ -265,14 +174,14 @@ export async function CreateFeature(featureData: {
   }
 }
 
-// ✅ MODIFIER UpdateFeature pour inclure description + image
+// MODIFIER UpdateFeature pour inclure description + image
 export async function UpdateFeature(id: number, featureData: Partial<any>): Promise<any> {
   const conn = await pool.getConnection();
   try {
     const updates: string[] = [];
     const values: any[] = [];
 
-    // ✅ Autoriser la mise à jour de description et image_url
+    // Autoriser la mise à jour de description et image_url
     const allowedFields = ['name', 'page', 'description', 'image_url', 'parent_feature_id'];
     
     Object.entries(featureData).forEach(([key, value]) => {

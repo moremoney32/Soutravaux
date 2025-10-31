@@ -116,7 +116,7 @@ const API_BASE =
     ? "http://localhost:3000/api"
     : "https://solutravo.zeta-app.fr/api";
 
-// ✅ Fonction générique pour les requêtes JSON
+// Fonction générique pour les requêtes JSON
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     headers: {
@@ -137,7 +137,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   return data.data || data;
 }
 
-// ✅ Fonction spécifique pour l'upload d'images
+// Fonction spécifique pour l'upload d'images
 async function uploadImage(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('image', file);
@@ -145,7 +145,7 @@ async function uploadImage(file: File): Promise<string> {
   const response = await fetch(`${API_BASE}/upload`, {
     method: 'POST',
     body: formData,
-    // ⚠️ PAS de Content-Type pour FormData (auto-géré par le navigateur)
+    // PAS de Content-Type pour FormData (auto-géré par le navigateur)
   });
 
   if (!response.ok) {
@@ -160,8 +160,26 @@ async function uploadImage(file: File): Promise<string> {
   if (!data.url) {
     throw new Error("URL de l'image non retournée par le serveur");
   }
+   console.log('URL retournée:', data.url);
+   let imageUrl = data.url;
+  
+  // ✅ CORRECTION : Si l'URL contient localhost, la remplacer
+  if (imageUrl.includes('localhost:3000')) {
+    console.warn('⚠️ URL localhost détectée, correction en cours...');
+    imageUrl = imageUrl.replace('http://localhost:3000', 'https://solutravo.zeta-app.fr');
+    console.log('✅ URL corrigée:', imageUrl);
+  }
+  
+  // ✅ Si l'URL est relative, la transformer en absolue
+  if (imageUrl.startsWith('/uploads')) {
+    imageUrl = `https://solutravo.zeta-app.fr${imageUrl}`;
+    console.log('✅ URL relative convertie:', imageUrl);
+  }
+  
+  console.log('📍 URL finale:', imageUrl);
+  
+  return imageUrl;
 
-  return data.url;
 }
 
 export const planFeatureApi = {
@@ -197,13 +215,13 @@ export const planFeatureApi = {
     return await fetchAPI(`/features/by-role?role=${role}`);
   },
 
-  // ✅ MODIFIÉ : createFeature avec support de l'upload
+  // MODIFIÉ : createFeature avec support de l'upload
   createFeature: async (featureData: Omit<Feature, 'id'> & { 
     imageFile?: File 
   }): Promise<Feature> => {
     let imageUrl: string | undefined = featureData.image_url;
 
-    // ✅ Si un fichier image est fourni, l'uploader d'abord
+    // Si un fichier image est fourni, l'uploader d'abord
     if (featureData.imageFile) {
       try {
         imageUrl = await uploadImage(featureData.imageFile);
@@ -214,7 +232,7 @@ export const planFeatureApi = {
       }
     }
 
-    // ✅ Créer la feature avec l'URL de l'image
+    // Créer la feature avec l'URL de l'image
     const { imageFile, ...dataToSend } = featureData;
     
     return await fetchAPI('/features', {
@@ -226,13 +244,13 @@ export const planFeatureApi = {
     });
   },
 
-  // ✅ MODIFIÉ : updateFeature avec support de l'upload
+  // MODIFIÉ : updateFeature avec support de l'upload
   updateFeature: async (id: number, featureData: Partial<Feature> & { 
     imageFile?: File 
   }): Promise<Feature> => {
     let imageUrl = featureData.image_url;
 
-    // ✅ Si un nouveau fichier image est fourni, l'uploader
+    // Si un nouveau fichier image est fourni, l'uploader
     if (featureData.imageFile) {
       try {
         imageUrl = await uploadImage(featureData.imageFile);
@@ -243,7 +261,7 @@ export const planFeatureApi = {
       }
     }
 
-    // ✅ Mettre à jour la feature
+    // Mettre à jour la feature
     const { imageFile, ...dataToSend } = featureData;
     
     return await fetchAPI(`/features/${id}`, {
