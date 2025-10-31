@@ -161,25 +161,8 @@ async function uploadImage(file: File): Promise<string> {
     throw new Error("URL de l'image non retournée par le serveur");
   }
    console.log('URL retournée:', data.url);
-   let imageUrl = data.url;
-  
-  // ✅ CORRECTION : Si l'URL contient localhost, la remplacer
-  if (imageUrl.includes('localhost:3000')) {
-    console.warn('⚠️ URL localhost détectée, correction en cours...');
-    imageUrl = imageUrl.replace('http://localhost:3000', 'https://solutravo.zeta-app.fr');
-    console.log('✅ URL corrigée:', imageUrl);
-  }
-  
-  // ✅ Si l'URL est relative, la transformer en absolue
-  if (imageUrl.startsWith('/uploads')) {
-    imageUrl = `https://solutravo.zeta-app.fr${imageUrl}`;
-    console.log('✅ URL relative convertie:', imageUrl);
-  }
-  
-  console.log('📍 URL finale:', imageUrl);
-  
-  return imageUrl;
 
+  return data.url;
 }
 
 export const planFeatureApi = {
