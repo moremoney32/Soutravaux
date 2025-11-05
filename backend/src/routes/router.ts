@@ -147,6 +147,12 @@ router.delete('/features/:featureId/plans/:planId', removeFeatureFromPlanControl
  */
 router.get('/features/:featureId/plans', getPlansByFeatureController);
 router.get('/features/by-role', getFeaturesByRoleController);
+router.get("/presocietes",getPreSocietesController);
+router.get("/societes",getSocietesController);
+router.get("/activites",getActivitesController);
+router.get("/departements",getDepartementsController);
+router.get("/stats",getStatsController);
+router.post("/send",sendNotificationController);
 
 router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
   const url = (req as any).fileUrl;
@@ -175,7 +181,7 @@ router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
  *   - activiteIds: string (comma-separated IDs, optional)
  *   - departementIds: string (comma-separated IDs, optional)
  */
-router.get("/presocietes",getPreSocietesController);
+// router.get("/presocietes",getPreSocietesController);
 
 /**
  * GET /api/push-notifications/societes
@@ -185,19 +191,19 @@ router.get("/presocietes",getPreSocietesController);
  *   - activiteIds: string (comma-separated IDs, optional)
  *   - departementIds: string (comma-separated IDs, optional)
  */
-router.get("/societes",getSocietesController);
+// router.get("/societes",getSocietesController);
 
 /**
  * GET /api/push-notifications/activites
  * Récupère toutes les activités disponibles
  */
-router.get("/activites",getActivitesController);
+// router.get("/activites",getActivitesController);
 
 /**
  * GET /api/push-notifications/departements
  * Récupère tous les départements disponibles
  */
-router.get("/departements",getDepartementsController);
+// router.get("/departements",getDepartementsController);
 
 /**
  * GET /api/push-notifications/stats
@@ -205,7 +211,7 @@ router.get("/departements",getDepartementsController);
  * Query params:
  *   - role: artisan | annonceur | fournisseur (required)
  */
-router.get("/stats",getStatsController);
+// router.get("/stats",getStatsController);
 
 // ===== ROUTE D'ENVOI DE NOTIFICATION =====
 
@@ -228,7 +234,7 @@ router.get("/stats",getStatsController);
  *   }
  * }
  */
- router.post("/send",sendNotificationController);
+//  router.post("/send",sendNotificationController);
 
 
 
