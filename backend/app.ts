@@ -47,18 +47,17 @@ const corsOptions: CorsOptions = {
     "Custom-Header"
   ],
 };
-console.log(corsOptions)
-const getBackendBaseUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://solutravo.zeta-app.fr';
-  } else {
-    return 'https://staging.solutravo.zeta-app.fr';
-  }
-};
+// const getBackendBaseUrl = () => {
+//   if (process.env.NODE_ENV === 'production') {
+//     return 'https://solutravo.zeta-app.fr';
+//   } else {
+//     return 'https://staging.solutravo.zeta-app.fr';
+//   }
+// };
 
-console.log("Configuration Backend:");
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("Backend URL:", getBackendBaseUrl());
+// console.log("Configuration Backend:");
+// console.log("NODE_ENV:", process.env.NODE_ENV);
+// console.log("Backend URL:", getBackendBaseUrl());
 
 // Middlewares
  app.use(cors(corsOptions));
@@ -67,30 +66,27 @@ app.use(cookieParser());
 // app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
-app.get("/", (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: `API Solutravo ${process.env.NODE_ENV} - Opérationnelle`,
-    environment: process.env.NODE_ENV,
-    backendUrl: getBackendBaseUrl(),
-    endpoints: {
-      config: "/api/config",
-      plans: "/api/plans",
-      features: "/api/features",
-      upload: "/api/upload"
-    },
-    timestamp: new Date().toISOString()
-  });
-});
+// app.get("/", (_req: Request, res: Response) => {
+//   res.json({
+//     success: true,
+//     message: `API Solutravo ${process.env.NODE_ENV} - Opérationnelle`,
+//     environment: process.env.NODE_ENV,
+//     backendUrl: getBackendBaseUrl(),
+//     endpoints: {
+//       config: "/api/config",
+//       plans: "/api/plans",
+//       features: "/api/features",
+//       upload: "/api/upload"
+//     },
+//     timestamp: new Date().toISOString()
+//   });
+// });
 
 //  Route de configuration pour le frontend
 app.get("/api/config", (_req: Request, res: Response) => {
   res.json({
     success: true,
-    environment: process.env.NODE_ENV,
-    backendUrl: getBackendBaseUrl(),
-    apiBaseUrl: `${getBackendBaseUrl()}/api`,
-    timestamp: new Date().toISOString()
+    message: "Configuration API Solutravo",
   });
 });
 // Routes API
