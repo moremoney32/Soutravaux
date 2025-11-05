@@ -61,14 +61,7 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("Backend URL:", getBackendBaseUrl());
 
 // Middlewares
-// app.use(cors(corsOptions));
-app.use(cors({
-    origin: "*", // Autorise TOUTES les origines temporairement
-    credentials: true,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-     allowedHeaders: ["*"],
-    exposedHeaders: ["*"]
-}));
+ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 // app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
