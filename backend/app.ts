@@ -60,6 +60,7 @@ const corsOptions: CorsOptions = {
 // console.log("Backend URL:", getBackendBaseUrl());
 
 // Middlewares
+app.options('*', cors(corsOptions));
  app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
