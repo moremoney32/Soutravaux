@@ -337,3 +337,34 @@ jobs:
             */.github/*
             */tests/*
           dangerous-clean-slate: true
+          
+      # ✅ NOUVEAU : Installer les dépendances sur le serveur via SSH
+      - name: Install dependencies and restart server (Production)
+        if: github.ref == 'refs/heads/prod_backend'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/solutravo.zeta-app.fr
+            npm install --production
+            pm2 restart server || pm2 start server.js --name server
+            pm2 save
+            pm2 logs server --lines 20
+
+      # ✅ STAGING aussi
+      - name: Install dependencies and restart server (Staging)
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/staging
+            npm install --production
+            pm2 restart staging-server || pm2 start server.js --name staging-server
+            pm2 save
