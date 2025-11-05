@@ -24,7 +24,7 @@ const allowedOrigins = [
    "https://abonnement.solutravo-compta.fr",
    "https://auth.solutravo-compta.fr",
    "https://abonnement.solutravo-app.fr",
-   "https://auth.solutravo-app.fr"
+   "https://auth.solutravo-app.fr",
 ];
 
 
@@ -47,6 +47,7 @@ const corsOptions: CorsOptions = {
     "Custom-Header"
   ],
 };
+console.log(corsOptions)
 const getBackendBaseUrl = () => {
   if (process.env.NODE_ENV === 'production') {
     return 'https://solutravo.zeta-app.fr';
@@ -60,7 +61,12 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("Backend URL:", getBackendBaseUrl());
 
 // Middlewares
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors({
+    origin: true, // Autorise TOUTES les origines temporairement
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"]
+}));
 app.use(express.json());
 app.use(cookieParser());
 // app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
