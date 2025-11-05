@@ -290,10 +290,10 @@ jobs:
         if: github.ref == 'refs/heads/prod_backend'
         working-directory: ./backend/dist
         run: |
-          echo "DB_HOST=${{ secrets.PROD_DB_HOST }}" >> .env
-          echo "DB_USER=${{ secrets.PROD_DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.PROD_DB_NAME }}" >> .env
+          echo "DB_HOST=46.202.133.214" >> .env
+          echo "DB_USER=u839546084_solutravo" >> .env
+          echo "DB_PASSWORD=Solutravo@!2025Db_0206+" >> .env
+          echo "DB_NAME=u839546084_solutravo" >> .env
           echo "DB_PORT=3306" >> .env
           echo "NODE_ENV=production" >> .env
           echo "APP_URL=https://solutravo.zeta-app.fr" >> .env
