@@ -28,3 +28,34 @@ export interface FeatureWithStatus extends Feature {
   inherited?: boolean;
 }
 
+
+
+export interface PreSociete {
+  id: string;
+  nom: string;
+  email: string;
+  dateCreation: Date;
+  notificationEnvoyee: boolean;
+}
+
+export interface Societe {
+  id: string;
+  nom: string;
+  email: string;
+  artisans: number;
+}
+
+export interface Departement {
+  id: string;
+  numero: string;
+  nom: string;
+  nombreSocietes: number;
+}
+
+export interface NotificationForm {
+  titre: string;
+  emoji: string;
+  description: string;
+}
+
+

@@ -1,0 +1,111 @@
+.presocietes-container_notifications {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+.presocietes-list_notifications {
+  width: 100%;
+}
+
+.list-header_notifications {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.list-header_notifications h4 {
+  font-family: var(--font-gotham);
+  color: var(--color-dark);
+}
+
+.presocietes-grid_notifications {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.presociete-card_notifications {
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.presociete-card_notifications.new_notifications {
+  border-color: var(--color-yellow-primary);
+  order: -2;
+}
+
+.presociete-card_notifications.notified_notifications {
+  border-color: #2196F3;
+  order: -1;
+}
+
+.presociete-card_notifications.selected_notifications {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.presociete-card_notifications:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.card-header_notifications {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.presociete-checkbox_notifications {
+  margin-top: 4px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-orange-primary);
+}
+
+.card-header_notifications h5 {
+  font-family: var(--font-gotham);
+  color: var(--color-dark);
+  flex: 1;
+  margin: 0;
+}
+
+.card-body_notifications {
+  margin-left: 30px;
+}
+
+.card-body_notifications .email_notifications {
+  color: var(--color-gray-secondary);
+  margin-bottom: 8px;
+}
+
+.card-body_notifications .date_notifications {
+  color: var(--color-gray-secondary);
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.badge-notified_notifications {
+  display: inline-block;
+  background-color: #2196F3;
+  color: var(--color-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: var(--font-montserrat);
+}
+
+@media (max-width: 1200px) {
+  .presocietes-container_notifications {
+    grid-template-columns: 1fr;
+  }
+}

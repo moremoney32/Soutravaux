@@ -22,6 +22,7 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
 } from '../controllers/featuresControllers';
 import UpdatePlanFree from "../controllers/UpdatePlanFree";
 import handleImageUpload from "../middleware/uploadMiddleware";
+import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
 
 const router: Router = express.Router();
 
@@ -164,6 +165,70 @@ router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
     url: url
   });
 });
+
+
+/**
+ * GET /api/push-notifications/presocietes
+ * Récupère les présociétés filtrées
+ * Query params:
+ *   - role: artisan | annonceur | fournisseur (required)
+ *   - activiteIds: string (comma-separated IDs, optional)
+ *   - departementIds: string (comma-separated IDs, optional)
+ */
+router.get("/presocietes",getPreSocietesController);
+
+/**
+ * GET /api/push-notifications/societes
+ * Récupère les sociétés filtrées
+ * Query params:
+ *   - role: artisan | annonceur | fournisseur (required)
+ *   - activiteIds: string (comma-separated IDs, optional)
+ *   - departementIds: string (comma-separated IDs, optional)
+ */
+router.get("/societes",getSocietesController);
+
+/**
+ * GET /api/push-notifications/activites
+ * Récupère toutes les activités disponibles
+ */
+router.get("/activites",getActivitesController);
+
+/**
+ * GET /api/push-notifications/departements
+ * Récupère tous les départements disponibles
+ */
+router.get("/departements",getDepartementsController);
+
+/**
+ * GET /api/push-notifications/stats
+ * Récupère les statistiques pour un rôle donné
+ * Query params:
+ *   - role: artisan | annonceur | fournisseur (required)
+ */
+router.get("/stats",getStatsController);
+
+// ===== ROUTE D'ENVOI DE NOTIFICATION =====
+
+/**
+ * POST /api/push-notifications/send
+ * Envoie une notification aux destinataires sélectionnés
+ * Body:
+ * {
+ *   "message": string (required),
+ *   "emoji": string (optional),
+ *   "notificationTypes": ["push" | "internal"] (required, min 1),
+ *   "recipients": {
+ *     "preSocieteIds": string[] (optional),
+ *     "societeIds": string[] (optional)
+ *   },
+ *   "filters": {
+ *     "group": "artisan" | "annonceur" | "fournisseur" (optional),
+ *     "activiteIds": string[] (optional),
+ *     "departementIds": string[] (optional)
+ *   }
+ * }
+ */
+ router.post("/send",sendNotificationController);
 
 
 

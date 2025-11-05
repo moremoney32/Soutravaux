@@ -1,0 +1,64 @@
+.header_notifications {
+  height: 60px;
+  background-color: var(--color-secondary);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-light);
+}
+
+.header-logo_notifications {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text_notifications {
+  font-family: var(--font-gotham);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-orange-primary);
+}
+
+.header-actions_notifications {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-bell_notifications {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+  color: var(--color-dark);
+}
+
+.notification-bell_notifications:hover {
+  background-color: var(--color-light-gray);
+}
+
+.notification-badge_notifications {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: var(--color-orange-primary);
+  color: var(--color-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

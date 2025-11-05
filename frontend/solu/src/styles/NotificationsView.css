@@ -1,0 +1,39 @@
+.notifications-view_notifications {
+  width: 100%;
+}
+
+.subtabs_notifications {
+  display: flex;
+  gap: 16px;
+  padding: 20px 32px;
+  background-color: var(--color-secondary);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.subtab-btn_notifications {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--color-dark);
+  font-family: var(--font-montserrat);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.subtab-btn_notifications:hover {
+  color: var(--color-orange-primary);
+}
+
+.subtab-btn_notifications.active {
+  color: var(--color-orange-primary);
+  border-bottom-color: var(--color-orange-primary);
+  font-weight: 600;
+}
+
+.subtab-content_notifications {
+  padding: 32px;
+}

@@ -6,6 +6,7 @@ import "./app.css";
 import SubscriptionPage from "./components/SubscriptionPage";
 import BibliothequesDashboard from "./components/BibiothequeDashboard";
 import PlanFeatureManager from "./components/PlanFeatureManager";
+import PushNotificationAppPushNotifications from "./components/PushNotificationAppPushNotifications";
 
 function App() {
   
@@ -20,6 +21,7 @@ function App() {
          <Route path="/subscription" element={<SubscriptionPage />} />
          <Route path="/catalogue" element={<BibliothequesDashboard />} />
          <Route path="/feature" element={<PlanFeatureManager />} />
+          <Route path="/notifications" element={<PushNotificationAppPushNotifications />} />
 
       </Routes>
     </BrowserRouter>

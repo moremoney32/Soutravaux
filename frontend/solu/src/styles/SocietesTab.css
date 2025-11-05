@@ -1,0 +1,68 @@
+.societes-container_notifications {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+.societes-list_notifications {
+  width: 100%;
+}
+
+.societes-grid_notifications {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.societe-card_notifications {
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: 2px solid var(--color-border);
+}
+
+.societe-card_notifications.selected_notifications {
+  border-color: var(--color-orange-primary);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.societe-card_notifications:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.societe-checkbox_notifications {
+  margin-top: 4px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-orange-primary);
+}
+
+.card-body_notifications .artisans_notifications {
+  color: var(--color-orange-primary);
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.empty-state_notifications {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-gray-secondary);
+}
+
+.empty-state_notifications p {
+  font-family: var(--font-montserrat);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@media (max-width: 1200px) {
+  .societes-container_notifications {
+    grid-template-columns: 1fr;
+  }
+}

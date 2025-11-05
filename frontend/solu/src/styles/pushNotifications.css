@@ -1,0 +1,560 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --color-primary: #E77131;
+  --color-secondary: #FFFFFF;
+  --color-background: #E77131;
+  --color-dark: #505050;
+  --color-light-gray: #F8F9FA;
+  --color-border: #E0E0E0;
+  --color-gray-secondary: #6c757d;
+  --color-yellow-primary: #f6b800;
+  --color-orange-primary: #e67131;
+  --color-gray-primary: #505151;
+
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-gotham: "Gotham Rounded", sans-serif;
+
+  --spacing-md: 16px;
+  --spacing-sm: 8px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  --shadow-light: 0 4px 20px rgba(231, 113, 49, 0.1);
+  --shadow-medium: 0 8px 30px rgba(231, 113, 49, 0.15);
+  --shadow-default: 0px 8px 13px -3px rgba(0, 0, 0, .07);
+
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 20px;
+
+  --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.appContainerPushNotifications {
+  display: flex;
+  height: 100vh;
+  font-family: var(--font-montserrat);
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.column1PushNotifications {
+  width: 280px;
+  background-color: var(--color-secondary);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.column2PushNotifications {
+  flex: 1;
+  background-color: #fafafa;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.column3PushNotifications {
+  width: 380px;
+  background-color: var(--color-secondary);
+  border-left: 1px solid var(--color-border);
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+.logoContainerPushNotifications {
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  margin-top: -1.2rem;
+  /* padding: var(--spacing-md) 0; */
+  /* margin-bottom: var(--spacing-md); */
+}
+
+.logoPushNotifications {
+  max-width: 180px;
+  height: auto;
+}
+
+.sectionPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.sectionTitlePushNotifications {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-montserrat);
+}
+
+.buttonGroupPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.groupButtonPushNotifications {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-secondary);
+  color: var(--color-dark);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: var(--font-montserrat);
+  text-align: left;
+}
+
+.groupButtonPushNotifications:hover {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-orange-primary);
+}
+
+.groupButtonPushNotifications.activePushNotifications {
+  background-color: var(--color-orange-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-orange-primary);
+}
+
+.searchInputPushNotifications {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.searchInputPushNotifications:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary), 0 0 0 2px var(--color-orange-primary);
+}
+
+.checkboxListPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: var(--spacing-sm);
+}
+
+.checkboxListPushNotifications::-webkit-scrollbar {
+  width: 4px;
+}
+
+.checkboxListPushNotifications::-webkit-scrollbar-track {
+  background: var(--color-light-gray);
+  border-radius: 4px;
+}
+
+.checkboxListPushNotifications::-webkit-scrollbar-thumb {
+  background: var(--color-gray-secondary);
+  border-radius: 4px;
+}
+
+.checkboxItemPushNotifications {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-dark);
+  font-family: var(--font-montserrat);
+}
+
+.checkboxItemPushNotifications input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-orange-primary);
+}
+
+.filterHeaderPushNotifications {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchContainerPushNotifications {
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchInputMainPushNotifications {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.searchInputMainPushNotifications:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary), 0 0 0 2px var(--color-orange-primary);
+}
+
+.filterByGroupPushNotifications {
+  min-width: 180px;
+}
+
+.selectFilterPushNotifications {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  background-color: var(--color-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.selectFilterPushNotifications:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+.selectAllContainerPushNotifications {
+  padding: var(--spacing-md);
+  background-color: var(--color-light-gray);
+  border-radius: var(--radius-small);
+}
+
+.selectAllTextPushNotifications {
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.cardsContainerPushNotifications {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.cardPushNotifications {
+  background-color: var(--color-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-light);
+}
+
+.cardPushNotifications:hover {
+  border-color: var(--color-orange-primary);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.cardPushNotifications.selectedCardPushNotifications {
+  border-color: var(--color-orange-primary);
+  background-color: #fff8f3;
+}
+
+.cardHeaderPushNotifications {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.cardHeaderPushNotifications input[type="checkbox"] {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-orange-primary);
+}
+
+.cardTitlePushNotifications {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+  font-family: var(--font-montserrat);
+}
+
+.cardEmailPushNotifications {
+  font-size: 12px;
+  color: var(--color-gray-secondary);
+  margin: var(--spacing-sm) 0;
+  font-family: var(--font-montserrat);
+}
+
+.cardFooterPushNotifications {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+.cardDatePushNotifications {
+  font-size: 11px;
+  color: var(--color-gray-secondary);
+  font-family: var(--font-montserrat);
+}
+
+.notifiedBadgePushNotifications {
+  font-size: 10px;
+  padding: 4px 8px;
+  background-color: #d4edda;
+  color: #155724;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  font-family: var(--font-montserrat);
+}
+
+.emptyStatePushNotifications {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px; 
+  color: var(--color-gray-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-family: var(--font-montserrat);
+}
+
+
+.notificationFormPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.formTitlePushNotifications {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+  font-family: var(--font-montserrat);
+}
+
+.recipientCountPushNotifications {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--color-light-gray);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  color: var(--color-dark);
+  font-family: var(--font-montserrat);
+}
+
+.countBadgePushNotifications {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  background-color: var(--color-orange-primary);
+  color: var(--color-secondary);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+}
+
+.messageContainerPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.messageHeaderPushNotifications {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.labelPushNotifications {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark);
+  font-family: var(--font-montserrat);
+}
+
+.emojiButtonPushNotifications {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 12px;
+  transition: var(--transition-fast);
+}
+
+.emojiButtonPushNotifications:hover {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-orange-primary);
+}
+
+.emojiPickerPushNotifications {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  padding: var(--spacing-md);
+  background-color: var(--color-light-gray);
+  border-radius: var(--radius-small);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.emojiPickerPushNotifications::-webkit-scrollbar {
+  width: 4px;
+}
+
+.emojiPickerPushNotifications::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+  border-radius: 4px;
+}
+
+.emojiPickerPushNotifications::-webkit-scrollbar-thumb {
+  background: var(--color-gray-secondary);
+  border-radius: 4px;
+}
+
+.emojiOptionPushNotifications {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-small);
+  transition: var(--transition-fast);
+}
+
+.emojiOptionPushNotifications:hover {
+  background-color: var(--color-secondary);
+  transform: scale(1.2);
+}
+
+.textareaPushNotifications {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-gray-secondary);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  font-weight: 500;
+  resize: vertical;
+  min-height: 120px;
+  transition: var(--transition-fast);
+}
+
+.textareaPushNotifications:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary), 0 0 0 2px var(--color-orange-primary);
+}
+
+.notificationTypeContainerPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.checkboxGroupPushNotifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.checkboxItemLargePushNotifications {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: 13px;
+  color: var(--color-dark);
+  font-family: var(--font-montserrat);
+}
+
+.checkboxItemLargePushNotifications:hover {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-orange-primary);
+}
+
+.checkboxItemLargePushNotifications input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-orange-primary);
+}
+
+.sendButtonPushNotifications {
+  padding: 14px 24px;
+  background-color: var(--color-orange-primary);
+  color: var(--color-secondary);
+  border: none;
+  border-radius: var(--radius-small);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: var(--font-montserrat);
+  margin-top: var(--spacing-md);
+}
+
+.sendButtonPushNotifications:hover:not(:disabled) {
+  background-color: var(--color-yellow-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.sendButtonPushNotifications:disabled {
+  background-color: var(--color-gray-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 1200px) {
+  .column3PushNotifications {
+    width: 320px;
+  }
+}
+
+@media (max-width: 992px) {
+  .column1PushNotifications {
+    width: 240px;
+  }
+
+  .cardsContainerPushNotifications {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}

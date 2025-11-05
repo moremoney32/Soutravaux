@@ -1,0 +1,56 @@
+.departements-container_notifications {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+.departements-list_notifications {
+  width: 100%;
+}
+
+.departements-grid_notifications {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.departement-card_notifications {
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-medium);
+  padding: 20px;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: 2px solid var(--color-border);
+}
+
+.departement-card_notifications.selected_notifications {
+  border-color: var(--color-orange-primary);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.departement-card_notifications:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.departement-checkbox_notifications {
+  margin-top: 4px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-orange-primary);
+}
+
+.card-body_notifications .societes-count_notifications {
+  color: var(--color-gray-secondary);
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+@media (max-width: 1200px) {
+  .departements-container_notifications {
+    grid-template-columns: 1fr;
+  }
+}
