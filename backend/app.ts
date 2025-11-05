@@ -63,9 +63,11 @@ console.log("Backend URL:", getBackendBaseUrl());
 // Middlewares
 // app.use(cors(corsOptions));
 app.use(cors({
-    origin: true, // Autorise TOUTES les origines temporairement
+    origin: "*", // Autorise TOUTES les origines temporairement
     credentials: true,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"]
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+     allowedHeaders: ["*"],
+    exposedHeaders: ["*"]
 }));
 app.use(express.json());
 app.use(cookieParser());
