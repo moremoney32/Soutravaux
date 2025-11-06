@@ -2,7 +2,7 @@
 
 export type GroupType = 'artisan' | 'annonceur' | 'fournisseur';
 
-export type NotificationType = 'push' | 'internal';
+export type NotificationType = 'push' | 'internal' | 'sse';
 
 export interface PreSocieteDB {
   id: number;
@@ -114,7 +114,7 @@ export interface DepartementDTO {
 export interface SendNotificationPayload {
   message: string;
   emoji?: string;
-  notificationTypes: ('push' | 'internal')[];
+  notificationTypes: ('push' | 'internal' | 'sse')[];
   recipients: {
     preSocieteIds?: string[];
     societeIds?: string[];
@@ -133,6 +133,7 @@ export interface SendNotificationResponse {
   failedCount: number;
   details?: {
     pushSent?: number;
+     sseSent?: number;
     internalSent?: number;
   };
 }

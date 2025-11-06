@@ -25,6 +25,7 @@ interface SendNotificationResponse {
   failedCount: number;
   details?: {
     pushSent?: number;
+    sseSent?: number;      // ← NOUVEAU
     internalSent?: number;
   };
 }
@@ -70,7 +71,7 @@ export const pushNotificationApi = {
       return result.data;
       
     } catch (error: any) {
-      console.error('❌ Erreur getPreSocietes:', error);
+      console.error('Erreur getPreSocietes:', error);
       throw error;
     }
   },
@@ -113,7 +114,7 @@ export const pushNotificationApi = {
       return result.data;
       
     } catch (error: any) {
-      console.error('❌ Erreur getSocietes:', error);
+      console.error(' Erreur getSocietes:', error);
       throw error;
     }
   },
@@ -142,7 +143,7 @@ export const pushNotificationApi = {
       return result.data;
       
     } catch (error: any) {
-      console.error('❌ Erreur getActivites:', error);
+      console.error(' Erreur getActivites:', error);
       throw error;
     }
   },
@@ -171,7 +172,7 @@ export const pushNotificationApi = {
       return result.data;
       
     } catch (error: any) {
-      console.error('❌ Erreur getDepartements:', error);
+      console.error(' Erreur getDepartements:', error);
       throw error;
     }
   },
@@ -214,7 +215,7 @@ export const pushNotificationApi = {
       return result;
       
     } catch (error: any) {
-      console.error('❌ Erreur sendNotification:', error);
+      console.error(' Erreur sendNotification:', error);
       throw error;
     }
   },
@@ -247,7 +248,7 @@ export const pushNotificationApi = {
       return result.data;
       
     } catch (error: any) {
-      console.error('❌ Erreur getStats:', error);
+      console.error(' Erreur getStats:', error);
       throw error;
     }
   },

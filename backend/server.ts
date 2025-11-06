@@ -1,12 +1,24 @@
 import app from "./app";
 import dotenv from "dotenv";
+import { cleanupSseService, initSseService } from "./src/services/SseServices";
+
 
 dotenv.config({ path: "./.env" });
 
 const PORT = process.env.PORT || 3000;
+initSseService();
+const server = app.listen(PORT, () => {
+  console.log(`Serveur démarré sur http://localhost:${PORT}`);
+});
 
-app.listen(PORT, () => {
-  console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
+process.on('SIGTERM', () => {
+  cleanupSseService(); 
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  cleanupSseService(); 
+  server.close(() => process.exit(0));
 });
 
 // DB_HOST=localhost

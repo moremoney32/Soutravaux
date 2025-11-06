@@ -49,7 +49,7 @@ export type GroupType = 'artisan' | 'annonceur' | 'fournisseur';
 
 export type FilterType = 'presocietes' | 'societes' | 'activites' | 'departements';
 
-export type NotificationType = 'push' | 'internal';
+export type NotificationType = 'push' | 'internal' | 'sse';
 
 export interface PreSociete {
   id: string;
@@ -91,4 +91,15 @@ export interface NotificationData {
   message: string;
   notificationType: NotificationType[];
   recipients: string[];
+}
+export interface SendNotificationResponse {
+  success: boolean;
+  message: string;
+  sentCount: number;
+  failedCount: number;
+  details?: {
+    pushSent?: number;
+    sseSent?: number;      // ← NOUVEAU
+    internalSent?: number;
+  };
 }

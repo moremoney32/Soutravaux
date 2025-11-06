@@ -25,6 +25,7 @@ const allowedOrigins = [
    "https://auth.solutravo-compta.fr",
    "https://abonnement.solutravo-app.fr",
    "https://auth.solutravo-app.fr",
+    "http://localhost:5500",
 ];
 
 

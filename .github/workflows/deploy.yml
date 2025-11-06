@@ -297,7 +297,9 @@ jobs:
           echo "DB_PORT=3306" >> .env
           echo "NODE_ENV=production" >> .env
           echo "APP_URL=https://solutravo.zeta-app.fr" >> .env
+          echo "ONESIGNAL_REST_API_KEY=${{ secrets.ONESIGNAL_REST_API_KEY }}" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
+          echo "ONESIGNAL_APP_ID=${{ secrets.ONESIGNAL_APP_ID }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
           echo "COOKIE_MAX_AGE=${{ secrets.COOKIE_MAX_AGE }}" >> .env

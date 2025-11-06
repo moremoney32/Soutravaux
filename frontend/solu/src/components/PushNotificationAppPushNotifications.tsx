@@ -50,6 +50,7 @@ import Column1PushNotifications from './Column1PushNotifications';
 import Column2PushNotifications from './Column2PushNotifications';
 import Column3PushNotifications from './Column3PushNotifications';
 import { usePushNotifications } from '../hook/Usepushnotifications';
+import type { NotificationType } from '../types/pushNotifications';
 
 function PushNotificationAppPushNotifications() {
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
@@ -90,7 +91,7 @@ function PushNotificationAppPushNotifications() {
   const handleSendNotification = async (
     message: string,
     emoji: string,
-    notificationTypes: any[],
+    notificationTypes: NotificationType[],
     recipientIds: string[]
   ) => {
     const result = await sendNotification(message, emoji, notificationTypes, recipientIds);
@@ -103,7 +104,7 @@ function PushNotificationAppPushNotifications() {
       {/* Message d'erreur global */}
       {error && (
         <div className="globalErrorPushNotifications">
-          ❌ {error}
+          {error}
         </div>
       )}
 

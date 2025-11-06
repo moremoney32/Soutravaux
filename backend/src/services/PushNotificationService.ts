@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
 import { ActiviteDTO, DepartementDTO, GroupType, PreSocieteDTO, SendNotificationPayload, SendNotificationResponse, SocieteDTO } from "../types/Pushnotifications";
+import { sendToMultipleUsers } from './SseServices';
 
 // ===== RÉCUPÉRATION DES PRÉSOCIÉTÉS =====
 export async function getPreSocietes(
@@ -201,60 +202,64 @@ export async function sendNotification(
   payload: SendNotificationPayload
 ): Promise<SendNotificationResponse> {
   const conn = await pool.getConnection();
-  interface OneSignalResponse {
-  id?: string;
-  recipients?: number;
-  errors?: string[];
-  error?: string;
-}
   
   try {
     await conn.beginTransaction();
 
     let totalRecipients = 0;
-    const recipientUserIds: string[] = [];
+    // ✅ CHANGEMENT : recipientSocieteIds au lieu de recipientUserIds
+    const recipientSocieteIds: string[] = [];
 
-    // Récupérer les IDs utilisateurs des présociétés sélectionnées
+    // ========================================
+    // RÉCUPÉRATION DES IDs SOCIÉTÉS
+    // ========================================
+
+    // Présociétés
     if (payload.recipients.preSocieteIds && payload.recipients.preSocieteIds.length > 0) {
       const [preSocietes] = await conn.query<RowDataPacket[]>(
-        `SELECT p.id, p.name, m.id as membre_id, m.email
+        `SELECT p.id, p.name
          FROM presocietes p
-         INNER JOIN membres m ON m.id = p.membre_id
          WHERE p.id IN (${payload.recipients.preSocieteIds.map(() => '?').join(',')})`,
         payload.recipients.preSocieteIds
       );
       
+      // ✅ CHANGEMENT : On garde directement les IDs présociétés
       preSocietes.forEach((ps: any) => {
-        if (ps.membre_id) recipientUserIds.push(ps.membre_id.toString());
+        recipientSocieteIds.push(ps.id.toString());
       });
       
       totalRecipients += preSocietes.length;
     }
 
-    // Récupérer les IDs utilisateurs des sociétés sélectionnées
+    // Sociétés
     if (payload.recipients.societeIds && payload.recipients.societeIds.length > 0) {
       const [societes] = await conn.query<RowDataPacket[]>(
-        `SELECT s.id, s.email, m.id as membre_id
+        `SELECT s.id, s.email
          FROM societes s
-         INNER JOIN membres m ON m.email = s.email
          WHERE s.id IN (${payload.recipients.societeIds.map(() => '?').join(',')})`,
         payload.recipients.societeIds
       );
       
+      // ✅ CHANGEMENT : On garde directement les IDs sociétés
       societes.forEach((s: any) => {
-        if (s.membre_id) recipientUserIds.push(s.membre_id.toString());
+        recipientSocieteIds.push(s.id.toString());
       });
       
       totalRecipients += societes.length;
     }
 
-    console.log(' IDs utilisateurs à notifier:', recipientUserIds);
+    console.log('📋 IDs sociétés à notifier:', recipientSocieteIds);
 
-    // Envoi réel via OneSignal
     let pushSent = 0;
+    let sseSent = 0;
     let internalSent = 0;
 
-    if (payload.notificationTypes.includes('push') && recipientUserIds.length > 0) {
+    // ========================================
+    // ENVOI ONESIGNAL
+    // ========================================
+    if (payload.notificationTypes.includes('push') && recipientSocieteIds.length > 0) {
+      console.log('📱 Envoi OneSignal à:', recipientSocieteIds);
+      
       try {
         const oneSignalResponse = await fetch('https://onesignal.com/api/v1/notifications', {
           method: 'POST',
@@ -264,14 +269,12 @@ export async function sendNotification(
           },
           body: JSON.stringify({
             app_id: process.env.ONESIGNAL_APP_ID,
-            include_external_user_ids:recipientUserIds, //recipientUserIds,
-            headings: {
-              en: 'Solutravo',
-              fr: 'Solutravo'
-            },
+            // ✅ CHANGEMENT : recipientSocieteIds
+            include_external_user_ids: recipientSocieteIds,
+            headings: { en: 'Solutravo', fr: 'Solutravo' },
             contents: {
-              en: `${payload.emoji} ${payload.message}`,
-              fr: `${payload.emoji} ${payload.message}`
+              en: `${payload.emoji || '🔔'} ${payload.message}`,
+              fr: `${payload.emoji || '🔔'} ${payload.message}`
             },
             data: {
               type: 'notification',
@@ -280,44 +283,51 @@ export async function sendNotification(
           })
         });
 
-         const oneSignalResult = await oneSignalResponse.json() as OneSignalResponse;
+        const oneSignalResult = await oneSignalResponse.json() as any;
         
         if (oneSignalResponse.ok) {
-          console.log('OneSignal notification sent:', oneSignalResult);
-          
-          //Vérification de type sécurisée
-          if (oneSignalResult && typeof oneSignalResult === 'object' && 'recipients' in oneSignalResult) {
-            pushSent = oneSignalResult.recipients || recipientUserIds.length;
-          } else {
-            pushSent = recipientUserIds.length;
-          }
+          console.log('✅ OneSignal sent:', oneSignalResult);
+          pushSent = oneSignalResult.recipients || recipientSocieteIds.length;
         } else {
-          console.error(' OneSignal error:', oneSignalResult);
-          
-          //Vérification de type sécurisée pour les erreurs
-          let errorMessage = 'OneSignal failed';
-          if (oneSignalResult && typeof oneSignalResult === 'object') {
-            if (Array.isArray(oneSignalResult.errors)) {
-              errorMessage = oneSignalResult.errors.join(', ');
-            } else if (oneSignalResult.error && typeof oneSignalResult.error === 'string') {
-              errorMessage = oneSignalResult.error;
-            } else if (oneSignalResult.errors && typeof oneSignalResult.errors === 'string') {
-              errorMessage = oneSignalResult.errors;
-            }
-          }
-          throw new Error(errorMessage);
+          console.error('❌ OneSignal error:', oneSignalResult);
         }
         
       } catch (error: any) {
-        console.error(' Erreur OneSignal:', error);
+        console.error('❌ Erreur OneSignal:', error);
         pushSent = 0;
-        // Ne pas throw pour continuer avec internal notifications
       }
     }
 
+    // ========================================
+    // ENVOI SSE
+    // ✅ CHANGEMENT : Utilise recipientSocieteIds
+    // ========================================
+    if (payload.notificationTypes.includes('sse') && recipientSocieteIds.length > 0) {
+      console.log('📡 Envoi SSE à:', recipientSocieteIds);
+      
+      try {
+        const sseData = {
+          type: 'notification',
+          title: 'Solutravo',
+          message: `${payload.emoji || '🔔'} ${payload.message}`,
+          emoji: payload.emoji,
+          timestamp: new Date().toISOString()
+        };
+
+        // ✅ CHANGEMENT : recipientSocieteIds
+        sseSent = sendToMultipleUsers(recipientSocieteIds, sseData);
+        
+        console.log(`✅ SSE envoyé à ${sseSent}/${recipientSocieteIds.length} sociétés connectées`);
+        
+      } catch (error: any) {
+        console.error('❌ Erreur SSE:', error);
+        sseSent = 0;
+      }
+    }
+
+    // Notifications internes
     if (payload.notificationTypes.includes('internal')) {
-      console.log('Envoi de notifications INTERNES à:', recipientUserIds.length, 'utilisateurs');
-      internalSent = recipientUserIds.length;
+      internalSent = recipientSocieteIds.length;
     }
 
     await conn.commit();
@@ -329,19 +339,19 @@ export async function sendNotification(
       failedCount: 0,
       details: {
         pushSent,
+        sseSent,
         internalSent
       }
     };
     
   } catch (error: any) {
     await conn.rollback();
-    console.error(' Erreur lors de l\'envoi de notification:', error);
-    throw new Error(`Échec de l'envoi de notification: ${error.message}`);
+    console.error('❌ Erreur notification:', error);
+    throw new Error(`Échec envoi: ${error.message}`);
   } finally {
     conn.release();
   }
 }
-
 // STATISTIQUES
 export async function getNotificationStats(role: GroupType) {
   const conn = await pool.getConnection();

@@ -23,8 +23,10 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
 import UpdatePlanFree from "../controllers/UpdatePlanFree";
 import handleImageUpload from "../middleware/uploadMiddleware";
 import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
+import sseRoutes from './sse.routes';
 
 const router: Router = express.Router();
+router.use('/sse', sseRoutes);
 
 router.post("/register", UserControllers);
 router.post("/registerAnnonceur",AnnonceurControllers);

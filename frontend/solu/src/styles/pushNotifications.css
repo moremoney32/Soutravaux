@@ -177,7 +177,7 @@
   font-family: var(--font-montserrat);
 }
 
-.checkboxItemPushNotifications input[type="checkbox"] {
+.selectAllContainerPushNotifications input[type="checkbox"] {
   cursor: pointer;
   width: 16px;
   height: 16px;
