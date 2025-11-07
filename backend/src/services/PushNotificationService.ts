@@ -207,7 +207,7 @@ export async function sendNotification(
     await conn.beginTransaction();
 
     let totalRecipients = 0;
-    // ✅ CHANGEMENT : recipientSocieteIds au lieu de recipientUserIds
+    // CHANGEMENT : recipientSocieteIds au lieu de recipientUserIds
     const recipientSocieteIds: string[] = [];
 
     // ========================================
@@ -223,7 +223,7 @@ export async function sendNotification(
         payload.recipients.preSocieteIds
       );
       
-      // ✅ CHANGEMENT : On garde directement les IDs présociétés
+      // CHANGEMENT : On garde directement les IDs présociétés
       preSocietes.forEach((ps: any) => {
         recipientSocieteIds.push(ps.id.toString());
       });
@@ -240,7 +240,7 @@ export async function sendNotification(
         payload.recipients.societeIds
       );
       
-      // ✅ CHANGEMENT : On garde directement les IDs sociétés
+      // CHANGEMENT : On garde directement les IDs sociétés
       societes.forEach((s: any) => {
         recipientSocieteIds.push(s.id.toString());
       });
@@ -269,12 +269,12 @@ export async function sendNotification(
           },
           body: JSON.stringify({
             app_id: process.env.ONESIGNAL_APP_ID,
-            // ✅ CHANGEMENT : recipientSocieteIds
+            // CHANGEMENT : recipientSocieteIds
             include_external_user_ids: recipientSocieteIds,
             headings: { en: 'Solutravo', fr: 'Solutravo' },
             contents: {
-              en: `${payload.emoji || '🔔'} ${payload.message}`,
-              fr: `${payload.emoji || '🔔'} ${payload.message}`
+              en: `${payload.emoji} ${payload.message}`,
+              fr: `${payload.emoji} ${payload.message}`
             },
             data: {
               type: 'notification',
@@ -286,21 +286,21 @@ export async function sendNotification(
         const oneSignalResult = await oneSignalResponse.json() as any;
         
         if (oneSignalResponse.ok) {
-          console.log('✅ OneSignal sent:', oneSignalResult);
+          console.log('OneSignal sent:', oneSignalResult);
           pushSent = oneSignalResult.recipients || recipientSocieteIds.length;
         } else {
-          console.error('❌ OneSignal error:', oneSignalResult);
+          console.error('OneSignal error:', oneSignalResult);
         }
         
       } catch (error: any) {
-        console.error('❌ Erreur OneSignal:', error);
+        console.error('Erreur OneSignal:', error);
         pushSent = 0;
       }
     }
 
     // ========================================
     // ENVOI SSE
-    // ✅ CHANGEMENT : Utilise recipientSocieteIds
+    // CHANGEMENT : Utilise recipientSocieteIds
     // ========================================
     if (payload.notificationTypes.includes('sse') && recipientSocieteIds.length > 0) {
       console.log('📡 Envoi SSE à:', recipientSocieteIds);
@@ -309,18 +309,18 @@ export async function sendNotification(
         const sseData = {
           type: 'notification',
           title: 'Solutravo',
-          message: `${payload.emoji || '🔔'} ${payload.message}`,
+          message: `${payload.emoji} ${payload.message}`,
           emoji: payload.emoji,
           timestamp: new Date().toISOString()
         };
 
-        // ✅ CHANGEMENT : recipientSocieteIds
+        // CHANGEMENT : recipientSocieteIds
         sseSent = sendToMultipleUsers(recipientSocieteIds, sseData);
         
-        console.log(`✅ SSE envoyé à ${sseSent}/${recipientSocieteIds.length} sociétés connectées`);
+        console.log(`SSE envoyé à ${sseSent}/${recipientSocieteIds.length} sociétés connectées`);
         
       } catch (error: any) {
-        console.error('❌ Erreur SSE:', error);
+        console.error('Erreur SSE:', error);
         sseSent = 0;
       }
     }
@@ -346,7 +346,7 @@ export async function sendNotification(
     
   } catch (error: any) {
     await conn.rollback();
-    console.error('❌ Erreur notification:', error);
+    console.error('Erreur notification:', error);
     throw new Error(`Échec envoi: ${error.message}`);
   } finally {
     conn.release();

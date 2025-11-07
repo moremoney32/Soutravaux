@@ -8,8 +8,8 @@ import type {
 } from '../types/pushNotifications';
 
 // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-// const API_BASE_URL = 'http://localhost:3000/api';
-const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+ const API_BASE_URL = 'http://localhost:3000/api';
+// const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
 
 // ===== TYPES POUR LES RÉPONSES API =====
 interface ApiResponse<T> {
@@ -26,7 +26,7 @@ interface SendNotificationResponse {
   failedCount: number;
   details?: {
     pushSent?: number;
-    sseSent?: number;      // ← NOUVEAU
+    sseSent?: number;      
     internalSent?: number;
   };
 }
