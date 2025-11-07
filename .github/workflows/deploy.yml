@@ -42,6 +42,8 @@
 #           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
 #           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 #           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+#           echo "ONESIGNAL_REST_API_KEY=${{ secrets.ONESIGNAL_REST_API_KEY }}" >> .env
+#           echo "ONESIGNAL_APP_ID=${{ secrets.ONESIGNAL_APP_ID }}" >> .env
 #           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
 #           echo "secretKey=${{ secrets.secretKey }}" >> .env
 #           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
@@ -259,7 +261,7 @@ jobs:
         working-directory: ./backend
         run: npm run build
 
-      # ✅ NOUVEAU : Copier package.json et package-lock.json dans dist/
+      #  NOUVEAU : Copier package.json et package-lock.json dans dist/
       - name: Copy package files to dist
         working-directory: ./backend
         run: |
@@ -276,6 +278,8 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD}}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME}}" >> .env
           echo "DB_PORT=${{ secrets.DB_PORT}}" >> .env
+          echo "ONESIGNAL_REST_API_KEY=${{ secrets.ONESIGNAL_REST_API_KEY }}" >> .env
+          echo "ONESIGNAL_APP_ID=${{ secrets.ONESIGNAL_APP_ID }}" >> .env
           echo "NODE_ENV=staging" >> .env
           echo "APP_URL=https://staging.solutravo-compta.fr" >> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
