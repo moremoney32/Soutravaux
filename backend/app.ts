@@ -57,9 +57,6 @@ const corsOptions: CorsOptions = {
 //   }
 // };
 
-// console.log("Configuration Backend:");
-// console.log("NODE_ENV:", process.env.NODE_ENV);
-// console.log("Backend URL:", getBackendBaseUrl());
 
 // Middlewares
  app.use(cors(corsOptions));
