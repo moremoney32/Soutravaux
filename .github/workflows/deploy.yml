@@ -75,7 +75,6 @@ jobs:
             */node_modules/*
             */.github/*
             */tests/*
-          dangerous-clean-slate: true
 
 
 
