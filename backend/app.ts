@@ -68,21 +68,20 @@ app.use(cookieParser());
 // app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
-// app.get("/", (_req: Request, res: Response) => {
-//   res.json({
-//     success: true,
-//     message: `API Solutravo ${process.env.NODE_ENV} - Opérationnelle`,
-//     environment: process.env.NODE_ENV,
-//     backendUrl: getBackendBaseUrl(),
-//     endpoints: {
-//       config: "/api/config",
-//       plans: "/api/plans",
-//       features: "/api/features",
-//       upload: "/api/upload"
-//     },
-//     timestamp: new Date().toISOString()
-//   });
-// });
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    message: `API Solutravo ${process.env.NODE_ENV} - Opérationnelle`,
+    environment: process.env.NODE_ENV,
+    endpoints: {
+      config: "/api/config",
+      plans: "/api/plans",
+      features: "/api/features",
+      upload: "/api/upload"
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 //  Route de configuration pour le frontend
 app.get("/api/config", (_req: Request, res: Response) => {
