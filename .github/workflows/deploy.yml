@@ -325,6 +325,9 @@ jobs:
             */node_modules/*
             */.github/*
             */tests/*
+
+          # ✅ Augmenter le timeout
+          timeout: 600000
           dangerous-clean-slate: true
 
       # DÉPLOIEMENT PRODUCTION
