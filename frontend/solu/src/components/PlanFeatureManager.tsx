@@ -967,12 +967,12 @@ const normalizeImageUrl = (url: string | null | undefined): string | null => {
   
   // Corriger localhost
   if (url.includes('localhost')) {
-    return url.replace(/http:\/\/localhost:\d+/, 'https://solutravo.zeta-app.fr');
+    return url.replace(/http:\/\/localhost:\d+/, 'https://staging.solutravo.zeta-app.fr');
   }
   
   // Corriger URL relative
   if (url.startsWith('/uploads')) {
-    return `https://solutravo.zeta-app.fr${url}`;
+    return `https://staging.solutravo.zeta-app.fr${url}`;
   }
   
   return url;
