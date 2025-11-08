@@ -6,7 +6,8 @@ import cookieParser from "cookie-parser";
 import routes from "./src/routes/router";
 import {errorHandler} from "./src/middleware/errorHandler";
   //import { setupSwagger } from "./src/config/swagger";
-dotenv.config({ path: "./.env" });
+// dotenv.config({ path: "./.env" });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const app: Application = express();
 const allowedOrigins = [
   "https://gilded-sunflower-4c737b.netlify.app",
