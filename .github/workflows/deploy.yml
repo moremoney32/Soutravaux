@@ -327,7 +327,7 @@ jobs:
 
           # ✅ Augmenter le timeout
           timeout: 600000
-          dangerous-clean-slate: true
+          # dangerous-clean-slate: true
 
       # DÉPLOIEMENT PRODUCTION
       - name: Deploy Production via FTP
@@ -344,6 +344,6 @@ jobs:
             */node_modules/*
             */.github/*
             */tests/*
-          dangerous-clean-slate: true
+          # dangerous-clean-slate: true
           
      
