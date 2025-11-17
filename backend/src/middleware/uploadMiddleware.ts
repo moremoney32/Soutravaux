@@ -100,7 +100,8 @@ async function handleImageUpload(req: Request, res: Response, next: NextFunction
     //   const baseUrl = process.env.NODE_ENV === 'production' 
     //     ? 'https://solutravo.zeta-app.fr'
     //     : 'http://localhost:3000';
-      const baseUrl = process.env.APP_URL || 'https://solutravo.zeta-app.fr';
+      // const baseUrl = process.env.APP_URL || 'https://solutravo.zeta-app.fr';
+      const baseUrl = process.env.APP_URL || 'https://staging.solutravo.zeta-app.fr';
       
       const url = `${baseUrl}/uploads/images/${fileName}`;
       

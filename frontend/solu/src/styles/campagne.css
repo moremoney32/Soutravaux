@@ -1,0 +1,1515 @@
+/* src/styles/campagne.css */
+
+/* ========================================
+   LAYOUT PRINCIPAL
+======================================== */
+
+.page-campagne {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+  font-family: var(--font-montserrat);
+}
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
+.sidebar-campagne {
+  width: 220px;
+  background: white;
+   border-right: 1px solid var(--color-border); 
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.logo-container-campagne {
+  padding: 24px;
+   /* border-bottom: 1px solid var(--color-border);  */
+}
+
+.logo-campagne {
+  width: 100%;
+  max-width: 150px;
+  transform:translate3d(0,-1rem,0) ;
+}
+.nav-campagne {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.nav-item-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-small);
+  color: var(--color-dark);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-item-campagne:hover {
+  background: var(--color-light-gray);
+}
+
+.nav-item-campagne.active-campagne {
+  background: var(--color-primary);
+  color: white;
+}
+
+.nav-item-campagne i {
+  font-size: 18px;
+}
+
+/* ========================================
+   MAIN CONTENT
+======================================== */
+
+.main-content-campagne {
+  margin-left: 220px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+
+.header-campagne {
+  background: white;
+  border-bottom: 1px solid var(--color-border); 
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.header-left-campagne {
+  flex: 1;
+}
+
+.header-title-campagne {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.header-right-campagne {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.btn-acheter-sms-campagne {
+  background:var(--color-primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-small);
+  border: none;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-acheter-sms-campagne:hover {
+  background:var(--color-yellow-primary);
+}
+
+.sms-restants-campagne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sms-count-campagne {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.sms-label-campagne {
+  font-size: 11px;
+  color: var(--color-dark);
+}
+
+.user-menu-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-small);
+  transition: var(--transition-fast);
+}
+
+.user-menu-campagne:hover {
+  background: var(--color-light-gray);
+}
+
+.user-avatar-campagne {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.user-info-campagne {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name-campagne {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.user-id-campagne {
+  font-size: 11px;
+  color: #6c757d;
+}
+
+/* ========================================
+   CONTAINER
+======================================== */
+
+.container-campagne {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  /* max-width: 1400px; */
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========================================
+   BREADCRUMB
+======================================== */
+
+.breadcrumb-campagne {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-dark);
+  margin-bottom: 24px;
+}
+
+.breadcrumb-campagne i {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.breadcrumb-campagne span.active-campagne {
+  color: #1E90FF;
+}
+
+/* ========================================
+   TITLE
+======================================== */
+
+.title-campagne {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-dark);
+  /* margin-bottom: 32px; */
+}
+
+/* ========================================
+   STEPPER
+======================================== */
+
+.stepper-campagne {
+  display: flex;
+  align-items: center;
+  /* background: white; */
+  padding: 24px;
+  /* border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-default); */
+  margin-bottom: 32px;
+  gap: 16px;
+  /* overflow-x: auto; */
+}
+
+.step-wrapper-campagne {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.step-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-number-campagne {
+  width: 40px;
+  height: 40px;
+  border-radius:10px;
+  background: #e9ecef;
+  color: var(--color-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.step-campagne.active-campagne .step-number-campagne {
+  background:var(--color-primary);
+  color: white;
+}
+
+.step-campagne.completed-campagne .step-number-campagne {
+  background: #e9ecef;
+  color: var(--color-dark);
+}
+
+.step-content-campagne {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.step-title-campagne {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.step-subtitle-campagne {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.step-arrow-campagne {
+  margin: 0 12px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.step-resume-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 16px;
+}
+
+/* ========================================
+   ÉTAPES
+======================================== */
+
+.content-wrapper-campagne {
+  background: white;
+  padding: 32px;
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-default);
+}
+
+.etape-campagne {
+  max-width:100%;
+}
+
+.etape-title-campagne {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 24px;
+}
+
+.form-group-campagne {
+  margin-bottom: 24px;
+}
+
+.form-group-campagne label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.input-campagne {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-size: 14px;
+  font-family: var(--font-montserrat);
+  transition: var(--transition-fast);
+}
+
+.input-campagne:focus {
+  outline: none;
+    border-color: var(--color-yellow-primary); 
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+.checkbox-group-campagne {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-group-campagne input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-group-campagne label {
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.actions-campagne {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  /* margin-top: 32px; */
+  padding-top: 24px;
+  /* border-top: 1px solid var(--color-border); */
+}
+
+/* ========================================
+   ONGLETS
+======================================== */
+
+.tabs-campagne {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.tab-campagne {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.tab-campagne:hover {
+  background: var(--color-light-gray);
+}
+
+.tab-campagne.active-campagne {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.tab-content-campagne {
+  padding: 16px 0;
+}
+
+/* ========================================
+   ÉTAPE 2 - CONTACTS
+======================================== */
+
+.etape-with-sidebar-campagne {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 32px;
+  max-width: 100%;
+}
+
+.etape-main-campagne {
+  min-width: 0;
+}
+
+.etape-sidebar-campagne {
+  background: #f8f9fa;
+  padding-left: 24px;
+  padding-right: 24px;
+  /* padding: 24px; */
+  border-radius: var(--radius-medium);
+}
+
+.sidebar-title-campagne {
+  font-size: 22px;
+  font-weight: 600;
+  /* margin-bottom: 12px; */
+  color: var(--color-dark);
+}
+
+.sidebar-text-campagne {
+  font-size: 13px;
+  color: var(--color-dark);
+  line-height: 1.6;
+}
+
+.help-text-campagne {
+  font-size: 13px;
+  color: var(--color-dark);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.textarea-contacts-campagne {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  resize: vertical;
+  height: 100px !important;
+  /* min-height: 200px; */
+}
+
+.textarea-contacts-campagne:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+.validation-info-campagne {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #28a745;
+}
+
+.validation-info-campagne i {
+  font-size: 16px;
+}
+.expediteur-option-campagne {
+    margin-top: 20px;
+}
+
+.radio-header-campagne {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.radio-input-campagne {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.radio-label-campagne {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-dark);
+    cursor: pointer;
+    margin: 0;
+}
+
+.expediteur-description-campagne {
+    font-size: 13px;
+    color: var(--color-dark);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    margin-left: 30px;
+}
+
+.expediteur-caracteres-campagne {
+    font-size: 12px;
+    color: var(--color-dark);
+    margin-bottom: 16px;
+    margin-left: 30px;
+}
+
+.expediteur-caracteres-campagne strong {
+    font-weight: 700;
+    color:var(--color-primary);
+}
+
+.expediteur-input-wrapper-campagne {
+    margin-left: 30px;
+    margin-bottom: 16px;
+}
+
+.input-expediteur-campagne {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+/* ========================================
+   CONTACTS ENREGISTRÉS - STYLE SMSFACTOR
+======================================== */
+
+.contacts-selector-wrapper-campagne {
+    position: relative;
+    width: 100%;
+}
+
+/* Box principale de l'input */
+.contacts-input-box-campagne {
+    display: flex;
+    align-items: center;
+    min-height: 50px;
+    padding: 8px 12px;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-small);
+    background: white;
+    cursor: text;
+    gap: 8px;
+}
+
+/* .contacts-input-box-campagne:hover {
+    border-color: #1C7ED6;
+} */
+
+/* Wrapper des tags + input */
+.contacts-tags-wrapper-campagne {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    flex: 1;
+}
+
+/* Tag individuel */
+.contact-tag-campagne {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #E8E8E8;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* Bouton X du tag */
+.contact-tag-close-campagne {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    color: #999;
+    padding: 0;
+    transition: var(--transition-fast);
+}
+
+.contact-tag-close-campagne:hover {
+    color: #333;
+}
+
+/* Input de recherche */
+.contacts-search-campagne {
+    flex: 1;
+    min-width: 120px;
+    border: none !important;
+    outline: none !important;
+    padding: 4px;
+    font-size: 13px;
+    font-family: var(--font-montserrat);
+    background: transparent !important;
+}
+
+/* Flèche dropdown */
+.contacts-arrow-campagne {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+}
+
+.contacts-arrow-campagne:hover {
+    color: #1E90FF;
+}
+
+/* Dropdown liste */
+.contacts-dropdown-campagne {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: var(--radius-small);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+/* Item de la liste */
+.contacts-item-campagne {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: var(--transition-fast);
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.contacts-item-campagne:last-child {
+    border-bottom: none;
+}
+
+.contacts-item-campagne:hover {
+    background: #F8F9FA;
+}
+
+/* Item sélectionné */
+.contacts-item-campagne.selected-campagne {
+    color:var(--color-primary);
+    font-weight: 500;
+    background: #F0F8FF;
+}
+
+.contacts-item-text-campagne {
+    flex: 1;
+}
+
+/* Checkmark */
+.contacts-check-campagne {
+    color:var(--color-primary);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Scrollbar dropdown */
+.contacts-dropdown-campagne::-webkit-scrollbar {
+    width: 6px;
+}
+
+.contacts-dropdown-campagne::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.contacts-dropdown-campagne::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.contacts-dropdown-campagne::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-tag-campagne {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .contacts-search-campagne {
+        min-width: 100px;
+    }
+}
+
+/* ========================================
+   NOUVELLE LISTE DE CONTACT
+======================================== */
+
+.nouvelle-liste-text-campagne {
+    font-size: 14px;
+    color: var(--color-dark);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.nouvelle-liste-link-campagne {
+    color: #1E90FF;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.nouvelle-liste-link-campagne:hover {
+    color: #1C7ED6;
+    text-decoration: underline;
+}
+
+
+
+/* WARNING BOX */
+.warning-box-campagne {
+    display: flex;
+    gap: 12px;
+    background: #FFF3CD;
+    border: 1px solid #FFE69C;
+    border-left: 4px solid #FFC107;
+    border-radius: var(--radius-small);
+    padding: 16px;
+    margin-top: 16px;
+    margin-left: 30px;
+}
+
+.warning-icon-campagne {
+    color: #856404;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.warning-text-campagne {
+    font-size: 13px;
+    color: #856404;
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ========================================
+   ÉTAPE 3 - MESSAGE
+======================================== */
+
+.model-selector-campagne {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.select-campagne {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+  font-family: var(--font-montserrat);
+  cursor: pointer;
+}
+
+.select-campagne:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+.btn-small-campagne {
+  padding: 10px 16px;
+  font-size: 12px;
+}
+
+.message-toolbar-campagne {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.btn-icon-campagne {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-emoji-campagne {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-emoji-campagne:hover {
+  background: var(--color-light-gray);
+}
+
+.emoji-picker-campagne {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  box-shadow: var(--shadow-medium);
+  z-index: 10;
+}
+
+.emoji-option-campagne {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: var(--transition-fast);
+}
+
+.emoji-option-campagne:hover {
+  background: var(--color-light-gray);
+  transform: scale(1.2);
+}
+
+.textarea-message-campagne {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-size: 14px;
+  font-family: var(--font-montserrat);
+  resize: vertical;
+  min-height: 150px;
+}
+
+.textarea-message-campagne:focus {
+  outline: none;
+  border-color: var(--color-yellow-primary);
+  box-shadow: 0 0 0 1px var(--color-yellow-primary);
+}
+
+.message-counter-campagne {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #28a745;
+}
+
+.message-preview-campagne {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: var(--radius-small);
+}
+
+.message-preview-campagne h5 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-dark);
+}
+
+.preview-box-campagne {
+  background: white;
+  padding: 16px;
+  border-radius: var(--radius-small);
+}
+
+.preview-box-campagne p {
+  font-size: 13px;
+  margin-bottom: 12px;
+  color: var(--color-dark);
+}
+
+.test-sms-campagne {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.input-small-campagne {
+  width: 200px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.check_button{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-save-model-campagne {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========================================
+   ÉTAPE 4 - PLANIFICATION
+======================================== */
+
+.radio-group-campagne {
+  margin-bottom: 24px;
+}
+
+.radio-option-campagne {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.radio-option-campagne input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.radio-option-campagne label {
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.date-time-picker-campagne {
+  display: flex;
+  gap: 12px;
+  margin-left: 26px;
+  margin-top: 12px;
+}
+
+.input-date-campagne,
+.input-time-campagne {
+  padding: 10px 16px;
+  font-size: 13px;
+}
+
+.input-date-campagne {
+  width: 200px;
+}
+
+.input-time-campagne {
+  width: 120px;
+}
+
+/* ========================================
+   ÉTAPE 5 - RÉSUMÉ
+======================================== */
+
+.stats-grid-campagne {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card-campagne {
+  background:gray;
+  padding: 20px;
+  border-radius: var(--radius-small);
+  text-align: center;
+  color: white;
+}
+
+.stat-value-campagne {
+  font-size: 32px;
+  font-weight: 700;
+  /* color: var(--color-dark); */
+  margin-bottom: 8px;
+}
+
+.stat-label-campagne {
+  font-size: 12px;
+  /* color: #6c757d; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.section-title-campagne {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 16px;
+}
+
+.resume-grid-campagne {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.resume-card-campagne {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: var(--radius-small);
+}
+
+.resume-icon-campagne {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background:gray;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.resume-content-campagne {
+  flex: 1;
+}
+
+.resume-title-campagne {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 4px;
+}
+
+.resume-date-campagne {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 4px;
+}
+
+.resume-label-campagne {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.message-preview-resume-campagne {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: var(--radius-small);
+  font-size: 14px;
+  color: var(--color-dark);
+  margin-bottom: 32px;
+  min-height: 80px;
+}
+
+.info-sections-campagne {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.info-section-campagne h5 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-dark);
+}
+
+.info-section-campagne p {
+  font-size: 13px;
+  color: var(--color-dark);
+  line-height: 1.5;
+}
+
+.btn-create-campagne {
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+  .etape-with-sidebar-campagne {
+    grid-template-columns: 1fr;
+  }
+  
+  .etape-sidebar-campagne {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid-campagne {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .resume-grid-campagne {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-sections-campagne {
+    grid-template-columns: 1fr;
+  }
+  
+  .stepper-campagne {
+    overflow-x: scroll;
+  }
+}
+
+/* ========================================
+   HEADER CRÉATION AVEC TITRE + BOUTON
+======================================== */
+
+.header-create-campagne {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-create-campagne .title-campagne {
+  margin: 0;
+}
+
+.btn-filtrer-campagnes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-gray-secondary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-small);
+  border: none;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-family: var(--font-montserrat);
+  flex-shrink: 0;
+}
+
+.btn-filtrer-campagnes:hover {
+  background: var(--color-yellow-primary);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .header-create-campagne {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .btn-filtrer-campagnes {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ========================================
+   VALIDATION NUMÉROS
+======================================== */
+
+.numeros-validation-display-campagne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: var(--radius-small);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.numero-item-validation-campagne {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.numero-item-validation-campagne.valid-campagne {
+  background: #D4EDDA;
+  color: #155724;
+  border: 1px solid #C3E6CB;
+}
+
+.numero-item-validation-campagne.invalid-campagne {
+  background: #F8D7DA;
+  color: #721C24;
+  border: 1px solid #F5C6CB;
+}
+
+.numero-item-validation-campagne i {
+  font-size: 14px;
+}
+
+.warning-validation-campagne {
+  color: #dc3545;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* Compteur caractères expéditeur */
+.caracteres-restants-campagne {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 4px;
+  margin-left: 30px;
+}
+
+/* ========================================
+   VALIDATION ET ERREURS
+======================================== */
+
+.input-error-campagne {
+  border-color: #dc3545 !important;
+}
+
+.error-text-campagne {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: #dc3545;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.error-text-campagne i {
+  font-size: 14px;
+}
+
+.error-banner-campagne {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: var(--radius-small);
+  color: #721c24;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.error-banner-campagne i {
+  font-size: 18px;
+}
+
+/* ========================================
+   LIENS ET FICHIERS INSÉRÉS (ÉTAPE 3)
+======================================== */
+
+.inserts-display-campagne {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: var(--radius-small);
+}
+
+.insert-item-campagne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-small);
+  font-size: 13px;
+}
+
+.insert-lien-campagne {
+  background: #E3F2FD;
+  border: 1px solid #1E90FF;
+}
+
+.insert-fichier-campagne {
+  background: #FFF3E0;
+  border: 1px solid #FF9800;
+}
+
+.insert-link-text-campagne {
+  flex: 1;
+  color: #1E90FF;
+  text-decoration: none;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.insert-link-text-campagne:hover {
+  text-decoration: underline;
+}
+
+.insert-file-text-campagne {
+  flex: 1;
+  color: #E65100;
+  font-weight: 500;
+}
+
+.insert-item-campagne i {
+  font-size: 16px;
+}
+
+.insert-lien-campagne i {
+  color: #1E90FF;
+}
+
+.insert-fichier-campagne i {
+  color: #FF9800;
+}
+
+.insert-remove-campagne {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #999;
+  transition: var(--transition-fast);
+}
+
+.insert-remove-campagne:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+/* ========================================
+   LIENS ET FICHIERS (ÉTAPE 5 RÉSUMÉ)
+======================================== */
+
+.liens-list-resume-campagne,
+.fichiers-list-resume-campagne {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lien-item-resume-campagne,
+.fichier-item-resume-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: var(--radius-small);
+}
+
+.lien-icon-resume-campagne,
+.fichier-icon-resume-campagne {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.lien-icon-resume-campagne {
+  background: #E3F2FD;
+  color: #1E90FF;
+}
+
+.fichier-icon-resume-campagne {
+  background: #E3F2FD;
+  color: #1E90FF;
+}
+
+.lien-text-resume-campagne {
+  flex: 1;
+  color: #1E90FF;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.lien-text-resume-campagne:hover {
+  text-decoration: underline;
+}
+
+.fichier-text-resume-campagne {
+  flex: 1;
+  color: var(--color-dark);
+  font-size: 14px;
+  font-weight: 500;
+}
+.slip-text-campagne{
+  margin-top: 10px;
+}
+
+
+
+/* Styles pour les liens dans l'aperçu */
+.preview-link-campagne {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.preview-link-campagne:hover {
+  color: #0056b3;
+}
+
+/* Styles pour les liens dans le résumé */
+.message-link-resume-campagne {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.message-link-resume-campagne:hover {
+  color: #0056b3;
+}
+
+.message-content-resume-campagne {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* Styles pour les commentaires de fichiers */
+.fichier-comment-campagne {
+  font-size: 0.8em;
+  color: #6c757d;
+  font-style: italic;
+  margin-left: 8px;
+}
+

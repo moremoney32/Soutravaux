@@ -8,16 +8,167 @@ import { ActiviteDTO, DepartementDTO, GroupType, PreSocieteDTO, SendNotification
 import { sendToMultipleUsers } from './SseServices';
 
 // ===== RÉCUPÉRATION DES PRÉSOCIÉTÉS =====
+// export async function getPreSocietes(
+//   role: GroupType,
+//   activiteIds?: string[],
+//   departementIds?: string[]
+// ): Promise<PreSocieteDTO[]> {
+//   const conn = await pool.getConnection();
+
+
+  
+//   try {
+//     let query = `
+//       SELECT 
+//         p.id,
+//         p.name,
+//         p.siret,
+//         p.createdAt,
+//         p.role,
+//         p.ville,
+//         p.cp,
+//         p.activity,
+//         0 as isNotified
+//       FROM presocietes p
+//       WHERE p.role = ?
+//     `;
+    
+//     const params: any[] = [role];
+
+//     // Filtrer par activité si spécifié
+//     if (activiteIds && activiteIds.length > 0) {
+//       query += ` AND p.activity IN (${activiteIds.map(() => '?').join(',')})`;
+//       params.push(...activiteIds);
+//     }
+
+//     // Filtrer par département via code postal (cp)
+//     // On compare les 2 premiers chiffres du CP avec le numéro du département
+//     if (departementIds && departementIds.length > 0) {
+//       // Créer une sous-requête pour récupérer les numéros de départements
+//       const [departments] = await conn.query<RowDataPacket[]>(
+//         `SELECT numero FROM departements WHERE id IN (${departementIds.map(() => '?').join(',')})`,
+//         departementIds
+//       );
+      
+//       const departmentNumbers = departments.map((d: any) => d.numero);
+      
+//       if (departmentNumbers.length > 0) {
+//         // Filtrer les présociétés dont le CP commence par un des numéros de département
+//         const cpConditions = departmentNumbers.map(() => 'LEFT(p.cp, 2) = ?').join(' OR ');
+//         query += ` AND (${cpConditions})`;
+//         params.push(...departmentNumbers);
+//       }
+//     }
+    
+//     query += ` ORDER BY p.createdAt DESC`;
+
+//     const [rows] = await conn.query<RowDataPacket[]>(query, params);
+    
+//     return rows.map((row: any) => ({
+//       id: String(row.id),
+//       name: row.name || 'Sans nom',
+//       siret: row.siret,
+//       createdDate: new Date(row.createdAt).toISOString(),
+//       isNotified: false, // À implémenter apres
+//       group: row.role as GroupType,
+//       ville: row.ville,
+//       cp: row.cp,
+//       activity: row.activity
+//     }));
+    
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+// // ===== RÉCUPÉRATION DES SOCIÉTÉS =====
+// export async function getSocietes(
+//   role: GroupType,
+//   activiteIds?: string[],
+//   departementIds?: string[]
+// ): Promise<SocieteDTO[]> {
+//   const conn = await pool.getConnection();
+  
+//   try {
+//     let query = `
+//       SELECT DISTINCT
+//         s.id,
+//         s.nomsociete,
+//         s.email,
+//         s.date_creation,
+//         s.role,
+//         s.siret,
+//         s.refmembre
+//       FROM societes s
+//       WHERE s.role = ?
+//     `;
+    
+//     const params: any[] = [role];
+
+//     // SI des filtres sont appliqués, on fait la jointure
+//     if ((activiteIds && activiteIds.length > 0) || (departementIds && departementIds.length > 0)) {
+//       query = `
+//         SELECT DISTINCT
+//           s.id,
+//           s.nomsociete,
+//           s.email,
+//           s.date_creation,
+//           s.role,
+//           s.siret,
+//           s.refmembre
+//         FROM societes s
+//         INNER JOIN activite_departement_societes ads ON ads.societe_id = s.id
+//         WHERE s.role = ?
+//       `;
+
+//       // Filtrage par activité
+//       if (activiteIds && activiteIds.length > 0) {
+//         query += ` AND ads.activite_id IN (${activiteIds.map(() => '?').join(',')})`;
+//         params.push(...activiteIds);
+//       }
+
+//       // Filtrage par département
+//       if (departementIds && departementIds.length > 0) {
+//         query += ` AND ads.departement_id IN (${departementIds.map(() => '?').join(',')})`;
+//         params.push(...departementIds);
+//       }
+//     }
+
+//     query += ` ORDER BY s.date_creation DESC`;
+
+//     const [rows] = await conn.query<RowDataPacket[]>(query, params);
+    
+//     // Retourner les sociétés (SANS récupérer leurs activités/départements pour l'instant)
+//     const societes = rows.map((row: any) => ({
+//       id: String(row.id),
+//       name: row.nomsociete,
+//       email: row.email,
+//       createdDate: new Date(row.date_creation).toISOString(),
+//       isNotified: false,
+//       group: row.role as GroupType,
+//       activites: [], // On ne charge pas les activités maintenant
+//       departements: [], // On ne charge pas les départements maintenant
+//       siret: row.siret
+//     }));
+
+//     return societes;
+    
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+
+// ===== RÉCUPÉRATION DES PRÉSOCIÉTÉS =====
 export async function getPreSocietes(
   role: GroupType,
   activiteIds?: string[],
   departementIds?: string[]
 ): Promise<PreSocieteDTO[]> {
   const conn = await pool.getConnection();
-
-
   
   try {
+    // REQUÊTE DE BASE - toutes les pré-sociétés du rôle
     let query = `
       SELECT 
         p.id,
@@ -35,14 +186,12 @@ export async function getPreSocietes(
     
     const params: any[] = [role];
 
-    // Filtrer par activité si spécifié
+    // APPLIQUER LES FILTRES SEULEMENT SI SPÉCIFIÉS
     if (activiteIds && activiteIds.length > 0) {
       query += ` AND p.activity IN (${activiteIds.map(() => '?').join(',')})`;
       params.push(...activiteIds);
     }
 
-    // Filtrer par département via code postal (cp)
-    // On compare les 2 premiers chiffres du CP avec le numéro du département
     if (departementIds && departementIds.length > 0) {
       // Créer une sous-requête pour récupérer les numéros de départements
       const [departments] = await conn.query<RowDataPacket[]>(
@@ -69,7 +218,7 @@ export async function getPreSocietes(
       name: row.name || 'Sans nom',
       siret: row.siret,
       createdDate: new Date(row.createdAt).toISOString(),
-      isNotified: false, // À implémenter apres
+      isNotified: false,
       group: row.role as GroupType,
       ville: row.ville,
       cp: row.cp,
@@ -90,8 +239,9 @@ export async function getSocietes(
   const conn = await pool.getConnection();
   
   try {
+    // REQUÊTE DE BASE - toutes les sociétés du rôle
     let query = `
-      SELECT DISTINCT
+      SELECT 
         s.id,
         s.nomsociete,
         s.email,
@@ -105,7 +255,7 @@ export async function getSocietes(
     
     const params: any[] = [role];
 
-    // SI des filtres sont appliqués, on fait la jointure
+    // APPLIQUER LES FILTRES SEULEMENT SI SPÉCIFIÉS
     if ((activiteIds && activiteIds.length > 0) || (departementIds && departementIds.length > 0)) {
       query = `
         SELECT DISTINCT

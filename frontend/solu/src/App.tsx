@@ -7,6 +7,8 @@ import SubscriptionPage from "./components/SubscriptionPage";
 import BibliothequesDashboard from "./components/BibiothequeDashboard";
 import PlanFeatureManager from "./components/PlanFeatureManager";
 import PushNotificationAppPushNotifications from "./components/PushNotificationAppPushNotifications";
+import CampagnePage from "./components/CampagnePage";
+import CreateListePage from "./components/CreateListePage";
 
 function App() {
   
@@ -22,6 +24,8 @@ function App() {
          <Route path="/catalogue" element={<BibliothequesDashboard />} />
          <Route path="/feature" element={<PlanFeatureManager />} />
           <Route path="/notifications" element={<PushNotificationAppPushNotifications />} />
+           <Route path="/campagne" element={<CampagnePage/>} />
+           <Route path="/create-liste" element={<CreateListePage />} />
 
       </Routes>
     </BrowserRouter>

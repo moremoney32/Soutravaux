@@ -1,0 +1,307 @@
+/* src/styles/create-liste.css */
+
+/* Import du CSS campagne pour réutiliser les styles */
+@import './campagne.css';
+
+/* ========================================
+   BREADCRUMB LINK
+======================================== */
+
+.breadcrumb-link-campagne {
+  color: #1E90FF;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.breadcrumb-link-campagne:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   WARNING BOX ÉTAPE 2
+======================================== */
+
+.warning-box-liste-campagne {
+  display: flex;
+  gap: 16px;
+  background: #FFF3CD;
+  border: 1px solid #FFE69C;
+  border-left: 4px solid #FFA500;
+  border-radius: var(--radius-small);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.warning-icon-liste-campagne {
+  color: #856404;
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.warning-text-liste-campagne {
+  font-size: 13px;
+  color: #856404;
+  line-height: 1.8;
+}
+
+.warning-text-liste-campagne strong {
+  font-weight: 600;
+}
+
+/* ========================================
+   TABS LISTE
+======================================== */
+
+.tabs-liste-campagne {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.tab-liste-campagne {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.tab-liste-campagne:hover {
+  background: var(--color-light-gray);
+}
+
+.tab-liste-campagne.active-campagne {
+  color:var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* ========================================
+   FILE UPLOAD
+======================================== */
+
+.file-upload-zone-campagne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-medium);
+  background: #FAFAFA;
+  text-align: center;
+}
+
+.file-input-hidden-campagne {
+  display: none;
+}
+
+.file-upload-label-campagne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.file-upload-icon-campagne {
+  font-size: 48px;
+  color: #1E90FF;
+}
+
+.file-upload-label-campagne span {
+  font-size: 14px;
+  color: var(--color-dark);
+}
+
+/* ========================================
+   COMPTEUR NUMÉROS
+======================================== */
+
+.compteur-numeros-campagne {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-dark);
+  font-weight: 500;
+}
+
+/* ========================================
+   SELECT PAYS
+======================================== */
+
+.select-pays-campagne {
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ========================================
+   ÉTAPE 3 - VALIDER
+======================================== */
+
+.valider-section-campagne {
+  margin-bottom: 32px;
+}
+
+.valider-subtitle-campagne {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 12px;
+}
+
+.valider-description-campagne {
+  font-size: 13px;
+  color: var(--color-dark);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.numeros-list-campagne {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  overflow: hidden;
+}
+
+.numeros-header-campagne {
+  background: #F8F9FA;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.numero-item-campagne {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--color-dark);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.numero-item-campagne:last-child {
+  border-bottom: none;
+}
+
+.no-data-campagne {
+  padding: 32px;
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+}
+
+/* ========================================
+   ÉTAPE 4 - RÉSUMÉ
+======================================== */
+
+.resume-grid-liste-campagne {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.resume-section-campagne {
+  background: #F8F9FA;
+  padding: 24px;
+  border-radius: var(--radius-medium);
+}
+
+.resume-section-title-campagne {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 16px;
+}
+
+.table-resume-campagne {
+  width: 100%;
+  background: white;
+  border-radius: var(--radius-small);
+  overflow: hidden;
+}
+
+.table-resume-campagne thead {
+  background: #F0F0F0;
+}
+
+.table-resume-campagne th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table-resume-campagne td {
+  padding: 16px;
+  font-size: 14px;
+  color: var(--color-dark);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table-resume-campagne tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pays-flag-campagne {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.volume-cell-campagne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.volume-count-campagne {
+  font-weight: 600;
+  min-width: 30px;
+}
+
+.volume-bar-campagne {
+  flex: 1;
+  height: 8px;
+  background: #E0E0E0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.volume-progress-campagne {
+  height: 100%;
+  background: linear-gradient(90deg, #1E90FF, #1C7ED6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.btn-icon-delete-campagne {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #dc3545;
+  transition: var(--transition-fast);
+}
+
+.btn-icon-delete-campagne:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .resume-grid-liste-campagne {
+    grid-template-columns: 1fr;
+  }
+}
