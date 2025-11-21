@@ -14,7 +14,8 @@ interface CreateListeEtape2Props {
 const CreateListeEtape2 = ({ data, onUpdate, onSuivant, onPrecedent }: CreateListeEtape2Props) => {
     const [activeMode, setActiveMode] = useState<'import' | 'manuel'>('import');
     const [textareaValue, setTextareaValue] = useState('');
-    const [selectedCountry, setSelectedCountry] = useState('FR');
+    const [selectedCountry] = useState('FR');
+    // const [selectedCountry, setSelectedCountry] = useState('FR');
     const [erreur, setErreur] = useState('');
     const [isLoading, setIsLoading] = useState(false);
    
