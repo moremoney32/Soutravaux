@@ -1,8 +1,9 @@
 
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderCampagne from './HeaderCampagne';
-import SidebarCampagne from './SidebarCampagne';
+// import SidebarCampagne from './SidebarCampagne';
 import StepperCampagne from './StepperCampagne';
 import Etape1Nom from './Etape1Nom';
 import Etape2Contacts from './Etape2Contacts';
@@ -13,11 +14,22 @@ import CampagnesListFiltres from './CampagnesListFiltres';
 import '../styles/campagne.css';
 import '../styles/filtres-campagne.css';
 import type { CampagneData } from '../types/campagne.types';
+import {useNavigate } from 'react-router-dom';
+
 
 const CampagnePage = () => {
+  const navigate = useNavigate()
+  let membreId = localStorage.getItem("membreId")
+  let userId = Number(membreId)
+  console.log(userId)
+  
   const [etapeActuelle, setEtapeActuelle] = useState<number>(1);
-   const [direction, setDirection] = useState<'next' | 'prev'>('next');
-  const [showFiltres, setShowFiltres] = useState<boolean>(false);
+  const [direction, setDirection] = useState<'next' | 'prev'>('next');
+
+  
+  // PAR DÉFAUT : MODE LISTE (showFiltres = true)
+  const [showFiltres, setShowFiltres] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [campagneData, setCampagneData] = useState<CampagneData>({
     nom: "",
     marketingPurpose: false,
@@ -34,55 +46,150 @@ const CampagnePage = () => {
     },
   });
 
-  const handleSuivant = () => {
-        if (etapeActuelle < 5) {
-            setDirection('next');
-            setEtapeActuelle(etapeActuelle + 1);
-        }
+  const formaterPayloadPourAPI = (data: CampagneData) => {
+    const maintenant = new Date();
+    
+    const payload: any = {
+      name: data.nom,
+      message: data.message,
+      sender: data.expediteur,
+      user_id: userId,
+      sent_at: data.planification.type === 'differe' ? 'later' : 'now',
     };
 
-    const handlePrecedent = () => {
-        if (etapeActuelle > 1) {
-            setDirection('prev');
-            setEtapeActuelle(etapeActuelle - 1);
-        }
-    };
+    if (data.contactType === 'manuelle') {
+      payload.contacts = data.contacts;
+      payload.list_contact_id = null;
+    } else if (data.contactType === 'enregistres') {
+      payload.list_contact_id = data.list_contact_id;
+      payload.contacts = null;
+    }
+
+    if (data.planification.type === 'differe') {
+      const datePlanifiee = new Date(`${data.planification.date}T${data.planification.heure}`);
+      
+      if (datePlanifiee <= maintenant) {
+        throw new Error("La date de planification doit être dans le futur");
+      }
+      
+      payload.scheduled_at = datePlanifiee.toISOString().slice(0, 16);
+    } else {
+      const dateDansLeFutur = new Date(maintenant.getTime() + 60000);
+      payload.scheduled_at = dateDansLeFutur.toISOString().slice(0, 16);
+    }
+
+    return payload;
+  };
+
+  const handleSuivant = () => {
+    if (etapeActuelle < 5) {
+      setDirection('next');
+      setEtapeActuelle(etapeActuelle + 1);
+    }
+  };
+
+  const handlePrecedent = () => {
+    if (etapeActuelle > 1) {
+      setDirection('prev');
+      setEtapeActuelle(etapeActuelle - 1);
+    }
+  };
 
   const handleUpdateData = (data: Partial<CampagneData>) => {
     setCampagneData({ ...campagneData, ...data });
   };
 
   const handleCreerCampagne = () => {
-    console.log('Création de la campagne:', campagneData);
-    alert('Campagne créée avec succès !');
-    setEtapeActuelle(1);
-    setShowFiltres(false);
+    try {
+      const payloadAPI = formaterPayloadPourAPI(campagneData);
+      console.log('Payload pour l\'API:', payloadAPI);
+      setIsLoading(true);
+      
+      fetch('https://backendstaging.solutravo-compta.fr/api/campaigns', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: JSON.stringify(payloadAPI)
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(JSON.stringify(err)) });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Succès:', data);
+        alert('Campagne créée avec succès !');
+        
+        // Retour à la liste des campagnes
+        setShowFiltres(true);
+        // setEtapeActuelle(1);
+       
+        
+        // Réinitialiser les données
+        setCampagneData({
+          nom: "",
+          marketingPurpose: false,
+          contacts: [],
+          contactsValides: 0,
+          expediteur: '',
+          message: '',
+          messageLength: 0,
+          smsCount: 0,
+          planification: {
+            type: 'differe',
+            date: new Date().toISOString().split('T')[0],
+            heure: new Date().toTimeString().slice(0, 5)
+          }
+        });
+        return  navigate(`/campagne/${userId}`)
+      })
+      .catch(error => {
+        console.error('Erreur API:', error);
+        try {
+          const errorData = JSON.parse(error.message);
+          alert(`Erreur: ${errorData.message || 'Une erreur est survenue'}`);
+        } catch {
+          alert(`Erreur: ${error.message}`);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+      
+    } catch (error: any) {
+      console.error('Erreur de validation:', error);
+      alert(error.message);
+    }
   };
 
+  // Passer en mode création
+  const handleShowCreate = () => {
+    setShowFiltres(false);
+    setEtapeActuelle(1);
+  };
+
+  // Retour à la liste
   const handleShowFiltres = () => {
     setShowFiltres(true);
   };
 
-  const handleShowCreate = () => {
-    setShowFiltres(false);
-    setEtapeActuelle(1)
+  const variants = {
+    enter: (direction: 'next' | 'prev') => ({
+      x: direction === 'next' ? 30 : -30,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: 'next' | 'prev') => ({
+      x: direction === 'next' ? -30 : 30,
+      opacity: 0,
+    }),
   };
-
-   // Variants pour les animations
-    const variants = {
-        enter: (direction: 'next' | 'prev') => ({
-            x: direction === 'next' ? 30 : -30,
-            opacity: 0,
-        }),
-        center: {
-            x: 0,
-            opacity: 1,
-        },
-        exit: (direction: 'next' | 'prev') => ({
-            x: direction === 'next' ? -30 : 30,
-            opacity: 0,
-        }),
-    };
 
   const renderEtape = () => {
     switch (etapeActuelle) {
@@ -127,6 +234,7 @@ const CampagnePage = () => {
             data={campagneData}
             onPrecedent={handlePrecedent}
             onCreer={handleCreerCampagne}
+            isLoading={isLoading}
           />
         );
       default:
@@ -136,7 +244,7 @@ const CampagnePage = () => {
 
   return (
     <div className="page-campagne">
-      <SidebarCampagne />
+      {/* <SidebarCampagne /> */}
       
       <div className="main-content-campagne">
         <HeaderCampagne />
@@ -144,7 +252,7 @@ const CampagnePage = () => {
         <div className="container-campagne">
           <AnimatePresence mode="wait">
             {showFiltres ? (
-              // MODE FILTRES
+              // MODE LISTE/FILTRES (PAR DÉFAUT)
               <motion.div
                 key="filtres-mode"
                 initial={{ opacity: 0, y: 20 }}
@@ -163,39 +271,36 @@ const CampagnePage = () => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* HEADER AVEC TITRE + BOUTON FILTRER */}
                 <div className="header-create-campagne">
                   <h2 className="title-campagne">Créer une campagne</h2>
-                  {etapeActuelle === 1 && (
-                    <button 
-                      className="btn-filtrer-campagnes"
-                      onClick={handleShowFiltres}
-                    >
-                      <i className="fa-solid fa-filter"></i>
-                      Filtrer mes campagnes
-                    </button>
-                  )}
+                  <button 
+                    className="btn-filtrer-campagnes"
+                    onClick={handleShowFiltres}
+                  >
+                    <i className="fa-solid fa-arrow-left"></i>
+                    Retour à mes campagnes
+                  </button>
                 </div>
                 
                 <StepperCampagne etapeActuelle={etapeActuelle} />
                 
                 <div className="content-wrapper-campagne">
-                    <AnimatePresence mode="wait" custom={direction}>
-                            <motion.div
-                                key={etapeActuelle}
-                                custom={direction}
-                                variants={variants}
-                                initial="enter"
-                                animate="center"
-                                exit="exit"
-                                transition={{
-                                    x: { type: 'spring', stiffness: 300, damping: 30 },
-                                    opacity: { duration: 0.3 },
-                                }}
-                            >
-                                {renderEtape()}
-                            </motion.div>
-                        </AnimatePresence>
+                  <AnimatePresence mode="wait" custom={direction}>
+                    <motion.div
+                      key={etapeActuelle}
+                      custom={direction}
+                      variants={variants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: 'spring', stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.3 },
+                      }}
+                    >
+                      {renderEtape()}
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}

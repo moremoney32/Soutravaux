@@ -305,3 +305,151 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*******error number***/
+/* Dans create-liste.css */
+.badge-invalides-campagne {
+  background: #dc3545;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.8em;
+  margin-left: 8px;
+}
+
+.invalid-count-campagne {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.numeros-invalides-details-campagne {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #dc3545;
+}
+
+.details-title-campagne {
+  margin: 0 0 8px 0;
+  font-size: 0.9em;
+  color: #495057;
+}
+
+.numeros-list-campagne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.numero-invalide-item-campagne {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8em;
+  color: #dc3545;
+}
+
+.import-instructions-campagne {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.import-instructions-campagne h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 1em;
+}
+
+.import-instructions-campagne ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.import-instructions-campagne li {
+    margin-bottom: 5px;
+}
+
+/* Dans create-liste.css */
+.contacts-list-campagne {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.contacts-header-campagne {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.contact-item-campagne {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.contact-item-campagne:last-child {
+  border-bottom: none;
+}
+
+.contact-name-campagne,
+.contact-phone-campagne,
+.contact-email-campagne {
+  padding: 0 8px;
+}
+
+.contact-phone-campagne {
+  font-family: monospace;
+  font-weight: 500;
+}
+
+.contact-email-campagne {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.validation-stats-campagne {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.stat-item-campagne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label-campagne {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.stat-value-campagne {
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.valid-stat-campagne {
+  color: #28a745;
+}
+
+.invalid-stat-campagne {
+  color: #dc3545;
+}

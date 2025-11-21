@@ -33,13 +33,6 @@ const StepperCampagne = ({ etapeActuelle }: StepperCampagneProps) => {
           </div>
         </div>
       ))}
-
-      {/* <div className="step-resume-campagne">
-        <div className="step-number-campagne">6</div>
-        <div className="step-content-campagne">
-          <div className="step-title-campagne">Résumé de l'envoi</div>
-        </div>
-      </div> */}
     </div>
   );
 };

@@ -9,6 +9,8 @@ import PlanFeatureManager from "./components/PlanFeatureManager";
 import PushNotificationAppPushNotifications from "./components/PushNotificationAppPushNotifications";
 import CampagnePage from "./components/CampagnePage";
 import CreateListePage from "./components/CreateListePage";
+import CampagneDetails from "./components/CampagneDetails";
+import AchatSMSPage from "./components/AchatSMSPage";
 
 function App() {
   
@@ -24,8 +26,10 @@ function App() {
          <Route path="/catalogue" element={<BibliothequesDashboard />} />
          <Route path="/feature" element={<PlanFeatureManager />} />
           <Route path="/notifications" element={<PushNotificationAppPushNotifications />} />
-           <Route path="/campagne" element={<CampagnePage/>} />
+           <Route path="/campagne/:membreId" element={<CampagnePage/>} />
+           <Route path="/statistique/campaigns/:campagneId" element={<CampagneDetails />} />
            <Route path="/create-liste" element={<CreateListePage />} />
+            <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} />
 
       </Routes>
     </BrowserRouter>

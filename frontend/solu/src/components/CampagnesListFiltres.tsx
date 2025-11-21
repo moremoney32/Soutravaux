@@ -1,138 +1,257 @@
+
+
 // src/components/campagne/CampagnesListFiltres.tsx
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/filtres-campagne.css';
+import type { CampagneAPI, CampagneFiltersAPI } from '../types/campagne.types';
+import { calculateCampagneStats, getAllCampagnes, getCampagneGlobalStatus } from '../services/filtresCampagnesData';
+import { useMembreId } from '../hooks/useMembreId';
+
 
 interface CampagnesListFiltresProps {
   onCreateCampagne: () => void;
 }
 
+interface CampagneFilters {
+  telephone: string;
+  smsMin: string;
+  smsMax: string;
+  message: string;
+  dateDebut: string;
+  dateFin: string;
+  supprimees: boolean;
+}
+
 const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) => {
-  const [filters, setFilters] = useState({
+  const navigate = useNavigate();
+  
+  const [filters, setFilters] = useState<CampagneFilters>({
     telephone: '',
     smsMin: '',
     smsMax: '',
     message: '',
-    periode: '',
+    dateDebut: '',
+    dateFin: '',
     supprimees: false,
   });
 
-  const handleFilterChange = (field: string, value: string | boolean) => {
+  // dÉtats pour l'API
+  const [campagnes, setCampagnes] = useState<CampagneAPI[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // dÉtats pour la pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCampagnes, setTotalCampagnes] = useState(0);
+  const [perPage, setPerPage] = useState(6);
+
+  let userId = useMembreId()
+// Convertir en number
+let numericUserId = Number(userId);
+
+
+  // dCharger les campagnes depuis l'API avec filtres
+  const loadCampagnes = async (page: number = 1, appliedFilters?: CampagneFilters) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Construire les filtres pour l'API
+      const apiFilters: CampagneFiltersAPI = {};
+      
+      const filtersToUse = appliedFilters || filters;
+      
+      if (filtersToUse.telephone) apiFilters.telephone = filtersToUse.telephone;
+      if (filtersToUse.smsMin) apiFilters.smsMin = filtersToUse.smsMin;
+      if (filtersToUse.smsMax) apiFilters.smsMax = filtersToUse.smsMax;
+      if (filtersToUse.message) apiFilters.message = filtersToUse.message;
+      if (filtersToUse.dateDebut) apiFilters.dateDebut = filtersToUse.dateDebut;
+      if (filtersToUse.dateFin) apiFilters.dateFin = filtersToUse.dateFin;
+      if (filtersToUse.supprimees) apiFilters.supprimees = filtersToUse.supprimees;
+
+      const response = await getAllCampagnes(numericUserId, page, apiFilters);
+      
+      if (response.success) {
+        setCampagnes(response.data.data);
+        setCurrentPage(response.data.current_page);
+        setTotalPages(response.data.last_page);
+        setTotalCampagnes(response.data.total);
+        setPerPage(response.data.per_page);
+      }
+    } catch (err) {
+      console.error('Erreur chargement campagnes:', err);
+      setError('Impossible de charger les campagnes');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // dCharger au montage
+  useEffect(() => {
+    loadCampagnes(1);
+  }, []);
+
+  const handleFilterChange = (field: keyof CampagneFilters, value: string | boolean) => {
     setFilters({ ...filters, [field]: value });
   };
 
+  // dAppliquer les filtres (recharge depuis la page 1)
   const handleFilter = () => {
-    console.log('Filtrer avec:', filters);
+    setCurrentPage(1);
+    loadCampagnes(1, filters);
   };
 
+  //  Réinitialiser les filtres
   const handleResetFilters = () => {
-    setFilters({
+    const emptyFilters: CampagneFilters = {
       telephone: '',
       smsMin: '',
       smsMax: '',
       message: '',
-      periode: '',
+      dateDebut: '',
+      dateFin: '',
       supprimees: false,
+    };
+    setFilters(emptyFilters);
+    setCurrentPage(1);
+    loadCampagnes(1, emptyFilters);
+  };
+
+  //  Pagination - Garde les filtres actifs
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      loadCampagnes(page, filters);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const getStatusBadge = (status: 'completed' | 'pending' | 'failed') => {
+    switch (status) {
+      case 'completed':
+        return <span className="badge-status badge-success">Envoyé</span>;
+      case 'pending':
+        return <span className="badge-status badge-warning">En cours</span>;
+      case 'failed':
+        return <span className="badge-status badge-danger">Échec</span>;
+      default:
+        return <span className="badge-status badge-secondary">Inconnu</span>;
+    }
+  };
+
+  const getTauxColor = (taux: number) => {
+    if (taux >= 90) return '#28a745';
+    if (taux >= 70) return '#ffc107';
+    return '#dc3545';
+  };
+
+  const handleViewDetails = (campagneId: string) => {
+    navigate(`/statistique/campaigns/${campagneId}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
-  return (
-    <div className="wrapper-filtres">
-      {/* HEADER AVEC BREADCRUMB ET BOUTONS */}
-      <div className="header-filtres">
-        {/* <div className="breadcrumb-filtres">
-          <i className="fa-solid fa-house"></i>
-          <span>Envoyer des SMS</span>
-          <i className="fa-solid fa-chevron-right"></i>
-          <span className="active-filtres">Mes campagnes</span>
-        </div> */}
-             <h2 className="title-filtres">Mes Campagnes</h2>
+  if (isLoading && campagnes.length === 0) {
+    return (
+      <div className="wrapper-filtres">
+        <div className="loading-state">
+          <i className="fa-solid fa-spinner fa-spin"></i>
+          <p>Chargement des campagnes...</p>
+        </div>
+      </div>
+    );
+  }
 
-        <div className="actions-filtres">
-          {/* <button className="btn-sms-rapide-filtres">
-            <i className="fa-solid fa-paper-plane"></i>
-            SMS rapide
-          </button> */}
-          <button className="btn-create-filtres" onClick={onCreateCampagne}>
-            <i className="fa-solid fa-comment"></i>
-            Créer une campagne
+  if (error) {
+    return (
+      <div className="wrapper-filtres">
+        <div className="error-state">
+          <i className="fa-solid fa-exclamation-triangle"></i>
+          <p>{error}</p>
+          <button className="btn-primary" onClick={() => loadCampagnes(1)}>
+            Réessayer
           </button>
         </div>
       </div>
+    );
+  }
 
-      {/* <h2 className="title-filtres">Mes Campagnes</h2> */}
+  return (
+    <div className="wrapper-filtres">
+      {/* HEADER */}
+      <div className="header-filtres">
+        <h2 className="title-filtres">Mes Campagnes SMS</h2>
+        <button className="btn-create-filtres" onClick={onCreateCampagne}>
+          <i className="fa-solid fa-plus"></i>
+          Créer une campagne
+        </button>
+      </div>
 
       {/* SECTION FILTRES */}
       <div className="section-filtres">
-        <h3 className="subtitle-filtres">Filtres</h3>
+        <h3 className="subtitle-filtres">
+          <i className="fa-solid fa-filter"></i>
+          Filtres de recherche
+        </h3>
 
         <div className="grid-filtres">
-          {/* Numéro de téléphone */}
           <div className="group-filtres">
             <label className="label-filtres">Numéro de téléphone</label>
             <input
               type="text"
               className="input-filtres"
-              placeholder="Numéro de téléphone"
+              placeholder="Ex: 0612345678"
               value={filters.telephone}
               onChange={(e) => handleFilterChange('telephone', e.target.value)}
             />
           </div>
 
-          {/* Nombre SMS min */}
           <div className="group-filtres">
-            <label className="label-filtres">Nombre SMS min/campagne</label>
+            <label className="label-filtres">SMS min/campagne</label>
             <input
-              type="text"
+              type="number"
               className="input-filtres"
-              placeholder="Nombre SMS min/campagne"
+              placeholder="Minimum"
               value={filters.smsMin}
               onChange={(e) => handleFilterChange('smsMin', e.target.value)}
             />
           </div>
 
-          {/* Nombre SMS max */}
           <div className="group-filtres">
-            <label className="label-filtres">Nombre SMS max/campagne</label>
+            <label className="label-filtres">SMS max/campagne</label>
             <input
-              type="text"
+              type="number"
               className="input-filtres"
-              placeholder="Nombre SMS max/campagne"
+              placeholder="Maximum"
               value={filters.smsMax}
               onChange={(e) => handleFilterChange('smsMax', e.target.value)}
             />
           </div>
 
-          {/* Message */}
           <div className="group-filtres">
             <label className="label-filtres">Message</label>
             <input
               type="text"
               className="input-filtres"
-              placeholder="Message"
+              placeholder="Rechercher dans les messages"
               value={filters.message}
               onChange={(e) => handleFilterChange('message', e.target.value)}
             />
           </div>
 
-          {/* Période */}
-          <div className="group-filtres">
-            <label className="label-filtres">Période</label>
-            <div className="periode-wrapper-filtres">
-              <input
-                type="text"
-                className="input-filtres"
-                placeholder=" - "
-                value={filters.periode}
-                onChange={(e) => handleFilterChange('periode', e.target.value)}
-              />
-              <i className="fa-solid fa-calendar icon-periode-filtres"></i>
-            </div>
-          </div>
-
-          {/* Campagnes supprimées */}
           <div className="group-filtres group-toggle-filtres">
-            <label className="label-filtres">Voir les campagnes supprimées uniquement</label>
+            <label className="label-filtres">Campagnes supprimées</label>
             <div className="toggle-container-filtres">
               <span className={!filters.supprimees ? 'text-active-filtres' : 'text-inactive-filtres'}>
                 Non
@@ -152,54 +271,183 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
           </div>
         </div>
 
-        {/* BOUTONS FILTRES */}
         <div className="buttons-filtres">
           <button className="btn-primary check_button" onClick={handleFilter}>
+            <i className="fa-solid fa-search"></i>
             Filtrer
           </button>
           <button className="btn-tertiary" onClick={handleResetFilters}>
+            <i className="fa-solid fa-eraser"></i>
             Effacer les filtres
           </button>
         </div>
       </div>
 
-      {/* TABLEAU */}
+      {/* TABLEAU DES CAMPAGNES */}
       <div className="section-table-filtres">
-        <table className="table-filtres">
-          <thead>
-            <tr>
-              <th>NOM</th>
-              <th>
-                ENVOYÉE À
-                <i className="fa-solid fa-sort"></i>
-              </th>
-              <th>
-                MESSAGE
-                <i className="fa-solid fa-sort"></i>
-              </th>
-              <th>
-                SMS
-                <i className="fa-solid fa-sort"></i>
-              </th>
-              <th>
-                STATISTIQUES
-                <i className="fa-solid fa-sort"></i>
-              </th>
-              <th>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={6} className="empty-filtres">
-                Aucune entrée correspondante n'a été trouvée
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div className="footer-table-filtres">
-          <span>0 entrées</span>
+        <div className="table-header-filtres">
+          <h3>Liste des campagnes ({totalCampagnes})</h3>
         </div>
+
+        {campagnes.length > 0 ? (
+          <>
+            <div className="campagnes-grid">
+              {campagnes.map((campagne) => {
+                const stats = calculateCampagneStats(campagne.recipients);
+                const globalStatus = getCampagneGlobalStatus(campagne.recipients);
+
+                return (
+                  <div key={campagne.id} className="campagne-card">
+                    <div className="campagne-card-header">
+                      <div>
+                        <h4 className="campagne-nom">{campagne.name}</h4>
+                        <p className="campagne-date">
+                          <i className="fa-solid fa-clock"></i>
+                          {formatDate(campagne.scheduled_at)}
+                        </p>
+                      </div>
+                      {getStatusBadge(globalStatus)}
+                    </div>
+
+                    <div className="campagne-card-body">
+                      <div className="campagne-info-row">
+                        <span className="campagne-label">
+                          <i className="fa-solid fa-user"></i>
+                          Expéditeur
+                        </span>
+                        <span className="campagne-value">{campagne.sender}</span>
+                      </div>
+
+                      <div className="campagne-info-row">
+                        <span className="campagne-label">
+                          <i className="fa-solid fa-envelope"></i>
+                          Message
+                        </span>
+                        <span className="campagne-value campagne-message-preview">
+                          {campagne.message.substring(0, 60)}...
+                        </span>
+                      </div>
+
+                      <div className="campagne-stats-grid">
+                        <div className="campagne-stat">
+                          <div className="campagne-stat-icon" style={{background: '#E3F2FD', color: '#1E90FF'}}>
+                            <i className="fa-solid fa-paper-plane"></i>
+                          </div>
+                          <div className="campagne-stat-content">
+                            <div className="campagne-stat-value">{stats.total}</div>
+                            <div className="campagne-stat-label">SMS envoyés</div>
+                          </div>
+                        </div>
+
+                        <div className="campagne-stat">
+                          <div className="campagne-stat-icon" style={{background: '#E8F5E9', color: '#4CAF50'}}>
+                            <i className="fa-solid fa-check-circle"></i>
+                          </div>
+                          <div className="campagne-stat-content">
+                            <div className="campagne-stat-value">{stats.delivered}</div>
+                            <div className="campagne-stat-label">SMS reçus</div>
+                          </div>
+                        </div>
+
+                        <div className="campagne-stat">
+                          <div className="campagne-stat-icon" style={{background: '#FFF3E0', color: '#FF9800'}}>
+                            <i className="fa-solid fa-mouse-pointer"></i>
+                          </div>
+                          <div className="campagne-stat-content">
+                            <div className="campagne-stat-value">{stats.clicked}</div>
+                            <div className="campagne-stat-label">Clics</div>
+                          </div>
+                        </div>
+
+                        <div className="campagne-stat">
+                          <div 
+                            className="campagne-stat-icon" 
+                            style={{
+                              background: stats.tauxReussite >= 90 ? '#E8F5E9' : stats.tauxReussite >= 70 ? '#FFF3E0' : '#FFEBEE',
+                              color: getTauxColor(stats.tauxReussite)
+                            }}
+                          >
+                            <i className="fa-solid fa-chart-line"></i>
+                          </div>
+                          <div className="campagne-stat-content">
+                            <div className="campagne-stat-value">{stats.tauxReussite}%</div>
+                            <div className="campagne-stat-label">Taux de réussite</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="campagne-card-footer">
+                      <button 
+                        className="btn-view-details"
+                        onClick={() => handleViewDetails(campagne.id)}
+                      >
+                        <i className="fa-solid fa-chart-pie"></i>
+                        Voir les statistiques
+                      </button>
+                      <button className="btn-icon-action" title="Supprimer">
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* PAGINATION */}
+            {totalPages > 1 && (
+              <div className="pagination-filtres">
+                <button 
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <i className="fa-solid fa-chevron-left"></i>
+                  Précédent
+                </button>
+
+                <div className="pagination-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      className={`pagination-number ${page === currentPage ? 'active' : ''}`}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <button 
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Suivant
+                  <i className="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            )}
+
+            {/* INFO PAGINATION */}
+            <div className="pagination-info">
+              <p>
+                Affichage de {((currentPage - 1) * perPage) + 1} à {Math.min(currentPage * perPage, totalCampagnes)} sur {totalCampagnes} campagnes
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="empty-state-filtres">
+            <i className="fa-solid fa-inbox"></i>
+            <h3>Aucune campagne trouvée</h3>
+            <p>
+              {Object.values(filters).some(v => v !== '' && v !== false) 
+                ? 'Aucune campagne ne correspond à vos critères de recherche' 
+                : 'Commencez par créer votre première campagne SMS'
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

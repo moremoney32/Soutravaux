@@ -6,13 +6,14 @@ interface Etape5ResumeProps {
   data: CampagneData;
   onPrecedent: () => void;
   onCreer: () => void;
+  isLoading?: boolean;
 }
 
-const Etape5Resume = ({ data, onPrecedent, onCreer }: Etape5ResumeProps) => {
+const Etape5Resume = ({ data, onPrecedent, onCreer,isLoading = false }: Etape5ResumeProps) => {
   
   //Formater la date et l'heure
   const formatPlanification = () => {
-    if (data.planification.type === 'instantane') {
+    if (data.planification.type === 'instantane'){
       return 'Envoi instantané';
     } else {
       if (data.planification.date && data.planification.heure) {
@@ -196,9 +197,20 @@ const Etape5Resume = ({ data, onPrecedent, onCreer }: Etape5ResumeProps) => {
             <i className="fa-solid fa-chevron-left"></i>
             Précédent
           </button>
-          <button className="btn-primary btn-create-campagne check_button" onClick={onCreer}>
-            <i className="fa-solid fa-check"></i>
-            Créer ({totalSMS} SMS)
+          <button className="btn-primary btn-create-campagne check_button" onClick={onCreer}   disabled={isLoading}>
+            {/* <i className="fa-solid fa-check"></i>
+            Validation ({totalSMS} SMS) */}
+            {isLoading ? (
+            <>
+              <i className="fa-solid fa-spinner fa-spin"></i>
+              Création en cours...
+            </>
+          ) : (
+            <>
+               Validation ({totalSMS} SMS)
+              <i className="fa-solid fa-chevron-right"></i>
+            </>
+          )}
           </button>
       </div>
     </div>

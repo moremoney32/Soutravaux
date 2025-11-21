@@ -1,13 +1,8 @@
 
-import { useState, useRef, useEffect } from 'react';
-import type { CampagneData } from '../types/campagne.types';
-import { useNavigate } from 'react-router-dom';
 
-interface ContactGroup {
-    id: number;
-    name: string;
-    count: number;
-}
+import { useState, useRef, useEffect } from 'react';
+import type { CampagneData, ContactList } from '../types/campagne.types';
+import { useNavigate } from 'react-router-dom';
 
 interface Etape2ContactsProps {
     data: CampagneData;
@@ -23,80 +18,132 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
     const [expediteurNom, setExpediteurNom] = useState(data.expediteur || '');
     const [erreur, setErreur] = useState('');
     const navigate = useNavigate();
+     let membreId = localStorage.getItem("membreId")
+  let userId = Number(membreId)
 
     // États pour contacts enregistrés
     const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedGroups, setSelectedGroups] = useState<ContactGroup[]>([]);
+    const [selectedLists, setSelectedLists] = useState<ContactList[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [contactLists, setContactLists] = useState<ContactList[]>([]);
+    const [isLoadingLists, setIsLoadingLists] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
+const getContactLists = async (membreId: number): Promise<ContactList[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/membres/${membreId}`, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+        'X-CSRF-TOKEN': '', // À remplacer par le vrai token si nécessaire
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    const data: ContactList[] = await response.json();
+    console.log(data)
+    return data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des listes de contacts:', error);
+    throw error;
+  }
+};
+
+    //Charger les listes de contacts depuis l'API
+    useEffect(() => {
+        const loadContactLists = async () => {
+            setIsLoadingLists(true);
+            try {
+                const membreId = userId; 
+                const lists = await getContactLists(membreId);
+                setContactLists(lists);
+            } catch (error) {
+                console.error('Erreur chargement listes:', error);
+                setErreur('Impossible de charger les listes de contacts');
+            } finally {
+                setIsLoadingLists(false);
+            }
+        };
+
+        if (activeTab === 'enregistres') {
+            loadContactLists();
+        }
+    }, [activeTab]);
+
     const handleSuivant = () => {
-        //  VALIDATION : Au moins 1 contact valide
-        if (data.contactsValides === 0) {
-            setErreur('Vous devez ajouter au moins un numéro de téléphone valide');
-            return;
+        // VALIDATION selon l'onglet actif
+        if (activeTab === 'manuelle') {
+            if (data.contactsValides === 0) {
+                setErreur('Vous devez ajouter au moins un numéro de téléphone valide');
+                return;
+            }
+            
+            // Pour contact manuel : list_contact_id = null
+            onUpdate({
+                contactType: 'manuelle',
+                list_contact_id: null,
+                // contacts est déjà mis à jour dans handleTextareaChange
+            });
+            
+        } else if (activeTab === 'enregistres') {
+            if (selectedLists.length === 0) {
+                setErreur('Vous devez sélectionner au moins une liste de contacts');
+                return;
+            }
+            
+            //Pour listes enregistrées : extraire les IDs des listes
+            const listIds = selectedLists.map(list => list.id);
+            
+            //Extraire TOUS les numéros pour les statistiques
+            const allPhoneNumbers = selectedLists.flatMap(list => 
+                list.contacts.map(contact => contact.phone_number)
+            );
+            
+            // Calculer le nombre total de contacts
+            const totalContacts = selectedLists.reduce((sum, list) => sum + list.contacts_count, 0);
+            
+            onUpdate({
+                contactType: 'enregistres',
+                list_contact_id: listIds, // IDs des listes pour l'API
+                contacts: allPhoneNumbers, // Numéros pour les stats
+                contactsValides: totalContacts,
+            });
         }
 
-        //  VALIDATION : Expéditeur obligatoire
+        // VALIDATION : Expéditeur obligatoire
         if (!expediteurNom.trim()) {
             setErreur("L'expéditeur personnalisé est obligatoire");
             return;
         }
-        onUpdate({
-            contactType: activeTab === 'manuelle' ? 'manuelle' : 'enregistres'
-        });
+
         setErreur('');
         onSuivant();
     };
 
-
-    // Liste des contacts AVEC count
-    const contactGroups: ContactGroup[] = [
-        { id: 1, name: 'Installateurs Bornes', count: 33 },
-        { id: 2, name: 'Prospects Théo', count: 102 },
-        { id: 3, name: 'Users Solutravo', count: 215 },
-        { id: 4, name: 'Borne de recharge', count: 89 },
-        { id: 5, name: 'Agent Immobilier 68', count: 45 },
-        { id: 6, name: 'Agent Immobilier 88', count: 25 },
-        { id: 7, name: 'Agent Immobilier 67', count: 25 },
-        { id: 8, name: 'Agent Immobilier 57', count: 29 },
-        { id: 9, name: 'Agent Immobilier 35', count: 19 },
-        { id: 10, name: 'Agent Immobilier 08', count: 5 },
-        { id: 11, name: 'Agent Immobilier 29', count: 14 },
-        { id: 12, name: 'Agent Immobilier 56', count: 24 },
-        { id: 13, name: 'Agent Immobilier 55', count: 9 },
-        { id: 14, name: 'Agent Immobilier 54', count: 34 },
-        { id: 15, name: 'Agent Immobilier 52', count: 3 },
-        { id: 16, name: 'Agent Immobilier 51', count: 33 },
-        { id: 17, name: 'Agent Immobilier 10', count: 12 },
-    ];
-
     // VALIDATION NUMÉROS FRANÇAIS
     const validateNumeroFrancais = (numero: string): boolean => {
-        // Retirer les espaces
         const cleaned = numero.replace(/\s/g, '');
-
-        // Format international : +33612345678 (commence par +33 suivi de 9 chiffres)
         const intlRegex = /^\+33[1-9]\d{8}$/;
-
-        // Format national : 0612345678 (commence par 0 suivi de 9 chiffres)
         const nationalRegex = /^0[1-9]\d{8}$/;
-
         return intlRegex.test(cleaned) || nationalRegex.test(cleaned);
     };
 
-    // Filtrer les contacts selon la recherche
-    const filteredGroups = contactGroups.filter(
-        group => group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // Filtrer les listes selon la recherche
+    const filteredLists = contactLists.filter(
+        list => list.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Vérifier si un groupe est sélectionné
-    const isGroupSelected = (groupId: number) => {
-        return selectedGroups.some(g => g.id === groupId);
+    // Vérifier si une liste est sélectionnée
+    const isListSelected = (listId: string) => {
+        return selectedLists.some(l => l.id === listId);
     };
 
     // Calculer le total de contacts
-    const totalContacts = selectedGroups.reduce((sum, group) => sum + group.count, 0);
+    const totalContacts = selectedLists.reduce((sum, list) => sum + list.contacts_count, 0);
 
     // Fermer dropdown si clic dehors
     useEffect(() => {
@@ -109,47 +156,43 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // GESTION TEXTAREA AVEC VALIDATION FRANÇAISE
+    // GESTION TEXTAREA - Contacts manuels
     const handleTextareaChange = (value: string) => {
         setTextareaValue(value);
-
-        // Séparer les numéros par virgule, point-virgule ou saut de ligne
         const contacts = value.split(/[\n,;]/).filter(c => c.trim()).map(c => c.trim());
-
-        // Valider avec regex française
         const valides = contacts.filter(c => validateNumeroFrancais(c));
-
-        // Envoyer TOUS les contacts (valides + invalides) + nombre de valides
+        
         onUpdate({
             contacts: contacts,
-            contactsValides: valides.length
+            contactsValides: valides.length,
+            list_contact_id: null, // Pas de liste pour contact manuel
         });
     };
 
-    // GESTION EXPÉDITEUR DYNAMIQUE
+    // GESTION EXPÉDITEUR
     const handleExpediteurChange = (nom: string) => {
         setExpediteurNom(nom);
-        onUpdate({ expediteur: nom }); // Mise à jour immédiate
+        onUpdate({ expediteur: nom });
     };
 
-    const handleToggleGroup = (group: ContactGroup) => {
-        if (isGroupSelected(group.id)) {
-            setSelectedGroups(selectedGroups.filter(g => g.id !== group.id));
+    // Toggle sélection d'une liste
+    const handleToggleList = (list: ContactList) => {
+        if (isListSelected(list.id)) {
+            setSelectedLists(selectedLists.filter(l => l.id !== list.id));
         } else {
-            setSelectedGroups([...selectedGroups, group]);
+            setSelectedLists([...selectedLists, list]);
         }
     };
 
-    const handleRemoveGroup = (groupId: number) => {
-        setSelectedGroups(selectedGroups.filter(g => g.id !== groupId));
+    // Supprimer une liste sélectionnée
+    const handleRemoveList = (listId: string) => {
+        setSelectedLists(selectedLists.filter(l => l.id !== listId));
     };
 
-    // AFFICHAGE VISUEL DES NUMÉROS AVEC COULEURS
+    // AFFICHAGE NUMÉROS AVEC VALIDATION
     const renderNumeroWithValidation = () => {
         if (!textareaValue) return null;
-
         const contacts = textareaValue.split(/[\n,;]/).filter(c => c.trim()).map(c => c.trim());
-
         if (contacts.length === 0) return null;
 
         return (
@@ -214,10 +257,8 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                             placeholder="+33612345678&#10;0698765432&#10;..."
                         ></textarea>
 
-                        {/* AFFICHAGE DES NUMÉROS AVEC VALIDATION */}
                         {renderNumeroWithValidation()}
 
-                        {/* COMPTEUR X/Y */}
                         <div className="validation-info-campagne">
                             <i className="fa-solid fa-check-circle"></i>
                             <span>
@@ -236,22 +277,20 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                 {activeTab === 'enregistres' && (
                     <div className="tab-content-campagne">
                         <div className="contacts-selector-wrapper-campagne" ref={dropdownRef}>
-                            {/* INPUT AVEC TAGS */}
                             <div
                                 className="contacts-input-box-campagne"
                                 onClick={() => setShowDropdown(true)}
                             >
-                                {/* Tags sélectionnés */}
                                 <div className="contacts-tags-wrapper-campagne">
-                                    {selectedGroups.map(group => (
-                                        <span key={group.id} className="contact-tag-campagne">
-                                            {group.name} ({group.count})
+                                    {selectedLists.map(list => (
+                                        <span key={list.id} className="contact-tag-campagne">
+                                            {list.name} ({list.contacts_count})
                                             <button
                                                 type="button"
                                                 className="contact-tag-close-campagne"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleRemoveGroup(group.id);
+                                                    handleRemoveList(list.id);
                                                 }}
                                             >
                                                 ×
@@ -259,18 +298,16 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                                         </span>
                                     ))}
 
-                                    {/* Input de recherche */}
                                     <input
                                         type="text"
                                         className="contacts-search-campagne"
-                                        placeholder={selectedGroups.length === 0 ? "" : ""}
+                                        placeholder={selectedLists.length === 0 ? "Rechercher une liste..." : ""}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         onFocus={() => setShowDropdown(true)}
                                     />
                                 </div>
 
-                                {/* Flèche dropdown */}
                                 <button
                                     type="button"
                                     className="contacts-arrow-campagne"
@@ -283,39 +320,48 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                                 </button>
                             </div>
 
-                            {/* DROPDOWN LISTE */}
                             {showDropdown && (
                                 <div className="contacts-dropdown-campagne">
-                                    {filteredGroups.map(group => (
-                                        <div
-                                            key={group.id}
-                                            className={`contacts-item-campagne ${isGroupSelected(group.id) ? 'selected-campagne' : ''}`}
-                                            onClick={() => handleToggleGroup(group)}
-                                        >
-                                            <span className="contacts-item-text-campagne">
-                                                {group.name} ({group.count})
-                                            </span>
-                                            {isGroupSelected(group.id) && (
-                                                <i className="fa-solid fa-check contacts-check-campagne"></i>
-                                            )}
+                                    {isLoadingLists ? (
+                                        <div className="contacts-loading-campagne">
+                                            <i className="fa-solid fa-spinner fa-spin"></i>
+                                            Chargement des listes...
                                         </div>
-                                    ))}
+                                    ) : filteredLists.length > 0 ? (
+                                        filteredLists.map(list => (
+                                            <div
+                                                key={list.id}
+                                                className={`contacts-item-campagne ${isListSelected(list.id) ? 'selected-campagne' : ''}`}
+                                                onClick={() => handleToggleList(list)}
+                                            >
+                                                <span className="contacts-item-text-campagne">
+                                                    {list.name} ({list.contacts_count})
+                                                </span>
+                                                {isListSelected(list.id) && (
+                                                    <i className="fa-solid fa-check contacts-check-campagne"></i>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="contacts-empty-campagne">
+                                            Aucune liste de contacts trouvée
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
 
-                        {/* Compteur total */}
-                        {selectedGroups.length > 0 && (
+                        {selectedLists.length > 0 && (
                             <div className="validation-info-campagne" style={{ marginTop: '12px' }}>
                                 <i className="fa-solid fa-check-circle"></i>
-                                <span>{totalContacts} numéros de téléphone valides parmi les {totalContacts}</span>
+                                <span>{totalContacts} contact{totalContacts > 1 ? 's' : ''} sélectionné{totalContacts > 1 ? 's' : ''}</span>
                             </div>
                         )}
                     </div>
                 )}
 
                 {/* ONGLET NOUVELLE LISTE */}
-                {activeTab === 'nouvelle' && (
+                 {activeTab === 'nouvelle' && (
                     <div className="tab-content-campagne">
                         <p className="nouvelle-liste-text-campagne">
                             Pour pouvoir réutiliser les contacts plus tard, vous pouvez{' '}
@@ -328,11 +374,10 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                                 }}
                             >
                                 créer une nouvelle liste de contacts
-                            </a>.
+                            </a>
                         </p>
                     </div>
                 )}
-
                 <div className="actions-campagne">
                     {erreur && (
                         <div className="error-banner-campagne">
@@ -348,7 +393,6 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                         Suivant
                         <i className="fa-solid fa-chevron-right"></i>
                     </button>
-
                 </div>
             </div>
 
@@ -382,7 +426,6 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                         Caractères spéciaux autorisés : <strong>_-'.,</strong> et l'espace.
                     </p>
 
-                    {/* EXPÉDITEUR DYNAMIQUE */}
                     {expediteurType === 'personnalise' && (
                         <div className="expediteur-input-wrapper-campagne">
                             <input
