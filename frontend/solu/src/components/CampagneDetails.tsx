@@ -859,7 +859,7 @@ const CampagneDetails = () => {
   if (isLoading) {
     return (
       <div className="page-campagne">
-        <SidebarCampagne />
+        {/* <SidebarCampagne /> */}
         <div className="main-content-campagne">
           <HeaderCampagne />
           <div className="loading-state">
@@ -874,7 +874,7 @@ const CampagneDetails = () => {
   if (error || !campagneData) {
     return (
       <div className="page-campagne">
-        <SidebarCampagne />
+        {/* <SidebarCampagne /> */}
         <div className="main-content-campagne">
           <HeaderCampagne />
           <div className="error-state">
