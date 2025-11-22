@@ -184,7 +184,7 @@ let membreIds = localStorage.getItem("membreId")
               <i className="fa-solid fa-spinner fa-spin"></i>
             </span>
           ) : (
-            <span className="sms-count-campagne">{credits.toLocaleString('fr-FR')}</span>
+            <span className="sms-count-campagne">{credits}</span>
           )}
           <span className="sms-label-campagne">SMS restants</span>
         </div>
