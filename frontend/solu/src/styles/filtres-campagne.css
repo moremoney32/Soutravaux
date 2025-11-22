@@ -285,7 +285,7 @@ input:checked + .slider-filtres:before {
    CAMPAGNE CARD HEADER
 ======================================== */
 
-.campagne-card-header {
+/* .campagne-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -317,7 +317,253 @@ input:checked + .slider-filtres:before {
   color: var(--color-orange-primary);
   font-size: 12px;
 }
+/* CSS AJOUTÉ POUR LA VERSION TABLEAU - À AJOUTER À LA FIN DE filtres-campagne.css */
 
+/* ========================================
+   TABLEAU CAMPAGNES (VERSION TABLEAU)
+======================================== */
+
+.table-wrapper-campagnes {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.table-campagnes {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-montserrat);
+}
+
+.table-campagnes thead {
+  background: #F8F9FA;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-campagnes th {
+  padding: 14px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table-campagnes tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition-fast);
+}
+
+.table-campagnes tbody tr:hover {
+  background: #F8F9FA;
+}
+
+.table-campagnes td {
+  padding: 16px 12px;
+  font-size: 13px;
+  color: var(--color-dark);
+  vertical-align: middle;
+}
+
+/* Colonnes spécifiques */
+.td-number {
+  font-weight: 700;
+  color: var(--color-gray-secondary);
+  width: 60px;
+  text-align: center;
+}
+
+.td-name {
+  min-width: 200px;
+}
+
+.campagne-name-cell {
+  font-weight: 600;
+  color: var(--color-dark);
+  font-size: 14px;
+}
+
+.td-message {
+  max-width: 300px;
+}
+
+.message-preview {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-date {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  min-width: 150px;
+}
+
+.td-stat {
+  font-weight: 600;
+}
+
+.td-center {
+  text-align: center;
+}
+
+.stat-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stat-badge.stat-primary {
+  background: #E3F2FD;
+  color: #1E90FF;
+}
+
+.stat-badge.stat-success {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.stat-badge.stat-info {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.td-taux {
+  font-weight: 700;
+}
+
+.taux-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Actions */
+.td-actions {
+  width: 120px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: 14px;
+}
+
+.btn-action.btn-view {
+  color: var(--color-orange-primary);
+}
+
+.btn-action.btn-view:hover {
+  background: var(--color-orange-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-orange-primary);
+}
+
+.btn-action.btn-delete {
+  color: #F44336;
+}
+
+.btn-action.btn-delete:hover {
+  background: #F44336;
+  color: var(--color-secondary);
+  border-color: #F44336;
+}
+
+/* ========================================
+   RESPONSIVE TABLEAU
+======================================== */
+
+@media (max-width: 1400px) {
+  .table-campagnes {
+    font-size: 12px;
+  }
+
+  .table-campagnes th,
+  .table-campagnes td {
+    padding: 12px 10px;
+  }
+
+  .td-message {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .table-wrapper-campagnes {
+    border-radius: var(--radius-small);
+    border: 1px solid var(--color-border);
+  }
+
+  .message-preview {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Sur mobile, on affiche un message pour scroller */
+  .table-wrapper-campagnes::before {
+    content: "← Faites défiler pour voir plus →";
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background: #FFF3E0;
+    color: #FF9800;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--radius-small) var(--radius-small) 0 0;
+  }
+
+  .table-campagnes th,
+  .table-campagnes td {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .stat-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .taux-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
 /* ========================================
    BADGES STATUS
 ======================================== */
@@ -459,7 +705,7 @@ input:checked + .slider-filtres:before {
   text-transform: uppercase;
   letter-spacing: 0.3px;
   font-family: var(--font-montserrat);
-}
+} */
 
 /* ========================================
    CAMPAGNE CARD FOOTER
