@@ -223,7 +223,7 @@ export interface CreateCheckoutSessionPayload {
 
 export interface CreateCheckoutSessionResponse {
   success: boolean;
-  url: string; // URL de redirection vers Stripe
+  checkout_url: string; // URL de redirection vers Stripe
 }
 
 export interface BillingData {

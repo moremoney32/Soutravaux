@@ -29,10 +29,11 @@ const Etape2Confirmation = ({ data, onPrecedent, membreId }: Etape2ConfirmationP
             };
 
             const response = await createCheckoutSession(payload);
+            console.log(response)
 
             // Redirection vers Stripe
-            if (response.url) {
-                window.location.href = response.url;
+            if (response.checkout_url) {
+                window.location.href = response.checkout_url;
             } else {
                 throw new Error('URL de redirection Stripe non reçue');
             }
