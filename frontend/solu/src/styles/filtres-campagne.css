@@ -234,7 +234,7 @@ input:checked + .slider-filtres:before {
    SECTION TABLEAU
 ======================================== */
 
-.section-table-filtres {
+/* .section-table-filtres {
   background: var(--color-secondary);
   padding: 28px;
   border-radius: var(--radius-medium);
@@ -254,6 +254,271 @@ input:checked + .slider-filtres:before {
   color: var(--color-dark);
   margin: 0;
   font-family: var(--font-gotham);
+} */
+.table-wrapper-campagnes {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.campagnes-mobile-cards {
+  display: none !important; /* ❌ Pas de cards, seulement tableau */
+}
+
+.table-campagnes {
+  width: 100%;
+  min-width: 800px; /* Largeur minimale pour forcer scroll si nécessaire */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-montserrat);
+}
+
+.table-campagnes thead {
+  background: #F8F9FA;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-campagnes th {
+  padding: 14px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table-campagnes tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: var(--transition-fast);
+}
+
+.table-campagnes tbody tr:hover {
+  background: #F8F9FA;
+}
+
+.table-campagnes td {
+  padding: 16px 12px;
+  font-size: 13px;
+  color: var(--color-dark);
+  vertical-align: middle;
+}
+
+/* Colonnes spécifiques */
+.td-number {
+  font-weight: 700;
+  color: var(--color-gray-secondary);
+  width: 60px;
+  text-align: center;
+  position: sticky;
+  left: 0;
+  background: var(--color-secondary);
+  z-index: 5;
+}
+
+.table-campagnes tbody tr:hover .td-number {
+  background: #F8F9FA;
+}
+
+.td-name {
+  min-width: 150px;
+  max-width: 200px;
+}
+
+.campagne-name-cell {
+  font-weight: 600;
+  color: var(--color-dark);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-message {
+  max-width: 250px;
+  min-width: 150px;
+}
+
+.message-preview {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-date {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.td-stat {
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.td-center {
+  text-align: center;
+}
+
+.stat-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.stat-badge.stat-primary {
+  background: #E3F2FD;
+  color: #1E90FF;
+}
+
+.stat-badge.stat-success {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.stat-badge.stat-info {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.td-taux {
+  font-weight: 700;
+  min-width: 80px;
+}
+
+.taux-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-montserrat);
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.badge-warning {
+  background: #FFF3E0;
+  color: #FF9800;
+}
+
+.badge-danger {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+.badge-secondary {
+  background: var(--color-light-gray);
+  color: #666;
+}
+
+/* Actions */
+.td-actions {
+  width: 100px;
+  min-width: 100px;
+  position: sticky;
+  right: 0;
+  background: var(--color-secondary);
+  z-index: 5;
+}
+
+.table-campagnes tbody tr:hover .td-actions {
+  background: #F8F9FA;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: 14px;
+}
+
+.btn-action.btn-view {
+  color: var(--color-orange-primary);
+}
+
+.btn-action.btn-view:hover {
+  background: var(--color-orange-primary);
+  color: var(--color-secondary);
+  border-color: var(--color-orange-primary);
+}
+
+.btn-action.btn-delete {
+  color: #F44336;
+}
+
+.btn-action.btn-delete:hover {
+  background: #F44336;
+  color: var(--color-secondary);
+  border-color: #F44336;
+}
+
+/* ========================================
+   SCROLLBAR PERSONNALISÉE
+======================================== */
+
+.table-wrapper-campagnes::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper-campagnes::-webkit-scrollbar-track {
+  background: #F8F9FA;
+}
+
+.table-wrapper-campagnes::-webkit-scrollbar-thumb {
+  background: var(--color-orange-primary);
+  border-radius: 4px;
+}
+
+.table-wrapper-campagnes::-webkit-scrollbar-thumb:hover {
+  background: var(--color-yellow-primary);
+}
+
+/* Firefox scrollbar */
+.table-wrapper-campagnes {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-orange-primary) #F8F9FA;
 }
 
 /* ========================================
@@ -498,12 +763,9 @@ input:checked + .slider-filtres:before {
 ======================================== */
 
 @media (max-width: 991px) {
-  /* Cacher le tableau */
-  .table-wrapper-campagnes {
+   .table-wrapper-campagnes {
     display: none;
-  }
-
-  /* Afficher les campagnes en cards */
+  } 
   .campagnes-mobile-cards {
     display: block;
     margin-top: 20px;
@@ -647,7 +909,6 @@ input:checked + .slider-filtres:before {
     font-size: 16px;
   }
 
-  /* Badges sur mobile */
   .stat-badge,
   .taux-badge {
     padding: 4px 8px;
@@ -715,6 +976,65 @@ input:checked + .slider-filtres:before {
   background: var(--color-light-gray);
   color: #666;
 }
+
+
+
+@media (max-width: 768px) {
+  .table-campagnes {
+    min-width: 800px; /* Réduit pour mobile */
+  }
+
+  .table-campagnes th,
+  .table-campagnes td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .td-name {
+    min-width: 140px;
+  }
+
+  .td-message {
+    max-width: 180px;
+    min-width: 120px;
+  }
+
+  .stat-badge,
+  .taux-badge {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-campagnes {
+    min-width: 700px;
+  }
+
+  .table-campagnes th,
+  .table-campagnes td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  .stat-badge,
+  .taux-badge,
+  .badge-status {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+/* ========================================
+   INDICATEUR SCROLL HORIZONTAL (MOBILE)
+======================================== */
+
+
 
 /* ========================================
    CAMPAGNE CARD BODY

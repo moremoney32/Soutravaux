@@ -737,7 +737,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .contact-tag-campagne {
         font-size: 12px;
         padding: 5px 10px;
@@ -758,7 +758,7 @@
   bottom: 0;
   z-index: 100;
 }
-}
+} */
 
 /* ========================================
    NOUVELLE LISTE DE CONTACT
@@ -1163,7 +1163,7 @@
    RESPONSIVE
 ======================================== */
 
-@media (max-width: 1200px) {
+/* @media (max-width: 1200px) {
   .etape-with-sidebar-campagne {
     grid-template-columns: 1fr;
   }
@@ -1189,7 +1189,7 @@
   .stepper-campagne {
     overflow-x: scroll;
   }
-}
+} */
 
 /* ========================================
    HEADER CRÉATION AVEC TITRE + BOUTON
@@ -1230,7 +1230,7 @@
 /* ========================================
    RESPONSIVE
 ======================================== */
-
+/* 
 @media (max-width: 768px) {
   .header-create-campagne {
     flex-direction: column;
@@ -1242,7 +1242,7 @@
     width: 100%;
     justify-content: center;
   }
-}
+} */
 
 
 /* ========================================
@@ -1548,18 +1548,13 @@
 }
 
 
-@media (max-width: 768px) {
-  /* Cacher la sidebar par défaut */
+/* @media (max-width: 768px) {
   .sidebar-campagne {
     transform: translateX(-100%);
   }
-
-  /* Quand la sidebar est ouverte (ajouter cette classe via JS) */
   .sidebar-campagne.sidebar-open {
     transform: translateX(0);
   }
-
-  /* Overlay pour fermer la sidebar */
   .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -1574,8 +1569,6 @@
   .sidebar-overlay.active {
     display: block;
   }
-
-  /* Header ajusté pour mobile */
   .header-campagne {
     padding: 12px 16px;
   }
@@ -1587,8 +1580,6 @@
   .header-right-campagne {
     gap: 12px;
   }
-
-  /* Bouton hamburger pour ouvrir la sidebar */
   .btn-menu-campagne {
     display: flex;
     align-items: center;
@@ -1607,15 +1598,13 @@
   .btn-menu-campagne:hover {
     background: var(--color-border);
   }
-
-  /* Cacher certains éléments sur mobile */
   .btn-acheter-sms-campagne {
     padding: 8px 12px;
     font-size: 12px;
   }
 
   .sms-restants-campagne {
-    display: none; /* Complètement caché sur mobile */
+    display: none; 
   }
 
   .user-menu-campagne {
@@ -1627,9 +1616,6 @@
   }
 }
 
-/* ========================================
-   RESPONSIVE - TRÈS PETIT MOBILE (< 480px)
-======================================== */
 
 @media (max-width: 480px) {
   .header-campagne {
@@ -1641,11 +1627,748 @@
   }
 
   .btn-acheter-sms-campagne {
-    display: none; /* Cache le bouton sur très petits écrans */
+    display: none; 
   }
 
   .header-right-campagne {
     gap: 8px;
   }
+} */
+
+/* ========================================
+   RESPONSIVE CAMPAGNES - AJOUTS ET CORRECTIONS
+======================================== */
+
+/* ========================================
+   BASE RESPONSIVE
+======================================== */
+
+/* Container responsive */
+@media (max-width: 1200px) {
+  .container-campagne {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
+@media (max-width: 768px) {
+  .container-campagne {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+  }
+}
+
+/* ========================================
+   HEADER RESPONSIVE
+======================================== */
+
+@media (max-width: 992px) {
+  .header-campagne {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+
+  .header-title-campagne {
+    font-size: 20px;
+  }
+
+  .header-right-campagne {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-campagne {
+    padding: 12px 15px;
+  }
+
+  .header-title-campagne {
+    font-size: 18px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .header-right-campagne {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .btn-acheter-sms-campagne {
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+
+  .sms-restants-campagne {
+    flex: 1;
+  }
+
+  .sms-count-campagne {
+    font-size: 16px;
+  }
+
+  .sms-label-campagne {
+    font-size: 10px;
+  }
+
+  .user-menu-campagne {
+    padding: 6px;
+  }
+
+  .user-avatar-campagne {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-info-campagne {
+    display: none;
+  }
+}
+
+/* ========================================
+   STEPPER RESPONSIVE
+======================================== */
+
+@media (max-width: 1200px) {
+  .stepper-campagne {
+    padding: 20px 16px;
+    overflow-x: auto;
+    gap: 12px;
+  }
+
+  .step-arrow-campagne {
+    margin: 0 8px;
+  }
+}
+
+@media (max-width: 992px) {
+  .stepper-campagne {
+    padding: 16px 12px;
+  }
+
+  .step-number-campagne {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .step-title-campagne {
+    font-size: 13px;
+  }
+
+  .step-subtitle-campagne {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stepper-campagne {
+    padding: 12px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .step-content-campagne {
+    display: none; /* Cache les titres sur mobile */
+  }
+
+  .step-number-campagne {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .step-arrow-campagne {
+    margin: 0 4px;
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   CONTENT WRAPPER RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .content-wrapper-campagne {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper-campagne {
+    padding: 16px 12px;
+  }
+}
+
+/* ========================================
+   ÉTAPE 1 - NOM
+======================================== */
+
+@media (max-width: 768px) {
+  .etape-title-campagne {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .form-group-campagne label {
+    font-size: 14px;
+  }
+
+  .input-campagne {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   ÉTAPE 2 - CONTACTS (AVEC SIDEBAR)
+======================================== */
+
+@media (max-width: 1200px) {
+  .etape-with-sidebar-campagne {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .etape-sidebar-campagne {
+    order: -1; /* Sidebar en haut sur tablette */
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .etape-with-sidebar-campagne {
+    gap: 20px;
+  }
+
+  .etape-sidebar-campagne {
+    padding: 16px;
+  }
+
+  .sidebar-title-campagne {
+    font-size: 18px;
+  }
+
+  .sidebar-text-campagne,
+  .help-text-campagne {
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   TABS RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .tabs-campagne {
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-campagne {
+    padding: 10px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-campagne {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   TEXTAREA ET INPUTS RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .textarea-contacts-campagne {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .textarea-message-campagne {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 120px;
+  }
+}
+
+/* ========================================
+   VALIDATION NUMÉROS RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .numeros-validation-display-campagne {
+    max-height: 150px;
+    padding: 10px;
+  }
+
+  .numero-item-validation-campagne {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .validation-info-campagne {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   CONTACTS ENREGISTRÉS - RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .contacts-input-box-campagne {
+    min-height: auto;
+    padding: 10px;
+  }
+
+  .contact-tag-campagne {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .contacts-search-campagne {
+    font-size: 13px;
+    min-width: 100px;
+  }
+
+  .contacts-dropdown-campagne {
+    max-height: 250px;
+  }
+
+  .contacts-item-campagne {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   EXPÉDITEUR RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .expediteur-option-campagne {
+    margin-top: 16px;
+  }
+
+  .radio-label-campagne {
+    font-size: 13px;
+  }
+
+  .expediteur-description-campagne,
+  .expediteur-caracteres-campagne {
+    font-size: 12px;
+    margin-left: 25px;
+  }
+
+  .expediteur-input-wrapper-campagne {
+    margin-left: 0;
+  }
+
+  .input-expediteur-campagne {
+    max-width: 100%;
+  }
+
+  .warning-box-campagne {
+    margin-left: 0;
+    padding: 12px;
+  }
+
+  .warning-text-campagne {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   ÉTAPE 3 - MESSAGE RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .message-toolbar-campagne {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-tertiary {
+    flex: 1;
+    min-width: calc(50% - 4px);
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .btn-emoji-campagne {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .emoji-picker-campagne {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .emoji-option-campagne {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-tertiary {
+    min-width: 100%;
+  }
+
+  .model-selector-campagne {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .select-campagne {
+    width: 100%;
+  }
+
+  .btn-small-campagne {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   INSERTS (LIENS/FICHIERS) RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .inserts-display-campagne {
+    padding: 10px;
+  }
+
+  .insert-item-campagne {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .insert-link-text-campagne,
+  .insert-file-text-campagne {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   APERÇU MESSAGE RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .message-preview-campagne {
+    padding: 12px;
+  }
+
+  .message-preview-campagne h5 {
+    font-size: 13px;
+  }
+
+  .preview-box-campagne {
+    padding: 12px;
+  }
+
+  .preview-box-campagne p {
+    font-size: 12px;
+  }
+
+  .message-counter-campagne {
+    font-size: 11px;
+  }
+}
+
+/* ========================================
+   ÉTAPE 4 - PLANIFICATION RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .date-time-picker-campagne {
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 0;
+  }
+
+  .input-date-campagne,
+  .input-time-campagne {
+    width: 100%;
+  }
+
+  .radio-option-campagne label {
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   ÉTAPE 5 - RÉSUMÉ RESPONSIVE
+======================================== */
+
+@media (max-width: 992px) {
+  .stats-grid-campagne {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-value-campagne {
+    font-size: 24px;
+  }
+
+  .stat-label-campagne {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid-campagne {
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card-campagne {
+    padding: 16px;
+  }
+
+  .stat-value-campagne {
+    font-size: 20px;
+  }
+
+  .stat-label-campagne {
+    font-size: 10px;
+  }
+
+  .section-title-campagne {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid-campagne {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Résumé Grid Responsive */
+@media (max-width: 992px) {
+  .resume-grid-campagne {
+    gap: 12px;
+  }
+
+  .resume-icon-campagne {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .resume-title-campagne,
+  .resume-date-campagne {
+    font-size: 13px;
+  }
+
+  .resume-label-campagne {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .resume-grid-campagne {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .resume-card-campagne {
+    padding: 12px;
+  }
+
+  .resume-icon-campagne {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
+
+/* Info Sections Responsive */
+@media (max-width: 992px) {
+  .info-sections-campagne {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .info-sections-campagne {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .info-section-campagne h5 {
+    font-size: 14px;
+  }
+
+  .info-section-campagne p {
+    font-size: 12px;
+  }
+
+  .message-preview-resume-campagne {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   ACTIONS (BOUTONS) RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .actions-campagne {
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-tertiary {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .check_button {
+    width: 100%;
+  }
+
+  .error-banner-campagne {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   HEADER CRÉATION RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .header-create-campagne {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .title-campagne {
+    font-size: 20px;
+  }
+
+  .btn-filtrer-campagnes {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   LIENS ET FICHIERS RÉSUMÉ RESPONSIVE
+======================================== */
+
+@media (max-width: 768px) {
+  .lien-item-resume-campagne,
+  .fichier-item-resume-campagne {
+    padding: 10px;
+  }
+
+  .lien-icon-resume-campagne,
+  .fichier-icon-resume-campagne {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .lien-text-resume-campagne,
+  .fichier-text-resume-campagne {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   SCROLLBARS MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+  /* Scrollbar plus fine sur mobile */
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-orange-primary);
+    border-radius: 2px;
+  }
+}
+
+/* ========================================
+   CORRECTIONS SPÉCIFIQUES MOBILE
+======================================== */
+
+@media (max-width: 480px) {
+  /* Éviter le débordement de texte */
+  .campagne-name-cell,
+  .resume-title-campagne,
+  .lien-text-resume-campagne {
+    word-break: break-word;
+  }
+
+  /* Inputs plus grands pour le tactile */
+  .input-campagne,
+  .select-campagne,
+  .textarea-contacts-campagne,
+  .textarea-message-campagne {
+    font-size: 16px; /* Empêche le zoom sur iOS */
+  }
+
+  /* Boutons plus grands pour le tactile */
+  button {
+    min-height: 44px; /* Taille minimum recommandée */
+  }
+}
+
+/* ========================================
+   FIX SIDEBAR (MORTE)
+======================================== */
+
+@media (max-width: 1200px) {
+  .main-content-campagne {
+    margin-left: 0; /* Plus de marge pour la sidebar */
+  }
+
+  .sidebar-campagne {
+    display: none; /* Cache complètement la sidebar */
+  }
+}
+
+/* ========================================
+   TRANSITIONS SMOOTH
+======================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .etape-campagne,
+  .tab-content-campagne,
+  .resume-card-campagne {
+    transition: all 0.3s ease;
+  }
+}
+
+/* ========================================
+   DARK MODE (OPTIONNEL)
+======================================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Si tu veux supporter le dark mode plus tard */
+}
