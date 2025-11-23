@@ -12,7 +12,7 @@ export const getAllCampagnes = async (
 ): Promise<CampagnesResponse> => {
   try {
     const params = new URLSearchParams({
-      userId: userId.toString(),
+      societe_id: userId.toString(),
       page: page.toString(),
     });
 

@@ -53,7 +53,7 @@ const CampagnePage = () => {
       name: data.nom,
       message: data.message,
       sender: data.expediteur,
-      user_id: userId,
+      societe_id: userId,
       sent_at: data.planification.type === 'differe' ? 'later' : 'now',
     };
 

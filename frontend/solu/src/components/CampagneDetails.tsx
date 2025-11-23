@@ -1,5 +1,4 @@
 
-
 // import { useState, useEffect } from 'react';
 // import { useParams, useNavigate } from 'react-router-dom';
 // import HeaderCampagne from './HeaderCampagne';
@@ -8,20 +7,26 @@
 // import type { CampagneDetailResponse } from '../types/campagne.types';
 // import { getCampagneDetails } from '../services/filtresCampagnesData';
 
-// //  INTERFACE POUR LES CLIQUEURS
 // interface CliqueurStatistique {
-//   id: string;
+//   id: string; 
 //   numero: string;
 //   nom: string | null;
 //   email: string | null;
 //   date_clic: string;
 //   heure_clic: string;
-//   nb_clics: number;
+//   nb_clics:number;
+
+// }
+// export interface ClickedRecipient {
+//   nom: string | null;
+//   email: string | null;
+//   phone_number: string;  
+//   sent_at: string; 
+//   total_clicked: number;      
 // }
 
-// //  INTERFACE POUR SMS NON-REÇUS
 // interface SmsNonRecuStatistique {
-//   id: string;
+//   id: string; 
 //   numero: string;
 //   nom: string | null;
 //   email: string | null;
@@ -29,7 +34,6 @@
 //   raison: string;
 //   is_blacklisted: boolean;
 // }
-
 
 // const CampagneDetails = () => {
 //   const { campagneId } = useParams<{ campagneId: string }>();
@@ -41,15 +45,14 @@
 //   const [isLoading, setIsLoading] = useState(true);
 //   const [error, setError] = useState<string | null>(null);
 
-// let membreId = localStorage.getItem("membreId")
-//   let userId = Number(membreId)
+//   let membreId = localStorage.getItem("membreId");
+//   let userId = Number(membreId);
 
 //   // ÉTATS POUR LES DONNÉES DE L'API
 //   const [campagneData, setCampagneData] = useState<CampagneDetailResponse | null>(null);
 //   const [cliqueurs, setCliqueurs] = useState<CliqueurStatistique[]>([]);
 //   const [smsNonRecus, setSmsNonRecus] = useState<SmsNonRecuStatistique[]>([]);
 
-//   //  CHARGER LES DONNÉES DEPUIS L'API
 //   useEffect(() => {
 //     const loadCampagneDetails = async () => {
 //       if (!campagneId) {
@@ -63,37 +66,41 @@
 //         setError(null);
         
 //         const data = await getCampagneDetails(campagneId);
+//         console.log('Données API reçues:', data);
 //         setCampagneData(data);
+//         const clickedData: CliqueurStatistique[] = data.detail_stat.clicked.map((c, index) => {
 
-//         //  Transformer les cliqueurs depuis l'API
-//         const clickedData: CliqueurStatistique[] = data.detail_stat.clicked.map(c => {
-//           const clickedDate = new Date(c.clicked_at);
+//           // L'API retourne "sent_at" pas "clicked_at"
+//           const clickedDate = new Date(c.sent_at);
+          
 //           return {
-//             id: c.id,
-//             numero: c.phone,
-//             nom: c.name || null,
+//             id: `cliqueur-${index}`, // Générer un ID unique
+//             numero: c.phone_number, // Utiliser phone_number
+//             nom: c.nom || null,
 //             email: c.email || null,
 //             date_clic: clickedDate.toLocaleDateString('fr-FR'),
 //             heure_clic: clickedDate.toLocaleTimeString('fr-FR'),
-//             nb_clics: c.click_count || 1
+//             nb_clics:1
 //           };
 //         });
 //         setCliqueurs(clickedData);
+//         console.log('Cliqueurs transformés:', clickedData);
 
-//         //  Transformer les SMS non-reçus depuis l'API
-//         const failedData: SmsNonRecuStatistique[] = data.detail_stat.failed.map(f => {
+//         // Transformer les SMS non-reçus depuis l'API (CORRIGÉ)
+//         const failedData: SmsNonRecuStatistique[] = data.detail_stat.failed.map((f, index) => {
 //           const failedDate = new Date(f.failed_at);
 //           return {
-//             id: f.id,
+//             id: `failed-${index}`, // Générer un ID unique
 //             numero: f.phone,
 //             nom: f.name || null,
 //             email: f.email || null,
 //             date_echec: `${failedDate.toLocaleDateString('fr-FR')} ${failedDate.toLocaleTimeString('fr-FR')}`,
 //             raison: f.reason || 'Erreur inconnue',
-//             is_blacklisted: false //  Par défaut non blacklisté (TODO: API blacklist)
+//             is_blacklisted: false
 //           };
 //         });
 //         setSmsNonRecus(failedData);
+//         console.log('SMS non-reçus transformés:', failedData);
 
 //       } catch (err) {
 //         console.error('Erreur chargement détails campagne:', err);
@@ -107,21 +114,19 @@
 //   }, [campagneId]);
 
 //   const filteredCliqueurs = cliqueurs.filter(c => 
-//     c.numero.includes(searchCliqueurs) ||
-//     c.nom?.toLowerCase().includes(searchCliqueurs.toLowerCase()) ||
-//     c.email?.toLowerCase().includes(searchCliqueurs.toLowerCase())
+//     (c.numero && c.numero.includes(searchCliqueurs)) ||
+//     (c.nom && c.nom.toLowerCase().includes(searchCliqueurs.toLowerCase())) ||
+//     (c.email && c.email.toLowerCase().includes(searchCliqueurs.toLowerCase()))
 //   );
 
 //   const filteredNonRecus = smsNonRecus.filter(s => 
-//     s.numero.includes(searchNonRecus) ||
-//     s.nom?.toLowerCase().includes(searchNonRecus.toLowerCase()) ||
-//     s.email?.toLowerCase().includes(searchNonRecus.toLowerCase()) ||
-//     s.raison.toLowerCase().includes(searchNonRecus.toLowerCase())
+//     (s.numero && s.numero.includes(searchNonRecus)) ||
+//     (s.nom && s.nom.toLowerCase().includes(searchNonRecus.toLowerCase())) ||
+//     (s.email && s.email.toLowerCase().includes(searchNonRecus.toLowerCase())) ||
+//     (s.raison && s.raison.toLowerCase().includes(searchNonRecus.toLowerCase()))
 //   );
 
-
-
-//   //  BLACKLISTER/DÉBLOQUER UN NUMÉRO INDIVIDUELLEMENT (STATIQUE POUR L'INSTANT)
+//   //BLACKLISTER/DÉBLOQUER UN NUMÉRO INDIVIDUELLEMENT
 //   const handleToggleBlacklist = async (smsId: string, currentStatus: boolean) => {
 //     const action = currentStatus ? 'débloquer' : 'blacklister';
     
@@ -130,14 +135,6 @@
 //     }
 
 //     try {
-//       // TODO: Appel API réel quand endpoint disponible
-//       // const response = await fetch(`/api/blacklist/${smsId}`, {
-//       //   method: currentStatus ? 'DELETE' : 'POST',
-//       //   headers: { 'Content-Type': 'application/json' },
-//       //   body: JSON.stringify({ membre_id: 32, campaign_id: campagneId })
-//       // });
-
-//       //  Simulation locale (TEMPORAIRE)
 //       setSmsNonRecus(prev => 
 //         prev.map(sms => 
 //           sms.id === smsId 
@@ -153,7 +150,7 @@
 //     }
 //   };
 
-//   //  BLACKLISTER TOUS LES NUMÉROS EN ÉCHEC (STATIQUE POUR L'INSTANT)
+//   // BLACKLISTER TOUS LES NUMÉROS EN ÉCHEC
 //   const handleBlacklistAll = async () => {
 //     const nonBlacklisted = smsNonRecus.filter(s => !s.is_blacklisted);
     
@@ -168,17 +165,6 @@
 
 //     try {
 //       // TODO: Appel API réel quand endpoint disponible
-//       // const response = await fetch('/api/blacklist/bulk', {
-//       //   method: 'POST',
-//       //   headers: { 'Content-Type': 'application/json' },
-//       //   body: JSON.stringify({
-//       //     membre_id: 32,
-//       //     campagne_id: campagneId,
-//       //     numeros: nonBlacklisted.map(s => s.numero)
-//       //   })
-//       // });
-
-//       //  Simulation locale (TEMPORAIRE)
 //       setSmsNonRecus(prev => 
 //         prev.map(sms => ({ ...sms, is_blacklisted: true }))
 //       );
@@ -201,7 +187,7 @@
 //     });
 //   };
 
-//   //  CALCULS DES STATISTIQUES
+//   // CALCULS DES STATISTIQUES
 //   const stats = campagneData?.stats;
 //   const tauxReception = stats && stats.total_sent > 0 
 //     ? ((stats.total_delivered / stats.total_sent) * 100).toFixed(2) 
@@ -216,7 +202,7 @@
 //   if (isLoading) {
 //     return (
 //       <div className="page-campagne">
-//         <SidebarCampagne />
+//         {/* <SidebarCampagne /> */}
 //         <div className="main-content-campagne">
 //           <HeaderCampagne />
 //           <div className="loading-state">
@@ -228,12 +214,12 @@
 //     );
 //   }
 
-//   if (error || !campagneData) {
+//   if (error || !campagneData){
 //     return (
 //       <div className="page-campagne">
-//         <SidebarCampagne />
+//         {/* <SidebarCampagne /> */}
 //         <div className="main-content-campagne">
-//           <HeaderCampagne />
+//           <HeaderCampagne/>
 //           <div className="error-state">
 //             <i className="fa-solid fa-exclamation-triangle"></i>
 //             <p>{error || 'Impossible de charger les détails'}</p>
@@ -249,7 +235,6 @@
 //   return (
 //     <div className="page-campagne">
 //       <SidebarCampagne />
-      
 //       <div className="main-content-campagne">
 //         <HeaderCampagne />
         
@@ -266,10 +251,6 @@
 //                 Statistiques et rapport d'envoi
 //               </p>
 //             </div>
-//             {/* <button className="btn-export-pdf" onClick={handleExportPDF}>
-//               <i className="fa-solid fa-file-pdf"></i>
-//               Exporter en PDF
-//             </button> */}
 //           </div>
 
 //           {/* STATS CARDS */}
@@ -647,7 +628,7 @@
 
 
 
-// src/components/campagne/CampagneDetails.tsx - VERSION CORRIGÉE
+
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -657,17 +638,16 @@ import '../styles/CampagnesDetails.css';
 import type { CampagneDetailResponse } from '../types/campagne.types';
 import { getCampagneDetails } from '../services/filtresCampagnesData';
 
-// INTERFACE POUR LES CLIQUEURS (CORRIGÉE)
 interface CliqueurStatistique {
-  id: string; // Généré localement
+  id: string; 
   numero: string;
   nom: string | null;
   email: string | null;
   date_clic: string;
   heure_clic: string;
   nb_clics:number
-
 }
+
 export interface ClickedRecipient {
   nom: string | null;
   email: string | null;
@@ -676,9 +656,8 @@ export interface ClickedRecipient {
   total_clicked: number;      
 }
 
-// INTERFACE POUR SMS NON-REÇUS
 interface SmsNonRecuStatistique {
-  id: string; // Généré localement
+  id: string; 
   numero: string;
   nom: string | null;
   email: string | null;
@@ -699,13 +678,16 @@ const CampagneDetails = () => {
 
   let membreId = localStorage.getItem("membreId");
   let userId = Number(membreId);
+  
+  // RÉCUPÉRATION DE societe_id depuis localStorage
+  // let societeId = localStorage.getItem("societeId");
+  // let numericSocieteId = Number(societeId);
 
   // ÉTATS POUR LES DONNÉES DE L'API
   const [campagneData, setCampagneData] = useState<CampagneDetailResponse | null>(null);
   const [cliqueurs, setCliqueurs] = useState<CliqueurStatistique[]>([]);
   const [smsNonRecus, setSmsNonRecus] = useState<SmsNonRecuStatistique[]>([]);
 
-  // CHARGER LES DONNÉES DEPUIS L'API (CORRIGÉ)
   useEffect(() => {
     const loadCampagneDetails = async () => {
       if (!campagneId) {
@@ -721,31 +703,26 @@ const CampagneDetails = () => {
         const data = await getCampagneDetails(campagneId);
         console.log('Données API reçues:', data);
         setCampagneData(data);
-
-        // Transformer les cliqueurs depuis l'API (CORRIGÉ)
+        
         const clickedData: CliqueurStatistique[] = data.detail_stat.clicked.map((c, index) => {
-
-          // L'API retourne "sent_at" pas "clicked_at"
           const clickedDate = new Date(c.sent_at);
           
           return {
-            id: `cliqueur-${index}`, // Générer un ID unique
-            numero: c.phone_number, // Utiliser phone_number
+            id: `cliqueur-${index}`,
+            numero: c.phone_number,
             nom: c.nom || null,
             email: c.email || null,
             date_clic: clickedDate.toLocaleDateString('fr-FR'),
             heure_clic: clickedDate.toLocaleTimeString('fr-FR'),
-            nb_clics:1
+            nb_clics: 1
           };
         });
         setCliqueurs(clickedData);
-        console.log('Cliqueurs transformés:', clickedData);
 
-        // Transformer les SMS non-reçus depuis l'API (CORRIGÉ)
         const failedData: SmsNonRecuStatistique[] = data.detail_stat.failed.map((f, index) => {
           const failedDate = new Date(f.failed_at);
           return {
-            id: `failed-${index}`, // Générer un ID unique
+            id: `failed-${index}`,
             numero: f.phone,
             nom: f.name || null,
             email: f.email || null,
@@ -755,7 +732,6 @@ const CampagneDetails = () => {
           };
         });
         setSmsNonRecus(failedData);
-        console.log('SMS non-reçus transformés:', failedData);
 
       } catch (err) {
         console.error('Erreur chargement détails campagne:', err);
@@ -768,7 +744,6 @@ const CampagneDetails = () => {
     loadCampagneDetails();
   }, [campagneId]);
 
-  // FILTRAGE (pas de changement, mais vérification de sécurité)
   const filteredCliqueurs = cliqueurs.filter(c => 
     (c.numero && c.numero.includes(searchCliqueurs)) ||
     (c.nom && c.nom.toLowerCase().includes(searchCliqueurs.toLowerCase())) ||
@@ -782,54 +757,101 @@ const CampagneDetails = () => {
     (s.raison && s.raison.toLowerCase().includes(searchNonRecus.toLowerCase()))
   );
 
-  // BLACKLISTER/DÉBLOQUER UN NUMÉRO INDIVIDUELLEMENT
+  // FONCTION API POUR BLOQUER/DÉBLOQUER
+  const blockUnblockContacts = async (phoneNumbers: string[], shouldBlock: boolean) => {
+    try {
+      const response = await fetch(
+        'https://backendstaging.solutravo-compta.fr/api/contacts/block',
+        {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '',
+          },
+          body: JSON.stringify({
+            phone_number: phoneNumbers,
+            societe_id: userId,
+            block: shouldBlock
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erreur lors du blocage/déblocage');
+      }
+
+      const result = await response.json();
+      console.log('Résultat API blocage:', result);
+      return result;
+
+    } catch (error) {
+      console.error('Erreur API block/unblock:', error);
+      throw error;
+    }
+  };
+
+  // BLOQUER/DÉBLOQUER UN NUMÉRO INDIVIDUELLEMENT
   const handleToggleBlacklist = async (smsId: string, currentStatus: boolean) => {
-    const action = currentStatus ? 'débloquer' : 'blacklister';
+    const sms = smsNonRecus.find(s => s.id === smsId);
+    if (!sms) return;
+
+    const action = currentStatus ? 'débloquer' : 'bloquer';
     
-    if (!confirm(`Voulez-vous vraiment ${action} ce numéro ?`)) {
+    if (!confirm(`Voulez-vous vraiment ${action} le numéro ${sms.numero} ?`)){
       return;
     }
 
     try {
-      // TODO: Appel API réel quand endpoint disponible
+      // Appel API
+      await blockUnblockContacts([sms.numero], !currentStatus);
+
+      // Mise à jour locale après succès
       setSmsNonRecus(prev => 
-        prev.map(sms => 
-          sms.id === smsId 
-            ? { ...sms, is_blacklisted: !currentStatus }
-            : sms
+        prev.map(s => 
+          s.id === smsId 
+            ? { ...s, is_blacklisted: !currentStatus }
+            : s
         )
       );
 
-      alert(`Numéro ${currentStatus ? 'débloqué' : 'blacklisté'} avec succès !`);
-    } catch (error) {
+      alert(`Numéro ${currentStatus ? 'débloqué' : 'bloqué'} avec succès !`);
+    } catch (error: any) {
       console.error('Erreur blacklist:', error);
-      alert('Une erreur est survenue');
+      alert(`❌ Erreur : ${error.message || 'Une erreur est survenue'}`);
     }
   };
 
-  // BLACKLISTER TOUS LES NUMÉROS EN ÉCHEC
+  // BLOQUER TOUS LES NUMÉROS EN ÉCHEC
   const handleBlacklistAll = async () => {
     const nonBlacklisted = smsNonRecus.filter(s => !s.is_blacklisted);
     
     if (nonBlacklisted.length === 0) {
-      alert('Tous les numéros sont déjà blacklistés');
+      alert('Tous les numéros sont déjà bloqués');
       return;
     }
 
-    if (!confirm(`Voulez-vous vraiment blacklister ${nonBlacklisted.length} numéro(s) ?`)) {
+    if (!confirm(`Voulez-vous vraiment bloquer ${nonBlacklisted.length} numéro(s) ?\n\nCette action bloquera tous les numéros en échec.`)) {
       return;
     }
 
     try {
-      // TODO: Appel API réel quand endpoint disponible
+      // Extraire tous les numéros non-bloqués
+      const phoneNumbers = nonBlacklisted.map(s => s.numero);
+
+      // Appel API pour bloquer tous les numéros
+      await blockUnblockContacts(phoneNumbers, true);
+
+      // Mise à jour locale après succès
       setSmsNonRecus(prev => 
         prev.map(sms => ({ ...sms, is_blacklisted: true }))
       );
 
-      alert(`${nonBlacklisted.length} numéro(s) blacklisté(s) avec succès !`);
-    } catch (error) {
-      console.error('Erreur blacklist:', error);
-      alert('Une erreur est survenue');
+      alert(`${nonBlacklisted.length} numéro(s) bloqué(s) avec succès !`);
+    } catch (error: any) {
+      console.error('Erreur blocage multiple:', error);
+      alert(`Erreur : ${error.message || 'Une erreur est survenue'}`);
     }
   };
 
@@ -859,7 +881,6 @@ const CampagneDetails = () => {
   if (isLoading) {
     return (
       <div className="page-campagne">
-        {/* <SidebarCampagne /> */}
         <div className="main-content-campagne">
           <HeaderCampagne />
           <div className="loading-state">
@@ -874,7 +895,6 @@ const CampagneDetails = () => {
   if (error || !campagneData) {
     return (
       <div className="page-campagne">
-        {/* <SidebarCampagne /> */}
         <div className="main-content-campagne">
           <HeaderCampagne />
           <div className="error-state">
@@ -1201,11 +1221,11 @@ const CampagneDetails = () => {
                     <div className="non-recus-actions">
                       <button className="btn-blacklist-all" onClick={handleBlacklistAll}>
                         <i className="fa-solid fa-ban"></i>
-                        Blacklister tous les numéros en échec
+                        Bloquer tous les numéros en échec
                       </button>
                       <p className="blacklist-notice">
                         <i className="fa-solid fa-info-circle"></i>
-                        Fonctionnalité temporairement en mode statique (endpoint API en cours de développement)
+                        Cette action bloquera définitivement tous les numéros qui n'ont pas reçu le SMS
                       </p>
                     </div>
                   )}
@@ -1249,7 +1269,7 @@ const CampagneDetails = () => {
                                   <button
                                     className="btn-block-individual"
                                     onClick={() => handleToggleBlacklist(sms.id, false)}
-                                    title="Blacklister ce numéro"
+                                    title="Bloquer ce numéro"
                                   >
                                     <i className="fa-solid fa-ban"></i>
                                     Bloquer

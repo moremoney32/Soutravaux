@@ -317,251 +317,369 @@ input:checked + .slider-filtres:before {
   color: var(--color-orange-primary);
   font-size: 12px;
 }
-/* CSS AJOUTÉ POUR LA VERSION TABLEAU - À AJOUTER À LA FIN DE filtres-campagne.css */
-
 /* ========================================
-   TABLEAU CAMPAGNES (VERSION TABLEAU)
+   TABLEAU CAMPAGNES - RESPONSIVE SANS SCROLL HORIZONTAL
 ======================================== */
 
-.table-wrapper-campagnes {
-  overflow-x: auto;
-  margin-top: 20px;
-}
-
-.table-campagnes {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-family: var(--font-montserrat);
-}
-
-.table-campagnes thead {
-  background: #F8F9FA;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.table-campagnes th {
-  padding: 14px 12px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-dark);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid var(--color-border);
-  white-space: nowrap;
-}
-
-.table-campagnes tbody tr {
-  border-bottom: 1px solid var(--color-border);
-  transition: var(--transition-fast);
-}
-
-.table-campagnes tbody tr:hover {
-  background: #F8F9FA;
-}
-
-.table-campagnes td {
-  padding: 16px 12px;
-  font-size: 13px;
-  color: var(--color-dark);
-  vertical-align: middle;
-}
-
-/* Colonnes spécifiques */
-.td-number {
-  font-weight: 700;
-  color: var(--color-gray-secondary);
-  width: 60px;
-  text-align: center;
-}
-
-.td-name {
-  min-width: 200px;
-}
-
-.campagne-name-cell {
-  font-weight: 600;
-  color: var(--color-dark);
-  font-size: 14px;
-}
-
-.td-message {
-  max-width: 300px;
-}
-
-.message-preview {
-  display: block;
-  font-size: 13px;
-  color: #666;
-  font-style: italic;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.td-date {
-  font-size: 13px;
-  color: #666;
-  white-space: nowrap;
-  min-width: 150px;
-}
-
-.td-stat {
-  font-weight: 600;
-}
-
-.td-center {
-  text-align: center;
-}
-
-.stat-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.stat-badge.stat-primary {
-  background: #E3F2FD;
-  color: #1E90FF;
-}
-
-.stat-badge.stat-success {
-  background: #E8F5E9;
-  color: #4CAF50;
-}
-
-.stat-badge.stat-info {
-  background: #FFF3E0;
-  color: #FF9800;
-}
-
-.td-taux {
-  font-weight: 700;
-}
-
-.taux-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-/* Actions */
-.td-actions {
-  width: 120px;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.btn-action {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-small);
-  background: var(--color-secondary);
-  cursor: pointer;
-  transition: var(--transition-fast);
-  font-size: 14px;
-}
-
-.btn-action.btn-view {
-  color: var(--color-orange-primary);
-}
-
-.btn-action.btn-view:hover {
-  background: var(--color-orange-primary);
-  color: var(--color-secondary);
-  border-color: var(--color-orange-primary);
-}
-
-.btn-action.btn-delete {
-  color: #F44336;
-}
-
-.btn-action.btn-delete:hover {
-  background: #F44336;
-  color: var(--color-secondary);
-  border-color: #F44336;
-}
-
-/* ========================================
-   RESPONSIVE TABLEAU
-======================================== */
-
-@media (max-width: 1400px) {
-  .table-campagnes {
-    font-size: 12px;
+/* Sur desktop : tableau normal */
+@media (min-width: 992px) {
+  .table-wrapper-campagnes {
+    overflow-x: auto;
+    margin-top: 20px;
   }
 
-  .table-campagnes th,
+  .table-campagnes {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: var(--font-montserrat);
+  }
+
+  .table-campagnes thead {
+    background: #F8F9FA;
+  }
+
+  .table-campagnes th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .table-campagnes tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+  }
+
+  .table-campagnes tbody tr:hover {
+    background: #F8F9FA;
+  }
+
   .table-campagnes td {
-    padding: 12px 10px;
+    padding: 16px 12px;
+    font-size: 13px;
+    color: var(--color-dark);
+    vertical-align: middle;
+  }
+
+  .td-number {
+    font-weight: 700;
+    color: var(--color-gray-secondary);
+    width: 60px;
+    text-align: center;
+  }
+
+  .td-name {
+    min-width: 200px;
+  }
+
+  .campagne-name-cell {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 14px;
   }
 
   .td-message {
-    max-width: 200px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .table-wrapper-campagnes {
-    border-radius: var(--radius-small);
-    border: 1px solid var(--color-border);
+    max-width: 300px;
   }
 
   .message-preview {
-    max-width: 150px;
-  }
-}
-
-@media (max-width: 768px) {
-  /* Sur mobile, on affiche un message pour scroller */
-  .table-wrapper-campagnes::before {
-    content: "← Faites défiler pour voir plus →";
     display: block;
-    text-align: center;
-    padding: 10px;
-    background: #FFF3E0;
-    color: #FF9800;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: var(--radius-small) var(--radius-small) 0 0;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .table-campagnes th,
-  .table-campagnes td {
-    padding: 10px 8px;
-    font-size: 11px;
+  .td-date {
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .td-stat {
+    font-weight: 600;
+  }
+
+  .td-center {
+    text-align: center;
   }
 
   .stat-badge {
-    padding: 4px 8px;
-    font-size: 11px;
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
   }
 
+  .stat-badge.stat-primary {
+    background: #E3F2FD;
+    color: #1E90FF;
+  }
+
+  .stat-badge.stat-success {
+    background: #E8F5E9;
+    color: #4CAF50;
+  }
+
+  .stat-badge.stat-info {
+    background: #FFF3E0;
+    color: #FF9800;
+  }
+
+  .td-taux {
+    font-weight: 700;
+  }
+
+  .taux-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .td-actions {
+    width: 120px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .btn-action {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    background: var(--color-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 14px;
+  }
+
+  .btn-action.btn-view {
+    color: var(--color-orange-primary);
+  }
+
+  .btn-action.btn-view:hover {
+    background: var(--color-orange-primary);
+    color: var(--color-secondary);
+    border-color: var(--color-orange-primary);
+  }
+
+  .btn-action.btn-delete {
+    color: #F44336;
+  }
+
+  .btn-action.btn-delete:hover {
+    background: #F44336;
+    color: var(--color-secondary);
+    border-color: #F44336;
+  }
+}
+
+/* ========================================
+   MOBILE/TABLET : TRANSFORMATION EN CARDS
+======================================== */
+
+@media (max-width: 991px) {
+  /* Cacher le tableau */
+  .table-wrapper-campagnes {
+    display: none;
+  }
+
+  /* Afficher les campagnes en cards */
+  .campagnes-mobile-cards {
+    display: block;
+    margin-top: 20px;
+  }
+
+  .campagne-mobile-card {
+    background: var(--color-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-default);
+  }
+
+  .campagne-mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .campagne-mobile-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 4px 0;
+    font-family: var(--font-gotham);
+  }
+
+  .campagne-mobile-date {
+    font-size: 12px;
+    color: #666;
+    font-family: var(--font-montserrat);
+  }
+
+  .campagne-mobile-body {
+    margin-bottom: 12px;
+  }
+
+  .campagne-mobile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #F8F9FA;
+  }
+
+  .campagne-mobile-row:last-child {
+    border-bottom: none;
+  }
+
+  .campagne-mobile-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    font-family: var(--font-montserrat);
+  }
+
+  .campagne-mobile-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-dark);
+    font-family: var(--font-montserrat);
+  }
+
+  .campagne-mobile-message {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .campagne-mobile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .campagne-mobile-stat {
+    text-align: center;
+    padding: 8px;
+    background: #F8F9FA;
+    border-radius: var(--radius-small);
+  }
+
+  .campagne-mobile-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-gotham);
+  }
+
+  .campagne-mobile-stat-label {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-family: var(--font-montserrat);
+  }
+
+  .campagne-mobile-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .btn-mobile-view {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--color-orange-primary);
+    color: var(--color-secondary);
+    padding: 10px;
+    border-radius: var(--radius-small);
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    font-family: var(--font-montserrat);
+  }
+
+  .btn-mobile-delete {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-light-gray);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    color: #F44336;
+    font-size: 16px;
+  }
+
+  /* Badges sur mobile */
+  .stat-badge,
   .taux-badge {
     padding: 4px 8px;
     font-size: 11px;
   }
 
-  .btn-action {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
+  .badge-status {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ========================================
+   SCROLLBAR POUR DESKTOP
+======================================== */
+
+@media (min-width: 992px) {
+  .table-wrapper-campagnes::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .table-wrapper-campagnes::-webkit-scrollbar-track {
+    background: #F8F9FA;
+  }
+
+  .table-wrapper-campagnes::-webkit-scrollbar-thumb {
+    background: var(--color-orange-primary);
+    border-radius: 4px;
+  }
+
+  .table-wrapper-campagnes::-webkit-scrollbar-thumb:hover {
+    background: var(--color-yellow-primary);
   }
 }
 /* ========================================

@@ -25,7 +25,7 @@ const Etape2Confirmation = ({ data, onPrecedent, membreId }: Etape2ConfirmationP
 
             const payload = {
                 pack_id: data.selectedPack.id,
-                membre_id: membreId,
+                societe_id: membreId,
             };
 
             const response = await createCheckoutSession(payload);

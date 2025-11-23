@@ -27,7 +27,7 @@ let membreIds = localStorage.getItem("membreId")
         const data = await getUserCredits(membreId);
         
         setCredits(data.credits);
-        setUserName(`${data.membre_prenom} ${data.membre_nom}`);
+        setUserName(data.nom);
         setUserId(membreId.toString());
       } catch (error) {
         console.error('Erreur lors du chargement des crédits:', error);

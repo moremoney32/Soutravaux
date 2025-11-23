@@ -28,10 +28,10 @@ const AchatSMSPage = () => {
   const [achatData, setAchatData] = useState<AchatSMSData>({
     selectedPack: null,
     billingData: {
+      entreprise:'',
       email: '',
-      entreprise: '',
-      prenom: '',
       nom: '',
+      prenom:"",
       telephone: '',
       adresse: '',
       complement: '',
@@ -45,7 +45,7 @@ const AchatSMSPage = () => {
   // Récupérer les données de l'utilisateur au chargement
   useEffect(() => {
     if (!membreId) {
-      console.error('❌ Aucun membre_id disponible');
+      console.error('Aucun membre_id disponible');
       setIsLoadingUserData(false);
       return;
     }
@@ -59,17 +59,17 @@ const AchatSMSPage = () => {
         setAchatData(prev => ({
           ...prev,
           billingData: {
-            email: data.societe.email,
-            entreprise: data.societe.nom,
-            prenom: data.membre_prenom,
-            nom: data.membre_nom,
-            telephone: data.membre_phone || '',
-            adresse: '', // Pas disponible dans l'API
+            email: data.email,
+            entreprise: data.nomsociete,
+            prenom:data.prenom ,
+            nom: data.nom,
+            telephone: data.phone || '',
+            adresse: data.adresse, 
             complement: '',
-            ville: data.societe.ville,
-            codePostal: data.societe.code_postal,
-            pays: data.societe.pays,
-            numeroTVA: data.societe.tva,
+            ville: data.ville,
+            codePostal: data.code_postal,
+            pays: data.pays,
+            numeroTVA: data.tva,
           },
         }));
       } catch (error) {

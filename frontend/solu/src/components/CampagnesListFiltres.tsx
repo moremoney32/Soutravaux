@@ -539,6 +539,43 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
   useEffect(() => {
     loadCampagnes(1);
   }, []);
+  const handleDeleteCampagne = async (campagneId: string, campagneName: string) => {
+  // Confirmation avant suppression
+  const confirmation = window.confirm(
+    `Êtes-vous sûr de vouloir supprimer la campagne "${campagneName}" ?\n\nCette action est irréversible.`
+  );
+
+  if (!confirmation) return;
+
+  try {
+    const response = await fetch(
+      `https://backendstaging.solutravo-compta.fr/api/campaigns/${campagneId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'accept': 'application/json',
+          'X-CSRF-TOKEN': '',
+        },
+      }
+    );
+
+    if (response.ok) {
+      alert('Campagne supprimée avec succès !');
+      
+      // Gestion intelligente de la pagination
+      if (campagnes.length === 1 && currentPage > 1) {
+        loadCampagnes(currentPage - 1, filters);
+      } else {
+        loadCampagnes(currentPage, filters);
+      }
+    } else {
+      const errorData = await response.json();
+      alert(`Erreur : ${errorData.message || 'Erreur inconnue'}`);
+    }
+  } catch (error) {
+    alert('Une erreur est survenue lors de la suppression');
+  }
+};
 
   const handleFilterChange = (field: keyof CampagneFilters, value: string | boolean) => {
     setFilters({ ...filters, [field]: value });
@@ -590,9 +627,6 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
     return '#dc3545';
   };
 
-  // const handleViewDetails = (campagneId: string) => {
-  //   navigate(`/campagne/${numericUserId}/details/${campagneId}`);
-  // };
     const handleViewDetails = (campagneId: string) => {
     navigate(`/statistique/campaigns/${campagneId}`);
   };
@@ -729,7 +763,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
         </div>
       </div>
 
-      {/* ✅ TABLEAU DES CAMPAGNES (NOUVEAU FORMAT) */}
+      {/*TABLEAU DES CAMPAGNES (NOUVEAU FORMAT) */}
       <div className="section-table-filtres">
         <div className="table-header-filtres">
           <h3>Liste des campagnes ({totalCampagnes})</h3>
@@ -817,6 +851,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
                             </button>
                             <button 
                               className="btn-action btn-delete"
+                              onClick={() => handleDeleteCampagne(campagne.id, campagne.name)}
                               title="Supprimer"
                             >
                               <i className="fa-solid fa-trash"></i>

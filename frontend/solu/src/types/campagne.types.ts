@@ -218,7 +218,7 @@ export interface SMSPacksResponse {
 
 export interface CreateCheckoutSessionPayload {
   pack_id: string;
-  membre_id: number;
+  societe_id: number;
 }
 
 export interface CreateCheckoutSessionResponse {
@@ -228,9 +228,9 @@ export interface CreateCheckoutSessionResponse {
 
 export interface BillingData {
   email: string;
-  entreprise: string;
-  prenom: string;
+  entreprise:string;
   nom: string;
+  prenom:string;
   telephone: string;
   adresse: string;
   complement?: string;
@@ -288,19 +288,18 @@ export interface CampagneDetailResponse {
 export interface UserCreditsResponse {
   status: number;
   credits: number;
-  membre_nom: string;
-  membre_prenom: string;
-  membre_phone: string | null;
-  societe: {
-    id: number;
-    nom: string;
-    email: string;
-    code_postal: string;
-    ville: string;
-    pays: string;
-    siret: string;
-    tva: string;
-  };
+  nomsociete:string;
+  nom: string;
+  adresse:string;
+  prenom:string;
+  phone: string | null;
+  id: number;
+  email: string;
+  code_postal: string;
+  ville: string;
+  pays: string;
+  siret: string;
+  tva: string;
 }
 
 

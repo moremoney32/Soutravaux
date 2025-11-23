@@ -67,7 +67,7 @@ const CreateListePage = () => {
             const payload = {
                 name: listeData.nom,
                 // description est optionnel, on peut l'enlever
-                membre_id: 32,
+                societe_id: userId,
                 contacts: listeData.contacts // ← Déjà au bon format !
             };
 

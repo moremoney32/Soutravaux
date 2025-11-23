@@ -62,9 +62,9 @@ export const createCheckoutSession = async (
 /**
  * Récupère les crédits SMS d'un membre
  */
-export const getUserCredits = async (membreId: number): Promise<UserCreditsResponse> => {
+export const getUserCredits = async (societe_id: number): Promise<UserCreditsResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/sms/credits/${membreId}`, {
+    const response = await fetch(`${API_BASE_URL}/sms/credits/${societe_id}`, {
       method: 'GET',
       headers: {
         'accept': 'application/json',
@@ -76,6 +76,7 @@ export const getUserCredits = async (membreId: number): Promise<UserCreditsRespo
     }
 
     const data = await response.json();
+    console.log(data)
     return data;
   } catch (error) {
     console.error('Erreur lors de la récupération des crédits SMS:', error);
