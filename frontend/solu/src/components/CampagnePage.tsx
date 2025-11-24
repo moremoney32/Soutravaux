@@ -14,11 +14,11 @@ import CampagnesListFiltres from './CampagnesListFiltres';
 import '../styles/campagne.css';
 import '../styles/filtres-campagne.css';
 import type { CampagneData } from '../types/campagne.types';
-import {useNavigate } from 'react-router-dom';
+// import {useNavigate } from 'react-router-dom';
 
 
 const CampagnePage = () => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   let membreId = localStorage.getItem("membreId")
   let userId = Number(membreId)
   console.log(userId)
@@ -52,6 +52,7 @@ const CampagnePage = () => {
     const payload: any = {
       name: data.nom,
       message: data.message,
+      links: data.links || [],
       sender: data.expediteur,
       societe_id: userId,
       sent_at: data.planification.type === 'differe' ? 'later' : 'now',
@@ -144,7 +145,12 @@ const CampagnePage = () => {
             heure: new Date().toTimeString().slice(0, 5)
           }
         });
-        return  navigate(`/campagne/${userId}`)
+      //   setTimeout(() => {
+      //   navigate(`/campagne/${userId}`);
+      // }, 500);
+      setTimeout(() => {
+        window.location.href = `/campagne/${userId}`;
+      }, 500);
       })
       .catch(error => {
         console.error('Erreur API:', error);

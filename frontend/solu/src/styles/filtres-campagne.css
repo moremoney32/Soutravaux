@@ -257,13 +257,12 @@ input:checked + .slider-filtres:before {
 } */
 .table-wrapper-campagnes {
   width: 100%;
-  overflow-x: auto;
   margin-top: 20px;
   -webkit-overflow-scrolling: touch;
 }
 
 .campagnes-mobile-cards {
-  display: none !important; /* ❌ Pas de cards, seulement tableau */
+  display: none !important; /*Pas de cards, seulement tableau */
 }
 
 .table-campagnes {
@@ -550,44 +549,13 @@ input:checked + .slider-filtres:before {
    CAMPAGNE CARD HEADER
 ======================================== */
 
-/* .campagne-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border);
-}
 
-.campagne-nom {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-dark);
-  margin: 0 0 6px 0;
-  font-family: var(--font-gotham);
-}
-
-.campagne-date {
-  font-size: 13px;
-  color: #666;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-montserrat);
-  font-weight: 500;
-}
-
-.campagne-date i {
-  color: var(--color-orange-primary);
-  font-size: 12px;
-}
 /* ========================================
    TABLEAU CAMPAGNES - RESPONSIVE SANS SCROLL HORIZONTAL
 ======================================== */
 
 /* Sur desktop : tableau normal */
-@media (min-width: 992px) {
+/* @media (min-width: 992px) {
   .table-wrapper-campagnes {
     overflow-x: auto;
     margin-top: 20px;
@@ -756,20 +724,18 @@ input:checked + .slider-filtres:before {
     color: var(--color-secondary);
     border-color: #F44336;
   }
-}
+} */
 
 /* ========================================
    MOBILE/TABLET : TRANSFORMATION EN CARDS
 ======================================== */
 
-@media (max-width: 991px) {
-   .table-wrapper-campagnes {
-    display: none;
-  } 
-  .campagnes-mobile-cards {
+@media (max-width: 768px) {
+   
+  /* .campagnes-mobile-cards {
     display: block;
     margin-top: 20px;
-  }
+  } */
 
   .campagne-mobile-card {
     background: var(--color-secondary);
@@ -921,6 +887,58 @@ input:checked + .slider-filtres:before {
   }
 }
 
+
+/* @media (max-width: 768px) {
+  .table-campagnes {
+    display: block;
+    width: 100%;
+    min-width: unset !important;
+  }
+  
+  .table-campagnes thead {
+    display: none;
+  }
+  
+  .table-campagnes tbody
+  .table-campagnes tr,
+  .table-campagnes td {
+    display: block;
+    width: 100%;
+  }
+  
+  .table-campagnes tr {
+    margin-bottom: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    padding: 12px;
+    background: var(--color-secondary);
+  }
+  
+  .table-campagnes td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .table-campagnes td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  
+  .td-number,
+  .td-actions {
+    position: static;
+    background: transparent;
+  }
+} */
+
+
+
 /* ========================================
    SCROLLBAR POUR DESKTOP
 ======================================== */
@@ -979,10 +997,8 @@ input:checked + .slider-filtres:before {
 
 
 
-@media (max-width: 768px) {
-  .table-campagnes {
-    min-width: 800px; /* Réduit pour mobile */
-  }
+/* @media (max-width: 768px) {
+  
 
   .table-campagnes th,
   .table-campagnes td {
@@ -1010,29 +1026,8 @@ input:checked + .slider-filtres:before {
     height: 32px;
     font-size: 13px;
   }
-}
+} */
 
-@media (max-width: 480px) {
-  .table-campagnes {
-    min-width: 700px;
-  }
-
-  .table-campagnes th,
-  .table-campagnes td {
-    padding: 8px 6px;
-    font-size: 11px;
-  }
-
-  .stat-badge,
-  .taux-badge,
-  .badge-status {
-    padding: 4px 8px;
-    font-size: 10px;
-  }
-}
-/* ========================================
-   INDICATEUR SCROLL HORIZONTAL (MOBILE)
-======================================== */
 
 
 
@@ -1230,6 +1225,9 @@ input:checked + .slider-filtres:before {
   margin: 0;
   font-family: var(--font-montserrat);
 }
+.h3{
+  color: var(--color-dark);
+}
 
 /* ========================================
    BOUTON RETOUR (Mode Création)
@@ -1302,6 +1300,7 @@ input:checked + .slider-filtres:before {
   
   .section-table-filtres {
     padding: 20px;
+    overflow-x: auto;
   }
   
   .campagne-stats-grid {
@@ -1529,3 +1528,50 @@ input:checked + .slider-filtres:before {
   font-family: var(--font-montserrat);
   margin: 0;
 }
+
+
+
+
+@media (max-width: 768px) {
+  .table-wrapper-campagnes {
+  width: 100%;
+  margin-top: 20px;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+  
+  .table-campagnes {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  
+  /* Optimisations pour mobile */
+  .table-campagnes th,
+  .table-campagnes td {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+  
+  /* Colonnes fixes pour faciliter la navigation */
+  .td-number {
+    position: sticky;
+    left: 0;
+    background: var(--color-secondary);
+    z-index: 10;
+    border-right: 2px solid var(--color-border);
+  }
+  
+  .td-actions {
+    position: sticky;
+    right: 0;
+    background: var(--color-secondary);
+    z-index: 10;
+    border-left: 2px solid var(--color-border);
+  }
+  
+  /* Cache les cards sur mobile */
+  .campagnes-mobile-cards {
+    display: none !important;
+  }
+}
+

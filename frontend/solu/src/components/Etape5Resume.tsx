@@ -153,9 +153,9 @@ const Etape5Resume = ({ data, onPrecedent, onCreer,isLoading = false }: Etape5Re
         {/* SECTION LIENS */}
         <div className="info-section-campagne">
           <h5>Liens inclus dans le message</h5>
-          {data.liens && data.liens.length > 0 ? (
+          {data.links && data.links.length > 0 ? (
             <div className="liens-list-resume-campagne">
-              {data.liens.map((lien, index) => (
+              {data.links.map((lien, index) => (
                 <div key={index} className="lien-item-resume-campagne">
                   <div className="lien-icon-resume-campagne">
                     <i className="fa-solid fa-link"></i>

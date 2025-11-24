@@ -12,6 +12,7 @@ export interface CampagneData {
   messageLength: number;
   smsCount: number;
   liens?: string[];
+  links?: string[];
   fichiers?: string[];
   planification: {
     type: 'differe' | 'instantane';
@@ -267,10 +268,14 @@ export interface CampagneDetailResponse {
     failed: Array<{
       id: string;
       phone: string;
+      phone_number: string;
       name?: string | null;
+      nom?: string | null;
+      is_blacklisted: boolean;
       email?: string | null;
       failed_at: string;
       reason: string;
+       raison?: string;
     }>;
     clicked: Array<{
       id: string;
