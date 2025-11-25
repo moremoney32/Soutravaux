@@ -65,8 +65,8 @@
 }
 
 .details-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size:1.125rem;
+  font-weight: 600;
   color: var(--color-dark);
   margin: 0 0 8px 0;
   font-family: var(--font-gotham);
@@ -277,8 +277,8 @@
 }
 
 .details-section-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size:1.125rem;
+  font-weight: 600;
   color: var(--color-dark);
   margin: 0 0 24px 0;
   display: flex;

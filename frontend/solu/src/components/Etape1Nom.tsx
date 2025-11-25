@@ -25,7 +25,7 @@ const Etape1Nom = ({ data, onUpdate, onSuivant }: Etape1NomProps) => {
 
   return (
     <div className="etape-campagne">
-      <h3 className="etape-title-campagne">Nom</h3>
+      {/* <h3 className="etape-title-campagne">Nom</h3> */}
 
       <div className="form-group-campagne">
         <label htmlFor="nom-campagne">Nom</label>

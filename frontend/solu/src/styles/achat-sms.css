@@ -38,8 +38,8 @@
 
 .title-achat-sms {
   font-family: var(--font-gotham);
-  font-size: 28px;
-  font-weight: 700;
+  font-size:1.125rem;
+  font-weight: 600;
   color: var(--color-dark);
   margin: 0;
 }
@@ -198,7 +198,7 @@
 
 .section-title-pack {
   font-family: var(--font-gotham);
-  font-size: 20px;
+  font-size:1.125rem;
   font-weight: 600;
   color: var(--color-dark);
   margin: 0;
@@ -326,8 +326,8 @@
 
 .recap-title {
   font-family: var(--font-gotham);
-  font-size: 18px;
-  font-weight: 700;
+  font-size:1.125rem;
+  font-weight: 600;
   color: var(--color-dark);
   margin: 0;
   padding-bottom: 12px;
@@ -498,7 +498,7 @@
 
 .section-title-confirmation {
   font-family: var(--font-gotham);
-  font-size: 20px;
+  font-size:1.125rem;
   font-weight: 600;
   color: var(--color-dark);
   margin: 0;

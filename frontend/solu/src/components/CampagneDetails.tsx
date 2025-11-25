@@ -382,10 +382,10 @@ const CampagneDetails = () => {
               <div className="overview-tab">
                 {/* RÉCAPITULATIF */}
                 <div className="details-section">
-                  <h3 className="details-section-title">
+                  <h5 className="details-section-title">
                     <i className="fa-solid fa-info-circle"></i>
                     Récapitulatif de l'envoi
-                  </h3>
+                  </h5>
                   <div className="recap-grid">
                     <div className="recap-item">
                       <span className="recap-label">Date d'envoi</span>

@@ -331,7 +331,7 @@
 }
 
 .etape-title-campagne {
-  font-size: 22px;
+  font-size:1.125rem;
   font-weight: 600;
   color: var(--color-dark);
   margin-bottom: 24px;
@@ -457,10 +457,11 @@
 }
 
 .sidebar-title-campagne {
-  font-size: 22px;
   font-weight: 600;
+   font-size:1.125rem;
   /* margin-bottom: 12px; */
   color: var(--color-dark);
+
 }
 
 .sidebar-text-campagne {

@@ -217,7 +217,7 @@ const getContactLists = async (membreId: number): Promise<ContactList[]> => {
     return (
         <div className="etape-campagne etape-with-sidebar-campagne">
             <div className="etape-main-campagne">
-                <h3 className="etape-title-campagne">Sélectionner les contacts de la campagne</h3>
+                <h5 className="etape-title-campagne">Sélectionner les contacts de la campagne</h5>
 
                 <div className="tabs-campagne">
                     <button
@@ -398,7 +398,7 @@ const getContactLists = async (membreId: number): Promise<ContactList[]> => {
 
             {/* SIDEBAR EXPÉDITEUR */}
             <div className="etape-sidebar-campagne">
-                <h4 className="sidebar-title-campagne">Expéditeur</h4>
+                <h5 className="sidebar-title-campagne">Expéditeur</h5>
                 <p className="sidebar-text-campagne">
                     Choisissez le nom de l'expéditeur qui s'affichera pour vos contacts :
                 </p>
