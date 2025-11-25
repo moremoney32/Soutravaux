@@ -980,7 +980,7 @@ input:checked + .slider-filtres:before {
   transform: translateX(-2px);
 }
 
-/* ========================================
+/* =================
    RESPONSIVE
 ======================================== */
 
