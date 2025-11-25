@@ -338,7 +338,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
                     const rowNumber = ((currentPage - 1) * perPage) + index + 1;
 
                     return (
-                      <tr key={campagne.id}>
+                      <tr key={campagne.id}  onClick={() => handleViewDetails(campagne.id)} className='tr-campagne-clickable-pointer'>
                         <td className="td-number">{rowNumber}</td>
                         <td className="td-name">
                           <div className="campagne-name-cell">
@@ -387,7 +387,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
                           <div className="action-buttons">
                             <button
                               className="btn-action btn-view"
-                              onClick={() => handleViewDetails(campagne.id)}
+                              // onClick={() => handleViewDetails(campagne.id)}
                               title="Voir les statistiques"
                             >
                               <i className="fa-solid fa-chart-pie"></i>
