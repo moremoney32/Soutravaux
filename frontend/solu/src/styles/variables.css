@@ -107,6 +107,31 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+/****screoll barr***/
+/* Webkit (Chrome, Safari, Edge moderne) */
+::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE / ancien Edge */
+body {
+  -ms-overflow-style: none;
+}
+
+/* S'assure que le html/body peuvent défiler sans barre */
+html,
+body {
+  overflow: auto;
+  height: 100%;
+}
+/***fin scroolbar**/
 
 /* === Styles typographiques par défaut (mobile-first) === */
 h3 {
