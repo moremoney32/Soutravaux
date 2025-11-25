@@ -1259,7 +1259,7 @@ input:checked + .slider-filtres:before {
  @media (max-width:768px) {
    .section-table-filtres {
     padding: 20px;
-    width:400px !important;
+    width:350px !important;
     margin: 0 auto !important;
     height:fit-content;
     /* display: none; */
@@ -1308,20 +1308,22 @@ input:checked + .slider-filtres:before {
 
   /*****details campagnes***/
   .details-header{
-    width: 400px;
+    width:350px;
   }
   .stats-overview-grid{
-     width: 400px;
+     width:350px;
+     margin: 0 auto;
   }
   .details-tabs {
-        width: 400px;
+        width: 350px;
         overflow-x: auto;
         gap: 4px;
         -webkit-overflow-scrolling: touch;
     }
     .details-section{
-      width: 400px;
+      width: 350px;
       height: fit-content;
+      margin: 0 auto;
      
     }
 }
