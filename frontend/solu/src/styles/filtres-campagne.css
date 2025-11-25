@@ -545,198 +545,9 @@ input:checked + .slider-filtres:before {
   border-color: var(--color-orange-primary);
 }
 
-/* ========================================
-   CAMPAGNE CARD HEADER
-======================================== */
-
-
-/* ========================================
-   TABLEAU CAMPAGNES - RESPONSIVE SANS SCROLL HORIZONTAL
-======================================== */
-
-/* Sur desktop : tableau normal */
-/* @media (min-width: 992px) {
-  .table-wrapper-campagnes {
-    overflow-x: auto;
-    margin-top: 20px;
-  }
-
-  .table-campagnes {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-family: var(--font-montserrat);
-  }
-
-  .table-campagnes thead {
-    background: #F8F9FA;
-  }
-
-  .table-campagnes th {
-    padding: 14px 12px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--color-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--color-border);
-    white-space: nowrap;
-  }
-
-  .table-campagnes tbody tr {
-    border-bottom: 1px solid var(--color-border);
-    transition: var(--transition-fast);
-  }
-
-  .table-campagnes tbody tr:hover {
-    background: #F8F9FA;
-  }
-
-  .table-campagnes td {
-    padding: 16px 12px;
-    font-size: 13px;
-    color: var(--color-dark);
-    vertical-align: middle;
-  }
-
-  .td-number {
-    font-weight: 700;
-    color: var(--color-gray-secondary);
-    width: 60px;
-    text-align: center;
-  }
-
-  .td-name {
-    min-width: 200px;
-  }
-
-  .campagne-name-cell {
-    font-weight: 600;
-    color: var(--color-dark);
-    font-size: 14px;
-  }
-
-  .td-message {
-    max-width: 300px;
-  }
-
-  .message-preview {
-    display: block;
-    font-size: 13px;
-    color: #666;
-    font-style: italic;
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .td-date {
-    font-size: 13px;
-    color: #666;
-    white-space: nowrap;
-  }
-
-  .td-stat {
-    font-weight: 600;
-  }
-
-  .td-center {
-    text-align: center;
-  }
-
-  .stat-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .stat-badge.stat-primary {
-    background: #E3F2FD;
-    color: #1E90FF;
-  }
-
-  .stat-badge.stat-success {
-    background: #E8F5E9;
-    color: #4CAF50;
-  }
-
-  .stat-badge.stat-info {
-    background: #FFF3E0;
-    color: #FF9800;
-  }
-
-  .td-taux {
-    font-weight: 700;
-  }
-
-  .taux-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .td-actions {
-    width: 120px;
-  }
-
-  .action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-  }
-
-  .btn-action {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
-    background: var(--color-secondary);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    font-size: 14px;
-  }
-
-  .btn-action.btn-view {
-    color: var(--color-orange-primary);
-  }
-
-  .btn-action.btn-view:hover {
-    background: var(--color-orange-primary);
-    color: var(--color-secondary);
-    border-color: var(--color-orange-primary);
-  }
-
-  .btn-action.btn-delete {
-    color: #F44336;
-  }
-
-  .btn-action.btn-delete:hover {
-    background: #F44336;
-    color: var(--color-secondary);
-    border-color: #F44336;
-  }
-} */
-
-/* ========================================
-   MOBILE/TABLET : TRANSFORMATION EN CARDS
-======================================== */
 
 @media (max-width: 768px) {
    
-  /* .campagnes-mobile-cards {
-    display: block;
-    margin-top: 20px;
-  } */
-
   .campagne-mobile-card {
     background: var(--color-secondary);
     border: 1px solid var(--color-border);
@@ -888,56 +699,6 @@ input:checked + .slider-filtres:before {
 }
 
 
-/* @media (max-width: 768px) {
-  .table-campagnes {
-    display: block;
-    width: 100%;
-    min-width: unset !important;
-  }
-  
-  .table-campagnes thead {
-    display: none;
-  }
-  
-  .table-campagnes tbody
-  .table-campagnes tr,
-  .table-campagnes td {
-    display: block;
-    width: 100%;
-  }
-  
-  .table-campagnes tr {
-    margin-bottom: 16px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-medium);
-    padding: 12px;
-    background: var(--color-secondary);
-  }
-  
-  .table-campagnes td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  
-  .table-campagnes td:before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: #666;
-    font-size: 12px;
-    text-transform: uppercase;
-  }
-  
-  .td-number,
-  .td-actions {
-    position: static;
-    background: transparent;
-  }
-} */
-
-
 
 /* ========================================
    SCROLLBAR POUR DESKTOP
@@ -994,41 +755,6 @@ input:checked + .slider-filtres:before {
   background: var(--color-light-gray);
   color: #666;
 }
-
-
-
-/* @media (max-width: 768px) {
-  
-
-  .table-campagnes th,
-  .table-campagnes td {
-    padding: 10px 8px;
-    font-size: 12px;
-  }
-
-  .td-name {
-    min-width: 140px;
-  }
-
-  .td-message {
-    max-width: 180px;
-    min-width: 120px;
-  }
-
-  .stat-badge,
-  .taux-badge {
-    padding: 5px 10px;
-    font-size: 11px;
-  }
-
-  .btn-action {
-    width: 32px;
-    height: 32px;
-    font-size: 13px;
-  }
-} */
-
-
 
 
 /* ========================================
@@ -1258,7 +984,7 @@ input:checked + .slider-filtres:before {
    RESPONSIVE
 ======================================== */
 
-@media (max-width: 1400px) {
+ @media (max-width: 1400px) {
   .grid-filtres {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1266,9 +992,9 @@ input:checked + .slider-filtres:before {
   .campagnes-grid {
     grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
   }
-}
+} 
 
-@media (max-width: 1024px) {
+ @media (max-width: 1024px) {
   .grid-filtres {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1287,7 +1013,7 @@ input:checked + .slider-filtres:before {
   .campagnes-grid {
     grid-template-columns: 1fr;
   }
-}
+} 
 
 @media (max-width: 768px) {
   .grid-filtres {
@@ -1300,7 +1026,6 @@ input:checked + .slider-filtres:before {
   
   .section-table-filtres {
     padding: 20px;
-    overflow-x: auto;
   }
   
   .campagne-stats-grid {
@@ -1327,6 +1052,7 @@ input:checked + .slider-filtres:before {
 }
 
 @media (max-width: 480px) {
+  
   .title-filtres {
     font-size: 22px;
   }
@@ -1530,48 +1256,75 @@ input:checked + .slider-filtres:before {
 }
 
 
-
-
-@media (max-width: 768px) {
+ @media (max-width:768px) {
+   .section-table-filtres {
+    padding: 20px;
+    width:400px !important;
+    margin: 0 auto !important;
+    height:fit-content;
+    /* display: none; */
+  }
+  .section-filtres{
+    width: 90% !important;
+    margin: 0 auto;
+  }
   .table-wrapper-campagnes {
-  width: 100%;
-  margin-top: 20px;
-  -webkit-overflow-scrolling: touch;
-  display: none;
-}
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    background: var(--color-secondary);
+  }
+  .btn-create-filtres{
+    width: 80%;
+  }
   
   .table-campagnes {
-    width: 100%;
-    margin-bottom: 0;
+    width:100%; /* Ajustez selon vos besoins */
   }
   
-  /* Optimisations pour mobile */
-  .table-campagnes th,
+  /* En-têtes fixes pendant le scroll */
+  .table-campagnes thead {
+    background: #F8F9FA;
+    z-index: 20;
+  }
+  
+  /* Améliore la visibilité sur mobile */
+  .table-campagnes th {
+    font-size: 11px;
+    padding: 10px 6px;
+  }
+  
   .table-campagnes td {
-    padding: 12px 8px;
     font-size: 12px;
+    padding: 10px 6px;
   }
   
-  /* Colonnes fixes pour faciliter la navigation */
-  .td-number {
-    position: sticky;
-    left: 0;
-    background: var(--color-secondary);
-    z-index: 10;
-    border-right: 2px solid var(--color-border);
-  }
-  
-  .td-actions {
-    position: sticky;
-    right: 0;
-    background: var(--color-secondary);
-    z-index: 10;
-    border-left: 2px solid var(--color-border);
-  }
-  
-  /* Cache les cards sur mobile */
+  /* Cache définitivement les cards */
   .campagnes-mobile-cards {
     display: none !important;
   }
+
+  /*****details campagnes***/
+  .details-header{
+    width: 400px;
+  }
+  .stats-overview-grid{
+     width: 400px;
+  }
+  .details-tabs {
+        width: 400px;
+        overflow-x: auto;
+        gap: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .details-section{
+      width: 400px;
+      height: fit-content;
+      /* height: 75vh; */
+    }
 }
+
+
 

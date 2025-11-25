@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderCampagne from './HeaderCampagne';
-import SidebarCampagne from './SidebarCampagne';
+// import SidebarCampagne from './SidebarCampagne';
 import '../styles/CampagnesDetails.css';
 import type { CampagneDetailResponse } from '../types/campagne.types';
 import { getCampagneDetails } from '../services/filtresCampagnesData';
@@ -284,7 +284,7 @@ const CampagneDetails = () => {
 
   return (
     <div className="page-campagne">
-      <SidebarCampagne />
+      {/* <SidebarCampagne /> */}
       
       <div className="main-content-campagne">
         <HeaderCampagne />
