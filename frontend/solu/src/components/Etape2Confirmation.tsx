@@ -33,7 +33,8 @@ const Etape2Confirmation = ({ data, onPrecedent, membreId }: Etape2ConfirmationP
 
             // Redirection vers Stripe
             if (response.checkout_url) {
-                window.location.href = response.checkout_url;
+                // window.location.href = response.checkout_url;
+                window.open(response.checkout_url, '_blank');
             } else {
                 throw new Error('URL de redirection Stripe non reçue');
             }
