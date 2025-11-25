@@ -1322,7 +1322,7 @@ input:checked + .slider-filtres:before {
     .details-section{
       width: 400px;
       height: fit-content;
-      /* height: 75vh; */
+     
     }
 }
 
