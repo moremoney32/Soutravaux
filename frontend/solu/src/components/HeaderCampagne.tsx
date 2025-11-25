@@ -53,7 +53,7 @@ let membreIds = localStorage.getItem("membreId")
   return (
     <header className="header-campagne">
       <div className="header-left-campagne">
-        <h1 className="header-title-campagne">Campagnes</h1>
+        <h5 className="header-title-campagne">Campagnes</h5>
       </div>
 
       <div className="header-right-campagne">

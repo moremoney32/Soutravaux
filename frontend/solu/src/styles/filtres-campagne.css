@@ -21,8 +21,8 @@
 }
 
 .title-filtres {
-  font-size: 28px;
-  font-weight: 700;
+  /* font-size: 28px; */
+  font-weight: 600;
   color: var(--color-dark);
   margin: 0;
   display: flex;
@@ -37,11 +37,12 @@
   gap: 10px;
   background: var(--color-orange-primary);
   color: var(--color-secondary);
-  padding: 12px 24px;
+   font-weight: 500;
+  font-size: 12px;
+  padding: 8px 16px;
   border-radius: var(--radius-small);
   border: none;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: var(--transition-fast);
   font-family: var(--font-montserrat);

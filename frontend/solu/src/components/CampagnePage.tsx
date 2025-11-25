@@ -278,7 +278,7 @@ const CampagnePage = () => {
                 transition={{ duration: 0.3 }}
               >
                 <div className="header-create-campagne">
-                  <h2 className="title-campagne">Créer une campagne</h2>
+                  <h5 className="title-campagne">Créer une campagne</h5>
                   <button 
                     className="btn-filtrer-campagnes"
                     onClick={handleShowFiltres}

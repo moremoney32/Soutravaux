@@ -214,7 +214,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
     <div className="wrapper-filtres">
       {/* HEADER */}
       <div className="header-filtres">
-        <h2 className="title-filtres">Mes Campagnes SMS</h2>
+        <h5 className="title-filtres">Mes Campagnes SMS</h5>
         <button className="btn-create-filtres" onClick={onCreateCampagne}>
           <i className="fa-solid fa-plus"></i>
           Créer une campagne
@@ -309,7 +309,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
       {/*TABLEAU DES CAMPAGNES (NOUVEAU FORMAT) */}
       <div className="section-table-filtres">
         <div className="table-header-filtres">
-          <h3 className='h3'>Liste des campagnes ({totalCampagnes})</h3>
+          <h5 className='h3'>Liste des campagnes ({totalCampagnes})</h5>
         </div>
 
         {campagnes.length > 0 ? (
