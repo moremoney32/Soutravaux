@@ -275,3 +275,19 @@ export const mockDepartements: Departement[] = [
   }
 ];
 
+
+export const mockRegions: RegionOption[] = [
+  { code: 'ARA', nom: 'Auvergne-Rhône-Alpes' },
+  { code: 'BFC', nom: 'Bourgogne-Franche-Comté' },
+  { code: 'BRE', nom: 'Bretagne' },
+  { code: 'CVL', nom: 'Centre-Val de Loire' },
+  { code: 'COR', nom: 'Corse' },
+  { code: 'GES', nom: 'Grand Est' },
+  { code: 'HDF', nom: 'Hauts-de-France'},
+  { code: 'IDF', nom: 'Île-de-France' },
+  { code: 'NOR', nom: 'Normandie' },
+  { code: 'NAQ', nom: 'Nouvelle-Aquitaine' },
+  { code: 'OCC', nom: 'Occitanie' },
+  { code: 'PDL', nom: 'Pays de la Loire' },
+  { code: 'PAC', nom: "Provence-Alpes-Côte d'Azur" }
+];

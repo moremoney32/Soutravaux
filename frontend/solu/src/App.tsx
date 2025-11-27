@@ -11,6 +11,7 @@ import CampagnePage from "./components/CampagnePage";
 import CreateListePage from "./components/CreateListePage";
 import CampagneDetails from "./components/CampagneDetails";
 import AchatSMSPage from "./components/AchatSMSPage";
+import ScrapingPage from "./components/ScrapingPage";
 
 function App() {
   
@@ -30,6 +31,7 @@ function App() {
            <Route path="/statistique/campaigns/:campagneId" element={<CampagneDetails />} />
            <Route path="/create-liste" element={<CreateListePage />} />
             <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} />
+             <Route path="/scraping" element={<ScrapingPage/>} />
 
       </Routes>
     </BrowserRouter>
