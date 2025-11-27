@@ -39,10 +39,10 @@ function genOTP(): string {
 }
 
 //REGISTER
-export async function UserRegister(data: UserRegisterInput) {
+export async function UserRegister(data: UserRegisterInput){
   const { email, prenom, role, phonenumber, address, size, legal_form, siret, name, nom, cp, ville, rue, capital } = data;
 
-  if (!email) {
+  if (!email){
     const err = new Error("Email obligatoire");
     (err as any).statusCode = 400;
     throw err;
