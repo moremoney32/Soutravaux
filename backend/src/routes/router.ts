@@ -20,6 +20,7 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
   getPlansByFeatureController,
   getFeaturesByRoleController
 } from '../controllers/featuresControllers';
+import { scrapeGoogleMapsController } from "../controllers/ScraperController";
 import UpdatePlanFree from "../controllers/UpdatePlanFree";
 import handleImageUpload from "../middleware/uploadMiddleware";
 import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
@@ -44,6 +45,7 @@ router.delete("/plans/:id", deletePlan);
 router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
 router.post("/downgrade-to-free", UpdatePlanFree);
+router.post("/google-maps", scrapeGoogleMapsController);
 
 
 

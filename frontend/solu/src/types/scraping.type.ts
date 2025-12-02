@@ -2,8 +2,8 @@
 
 export interface ScrapingFilters {
   region: string;        
-  departement: string;
-  ville: string;
+departement: string[];  
+  ville: string[];
   activite: string;
   nombre_resultats: number;
 }
@@ -23,6 +23,9 @@ export interface EntrepriseScraped {
   departement: string;
   note?: number;
   nombre_avis?: number;
+  adresse_etablissement?: string;
+  code_postal_etablissement?: string;
+  ville_etablissement?: string;
 }
 
 export interface ScrapingResponse {

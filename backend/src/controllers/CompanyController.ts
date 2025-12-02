@@ -25,7 +25,7 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
             `https://api.insee.fr/api-sirene/3.11/siret?q=${query}&nombre=20`, // Limite à 20 résultats
             {
                 headers: {
-                    "X-INSEE-Api-Key-Integration": apiKey,
+                    "X-INSEE-Api-Key-Integration":apiKey,
                 },
             }
         );

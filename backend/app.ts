@@ -85,6 +85,14 @@ app.get("/", (_req: Request, res: Response) => {
     timestamp: new Date().toISOString()
   });
 });
+// Health check
+app.get('/health', (_req: Request, res: Response) =>{
+  res.json({ 
+    status: 'OK', 
+    message: 'Scraper API is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 //  Route de configuration pour le frontend
 app.get("/api/config", (_req: Request, res: Response) => {

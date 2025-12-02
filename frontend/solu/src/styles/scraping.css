@@ -91,7 +91,7 @@
   font-family: var(--font-montserrat);
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-gray-primary);
+color: var(--color-dark);
 }
 
 .scraping-filter-select {
@@ -210,11 +210,11 @@
   font-weight: 600;
 }
 
-.scraping-actions-group {
+/* .scraping-actions-group {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
-}
+} */
 
 .scraping-btn-select-all {
   display: flex;
@@ -432,6 +432,99 @@
 .scraping-no-results p {
   font-size: 1.1rem;
   line-height: 1.6;
+}
+
+/* Messages d'erreur et de progression */
+.scraping-error-message {
+  background: #fee;
+  border-left: 4px solid #e74c3c;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  color: #c0392b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scraping-progress-message {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px;
+}
+
+/* Bannière de statistiques */
+.scraping-stats-banner {
+  background:var(--color-orange-primary);
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.scraping-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.scraping-stat-item i {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.scraping-btn-export {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background:gray;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-small);
+    font-family: var(--font-montserrat);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.scraping-btn-mailing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: gray;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-small);
+    font-family: var(--font-montserrat);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+/* Pour garder tous les boutons sur la même ligne */
+.scraping-actions-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
 /* === RESPONSIVE === */

@@ -12,7 +12,7 @@
     "forceConsistentCasingInFileNames": true, // Sensible à la casse
 
     /* Librairies */
-    "lib": ["es2020"],             // Fonctions modernes (Promise, Map…)
+    "lib": ["ES2020", "DOM"],             // Fonctions modernes (Promise, Map…)
     "types": ["node"],             // Active les types Node.js
     /* (⚠️ n'oublie pas : npm install -D @types/node @types/express) */
 
