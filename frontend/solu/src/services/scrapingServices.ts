@@ -126,7 +126,8 @@ import axios from 'axios';
 import type { ScrapingFilters, EntrepriseScraped } from '../types/scraping.type';
 import { mockRegions, mockVilles, mockActivites } from '../data/scrapingData';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+ //const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://46.202.130.175:3002/api';
 
 // ============================================
 // INTERFACE DE RÉPONSE API
@@ -209,11 +210,11 @@ export const scrapeGoogleMaps = async (
   try {
     console.log('🚀 Envoi requête scraping:', filters);
 
-    // ⭐ CONVERTIR LES CODES EN NOMS POUR L'API
+    //CONVERTIR LES CODES EN NOMS POUR L'API
     const regionNom = mockRegions.find(r => r.code === filters.region)?.nom || filters.region;
     const activiteNom = mockActivites.find(a => a.id === filters.activite)?.nom || filters.activite;
 
-    // ⭐ CONVERTIR LES CODES VILLES EN NOMS
+    //CONVERTIR LES CODES VILLES EN NOMS
     const villesNoms = filters.ville.length > 0
       ? filters.ville.map(code => mockVilles.find(v => v.code === code)?.nom || code)
       : undefined;
@@ -228,9 +229,9 @@ export const scrapeGoogleMaps = async (
 
     console.log('📡 Payload envoyé:', payload);
 
-    // ⭐ CORRECTION : Route correcte
+    //CORRECTION : Route correcte
     const response = await axios.post<ScrapingApiResponse>(
-      `${API_BASE_URL}/google-maps`,  // ✅ /scraper/google-maps
+      `${API_BASE_URL}/google-maps`,  ///scraper/google-maps
       payload,
       {
         timeout: 300000,
@@ -240,7 +241,7 @@ export const scrapeGoogleMaps = async (
       }
     );
 
-    console.log('✅ Réponse API:', response.data);
+    console.log('Réponse API:', response.data);
 
     const entreprises = transformApiDataToFrontend(response.data.data);
 
@@ -369,7 +370,7 @@ export const scrapeGoogleMaps = async (
 //     let objectif = filters.nombre_resultats || 20;
 
 //     // ==========================================
-//     // ⭐ EVENT : batch (données reçues par lot de 5)
+//     //EVENT : batch (données reçues par lot de 5)
 //     // ==========================================
 //     eventSource.addEventListener('batch', (event: MessageEvent) => {
 //       try {
@@ -420,7 +421,7 @@ export const scrapeGoogleMaps = async (
 //     });
 
 //     // ==========================================
-//     // ⭐ EVENT : status (progression)
+//     //EVENT : status (progression)
 //     // ==========================================
 //     eventSource.addEventListener('status', (event: MessageEvent) => {
 //       try {
@@ -432,7 +433,7 @@ export const scrapeGoogleMaps = async (
 //     });
 
 //     // ==========================================
-//     // ⭐ EVENT : close (fin du scraping)
+//     //EVENT : close (fin du scraping)
 //     // ==========================================
 //     eventSource.addEventListener('close', (event: MessageEvent) => {
 //       try {
@@ -459,7 +460,7 @@ export const scrapeGoogleMaps = async (
 //     });
 
 //     // ==========================================
-//     // ⭐ EVENT : error (erreur backend)
+//     //EVENT : error (erreur backend)
 //     // ==========================================
 //     eventSource.addEventListener('error', (event: MessageEvent) => {
 //       console.error('❌ Erreur SSE backend:', event.data);
