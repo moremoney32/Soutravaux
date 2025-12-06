@@ -1,137 +1,15 @@
-// // // src/services/scrapingApi.ts
-
-// import axios from 'axios';
-// import type { ScrapingFilters, EntrepriseScraped } from '../types/scraping.type';
-
-// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-// // ============================================
-// // INTERFACE DE RÉPONSE API
-// // ============================================
-// interface ScrapingApiResponse {
-//   success: boolean;
-//   message: string;
-//   stats: {
-//     total_vise: number;
-//     total_trouve: number;
-//     avec_telephone: number;
-//     avec_email: number;
-//     avec_siret: number;
-//     avec_gerant: number;
-//     duree_secondes: number;
-//   };
-//   data: Array<{
-//     id: string;
-//     nom_societe: string;
-//     nom_gerant?: string;
-//     telephone?: string;
-//     email?: string;
-//     adresse: string;
-//     code_postal: string;
-//     ville: string;
-//     departement: string;
-//     activite: string;
-//     siret?: string;
-//     siren?: string;
-//     site_web?: string;
-//     note?: number;
-//     nombre_avis?: number;
-//     etat_administratif?: string;
-//     scraped_at: string;
-//   }>;
-// }
-
-// // ============================================
-// // TRANSFORMER LES DONNÉES API → FRONTEND
-// // ============================================
-// const transformApiDataToFrontend = (apiData: ScrapingApiResponse['data']): EntrepriseScraped[] => {
-//   return apiData.map(entreprise => ({
-//     id: entreprise.id,
-//     nom_societe: entreprise.nom_societe,
-//     nom: entreprise.nom_gerant?.split(' ').pop() || '',  // Nom de famille
-//     prenom: entreprise.nom_gerant?.split(' ')[0] || '',  // Prénom
-//     telephone: entreprise.telephone || 'Non disponible',
-//     email: entreprise.email || 'Non disponible',
-//     adresse: entreprise.adresse,
-//     code_postal: entreprise.code_postal,
-//     ville: entreprise.ville,
-//     departement: entreprise.departement,
-//     activite: entreprise.activite,
-//     siret: entreprise.siret || 'Non disponible',
-//     site_web: entreprise.site_web,
-//     note: entreprise.note ?? null,
-//     nombre_avis: entreprise.nombre_avis ?? null
-//   }));
-// };
-
-// // ============================================
-// // FONCTION PRINCIPALE : SCRAPER GOOGLE MAPS
-// // ============================================
-// export const scrapeGoogleMaps = async (filters: ScrapingFilters): Promise<{
-//   entreprises: EntrepriseScraped[];
-//   stats: ScrapingApiResponse['stats'];
-// }> => {
-//   try {
-//     console.log('🚀 Envoi requête scraping:', filters);
-
-//     const response = await axios.post<ScrapingApiResponse>(
-//       `${API_BASE_URL}/google-maps`,
-//       {
-//         region: filters.region || undefined,
-//         departement: filters.departement || undefined,
-//         ville: filters.ville,
-//         activite: filters.activite || undefined,
-//         nombre_resultats: filters.nombre_resultats
-//       },
-//       {
-//         timeout: 300000, // 5 minutes (scraping peut être long)
-//         headers: {
-//           'Content-Type': 'application/json'
-//         }
-//       }
-//     );
-
-//     console.log('Réponse API:', response.data);
-
-//     // Transformer les données
-//     const entreprises = transformApiDataToFrontend(response.data.data);
-
-//     return {
-//       entreprises,
-//       stats: response.data.stats
-//     };
-
-//   } catch (error: any) {
-//     console.error('❌ Erreur API scraping:', error);
-
-//     if (axios.isAxiosError(error)) {
-//       if (error.response) {
-//         // Erreur du serveur (4xx, 5xx)
-//         throw new Error(error.response.data?.message || 'Erreur serveur lors du scraping');
-//       } else if (error.request) {
-//         // Pas de réponse du serveur
-//         throw new Error('Le serveur ne répond pas. Vérifiez votre connexion.');
-//       }
-//     }
-
-//     throw new Error('Erreur inconnue lors du scraping');
-//   }
-// };
-
-
-
-// src/services/scrapingServices.ts
 
 import axios from 'axios';
 import type { ScrapingFilters, EntrepriseScraped } from '../types/scraping.type';
 import { mockRegions, mockVilles, mockActivites } from '../data/scrapingData';
 
  //const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
- const API_BASE_URL = 'http://46.202.130.175:3002/api';
+ const API_BASE_URL = 'https://elyfthosting.tech/api';
+ //const API_BASE_URL = 'http://46.202.130.175:3002/api';
 
-// ============================================
+
 // INTERFACE DE RÉPONSE API
-// ============================================
+
 interface ScrapingApiResponse {
   success: boolean;
   message: string;
@@ -169,9 +47,9 @@ interface ScrapingApiResponse {
   }>;
 }
 
-// ============================================
+
 // TRANSFORMER LES DONNÉES API → FRONTEND
-// ============================================
+
 const transformApiDataToFrontend = (
   apiData: ScrapingApiResponse['data']
 ): EntrepriseScraped[] => {
@@ -198,9 +76,9 @@ const transformApiDataToFrontend = (
   }));
 };
 
-// ============================================
+
 // SCRAPER GOOGLE MAPS
-// ============================================
+
 export const scrapeGoogleMaps = async (
   filters: ScrapingFilters
 ): Promise<{
@@ -208,7 +86,7 @@ export const scrapeGoogleMaps = async (
   stats: ScrapingApiResponse['stats'];
 }> => {
   try {
-    console.log('🚀 Envoi requête scraping:', filters);
+    // console.log(' Envoi requête scraping:', filters);
 
     //CONVERTIR LES CODES EN NOMS POUR L'API
     const regionNom = mockRegions.find(r => r.code === filters.region)?.nom || filters.region;
@@ -227,7 +105,7 @@ export const scrapeGoogleMaps = async (
       nombre_resultats: filters.nombre_resultats
     };
 
-    console.log('📡 Payload envoyé:', payload);
+    // console.log('📡 Payload envoyé:', payload);
 
     //CORRECTION : Route correcte
     const response = await axios.post<ScrapingApiResponse>(
@@ -241,7 +119,7 @@ export const scrapeGoogleMaps = async (
       }
     );
 
-    console.log('Réponse API:', response.data);
+    // console.log('Réponse API:', response.data);
 
     const entreprises = transformApiDataToFrontend(response.data.data);
 
@@ -273,9 +151,9 @@ export const scrapeGoogleMaps = async (
 
 // const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://backendstaging.solutravo-compta.fr/api';
 
-// // ============================================
+// 
 // // INTERFACE DE RÉPONSE SSE
-// // ============================================
+// 
 // interface SSEEntreprise {
 //   id: string;
 //   nom_societe: string;
@@ -306,9 +184,9 @@ export const scrapeGoogleMaps = async (
 //   duree_secondes: number;
 // }
 
-// // ============================================
+// 
 // // TRANSFORMER LES DONNÉES API → FRONTEND
-// // ============================================
+// 
 // const transformApiDataToFrontend = (entreprise: SSEEntreprise): EntrepriseScraped => {
 //   return {
 //     id: entreprise.id,
@@ -331,9 +209,9 @@ export const scrapeGoogleMaps = async (
 
 
 
-// // ============================================
+// 
 // // SCRAPER AVEC SSE (TEMPS RÉEL)
-// // ============================================
+// 
 // // src/services/scrapingApi.ts
 
 // export const scrapeGoogleMaps = async (

@@ -28,9 +28,9 @@
 // ];
 
 // const ScrapingPage: React.FC = () => {
-//     // ============================================
+//  
 //     // ÉTATS
-//     // ============================================
+//  
 //     const [filters, setFilters] = useState<ScrapingFilters>({
 //         region: '',
 //         departement: '',
@@ -64,9 +64,9 @@
 //         duree_secondes: number;
 //     } | null>(null);
 
-//     // ============================================
+//  
 //     // FILTRER DÉPARTEMENTS SELON RÉGION
-//     // ============================================
+//  
 //     useEffect(() => {
 //         if (filters.region) {
 //             const filtered = departements.filter(d => d.region === filters.region);
@@ -80,9 +80,9 @@
 //         }
 //     }, [filters.region, departements, filters.departement]);
 
-//     // ============================================
+//  
 //     // FILTRER VILLES SELON DÉPARTEMENT
-//     // ============================================
+//  
 //     useEffect(() => {
 //         if (filters.departement) {
 //             const filtered = villes.filter(v => v.departement === filters.departement);
@@ -112,13 +112,13 @@
 //     setErrorMessage('');
 // };
 
-//     // ============================================
+//  
 //     // RECHERCHER (APPEL API RÉEL)
-//     // ============================================
+//  
 //     const handleSearch = async () => {
 //         // Validation
 //         if (!filters.ville) {
-//             setErrorMessage('⚠️ Veuillez sélectionner une ville');
+//             setErrorMessage('Veuillez sélectionner une ville');
 //             return;
 //         }
 
@@ -150,9 +150,9 @@
 //         }
 //     };
 
-//     // ============================================
+//  
 //     // RÉINITIALISER LES FILTRES
-//     // ============================================
+//  
 //     const handleReset = () => {
 //         setFilters({
 //             region: '',
@@ -168,9 +168,9 @@
 //         setStats(null);
 //     };
 
-//     // ============================================
+//  
 //     // SÉLECTIONNER/DÉSÉLECTIONNER UNE ENTREPRISE
-//     // ============================================
+//  
 //     const handleSelectEntreprise = (id: string) => {
 //         setSelectedIds(prev => {
 //             const newSet = new Set(prev);
@@ -183,9 +183,9 @@
 //         });
 //     };
 
-//     // ============================================
+//  
 //     // SÉLECTIONNER/DÉSÉLECTIONNER TOUT
-//     // ============================================
+//  
 //     const handleSelectAll = () => {
 //         if (selectedIds.size === entreprises.length) {
 //             setSelectedIds(new Set());
@@ -232,9 +232,9 @@
 //     document.body.removeChild(link);
 // };
 
-//     // ============================================
+//  
 //     // ENVOYER CAMPAGNE SMS
-//     // ============================================
+//  
 //     const handleSendCampaign = () => {
 //         const selectedEntreprises = entreprises.filter(e => selectedIds.has(e.id));
 
@@ -246,16 +246,16 @@
 //         // navigate('/campagne/:membreId', { state: { contacts: selectedEntreprises } });
 //     };
 
-//     // ============================================
+// 
 //     // RENDER
 //     // ============================================
 //     return (
 //         <div className="scraping-page">
 //             <div className="scraping-container">
 
-//                 {/* ===================================== */}
+//          
 //                 {/* HEADER */}
-//                 {/* ===================================== */}
+//          
 //                 <header className="scraping-header">
 //                     <h2 className="scraping-title">
 //                         Générateur de prospects depuis Google Maps
@@ -270,9 +270,9 @@
 //                     </p>
 //                 </header>
 
-//                 {/* ===================================== */}
+//          
 //                 {/* STATS DU SCRAPING */}
-//                 {/* ===================================== */}
+//          
 //                 {stats && (
 //                     <div className="scraping-stats-banner">
 //                         <div className="scraping-stat-item">
@@ -302,9 +302,9 @@
 //                     </div>
 //                 )}
 
-//                 {/* ===================================== */}
+//          
 //                 {/* MESSAGE D'ERREUR */}
-//                 {/* ===================================== */}
+//          
 //                 {errorMessage && (
 //                     <div className="scraping-error-message">
 //                         <i className="fas fa-exclamation-triangle"></i>
@@ -312,9 +312,9 @@
 //                     </div>
 //                 )}
 
-//                 {/* ===================================== */}
+//          
 //                 {/* PROGRESSION DU SCRAPING */}
-//                 {/* ===================================== */}
+//          
 //                 {scrapingProgress && (
 //                     <div className="scraping-progress-message">
 //                         <i className="fas fa-spinner fa-spin"></i>
@@ -322,9 +322,9 @@
 //                     </div>
 //                 )}
 
-//                 {/* ===================================== */}
+//          
 //                 {/* SECTION FILTRES */}
-//                 {/* ===================================== */}
+//          
 //                 <section className="scraping-filters-section">
 //                     <h3 className="scraping-filters-title">
 //                         <i className="fas fa-filter"></i>
@@ -477,9 +477,9 @@
 //                     </div>
 //                 </section>
 
-//                 {/* ===================================== */}
+//          
 //                 {/* SECTION RÉSULTATS */}
-//                 {/* ===================================== */}
+//          
 //                 <section className="scraping-results-section">
 //                     <div className="scraping-results-header">
 //                         <h3 className="scraping-results-title">
@@ -695,9 +695,7 @@ import {
 import CustomSelect from '../components/CustomSelect';
 
 const ScrapingPage: React.FC = () => {
-    // ============================================
     // ÉTATS
-    // ============================================
     const [filters, setFilters] = useState<ScrapingFilters>({
         region: '',
         departement: [],
@@ -706,7 +704,7 @@ const ScrapingPage: React.FC = () => {
         nombre_resultats: 0
     });
 
-    // ⭐ Données API
+    // Données API
     const [regions, setRegions] = useState<Region[]>([]);
     const [departements, setDepartements] = useState<Departement[]>([]);
     const [villes, setVilles] = useState<Ville[]>([]);
@@ -735,23 +733,19 @@ const ScrapingPage: React.FC = () => {
         villes_scrappees?: string[];
     } | null>(null);
 
-    // ============================================
     // CHARGER LES RÉGIONS AU MONTAGE
-    // ============================================
     useEffect(() => {
         async function loadRegions() {
             setLoadingRegions(true);
             const data = await getAllRegions();
             setRegions(data);
             setLoadingRegions(false);
-            console.log('✅ Régions chargées:', data.length);
+            console.log(' Régions chargées:', data.length);
         }
         loadRegions();
     }, []);
 
-    // ============================================
     // CHARGER DÉPARTEMENTS QUAND RÉGION CHANGE
-    // ============================================
     useEffect(() => {
         async function loadDepartements() {
             if (!filters.region) {
@@ -763,14 +757,12 @@ const ScrapingPage: React.FC = () => {
             const data = await getDepartementsFromRegion(filters.region);
             setDepartements(data);
             setLoadingDepartements(false);
-            console.log('✅ Départements chargés:', data.length);
+            console.log(' Départements chargés:', data.length);
         }
         loadDepartements();
     }, [filters.region]);
 
-    // ============================================
     // CHARGER VILLES QUAND DÉPARTEMENTS CHANGENT
-    // ============================================
     useEffect(() => {
         async function loadVilles() {
             if (filters.departement.length === 0) {
@@ -786,14 +778,12 @@ const ScrapingPage: React.FC = () => {
             const data = await getVillesFromMultipleDepartements(departementsData);
             setVilles(data);
             setLoadingVilles(false);
-            console.log('✅ Villes chargées:', data.length);
+            console.log(' Villes chargées:', data.length);
         }
         loadVilles();
     }, [filters.departement, filters.region]);
 
-    // ============================================
     // GÉRER CHANGEMENT RÉGION
-    // ============================================
     const handleRegionChange = (value: string | string[]) => {
         setFilters({
             region: value as string,
@@ -805,9 +795,7 @@ const ScrapingPage: React.FC = () => {
         setErrorMessage('');
     };
 
-    // ============================================
     // GÉRER CHANGEMENT DÉPARTEMENTS
-    // ============================================
     const handleDepartementChange = (value: string | string[]) => {
         setFilters(prev => ({
             ...prev,
@@ -817,9 +805,7 @@ const ScrapingPage: React.FC = () => {
         setErrorMessage('');
     };
 
-    // ============================================
     // GÉRER CHANGEMENT VILLES
-    // ============================================
     const handleVilleChange = (value: string | string[]) => {
         setFilters(prev => ({
             ...prev,
@@ -828,9 +814,7 @@ const ScrapingPage: React.FC = () => {
         setErrorMessage('');
     };
 
-    // ============================================
     // AUTRES FILTRES
-    // ============================================
     const handleFilterChange = (field: keyof ScrapingFilters, value: string | number) => {
         setFilters(prev => ({
             ...prev,
@@ -839,17 +823,15 @@ const ScrapingPage: React.FC = () => {
         setErrorMessage('');
     };
 
-    // ============================================
     // RECHERCHER
-    // ============================================
     const handleSearch = async () => {
         if (!filters.region) {
-            setErrorMessage('⚠️ Veuillez sélectionner une région');
+            setErrorMessage('Veuillez sélectionner une région');
             return;
         }
 
         if (filters.departement.length === 0) {
-            setErrorMessage('⚠️ Veuillez sélectionner au moins un département');
+            setErrorMessage('Veuillez sélectionner au moins un département');
             return;
         }
 
@@ -877,9 +859,7 @@ const ScrapingPage: React.FC = () => {
         }
     };
 
-    // ============================================
     // RÉINITIALISER
-    // ============================================
     const handleReset = () => {
         setFilters({
             region: '',
@@ -895,9 +875,9 @@ const ScrapingPage: React.FC = () => {
         setStats(null);
     };
 
-    // ============================================
+
     // SÉLECTION ENTREPRISES
-    // ============================================
+
     const handleSelectEntreprise = (id: string) => {
         setSelectedIds(prev => {
             const newSet = new Set(prev);
@@ -972,24 +952,22 @@ const handleExportFrontend = () => {
     document.body.removeChild(link);
 };
 
-    // ============================================
+
     // CAMPAGNE SMS
-    // ============================================
+
     const handleSendCampaign = () => {
         const selected = entreprises.filter(e => selectedIds.has(e.id));
         alert(`Campagne SMS à ${selected.length} entreprises`);
     };
 
-    // ============================================
+
     // RENDER
-    // ============================================
+
     return (
         <div className="scraping-page">
             <div className="scraping-container">
 
-                {/* ===================================== */}
                 {/* HEADER */}
-                {/* ===================================== */}
                 <header className="scraping-header">
                     <h2 className="scraping-title">
                         Générateur de prospects depuis Google Maps
@@ -999,9 +977,7 @@ const handleExportFrontend = () => {
                     </p>
                 </header>
 
-                {/* ===================================== */}
                 {/* STATS DU SCRAPING */}
-                {/* ===================================== */}
                 {stats && (
                     <div className="scraping-stats-banner">
                         <div className="scraping-stat-item">
@@ -1037,9 +1013,7 @@ const handleExportFrontend = () => {
                     </div>
                 )}
 
-                {/* ===================================== */}
                 {/* MESSAGE D'ERREUR */}
-                {/* ===================================== */}
                 {errorMessage && (
                     <div className="scraping-error-message">
                         <i className="fas fa-exclamation-triangle"></i>
@@ -1047,9 +1021,7 @@ const handleExportFrontend = () => {
                     </div>
                 )}
 
-                {/* ===================================== */}
                 {/* PROGRESSION DU SCRAPING */}
-                {/* ===================================== */}
                 {scrapingProgress && (
                     <div className="scraping-progress-message">
                         <i className="fas fa-spinner fa-spin"></i>
@@ -1057,9 +1029,7 @@ const handleExportFrontend = () => {
                     </div>
                 )}
 
-                {/* ===================================== */}
                 {/* SECTION FILTRES */}
-                {/* ===================================== */}
                 <section className="scraping-filters-section">
                     <h3 className="scraping-filters-title">
                         <i className="fas fa-filter"></i>
@@ -1178,9 +1148,7 @@ const handleExportFrontend = () => {
                     </div>
                 </section>
 
-                {/* ===================================== */}
                 {/* SECTION RÉSULTATS */}
-                {/* ===================================== */}
                 <section className="scraping-results-section">
                     <div className="scraping-results-header">
                         <h3 className="scraping-results-title">
@@ -1190,6 +1158,19 @@ const handleExportFrontend = () => {
                         </h3>
 
                         <div className="scraping-actions-group">
+                            <button
+                                className="scraping-btn-reset"
+                                // onClick={handleExportFrontend}
+                                disabled={entreprises.length === 0}
+                            >
+                                <i className="fas fa-envelope"></i>
+                                Envoyer campagne DE Mails
+                                {selectedIds.size > 0 && (
+                                    <span className="scraping-selected-count">
+                                        ({selectedIds.size})
+                                    </span>
+                                )}
+                            </button>
                             <button
                                 className="scraping-btn-reset"
                                 onClick={handleExportFrontend}
@@ -1221,7 +1202,7 @@ const handleExportFrontend = () => {
                                 disabled={selectedIds.size === 0}
                             >
                                 <i className="fas fa-paper-plane"></i>
-                                Envoyer campagne SMS
+                                Envoyer campagne SMS Rapide
                                 {selectedIds.size > 0 && (
                                     <span className="scraping-selected-count">
                                         ({selectedIds.size})
@@ -1237,7 +1218,7 @@ const handleExportFrontend = () => {
                             <div className="scraping-loading-spinner"></div>
                             <p>🕷️ Scraping Google Maps...</p>
                             <p style={{ fontSize: '12px', color: 'var(--color-gray-secondary)' }}>
-                                Cela peut prendre jusqu'à 3 minutes
+                                Cela peut prendre jusqu'à 3 minutes car nous devons respecter les limites de Google.
                             </p>
                         </div>
                     )}
@@ -1396,9 +1377,9 @@ export default ScrapingPage;
 // import { scrapeGoogleMaps } from '../services/scrapingServices';
 
 // const ScrapingPage: React.FC = () => {
-//     // ============================================
+//  
 //     // ÉTATS
-//     // ============================================
+//  
 //     const [filters, setFilters] = useState<ScrapingFilters>({
 //         region: '',
 //         departement: '',
@@ -1431,9 +1412,9 @@ export default ScrapingPage;
 //         duree_secondes: number;
 //     } | null>(null);
 
-//     // ============================================
+//  
 //     // FILTRER DÉPARTEMENTS SELON RÉGION
-//     // ============================================
+//  
 //     useEffect(() => {
 //         if (filters.region) {
 //             const filtered = departements.filter(d => d.region === filters.region);
@@ -1447,9 +1428,9 @@ export default ScrapingPage;
 //         }
 //     }, [filters.region, departements, filters.departement]);
 
-//     // ============================================
+//  
 //     // FILTRER VILLES SELON DÉPARTEMENT
-//     // ============================================
+//  
 //     useEffect(() => {
 //         if (filters.departement) {
 //             const filtered = villes.filter(v => v.departement === filters.departement);
@@ -1466,9 +1447,9 @@ export default ScrapingPage;
 //         }
 //     }, [filters.departement, filters.region, villes, filters.ville]);
 
-//     // ============================================
+//  
 //     // GÉRER LES CHANGEMENTS DE FILTRES
-//     // ============================================
+//  
 //     const handleFilterChange = (field: keyof ScrapingFilters, value: string | number) => {
 //         const finalValue = field === 'nombre_resultats' ? Number(value) : value;
 
@@ -1481,13 +1462,13 @@ export default ScrapingPage;
 //         setErrorMessage('');
 //     };
 
-//     // ============================================
+//  
 //     // RECHERCHER AVEC SSE (TEMPS RÉEL)
-//     // ============================================
+//  
 //     const handleSearch = async () => {
 //         // Validation
 //         if (!filters.ville) {
-//             setErrorMessage('⚠️ Veuillez sélectionner une ville');
+//             setErrorMessage('Veuillez sélectionner une ville');
 //             return;
 //         }
 
@@ -1503,7 +1484,7 @@ export default ScrapingPage;
 //             const { entreprises: results, stats: scrapingStats } = await scrapeGoogleMaps(
 //                 filters,
 //                 (progressEntreprises, progressStats) => {
-//                     // ⭐ Mise à jour en temps réel
+//                     // Mise à jour en temps réel
 //                     setEntreprises(progressEntreprises);
 
 //                     if (progressStats) {
@@ -1521,7 +1502,7 @@ export default ScrapingPage;
 //             setHasSearched(true);
 //             setScrapingProgress('');
 
-//             console.log('✅ Scraping terminé:', {
+//             console.log(' Scraping terminé:', {
 //                 total: results.length,
 //                 stats: scrapingStats
 //             });
@@ -1535,9 +1516,9 @@ export default ScrapingPage;
 //         }
 //     };
 
-//     // ============================================
+//  
 //     // RÉINITIALISER LES FILTRES
-//     // ============================================
+//  
 //     const handleReset = () => {
 //         setFilters({
 //             region: '',
@@ -1553,9 +1534,9 @@ export default ScrapingPage;
 //         setStats(null);
 //     };
 
-//     // ============================================
+//  
 //     // SÉLECTIONNER/DÉSÉLECTIONNER UNE ENTREPRISE
-//     // ============================================
+//  
 //     const handleSelectEntreprise = (id: string) => {
 //         setSelectedIds(prev => {
 //             const newSet = new Set(prev);
@@ -1568,9 +1549,9 @@ export default ScrapingPage;
 //         });
 //     };
 
-//     // ============================================
+//  
 //     // SÉLECTIONNER/DÉSÉLECTIONNER TOUT
-//     // ============================================
+//  
 //     const handleSelectAll = () => {
 //         if (selectedIds.size === entreprises.length) {
 //             setSelectedIds(new Set());
@@ -1579,9 +1560,9 @@ export default ScrapingPage;
 //         }
 //     };
 
-//     // ============================================
+//  
 //     // ENVOYER CAMPAGNE SMS
-//     // ============================================
+//  
 //     const handleSendCampaign = () => {
 //         const selectedEntreprises = entreprises.filter(e => selectedIds.has(e.id));
 
@@ -1590,9 +1571,9 @@ export default ScrapingPage;
 // Numéros : ${selectedEntreprises.map(e => e.telephone).join(', ')}`);
 //     };
 
-//     // ============================================
+//  
 //     // RENDER
-//     // ============================================
+//  
 //     return (
 //         <div className="scraping-page">
 //             <div className="scraping-container">
