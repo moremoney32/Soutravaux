@@ -343,7 +343,7 @@ color: var(--color-dark);
 
 .scraping-entreprise-name {
   font-weight: 600;
-  color: var(--color-orange-primary);
+  /* color: var(--color-orange-primary); */
 }
 
 .scraping-contact-info {
@@ -375,8 +375,9 @@ color: var(--color-dark);
 }
 
 .scraping-badge-activite {
-  background: rgba(230, 113, 49, 0.15);
-  color: var(--color-orange-primary);
+  background: white;
+  /* background: rgba(230, 113, 49, 0.15); */
+  /* color: var(--color-orange-primary); */
 }
 
 .scraping-rating {

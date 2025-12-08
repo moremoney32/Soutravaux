@@ -138,7 +138,7 @@
   background: var(--color-gray-light);
   font-weight: 600;
   font-size: 13px;
-  color: var(--color-primary);
+  color:white;
   transition: background 0.2s ease;
 }
 
@@ -192,7 +192,8 @@
 }
 
 .custom-select-option-selected {
-  background: var(--color-primary);
+  /* background: var(--color-primary); */
+    background: rgba(0, 123, 255, 0.12);
   font-weight: 600;
 }
 
@@ -218,7 +219,8 @@
 
 .custom-select-option-info {
   font-size: 11px;
-  color: var(--color-gray-secondary);
+  color: white;
+  /* color: var(--color-gray-secondary); */
   background: var(--color-gray-light);
   padding: 2px 8px;
   border-radius: 4px;
