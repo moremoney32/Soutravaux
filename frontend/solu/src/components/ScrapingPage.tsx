@@ -286,8 +286,8 @@ const scrapeOptimiseAntiDetection = async (
   );
   
   const CONFIG = {
-    TAILLE_LOT: 15,           // ✅ 15 villes par lot (bon équilibre)
-    PARALLEL_CHUNK:10,        // ✅ 10 villes en VRAI parallèle (contrôle mémoire)
+    TAILLE_LOT: 10,           // ✅ 15 villes par lot (bon équilibre)
+    PARALLEL_CHUNK:5,        // ✅ 10 villes en VRAI parallèle (contrôle mémoire)
     PAUSE_MINUTES: 1,         // ✅ 1 minute de pause (anti-détection)
     PAUSE_LONGUE_MINUTES: 3,  // ✅ 3 minutes après 30 villes
     SEUIL_PAUSE_LONGUE: 30    // ✅ Pause longue tous les 30 villes
