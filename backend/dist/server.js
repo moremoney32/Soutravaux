@@ -5,10 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const SseServices_1 = require("./src/services/SseServices");
 dotenv_1.default.config({ path: "./.env" });
 const PORT = process.env.PORT || 3000;
-app_1.default.listen(PORT, () => {
-    console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
+(0, SseServices_1.initSseService)();
+const server = app_1.default.listen(PORT, () => {
+    console.log(`Serveur démarré sur http://localhost:${PORT}`);
+});
+process.on('SIGTERM', () => {
+    (0, SseServices_1.cleanupSseService)();
+    server.close(() => process.exit(0));
+});
+process.on('SIGINT', () => {
+    (0, SseServices_1.cleanupSseService)();
+    server.close(() => process.exit(0));
 });
 // DB_HOST=localhost
 // DB_USER=root

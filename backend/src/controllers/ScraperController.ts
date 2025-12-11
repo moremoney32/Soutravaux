@@ -3,8 +3,11 @@
 // src/controllers/scraper.controller.ts
 
 import { Request, Response, NextFunction } from 'express';
-import { orchestrateScraping } from '../services/ochestratorscraperService';
+// import { orchestrateScraping } from '../services/ochestratorscraperService';
 import type { ScraperQuery } from '../types/scraper';
+import { orchestrateScrapingOptimized} from '../services/ochestratorscraperService';
+
+
 
 export const scrapeGoogleMapsController = async (
   req: Request,
@@ -51,7 +54,7 @@ export const scrapeGoogleMapsController = async (
 
     console.log('🔧 Query finale:', query);
 
-    const { entreprises, stats } = await orchestrateScraping(query);
+    const { entreprises, stats } = await orchestrateScrapingOptimized(query);
 
     if (entreprises.length === 0) {
       res.status(200).json({

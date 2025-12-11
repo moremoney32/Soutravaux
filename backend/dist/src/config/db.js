@@ -15,7 +15,7 @@ const pool = promise_1.default.createPool({
     connectionLimit: 10,
 });
 pool.getConnection()
-    .then(() => console.log("✅ Connexion MySQL établie avec succès"))
-    .catch(err => console.error("❌ Erreur connexion MySQL:", err.message));
+    .then(() => console.log("Connexion MySQL établie avec succès"))
+    .catch(err => console.error("Erreur connexion MySQL:", err.message));
 exports.default = pool;
 //# sourceMappingURL=db.js.map

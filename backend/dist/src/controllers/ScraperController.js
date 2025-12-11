@@ -1,0 +1,65 @@
+"use strict";
+// src/controllers/scraper.controller.ts
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.scrapeGoogleMapsController = void 0;
+const ochestratorscraperService_1 = require("../services/ochestratorscraperService");
+const scrapeGoogleMapsController = async (req, res, next) => {
+    try {
+        const { region, departement, ville, activite, nombre_resultats } = req.body;
+        console.log('Requête reçue:', req.body);
+        // Validation région obligatoire
+        if (!region) {
+            res.status(400).json({
+                success: false,
+                message: 'La région est obligatoire',
+                stats: {
+                    total_vise: 0,
+                    total_trouve: 0,
+                    avec_telephone: 0,
+                    avec_email: 0,
+                    avec_siret: 0,
+                    avec_gerant: 0,
+                    duree_secondes: 0,
+                    message: '⚠️ La région est obligatoire'
+                },
+                data: []
+            });
+            return;
+        }
+        // Convertir departement et ville en tableaux si nécessaire
+        const query = {
+            region,
+            departement: departement
+                ? (Array.isArray(departement) ? departement : [departement])
+                : undefined,
+            ville: ville
+                ? (Array.isArray(ville) ? ville : [ville])
+                : undefined,
+            activite: activite || undefined,
+            nombre_resultats: nombre_resultats || 20
+        };
+        console.log('🔧 Query finale:', query);
+        const { entreprises, stats } = await (0, ochestratorscraperService_1.orchestrateScrapingOptimized)(query);
+        if (entreprises.length === 0) {
+            res.status(200).json({
+                success: true,
+                message: stats.message || 'Aucune entreprise trouvée',
+                stats,
+                data: []
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Scraping réussi',
+            stats,
+            data: entreprises
+        });
+    }
+    catch (error) {
+        console.error('❌ Erreur controller:', error);
+        next(error);
+    }
+};
+exports.scrapeGoogleMapsController = scrapeGoogleMapsController;
+//# sourceMappingURL=ScraperController.js.map

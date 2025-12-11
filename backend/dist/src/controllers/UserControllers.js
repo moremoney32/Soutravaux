@@ -3,8 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resendCodeController = exports.completeController = exports.UserControllersVerifyCode = exports.UserControllers = void 0;
-// import { UserRegister, VerifyCode, UserLogin } from "../controllers/UserControllers";
+exports.resendCodeController = exports.completeController = exports.UserControllersVerifyCode = exports.FournisseurControllers = exports.AnnonceurControllers = exports.UserControllers = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: "../../.env" });
@@ -19,6 +18,32 @@ const UserControllers = async (req, res, next) => {
     }
 };
 exports.UserControllers = UserControllers;
+const AnnonceurControllers = async (req, res, next) => {
+    try {
+        const annonceur = await (0, Uservices_1.AnnonceurRegister)(req.body);
+        res.status(201).json({
+            message: "Inscription annonceur réussie, code envoyé",
+            annonceur
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.AnnonceurControllers = AnnonceurControllers;
+const FournisseurControllers = async (req, res, next) => {
+    try {
+        const fournisseur = await (0, Uservices_1.FournisseurRegister)(req.body);
+        res.status(201).json({
+            message: "Demande de contact fournisseur envoyée avec succès",
+            fournisseur
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+};
+exports.FournisseurControllers = FournisseurControllers;
 const UserControllersVerifyCode = async (req, res, next) => {
     try {
         await (0, Uservices_1.VerifyCode)(req.body);

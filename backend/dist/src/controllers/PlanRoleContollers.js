@@ -3,13 +3,49 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSettings = exports.getSettings = exports.deletePlan = exports.createPlan = exports.updatePlan = exports.GetPlansByRole = void 0;
+exports.updateSettings = exports.getSettings = exports.createPlan = exports.updatePlan = exports.GetPlansByRole = exports.deletePlan = void 0;
 const db_1 = __importDefault(require("../config/db"));
+// DELETE - Supprimer un plan
+const deletePlan = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Vérifie si le plan existe
+        const [rows] = await db_1.default.query("SELECT * FROM plans WHERE id = ?", [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Plan introuvable" });
+        }
+        // Vérifier si le plan est utilisé par des sociétés
+        const [societeRows] = await db_1.default.query("SELECT COUNT(*) as count FROM societes WHERE plan_id = ?", [id]);
+        if (societeRows[0].count > 0) {
+            return res.status(400).json({
+                error: "Impossible de supprimer ce plan car il est utilisé par des sociétés"
+            });
+        }
+        // Supprime le plan
+        await db_1.default.query("DELETE FROM plans WHERE id = ?", [id]);
+        return res.json({
+            message: "Plan supprimé avec succès",
+            deletedId: id
+        });
+    }
+    catch (err) {
+        console.error("Erreur suppression plan:", err);
+        return res.status(500).json({ error: "Erreur serveur lors de la suppression" });
+    }
+};
+exports.deletePlan = deletePlan;
 const GetPlansByRole = async (req, res) => {
     try {
         const { role } = req.query;
         const [rows] = await db_1.default.query("SELECT * FROM plans WHERE role = ?", [role]);
-        res.json(rows);
+        // Parser tous les champs JSON
+        const plansParsed = rows.map((p) => ({
+            ...p,
+            features: typeof p.features === "string" ? JSON.parse(p.features) : p.features,
+            key_benefits: typeof p.key_benefits === "string" ? JSON.parse(p.key_benefits) : p.key_benefits,
+            detailed_features: typeof p.detailed_features === "string" ? JSON.parse(p.detailed_features) : p.detailed_features
+        }));
+        res.json(plansParsed);
     }
     catch (err) {
         res.status(500).json({ error: "Erreur lors du chargement des plans" });
@@ -18,10 +54,15 @@ const GetPlansByRole = async (req, res) => {
 exports.GetPlansByRole = GetPlansByRole;
 const updatePlan = async (req, res) => {
     try {
-        const { id, name, price, period, description, features, popular, color, stripe_link } = req.body;
+        const { id, name, price, period, description, features, popular, color, stripe_link, subtitle, target_audience, key_benefits, detailed_features, why_choose, icon_name, gradient } = req.body;
         await db_1.default.query(`UPDATE plans 
-       SET name=?, price=?, period=?, description=?, features=?, popular=?, color=?, stripe_link=?
-       WHERE id=?`, [name, price, period, description, JSON.stringify(features), popular, color, stripe_link, id]);
+       SET name=?, price=?, period=?, description=?, features=?, popular=?, color=?, stripe_link=?,
+           subtitle=?, target_audience=?, key_benefits=?, detailed_features=?, why_choose=?, icon_name=?, gradient=?
+       WHERE id=?`, [
+            name, price, period, description, JSON.stringify(features), popular, color, stripe_link,
+            subtitle, target_audience, JSON.stringify(key_benefits), JSON.stringify(detailed_features),
+            why_choose, icon_name, gradient, id
+        ]);
         res.json({ message: "Plan mis à jour avec succès" });
     }
     catch (err) {
@@ -30,24 +71,22 @@ const updatePlan = async (req, res) => {
     }
 };
 exports.updatePlan = updatePlan;
-// controllers/PlanRoleControllers.ts
 const createPlan = async (req, res) => {
     try {
-        const { name, price, period, description, features, popular, color, stripe_link } = req.body;
-        const [result] = await db_1.default.query(`INSERT INTO plans (name, price, period, description, features, popular, color, stripe_link)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [name, price, period, description, JSON.stringify(features), popular ? 1 : 0, color, stripe_link]);
+        const { name, price, period, description, features, popular, color, stripe_link, subtitle, target_audience, key_benefits, detailed_features, why_choose, icon_name, gradient } = req.body;
+        const [result] = await db_1.default.query(`INSERT INTO plans (name, price, period, description, features, popular, color, stripe_link,
+                          subtitle, target_audience, key_benefits, detailed_features, why_choose, icon_name, gradient)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+            name, price, period, description, JSON.stringify(features), popular ? 1 : 0, color, stripe_link,
+            subtitle, target_audience, JSON.stringify(key_benefits), JSON.stringify(detailed_features),
+            why_choose, icon_name, gradient
+        ]);
         res.json({
             message: "Plan créé avec succès",
             plan: {
                 id: result.insertId,
-                name,
-                price,
-                period,
-                description,
-                features,
-                popular,
-                color,
-                stripe_link
+                name, price, period, description, features, popular, color, stripe_link,
+                subtitle, target_audience, key_benefits, detailed_features, why_choose, icon_name, gradient
             }
         });
     }
@@ -57,25 +96,6 @@ const createPlan = async (req, res) => {
     }
 };
 exports.createPlan = createPlan;
-// DELETE /api/plans/:id
-const deletePlan = async (req, res) => {
-    try {
-        const { id } = req.params;
-        // Vérifie si le plan existe
-        const [rows] = await db_1.default.query("SELECT * FROM plans WHERE id = ?", [id]);
-        if (rows.length === 0) {
-            return res.status(404).json({ error: "Plan introuvable" });
-        }
-        // Supprime le plan
-        await db_1.default.query("DELETE FROM plans WHERE id = ?", [id]);
-        return res.json({ message: "Plan supprimé avec succès" });
-    }
-    catch (err) {
-        console.error("Erreur suppression plan:", err);
-        return res.status(500).json({ error: "Erreur serveur" });
-    }
-};
-exports.deletePlan = deletePlan;
 //Récupérer les settings
 const getSettings = async (_req, res) => {
     try {

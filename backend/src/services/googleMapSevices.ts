@@ -1,4 +1,3 @@
-// // src/services/googlemaps.scraper.service.ts
 
 import { chromium, Browser, Page } from 'playwright';
 import { GoogleMapsResult, ScraperQuery } from '../types/scraper';
@@ -18,6 +17,35 @@ export async function initBrowser(): Promise<Browser> {
   
   console.log('Navigateur lancé');
   return browser;
+}
+
+// ============================================
+// ACCEPTER LES COOKIES GOOGLE (VERSION RAPIDE)
+// ============================================
+async function acceptGoogleCookiesFast(page: Page): Promise<void> {
+  try {
+    // STRATÉGIE 1 : Attendre TOUS les sélecteurs en PARALLÈLE (race)
+    const clicked = await Promise.race([
+      // Sélecteurs les plus courants en premier
+      page.click('button:has-text("Tout accepter")', { timeout: 2000 }).then(() => true),
+      page.click('button:has-text("Accept all")', { timeout: 2000 }).then(() => true),
+      page.click('#L2AGLb', { timeout: 2000 }).then(() => true),
+      page.click('button[aria-label*="Accept"]', { timeout: 2000 }).then(() => true),
+      
+      // Timeout global de 2 secondes
+      new Promise<boolean>(resolve => setTimeout(() => resolve(false), 2000))
+    ]).catch(() => false);
+    
+    if (clicked) {
+      console.log('Cookies acceptés');
+      await page.waitForTimeout(500); //Réduit de 2s à 0.5s
+    } else {
+      console.log('Pas de popup cookies');
+    }
+    
+  } catch (error) {
+    // Silencieux, on continue
+  }
 }
 
 async function checkIfBlocked(page: Page): Promise<boolean> {
@@ -73,7 +101,7 @@ async function extractGoogleMapsDataWithOffset(
   offset: number,
   limit: number
 ): Promise<GoogleMapsResult[]> {
-  console.log(`🕷️ Extraction ${offset}-${offset + limit}...`);
+  console.log(`Extraction ${offset}-${offset + limit}...`);
   
   const results = await page.evaluate(({ offset, limit }: { offset: number, limit: number }) => {
     const businesses: Array<{
@@ -184,7 +212,7 @@ export async function scrapeGoogleMapsWithOffset(
     let villeValue: string = '';
     
     if (Array.isArray(query.ville)) {
-      villeValue = query.ville[0] || '';  // Prendre la première ville
+      villeValue = query.ville[0] || '';
     } else if (typeof query.ville === 'string') {
       villeValue = query.ville;
     }
@@ -195,12 +223,12 @@ export async function scrapeGoogleMapsWithOffset(
     
     // Gérer query.departement qui peut être string[]
     if (query.departement && query.departement.length > 0) {
-      searchQuery += ` ${query.departement[0]}`;  // Prendre le premier département
+      searchQuery += ` ${query.departement[0]}`;
     }
     
     const url = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
     
-    console.log('🌐 Navigation vers Google Maps:', url);
+    console.log('Navigation vers Google Maps:', url);
     
     const response = await page.goto(url, { 
       waitUntil: 'domcontentloaded',
@@ -213,6 +241,9 @@ export async function scrapeGoogleMapsWithOffset(
     if (status === 403 || status === 429) {
       throw new Error(`Bloqué par Google (Status ${status})`);
     }
+    
+    //ACCEPTER LES COOKIES (VERSION RAPIDE)
+    await acceptGoogleCookiesFast(page);
     
     await page.waitForSelector('div[role="feed"]', { timeout: 15000 });
     console.log('Résultats chargés');
@@ -228,7 +259,7 @@ export async function scrapeGoogleMapsWithOffset(
   const results = await extractGoogleMapsDataWithOffset(page, offset, limit);
   
   if (results.length === 0) {
-    console.log('⚠️ Aucun résultat Google Maps pour ce batch');
+    console.log('Aucun résultat Google Maps pour ce batch');
   }
   
   return { results, browser, page };
@@ -236,5 +267,5 @@ export async function scrapeGoogleMapsWithOffset(
 
 export async function closeBrowser(browser: Browser): Promise<void> {
   await browser.close();
-  console.log('🔒 Navigateur fermé');
+  console.log('Navigateur fermé');
 }
