@@ -12,6 +12,7 @@ import CreateListePage from "./components/CreateListePage";
 import CampagneDetails from "./components/CampagneDetails";
 import AchatSMSPage from "./components/AchatSMSPage";
 import ScrapingPage from "./components/ScrapingPage";
+import GoogleCalendar from "./components/GoogleCalendar";
 
 function App() {
   
@@ -30,8 +31,9 @@ function App() {
            <Route path="/campagne/:membreId" element={<CampagnePage/>} />
            <Route path="/statistique/campaigns/:campagneId" element={<CampagneDetails />} />
            <Route path="/create-liste" element={<CreateListePage />} />
-            <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} />
+            <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} /> 
              <Route path="/scraping" element={<ScrapingPage/>} />
+                <Route path="/calendar" element={<GoogleCalendar/>} />
 
       </Routes>
     </BrowserRouter>

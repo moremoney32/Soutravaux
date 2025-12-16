@@ -20,11 +20,12 @@ import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, update
   getPlansByFeatureController,
   getFeaturesByRoleController
 } from '../controllers/featuresControllers';
-import { scrapeGoogleMapsController } from "../controllers/ScraperController";
+// import { scrapeGoogleMapsController } from "../controllers/ScraperController";
 import UpdatePlanFree from "../controllers/UpdatePlanFree";
 import handleImageUpload from "../middleware/uploadMiddleware";
 import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
 import sseRoutes from './sse.routes';
+import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);

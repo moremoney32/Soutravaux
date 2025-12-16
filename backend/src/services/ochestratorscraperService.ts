@@ -581,33 +581,29 @@
 // ochestratorscraperService.ts - VERSION OPTIMISÉE
 
 import { EntrepriseScraped, ScraperQuery, ScraperStats } from '../types/scraper';
-import { scrapeGoogleMapsWithOffset } from './googleMapSevices';
+import { scrapeGoogleMapsWithOffset } from './googleMapServices';
 import { getSiretFromInsee } from './inseeService';
 import {
-  scrapeEmailFromWebsite,
+  // scrapeEmailFromWebsite,
   scrapeGerantFromWebsite,
   closeBrowserPool
 } from './websideScraperServices';
 import { chromium } from 'playwright';
 
-// ============================================
-// 🎯 CONFIGURATION HYPER-OPTIMISÉE
-// ============================================
+
 const CONFIG = {
-  MAX_PARALLEL_VILLES: 3,        // ⚡ RÉDUIT : 3 villes MAX en parallèle
-  MAX_CONCURRENT_ENRICH: 4,      // ⚡ RÉDUIT : 4 enrichissements simultanés
-  ENRICH_TIMEOUT_MS: 5000,       // ⚡ RÉDUIT : 5 secondes max
-  BATCH_SIZE: 15,                // ⚡ OPTIMAL : 15 résultats par batch
+  MAX_PARALLEL_VILLES: 3,        
+  MAX_CONCURRENT_ENRICH: 4,     
+  ENRICH_TIMEOUT_MS: 5000,      
+  BATCH_SIZE: 15,               
   OBJECTIF_MAX: 500,
-  MAX_ENTREPRISES_PAR_VILLE: 30, // ⚡ RÉDUIT : 30 max par ville
-  MAX_BATCHES_PAR_VILLE: 2,      // ⚡ RÉDUIT : 2 batches max par ville
-  PROGRESS_CHECK_INTERVAL: 2000, // Vérif toutes les 2 secondes
-  MIN_VALID_RATE: 0.3            // ⚡ Arrêt si <30% des résultats sont valides
+  MAX_ENTREPRISES_PAR_VILLE: 30, 
+  MAX_BATCHES_PAR_VILLE: 2,      
+  PROGRESS_CHECK_INTERVAL: 2000, 
+  MIN_VALID_RATE: 0.3            
 };
 
-// ============================================
-// 🚨 CONTROLLER AVEC INTERRUPTION INTELLIGENTE
-// ============================================
+
 class SmartScrapingController {
   private entreprises: EntrepriseScraped[] = [];
   private siretsSeen = new Set<string>();
@@ -678,7 +674,7 @@ class SmartScrapingController {
 }
 
 // ============================================
-// ⚡ ENRICHISSEMENT SUPER-RAPIDE (avec cache)
+// ENRICHISSEMENT SUPER-RAPIDE (avec cache)
 // ============================================
 const emailCache = new Map<string, string | undefined>();
 const gerantCache = new Map<string, string | undefined>();
@@ -717,18 +713,18 @@ async function enrichEntrepriseUltraRapide(
     const promises: Promise<any>[] = [];
 
     // Email (avec cache)
-    if (gmResult.site_web && !emailCache.has(gmResult.site_web)) {
-      promises.push(
-        scrapeEmailFromWebsite(gmResult.site_web)
-          .then(email => emailCache.set(gmResult.site_web!, email))
-          .catch(() => emailCache.set(gmResult.site_web!, undefined))
-      );
-    }
+    // if (gmResult.site_web && !emailCache.has(gmResult.site_web)) {
+    //   promises.push(
+    //     scrapeEmailFromWebsite(gmResult.site_web)
+    //       .then(email => emailCache.set(gmResult.site_web!, email))
+    //       .catch(() => emailCache.set(gmResult.site_web!, undefined))
+    //   );
+    // }
 
     // Gérant (avec cache)
     if (gmResult.site_web && !gerantCache.has(gmResult.site_web)) {
       promises.push(
-        scrapeGerantFromWebsite(gmResult.site_web)
+        scrapeGerantFromWebsite()
           .then(gerant => gerantCache.set(gmResult.site_web!, gerant))
           .catch(() => gerantCache.set(gmResult.site_web!, undefined))
       );

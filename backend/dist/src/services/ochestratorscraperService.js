@@ -2,61 +2,67 @@
 // // src/services/ochestratorscraperService.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.orchestrateScrapingOptimized = orchestrateScrapingOptimized;
-const googleMapSevices_1 = require("./googleMapSevices");
+const googleMapServices_1 = require("./googleMapServices");
 const inseeService_1 = require("./inseeService");
 const websideScraperServices_1 = require("./websideScraperServices");
 const playwright_1 = require("playwright");
 // ============================================
-// 🎯 CONFIGURATION
+// 🎯 CONFIGURATION HYPER-OPTIMISÉE
 // ============================================
-// const CONFIG = {
-//   MAX_PARALLEL_VILLES: 10,        // Maximum de villes en parallèle
-//   MAX_CONCURRENT_ENRICH: 5,       // 5 enrichissements max en parallèle
-//   ENRICH_TIMEOUT_MS: 8000,
-//   BATCH_SIZE: 20,
-//   OBJECTIF_MAX: 500
-// };
 const CONFIG = {
-    MAX_PARALLEL_VILLES: 10, // ✅ 10 villes (optimal pour 7GB)
-    MAX_CONCURRENT_ENRICH: 8, // ✅ 8 au lieu de 5 (tu as la RAM)
-    ENRICH_TIMEOUT_MS: 8000, // ✅ 8 secondes
-    BATCH_SIZE: 20, // ✅ 20 entreprises par batch Google Maps
-    OBJECTIF_MAX: 500 // ✅ Limite de sécurité
+    MAX_PARALLEL_VILLES: 3, // ⚡ RÉDUIT : 3 villes MAX en parallèle
+    MAX_CONCURRENT_ENRICH: 4, // ⚡ RÉDUIT : 4 enrichissements simultanés
+    ENRICH_TIMEOUT_MS: 5000, // ⚡ RÉDUIT : 5 secondes max
+    BATCH_SIZE: 15, // ⚡ OPTIMAL : 15 résultats par batch
+    OBJECTIF_MAX: 500,
+    MAX_ENTREPRISES_PAR_VILLE: 30, // ⚡ RÉDUIT : 30 max par ville
+    MAX_BATCHES_PAR_VILLE: 2, // ⚡ RÉDUIT : 2 batches max par ville
+    PROGRESS_CHECK_INTERVAL: 2000, // Vérif toutes les 2 secondes
+    MIN_VALID_RATE: 0.3 // ⚡ Arrêt si <30% des résultats sont valides
 };
 // ============================================
-// 🛡️ CONTROLLER SÉCURISÉ (pas besoin de p-limit)
+// 🚨 CONTROLLER AVEC INTERRUPTION INTELLIGENTE
 // ============================================
-class ScrapingController {
+class SmartScrapingController {
     constructor(objectif) {
         this.entreprises = [];
         this.siretsSeen = new Set();
         this.isGoalReached = false;
+        this.shouldStopAll = false; // ⚡ NOUVEAU : flag d'arrêt global
         this.objectif = Math.min(objectif, CONFIG.OBJECTIF_MAX);
     }
-    // 🎯 Ajout thread-safe
+    // ⚡ Vérification rapide avant toute opération
+    shouldContinue() {
+        return !this.isGoalReached && !this.shouldStopAll;
+    }
     addEntreprise(entreprise) {
-        // Vérifier atomiquement
-        if (this.isGoalReached) {
-            return { added: false, goalReached: true };
+        // ⚡ Vérification ultra-rapide
+        if (!this.shouldContinue()) {
+            return { added: false, goalReached: this.isGoalReached };
         }
-        // Déduplication
+        // Déduplication rapide
         if (entreprise.siret && this.siretsSeen.has(entreprise.siret)) {
             return { added: false, goalReached: false };
         }
-        // Ajouter
-        if (entreprise.siret) {
+        if (entreprise.siret)
             this.siretsSeen.add(entreprise.siret);
-        }
         this.entreprises.push(entreprise);
-        // Vérifier objectif
+        // ⚡ Objectif atteint → signal d'arrêt GLOBAL
         if (this.entreprises.length >= this.objectif) {
             this.isGoalReached = true;
+            this.shouldStopAll = true; // ⚡ ARRÊT IMMÉDIAT POUR TOUS
+            console.log(`🎯 OBJECTIF ATTEINT : ${this.entreprises.length}/${this.objectif} → ARRÊT IMMÉDIAT`);
             return { added: true, goalReached: true };
         }
         return { added: true, goalReached: false };
     }
-    isCompleted() {
-        return this.isGoalReached;
+    // ⚡ Méthode pour forcer l'arrêt (appelée par l'orchestrateur)
+    forceStop() {
+        this.shouldStopAll = true;
+        console.log('🛑 Arrêt forcé déclenché');
+    }
+    isStopped() {
+        return this.shouldStopAll;
     }
     getEntreprises() {
         return this.entreprises.slice(0, this.objectif);
@@ -67,19 +73,29 @@ class ScrapingController {
     getGoal() {
         return this.objectif;
     }
+    getRemainingCount() {
+        return Math.max(0, this.objectif - this.entreprises.length);
+    }
 }
 // ============================================
-// 🚀 ENRICHISSEMENT (inchangé)
+// ⚡ ENRICHISSEMENT SUPER-RAPIDE (avec cache)
 // ============================================
-async function enrichEntrepriseRapide(gmResult, query) {
-    const cpMatch = gmResult.adresse.match(/\b\d{5}\b/);
+const emailCache = new Map();
+const gerantCache = new Map();
+const siretCache = new Map();
+async function enrichEntrepriseUltraRapide(gmResult, query) {
+    // ⚡ Validation ultra-rapide
+    if (!gmResult.nom_societe || gmResult.nom_societe.length < 2) {
+        return null;
+    }
+    const cpMatch = gmResult.adresse?.match(/\b\d{5}\b/);
     const code_postal = cpMatch ? cpMatch[0] : '';
     const departement = code_postal ? code_postal.substring(0, 2) : '';
     const entreprise = {
         id: `${Date.now()}-${Math.random()}`,
         nom_societe: gmResult.nom_societe,
         telephone: gmResult.telephone,
-        adresse: gmResult.adresse,
+        adresse: gmResult.adresse || '',
         code_postal,
         ville: gmResult.ville || '',
         departement,
@@ -89,105 +105,159 @@ async function enrichEntrepriseRapide(gmResult, query) {
         nombre_avis: gmResult.nombre_avis,
         scraped_at: new Date()
     };
+    // ⚡ Enrichissement conditionnel RAPIDE
     try {
-        await Promise.race([
-            (async () => {
-                const [email, gerant, inseeData] = await Promise.all([
-                    gmResult.site_web ? (0, websideScraperServices_1.scrapeEmailFromWebsite)(gmResult.site_web) : undefined,
-                    gmResult.site_web ? (0, websideScraperServices_1.scrapeGerantFromWebsite)(gmResult.site_web) : undefined,
-                    (0, inseeService_1.getSiretFromInsee)(gmResult.nom_societe)
-                ]);
-                if (email)
-                    entreprise.email = email;
-                if (gerant)
-                    entreprise.nom_gerant = gerant;
-                if (inseeData.siret) {
-                    entreprise.siret = inseeData.siret;
-                    entreprise.siren = inseeData.siren;
-                    entreprise.etat_administratif = inseeData.etat_administratif;
-                    entreprise.adresse_etablissement = inseeData.adresse_etablissement;
-                    entreprise.code_postal_etablissement = inseeData.code_postal_etablissement;
-                    entreprise.ville_etablissement = inseeData.ville_etablissement;
-                    if (!entreprise.nom_gerant && inseeData.nom_gerant) {
-                        entreprise.nom_gerant = inseeData.nom_gerant;
-                    }
-                }
-            })(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 8000))
-        ]);
+        const promises = [];
+        // Email (avec cache)
+        if (gmResult.site_web && !emailCache.has(gmResult.site_web)) {
+            promises.push((0, websideScraperServices_1.scrapeEmailFromWebsite)(gmResult.site_web)
+                .then(email => emailCache.set(gmResult.site_web, email))
+                .catch(() => emailCache.set(gmResult.site_web, undefined)));
+        }
+        // Gérant (avec cache)
+        if (gmResult.site_web && !gerantCache.has(gmResult.site_web)) {
+            promises.push((0, websideScraperServices_1.scrapeGerantFromWebsite)(gmResult.site_web)
+                .then(gerant => gerantCache.set(gmResult.site_web, gerant))
+                .catch(() => gerantCache.set(gmResult.site_web, undefined)));
+        }
+        // SIRET (avec cache)
+        if (!siretCache.has(gmResult.nom_societe)) {
+            promises.push((0, inseeService_1.getSiretFromInsee)(gmResult.nom_societe)
+                .then(data => siretCache.set(gmResult.nom_societe, data))
+                .catch(() => siretCache.set(gmResult.nom_societe, null)));
+        }
+        // ⚡ Attendre MAX 5 secondes
+        if (promises.length > 0) {
+            await Promise.race([
+                Promise.allSettled(promises),
+                new Promise(resolve => setTimeout(resolve, CONFIG.ENRICH_TIMEOUT_MS))
+            ]);
+        }
+        // Récupérer depuis les caches
+        if (gmResult.site_web) {
+            entreprise.email = emailCache.get(gmResult.site_web);
+            entreprise.nom_gerant = gerantCache.get(gmResult.site_web);
+        }
+        const inseeData = siretCache.get(gmResult.nom_societe);
+        if (inseeData?.siret) {
+            entreprise.siret = inseeData.siret;
+            entreprise.siren = inseeData.siren;
+            // ... autres champs
+        }
     }
     catch (error) {
-        // Timeout - on garde les données partielles
+        // Silencieux
     }
-    // 🎯 VALIDER : Garder si SIRET OU email OU téléphone
-    if (entreprise.siret || entreprise.email || entreprise.telephone) {
-        return entreprise;
-    }
-    return null;
+    // ⚡ Validation finale RAPIDE
+    const hasValidData = entreprise.telephone ||
+        entreprise.email ||
+        entreprise.siret ||
+        (entreprise.nom_societe && entreprise.nom_societe.length > 3);
+    return hasValidData ? entreprise : null;
 }
 // ============================================
-// 🚀 SCRAPER D'UNE VILLE (AMÉLIORÉ)
+// ⚡ SCRAPER VILLE AVEC ARRÊT INTELLIGENT
 // ============================================
-async function scraperVille(ville, query, controller) {
+async function scraperVilleIntelligent(ville, query, controller) {
     console.log(`🏙️  Début: ${ville}`);
-    const browser = await playwright_1.chromium.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    let browser;
     try {
+        browser = await playwright_1.chromium.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
         let offset = 0;
         let entreprisesVille = 0;
         let batchNumber = 0;
-        // 🎯 BOUCLE JUSQU'À LIMITE OU OBJECTIF ATTEINT
-        while (!controller.isCompleted() && entreprisesVille < 50) { // Max 50 par ville
+        let consecutiveEmptyBatches = 0;
+        // ⚡ BOUCLE AVEC VÉRIFICATION CONSTANTE
+        while (controller.shouldContinue() &&
+            batchNumber < CONFIG.MAX_BATCHES_PAR_VILLE &&
+            consecutiveEmptyBatches < 2) {
             batchNumber++;
-            const queryVille = { ...query, ville };
-            const { results } = await (0, googleMapSevices_1.scrapeGoogleMapsWithOffset)(queryVille, offset, CONFIG.BATCH_SIZE, browser, undefined);
-            if (!results || results.length === 0) {
-                console.log(`ℹ️  ${ville}: Aucun résultat (batch ${batchNumber})`);
+            // ⚡ Vérification RAPIDE avant chaque batch
+            if (!controller.shouldContinue()) {
+                console.log(`⏹️  ${ville}: Arrêt demandé avant batch ${batchNumber}`);
+                return { success: true, count: entreprisesVille, reason: 'arrêt_global' };
+            }
+            const restantGlobal = controller.getRemainingCount();
+            const batchSize = Math.min(CONFIG.BATCH_SIZE, restantGlobal * 2); // ⚡ Dynamique
+            if (batchSize <= 0) {
+                console.log(`✅ ${ville}: Plus besoin de résultats`);
                 break;
             }
-            console.log(`📊 ${ville}: ${results.length} résultats (batch ${batchNumber})`);
-            // 🎯 ENRICHIR AVEC LIMITATION MANUELLE (pas de p-limit)
-            const enrichPromises = results.map(gmResult => enrichEntrepriseRapide(gmResult, queryVille));
-            // Limiter manuellement à 5 enrichissements "actifs"
+            console.log(`📡 ${ville}: Batch ${batchNumber}, demande ${batchSize} résultats`);
+            const queryVille = { ...query, ville };
+            let results;
+            try {
+                const scraped = await (0, googleMapServices_1.scrapeGoogleMapsWithOffset)(queryVille, offset, batchSize, browser, undefined);
+                results = scraped.results;
+            }
+            catch (error) {
+                console.log(`⚠️  ${ville}: Erreur scraping batch ${batchNumber} }`);
+                break;
+            }
+            // ⚡ ANALYSE RAPIDE DES RÉSULTATS
+            if (!results || results.length === 0) {
+                console.log(`ℹ️  ${ville}: Aucun résultat batch ${batchNumber}`);
+                consecutiveEmptyBatches++;
+                offset += batchSize;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                continue;
+            }
+            consecutiveEmptyBatches = 0; // Reset
+            console.log(`📊 ${ville}: ${results.length} résultats bruts`);
+            // ⚡ ENRICHISSEMENT PAR CHUNKS AVEC ARRÊT RAPIDE
             const chunkSize = CONFIG.MAX_CONCURRENT_ENRICH;
             let addedInBatch = 0;
-            for (let i = 0; i < enrichPromises.length; i += chunkSize) {
-                if (controller.isCompleted())
+            let validResults = 0;
+            for (let i = 0; i < results.length; i += chunkSize) {
+                // ⚡ Vérification ultra-rapide entre chaque chunk
+                if (!controller.shouldContinue()) {
+                    console.log(`⏹️  ${ville}: Arrêt pendant enrichissement chunk`);
                     break;
-                const chunk = enrichPromises.slice(i, i + chunkSize);
-                const enriched = await Promise.allSettled(chunk);
+                }
+                const chunk = results.slice(i, i + chunkSize);
+                // ⚡ ENRICHISSEMENT PARALLÈLE MAIS LIMITÉ
+                const enrichPromises = chunk.map(gmResult => enrichEntrepriseUltraRapide(gmResult, queryVille));
+                const enriched = await Promise.allSettled(enrichPromises);
+                // ⚡ TRAITEMENT RAPIDE DES RÉSULTATS
                 for (const result of enriched) {
-                    if (controller.isCompleted())
+                    if (!controller.shouldContinue())
                         break;
                     if (result.status === 'fulfilled' && result.value) {
-                        const { added, goalReached } = controller.addEntreprise(result.value);
+                        const { added } = controller.addEntreprise(result.value);
                         if (added) {
                             entreprisesVille++;
                             addedInBatch++;
-                        }
-                        if (goalReached) {
-                            console.log(`🎯 ${ville}: Objectif global atteint`);
-                            return { success: true, count: entreprisesVille };
+                            validResults++;
                         }
                     }
                 }
-                // Petite pause entre chunks d'enrichissement
-                if (!controller.isCompleted() && i + chunkSize < enrichPromises.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                // ⚡ Petite pause entre chunks
+                if (controller.shouldContinue() && i + chunkSize < results.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
-            console.log(`✅ ${ville}: +${addedInBatch} entreprises (total: ${entreprisesVille})`);
-            // Vérifier si on peut arrêter cette ville
-            if (addedInBatch === 0 && results.length > 0) {
-                console.log(`⚠️  ${ville}: Aucune entreprise valide, arrêt`);
+            // ⚡ ANALYSE DE PERFORMANCE
+            const validityRate = results.length > 0 ? validResults / results.length : 0;
+            console.log(`✅ ${ville}: Batch ${batchNumber} → ${addedInBatch} valides (taux: ${Math.round(validityRate * 100)}%)`);
+            // ⚡ DÉCISION INTELLIGENTE : CONTINUER OU ARRÊTER ?
+            if (validityRate < CONFIG.MIN_VALID_RATE && addedInBatch < 2) {
+                console.log(`⚠️  ${ville}: Taux de validité trop bas (${Math.round(validityRate * 100)}%), arrêt`);
                 break;
             }
-            offset += CONFIG.BATCH_SIZE;
-            // Petite pause entre batches Google Maps
-            if (!controller.isCompleted() && batchNumber < 3) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            if (addedInBatch > 0) {
+                offset += batchSize;
+                // ⚡ Pause optimisée
+                if (controller.shouldContinue() && batchNumber < CONFIG.MAX_BATCHES_PAR_VILLE) {
+                    const pauseTime = Math.min(1000 + batchNumber * 500, 3000);
+                    await new Promise(resolve => setTimeout(resolve, pauseTime));
+                }
+            }
+            else {
+                offset += batchSize;
+                consecutiveEmptyBatches++;
             }
         }
         console.log(`🏁 ${ville}: Terminé avec ${entreprisesVille} entreprises`);
@@ -198,15 +268,17 @@ async function scraperVille(ville, query, controller) {
         return { success: false, count: 0 };
     }
     finally {
-        await browser.close();
+        if (browser)
+            await browser.close();
     }
 }
 // ============================================
-// 🚀 ORCHESTRATEUR OPTIMISÉ POUR FRONTEND
+// 🚀 ORCHESTRATEUR HYPER-INTELLIGENT
 // ============================================
 async function orchestrateScrapingOptimized(query) {
     const startTime = Date.now();
-    console.log('\n🚀 SCRAPING OPTIMISÉ POUR FRONTEND...');
+    console.log('\n🚀 SCRAPING OPTIMISÉ V4 - ARRÊT INTELLIGENT');
+    console.log(`⚙️  ${CONFIG.MAX_PARALLEL_VILLES} villes || ${CONFIG.MAX_CONCURRENT_ENRICH} enrich || Batch ${CONFIG.BATCH_SIZE}`);
     // VALIDATION
     if (!query.region) {
         return {
@@ -214,64 +286,51 @@ async function orchestrateScrapingOptimized(query) {
             stats: createEmptyStats('⚠️ La région est obligatoire')
         };
     }
-    // 🎯 CRÉER LE CONTROLLER
-    const controller = new ScrapingController(query.nombre_resultats || 20);
+    // ⚡ CONTROLLER INTELLIGENT
+    const controller = new SmartScrapingController(query.nombre_resultats || 20);
     console.log(`🎯 Objectif: ${controller.getGoal()} entreprises`);
-    // 🎯 RÉCUPÉRER LES VILLES (DÉJÀ TRIÉES PAR FRONTEND)
+    // ⚡ PRÉPARATION DES VILLES
     let villesToScrape = [];
     if (query.ville) {
-        // ⚠️ Frontend a déjà trié par population !
         villesToScrape = Array.isArray(query.ville) ? query.ville : [query.ville];
-        console.log(`📍 ${villesToScrape.length} villes (triées par frontend)`);
     }
-    else if (query.departement?.length) {
-        // Fallback si pas de villes spécifiées
-        // const villesData = await getVillesFromMultipleDepartements(query.departement);
-        // villesData.sort((a, b) => (b.population || 0) - (a.population || 0));
-        // villesToScrape = villesData.map(v => v.nom);
-        console.log(`📍 ${villesToScrape.length} villes triées par population`);
-    }
-    else {
-        return {
-            entreprises: [],
-            stats: createEmptyStats('⚠️ Au moins un département ou une ville requis')
-        };
-    }
-    // 🎯 LIMITER LE PARALLÉLISME
-    villesToScrape = villesToScrape.slice(0, CONFIG.MAX_PARALLEL_VILLES);
-    console.log(`⚙️  Configuration: ${villesToScrape.length} villes en parallèle`);
-    // 🎯 LANCER LE SCRAPING EN PARALLÈLE MAIS AVEC SURVEILLANCE
-    const scrapingPromises = villesToScrape.map(ville => scraperVille(ville, query, controller));
-    // 🎯 SURVEILLANCE EN TEMPS RÉEL
+    // ⚡ LIMITATION INTELLIGENTE : Moins de villes si petit objectif
+    const parallelLimit = Math.min(CONFIG.MAX_PARALLEL_VILLES, Math.ceil(controller.getGoal() / 10) // 1 ville pour 10 résultats max
+    );
+    villesToScrape = villesToScrape.slice(0, parallelLimit);
+    console.log(`📍 ${villesToScrape.length} villes sélectionnées (objectif: ${controller.getGoal()})`);
+    // ⚡ EXÉCUTION AVEC SURVEILLANCE EN TEMPS RÉEL
+    const scrapingPromises = villesToScrape.map(ville => scraperVilleIntelligent(ville, query, controller));
+    // ⚡ SURVEILLANCE ACTIVE TOUTES LES 2 SECONDES
     const progressInterval = setInterval(() => {
-        console.log(`📈 Progression: ${controller.getCount()}/${controller.getGoal()}`);
-        if (controller.isCompleted()) {
-            console.log(`🎯 Objectif atteint ! Arrêt en cours...`);
-        }
-    }, 3000);
-    // 🎯 ATTENDRE TOUTES LES PROMESSES MAIS AVEC ARRÊT INTELLIGENT
+        const current = controller.getCount();
+        const goal = controller.getGoal();
+        const progress = Math.round((current / goal) * 100);
+        console.log(`📈 ${current}/${goal} (${progress}%) - ${controller.isStopped() ? 'ARRÊT' : 'EN COURS'}`);
+    }, CONFIG.PROGRESS_CHECK_INTERVAL);
     try {
-        // Attendre un peu pour voir si objectif atteint rapidement
-        await Promise.race([
-            Promise.allSettled(scrapingPromises),
-            new Promise(resolve => {
-                // Vérifier périodiquement si objectif atteint
-                const checkInterval = setInterval(() => {
-                    if (controller.isCompleted()) {
-                        clearInterval(checkInterval);
-                        resolve('goal_reached');
-                    }
-                }, 1000);
-            })
-        ]);
+        // ⚡ ATTENTE INTELLIGENTE : On n'attend pas tout finir !
+        const results = await Promise.allSettled(scrapingPromises);
+        // ⚡ ANALYSE DES RÉSULTATS
+        let totalExtracted = 0;
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                const ville = villesToScrape[index];
+                console.log(`📊 ${ville}: ${result.value.count} entreprises`);
+                totalExtracted += result.value.count;
+            }
+        });
+        console.log(`📦 Total extrait: ${totalExtracted} entreprises`);
     }
     catch (error) {
         console.error('💥 Erreur globale:', error);
     }
     finally {
         clearInterval(progressInterval);
+        // ⚡ FORCER L'ARRÊT AU CAS OÙ
+        controller.forceStop();
     }
-    // 🎯 NETTOYAGE
+    // ⚡ NETTOYAGE URGENT
     await (0, websideScraperServices_1.closeBrowserPool)();
     // 📊 STATISTIQUES FINALES
     const entreprisesFinales = controller.getEntreprises();
@@ -279,6 +338,10 @@ async function orchestrateScrapingOptimized(query) {
     console.log(`\n✨ SCRAPING TERMINÉ`);
     console.log(`📊 Résultats: ${entreprisesFinales.length}/${controller.getGoal()}`);
     console.log(`⏱️ Durée: ${dureeSecondes}s`);
+    if (dureeSecondes > 0) {
+        const perMinute = Math.round(entreprisesFinales.length / dureeSecondes * 60);
+        console.log(`🚀 Performance: ${perMinute} entreprises/min`);
+    }
     const stats = {
         total_vise: controller.getGoal(),
         total_trouve: entreprisesFinales.length,
@@ -292,7 +355,7 @@ async function orchestrateScrapingOptimized(query) {
     return { entreprises: entreprisesFinales, stats };
 }
 // ============================================
-// 🛠️ FONCTIONS UTILITAIRES
+// 🛠️ FONCTION UTILITAIRE
 // ============================================
 function createEmptyStats(message) {
     return {

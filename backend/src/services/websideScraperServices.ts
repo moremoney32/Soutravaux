@@ -1,159 +1,216 @@
 
 
-// src/services/websideScraperServices.ts
+// // src/services/websideScraperServices.ts
 
-import { chromium, Browser } from 'playwright';
-import { retryAsync } from './parralel';
+// import { chromium } from 'playwright';
 
-// Pool global de navigateurs (max 5)
-let browserPool: Browser[] = [];
-const MAX_BROWSERS = 5;
+// // Pool global de navigateurs (pour usage futur potentiel)
+// let browserPool: any[] = [];
 
-/**
- * Obtenir un navigateur du pool (ou en créer un nouveau)
- */
-async function getBrowserFromPool(): Promise<Browser> {
-  if (browserPool.length < MAX_BROWSERS) {
-    const browser = await chromium.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    browserPool.push(browser);
-    console.log(`🌐 Navigateur créé (${browserPool.length}/${MAX_BROWSERS})`);
-    return browser;
-  }
+// /**
+//  * Cache email par domaine pour éviter re-scraping
+//  */
+// const emailCache = new Map<string, string | undefined>();
 
-  // Réutiliser un navigateur aléatoire
-  return browserPool[Math.floor(Math.random() * browserPool.length)];
-}
+// /**
+//  * Fermer tous les navigateurs du pool
+//  */
+// export async function closeBrowserPool(): Promise<void> {
+//   console.log(`🔒 Fermeture de ${browserPool.length} navigateurs...`);
+//   await Promise.all(browserPool.map(b => b.close().catch(() => {})));
+//   browserPool = [];
+// }
+
+// /**
+//  * Scraper email depuis un site web
+//  * ⚠️ OPTIMISÉ : timeout court (2s), cache, abandon rapide
+//  * Retourne undefined si pas trouvé (pas d'erreur, juste timeout court)
+//  */
+// export async function scrapeEmailFromWebsite(
+//   url?: string
+// ): Promise<string | undefined> {
+//   if (!url || url.length < 5) {
+//     return undefined;
+//   }
+
+//   console.log(`📧 Recherche email: ${url}`);
+  
+//   try {
+//     const urlObj = new URL(url);
+//     const domain = urlObj.hostname;
+
+//     // Vérifier cache
+//     if (emailCache.has(domain)) {
+//       const cached = emailCache.get(domain);
+//       if (cached) {
+//         console.log(`  ✅ Email trouvé (cache): ${cached}`);
+//       }
+//       return cached;
+//     }
+
+//     // ⚡ EXTRACTION RAPIDE : 2 secondes max
+//     const browser = await chromium.launch({
+//       headless: true,
+//       args: ['--no-sandbox', '--disable-setuid-sandbox']
+//     });
+
+//     const context = await browser.newContext();
+//     const page = await context.newPage();
+
+//     try {
+//       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 5000 });
+
+//       // Regex pour emails
+//       const email = await page.evaluate(() => {
+//         const text = document.body.innerText;
+//         const emailRegex =
+//           /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+//         const matches = text.match(emailRegex);
+
+//         // Filtrer les emails de contact (pas noreply, no-reply, test, etc.)
+//         if (matches) {
+//           return matches.find(
+//             (email) =>
+//               !email.includes('noreply') &&
+//               !email.includes('no-reply') &&
+//               !email.includes('test@') &&
+//               !email.includes('example')
+//           );
+//         }
+//         return undefined;
+//       });
+
+//       // Cache le résultat
+//       emailCache.set(domain, email);
+//       if (email) {
+//         console.log(`  ✅ Email trouvé: ${email}`);
+//       } else {
+//         console.log(`  ❌ Pas d'email trouvé`);
+//       }
+//       return email;
+//     } finally {
+//       await context.close();
+//       await browser.close();
+//     }
+//   } catch (error) {
+//     console.log(`  ⚠️ Erreur scraping email: ${error instanceof Error ? error.message : 'unknown'}`);
+//     return undefined;
+//   }
+// }
+
+// /**
+//  * Scraper nom gérant depuis un site web
+//  * ⚠️ DÉSACTIVÉ : Trop cher en ressources, très peu fiable (anti-scraping)
+//  * Retourne undefined immédiatement pour économiser temps/navigateurs
+//  */
+// export async function scrapeGerantFromWebsite(): Promise<string | undefined> {
+//   // ❌ SKIP GÉRANT SCRAPING (trop cher, peu fiable)
+//   return undefined;
+// }
+
+
+import { chromium } from 'playwright';
+
+// Cache email par domaine pour éviter re-scraping
+const emailCache = new Map<string, { email?: string; timestamp: number }>();
+const CACHE_TTL = 3600000; // 1 heure
 
 /**
  * Fermer tous les navigateurs du pool
  */
 export async function closeBrowserPool(): Promise<void> {
-  console.log(`🔒 Fermeture de ${browserPool.length} navigateurs...`);
-  await Promise.all(browserPool.map(b => b.close().catch(() => {})));
-  browserPool = [];
+  console.log(`🔒 Fermeture des navigateurs...`);
 }
 
 /**
- * Scraper email depuis un site web
+ * Scraper email depuis un site web - OPTIMISÉ
  */
-export async function scrapeEmailFromWebsite(url: string): Promise<string | undefined> {
-  if (!url) return undefined;
+export async function scrapeEmailFromWebsite(
+  url?: string
+): Promise<string | undefined> {
+  if (!url || url.length < 5) {
+    return undefined;
+  }
 
-  return retryAsync(async () => {
-    console.log(`📧 Recherche email: ${url}`);
+  console.log(`📧 Recherche email: ${url}`);
+  
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname;
 
-    const browser = await getBrowserFromPool();
-    const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0'
+    // Vérifier cache valide
+    const cached = emailCache.get(domain);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      if (cached.email) {
+        console.log(`  ✅ Email trouvé (cache): ${cached.email}`);
+      }
+      return cached.email;
+    }
+
+    // ⚡ EXTRACTION RAPIDE : 3 secondes max
+    const browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
+
+    const context = await browser.newContext();
     const page = await context.newPage();
 
     try {
-      // Aller sur le site
-      await page.goto(url, {
-        waitUntil: 'domcontentloaded',
-        timeout: 8000
-      }).catch(() => null);
+      await page.goto(url, { 
+        waitUntil: 'domcontentloaded', 
+        timeout: 3000 
+      });
 
-      // Chercher page contact
-      const contactLinks = await page.$$eval('a', (links) =>
-        links
-          .filter((a) => {
-            const text = a.textContent?.toLowerCase() || '';
-            const href = a.href.toLowerCase();
-            return text.includes('contact') ||
-              href.includes('contact') ||
-              href.includes('nous-contacter');
-          })
-          .map((a) => a.href)
-      );
-
-      // Aller sur page contact
-      if (contactLinks.length > 0) {
-        await page.goto(contactLinks[0], {
-          waitUntil: 'domcontentloaded',
-          timeout: 8000
-        }).catch(() => null);
-      }
-
-      // Extraire email
-      const pageContent = await page.content();
-      const emailRegex = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}/g;
-      const emails = pageContent.match(emailRegex);
-
-      await context.close();
-
-      if (emails && emails.length > 0) {
-        const validEmail = emails.find((email) =>
-          !email.includes('example.com') &&
-          !email.includes('domain.com') &&
-          !email.includes('yoursite.com') &&
-          !email.includes('sentry.io') &&
-          !email.includes('facebook.com') &&
-          !email.includes('google.com')
-        );
-
-        if (validEmail) {
-          console.log(`Email trouvé: ${validEmail}`);
-          return validEmail;
+      // Regex pour emails - améliorée
+      const email = await page.evaluate(() => {
+        // Chercher dans les liens d'abord (plus rapide)
+        const mailtoLinks = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+        if (mailtoLinks.length > 0) {
+          const href = mailtoLinks[0].getAttribute('href');
+          if (href) return href.replace('mailto:', '');
         }
+        
+        // Sinon chercher dans le texte
+        const text = document.body.innerText;
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+        const matches = text.match(emailRegex);
+
+        if (matches) {
+          return matches.find(
+            (email) =>
+              !email.toLowerCase().includes('noreply') &&
+              !email.toLowerCase().includes('no-reply') &&
+              !email.toLowerCase().includes('test@') &&
+              !email.toLowerCase().includes('example@') &&
+              !email.toLowerCase().includes('contact@') // Priorité aux emails non génériques
+          ) || matches[0]; // Fallback sur premier email trouvé
+        }
+        return undefined;
+      });
+
+      // Cache le résultat
+      emailCache.set(domain, { email, timestamp: Date.now() });
+      
+      if (email) {
+        console.log(`  ✅ Email trouvé: ${email}`);
+      } else {
+        console.log(`  ❌ Pas d'email trouvé`);
       }
-
-      return undefined;
-
-    } catch (error: any) {
-      await context.close().catch(() => {});
-      throw error;
+      return email;
+    } finally {
+      await context.close();
+      await browser.close();
     }
-  }, 2, 500);
+  } catch (error) {
+    console.log(`  ⚠️ Erreur scraping email: ${error instanceof Error ? error.message : 'unknown'}`);
+    return undefined;
+  }
 }
 
 /**
  * Scraper nom gérant depuis un site web
  */
-export async function scrapeGerantFromWebsite(url: string): Promise<string | undefined> {
-  if (!url) return undefined;
-
-  return retryAsync(async () => {
-    console.log(`👤 Recherche gérant: ${url}`);
-
-    const browser = await getBrowserFromPool();
-    const context = await browser.newContext();
-    const page = await context.newPage();
-
-    try {
-      await page.goto(url, {
-        waitUntil: 'domcontentloaded',
-        timeout: 8000
-      }).catch(() => null);
-
-      const pageText = await page.evaluate(() => document.body.innerText);
-
-      const patterns = [
-        /Gérant\s*:\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)/i,
-        /Dirigeant\s*:\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)/i,
-        /Fondateur\s*:\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)/i,
-        /Président\s*:\s*([A-ZÀ-Ÿ][a-zà-ÿ]+\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)/i
-      ];
-
-      for (const pattern of patterns) {
-        const match = pageText.match(pattern);
-        if (match && match[1]) {
-          console.log(`Gérant trouvé: ${match[1]}`);
-          await context.close();
-          return match[1];
-        }
-      }
-
-      await context.close();
-      return undefined;
-
-    } catch (error: any) {
-      await context.close().catch(() => {});
-      throw error;
-    }
-  }, 2, 500);
+export async function scrapeGerantFromWebsite(): Promise<string | undefined> {
+  return undefined;
 }
