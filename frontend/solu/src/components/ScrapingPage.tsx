@@ -7,7 +7,7 @@ import type {
     ScrapingFilters
 } from '../types/scraping.type';
 import { mockActivites } from '../data/scrapingData';
-import { scrapeGoogleMaps } from '../services/scrapingServices';
+// import { scrapeGoogleMaps } from '../services/scrapingServices';
 import {
     getAllRegions,
     getDepartementsFromRegion,
@@ -17,6 +17,7 @@ import {
     type Ville
 } from '../services/geoService';
 import CustomSelect from '../components/CustomSelect';
+import { scrapeScrapIo } from '../services/scrapingServices';
 
 const ScrapingPage: React.FC = () => {
     // ÉTATS
@@ -59,12 +60,12 @@ const ScrapingPage: React.FC = () => {
 
     // CHARGER LES RÉGIONS AU MONTAGE
     useEffect(() => {
-        async function loadRegions() { 
+        async function loadRegions() {
             setLoadingRegions(true);
             const data = await getAllRegions();
             setRegions(data);
             setLoadingRegions(false);
-          
+
         }
         loadRegions();
     }, []);
@@ -145,579 +146,127 @@ const ScrapingPage: React.FC = () => {
         setErrorMessage('');
     };
 
-    /***scrapingPage sans detection  */
 
-    // ============================================
-// 🎯 FONCTION : SCRAPING OPTIMISÉ ANTI-DÉTECTION
-// ============================================
-// const scrapeOptimiseAntiDetection = async (
-//   villesBrutes: Ville[],
-//   limiteResultats: number
-// ) => {
-  
-  
-//   // ÉTAPE 1 : TRIER LES VILLES PAR POPULATION (GRANDES D'ABORD)
-// //   console.log(`📊 Tri des ${villesBrutes.length} villes par population...`);
-  
-//   const villesTriees = [...villesBrutes].sort((a, b) => 
-//     (b.population || 0) - (a.population || 0)
-//   );
-  
-  
-//   // CONFIGURATION ANTI-DÉTECTION
-//   const CONFIG = {
-//     TAILLE_LOT:20,              // 5 villes en parallèle
-//     PAUSE_MINUTES:1,           // 2 minutes de pause
-//     MAX_VILLES_AVANT_PAUSE_LONGUE: 35  // Pause longue tous les 15 villes
-//   };
-  
-//   const tousLesResultats: EntrepriseScraped[] = [];
-//   let villesScrapees = 0;
-//   let lotsEffectues = 0;
-//   const startTime = Date.now();
-  
-//   // ÉTAPE 2 : SCRAPING PAR LOTS
-//   for (let i = 0; i < villesTriees.length; i += CONFIG.TAILLE_LOT) {
-    
-//     // Vérifier si limite atteinte
-//     if (tousLesResultats.length >= limiteResultats) {
-//       break;
-//     }
-    
-//     const lot = villesTriees.slice(i, i + CONFIG.TAILLE_LOT);
-//     lotsEffectues++;  
-//     try {
-//       // SCRAPING ASYNCHRONE (PARALLÈLE) DU LOT
-//       const promesses = lot.map(ville => {
-//         const restant = limiteResultats - tousLesResultats.length;
-//         const nbARecuperer = Math.min(50, Math.max(10, restant));
-        
-        
-//         return scrapeGoogleMaps({
-//           region: filters.region,
-//           departement: filters.departement,
-//           ville: [ville.code],
-//           activite: filters.activite,
-//           nombre_resultats: nbARecuperer
-//         });
-//       });
+
+     const scrapeOptimise = async (
+        villes: Ville[],
+        limite: number,
+        activite: string,
+        setScrapingProgress: (text: string) => void
+      ): Promise<EntrepriseScraped[]> => {
+        const results: EntrepriseScraped[] = []
+        const seen = new Set<string>()
       
-//       // Attendre que TOUTES les villes du lot soient scrapées
-//       const resultatsLot = await Promise.allSettled(promesses);
+        for (const ville of villes) {
+          if (results.length >= limite) break
       
-//       // TRAITER LES RÉSULTATS
-//       for (let j = 0; j < resultatsLot.length; j++) {
-//         const result = resultatsLot[j];
-//         const ville = lot[j];
-        
-//         if (result.status === 'fulfilled' && result.value?.entreprises) {
-//           const entreprises = result.value.entreprises;
-          
-//           // Ajouter seulement ce qu'on a besoin
-//           const restant = limiteResultats - tousLesResultats.length;
-//           const aAjouter = entreprises.slice(0, restant);
-          
-//           tousLesResultats.push(...aAjouter);
-//           villesScrapees++;
-          
-//           // Vérifier si limite atteinte
-//           if (tousLesResultats.length >= limiteResultats) {
-//             break;
-//           }
-          
-//         } else if (result.status === 'rejected') {
-//           console.log(`${ville.nom}: Erreur - ${result.reason}`);
-//         } else {
-//         //   console.log(`${ville.nom}: Aucun résultat`);
-//         }
-//       }
+          // Calculer combien il reste à récupérer
+          const restant = limite - results.length
       
-//       // Arrêter si limite atteinte
-//       if (tousLesResultats.length >= limiteResultats) {
-//         break;
-//       }
+          // Scrape pour cette ville avec la limite restante
+          const entreprisesVille = await scrapeScrapIo(activite, ville.nom, restant)
       
-//       // PAUSE ENTRE LES LOTS (ANTI-DÉTECTION)
-//       if (i + CONFIG.TAILLE_LOT < villesTriees.length) {
-        
-//         // Pause longue tous les 15 villes (3 lots)
-//         const villesScrapeesDansSession = (lotsEffectues * CONFIG.TAILLE_LOT);
-//         const pauseLongue = villesScrapeesDansSession % CONFIG.MAX_VILLES_AVANT_PAUSE_LONGUE === 0 && lotsEffectues > 0;
-        
-//         const pauseMinutes = pauseLongue ? 4 : CONFIG.PAUSE_MINUTES;
-//         if (pauseLongue) {
-//           console.log(`   (Pause longue - ${villesScrapeesDansSession} villes scrapées)`);
-//         }
-        
-//         setScrapingProgress(`⏸️ Pause anti-détection : ${pauseMinutes} min...`);
-        
-//         // Compte à rebours
-//         for (let sec = pauseMinutes * 60; sec > 0; sec -= 10) {
-//           await new Promise(resolve => setTimeout(resolve, 10000));
-//           const minutesRestantes = Math.floor(sec / 60);
-//           const secondesRestantes = sec % 60;
-//           setScrapingProgress(`⏸️ Pause : ${minutesRestantes}:${secondesRestantes.toString().padStart(2, '0')}...`);
-//         }
-        
-//         setScrapingProgress('🕷️ Scraping en cours...');
-//       }
+          for (const e of entreprisesVille) {
+            if (results.length >= limite) break
+            if (seen.has(e.id)) continue
       
-//     } catch (error: any) {
-//       console.error(`\n   ❌ Erreur lot ${lotsEffectues}:`, error.message);
-//     }
-//   }
-  
-//   // RÉSUMÉ FINAL
-//   const dureeSecondes = Math.round((Date.now() - startTime) / 1000);
-//   const dureeMinutes = Math.floor(dureeSecondes / 60);
-//   const dureeSecondesRestantes = dureeSecondes % 60;
-//   console.log(`Durée totale : ${dureeMinutes}m ${dureeSecondesRestantes}s`);
-  
-//  // setProgression(100);
-//   return tousLesResultats;
-// };
-const scrapeOptimiseAntiDetection = async (
-  villesBrutes: Ville[],
-  limiteResultats: number
-) => {
-  // 🎯 TRI PAR POPULATION (grandes villes d'abord)
-  const villesTriees = [...villesBrutes].sort((a, b) => 
-    (b.population || 0) - (a.population || 0)
-  );
-  
-  const CONFIG = {
-    TAILLE_LOT: 10,           // ✅ 15 villes par lot (bon équilibre)
-    PARALLEL_CHUNK:5,        // ✅ 10 villes en VRAI parallèle (contrôle mémoire)
-    PAUSE_MINUTES: 1,         // ✅ 1 minute de pause (anti-détection)
-    PAUSE_LONGUE_MINUTES: 3,  // ✅ 3 minutes après 30 villes
-    SEUIL_PAUSE_LONGUE: 30    // ✅ Pause longue tous les 30 villes
-  };
-  
-  const tousLesResultats: EntrepriseScraped[] = [];
-  const siretsSeen = new Set<string>();
-  let totalVillesScrapees = 0;
-  const startTime = Date.now();
-  
-  console.log(`📊 Objectif: ${limiteResultats} entreprises sur ${villesTriees.length} villes`);
-  console.log(`⚙️ Config: ${CONFIG.PARALLEL_CHUNK} villes en parallèle, lots de ${CONFIG.TAILLE_LOT}`);
-  
-  // 🎯 BOUCLE PAR LOTS DE VILLES
-  for (let i = 0; i < villesTriees.length; i += CONFIG.TAILLE_LOT) {
-    // ✅ ARRÊT IMMÉDIAT SI OBJECTIF ATTEINT
-    if (tousLesResultats.length >= limiteResultats) {
-      console.log(`🎯 OBJECTIF ATTEINT : ${tousLesResultats.length}/${limiteResultats}`);
-      break;
-    }
-    
-    const lot = villesTriees.slice(i, i + CONFIG.TAILLE_LOT);
-    const numLot = Math.floor(i / CONFIG.TAILLE_LOT) + 1;
-    console.log(`\n📦 LOT ${numLot}: ${lot.length} villes`);
-    
-    // 🎯 CRÉATION DES PROMESSES POUR CE LOT
-    const promesses = lot.map(ville => {
-      const restant = limiteResultats - tousLesResultats.length;
-      if (restant <= 0) return Promise.resolve(null);
-      
-      // ✅ Demander 2x plus pour compenser les rejets (pas de SIRET/email)
-      const nbARecuperer = Math.min(50, Math.max(15, restant * 2));
-      
-      return scrapeGoogleMaps({
-        region: filters.region,
-        departement: filters.departement,
-        ville: [ville.code],
-        activite: filters.activite,
-        nombre_resultats: nbARecuperer
-      })
-      .then(response => ({ ville, entreprises: response.entreprises }))
-      .catch(error => {
-        console.log(`❌ ${ville.nom}: ${error.message}`);
-        return null;
-      });
-    });
-    
-    // 🎯 TRAITEMENT PAR GROUPES DE 5 (CHUNKING)
-    for (let j = 0; j < promesses.length; j += CONFIG.PARALLEL_CHUNK) {
-      // ✅ VÉRIFICATION AVANT CHAQUE GROUPE
-      if (tousLesResultats.length >= limiteResultats) {
-        console.log(`🎯 OBJECTIF ATTEINT APRÈS ${j} villes du lot`);
-        break;
-      }
-      
-      const chunk = promesses.slice(j, j + CONFIG.PARALLEL_CHUNK);
-      const villesChunk = lot.slice(j, j + CONFIG.PARALLEL_CHUNK);
-      
-      console.log(`⚡ Groupe ${Math.floor(j / CONFIG.PARALLEL_CHUNK) + 1}: ${villesChunk.map(v => v.nom).join(', ')}`);
-      
-      try {
-        // ✅ EXÉCUTION PARALLÈLE DU GROUPE (5 villes max)
-        const results = await Promise.allSettled(chunk);
-        
-        // ✅ TRAITEMENT DES RÉSULTATS
-        for (let k = 0; k < results.length; k++) {
-          const result = results[k];
-          const ville = villesChunk[k];
-          
-          if (result.status === 'fulfilled' && result.value) {
-            const { entreprises } = result.value;
-            
-            if (entreprises && entreprises.length > 0) {
-              let ajoutees = 0;
-              
-              for (const entreprise of entreprises) {
-                // ✅ ARRÊT DÈS QUE LA LIMITE EST ATTEINTE
-                if (tousLesResultats.length >= limiteResultats) {
-                  console.log(`🎯 LIMITE ATTEINTE dans ${ville.nom} (après ${ajoutees} ajouts)`);
-                  break;
-                }
-                
-                // ✅ DÉDUPLICATION PAR SIRET
-                if (entreprise.siret && siretsSeen.has(entreprise.siret)) {
-                  continue; // Skip les doublons
-                }
-                
-                if (entreprise.siret) {
-                  siretsSeen.add(entreprise.siret);
-                }
-                
-                tousLesResultats.push(entreprise);
-                ajoutees++;
-              }
-              
-              console.log(`✅ ${ville.nom}: +${ajoutees} entreprises (total: ${tousLesResultats.length}/${limiteResultats})`);
-              totalVillesScrapees++;
-            }
+            seen.add(e.id)
+            results.push(e)
           }
+      
+          setScrapingProgress(`📍 ${ville.nom} — ${results.length}/${limite}`)
         }
-        
-        // ✅ ARRÊT APRÈS CHAQUE GROUPE SI OBJECTIF ATTEINT
-        if (tousLesResultats.length >= limiteResultats) {
-          console.log(`\n🎯 OBJECTIF ATTEINT APRÈS GROUPE !`);
-          break;
+      
+        return results
+      }
+      const handleSearch = async () => {
+        // VALIDATIONS
+        if (!filters.region) {
+          setErrorMessage('Veuillez sélectionner une région');
+          return;
         }
-        
-      } catch (error: any) {
-        console.error(`💥 Erreur groupe:`, error.message);
-      }
-    }
+        if (filters.departement.length === 0) {
+          setErrorMessage('Veuillez sélectionner au moins un département');
+          return;
+        }
+        if (!filters.activite) {
+          setErrorMessage('Veuillez sélectionner une activité');
+          return;
+        }
+        if (filters.nombre_resultats < 5 || filters.nombre_resultats > 500) {
+          setErrorMessage('Le nombre de résultats doit être entre 5 et 500');
+          return;
+        }
+      
+        // INITIALISATION
+        setIsLoading(true);
+        setSelectedIds(new Set());
+        setErrorMessage('');
+        setEntreprises([]);
+        setStats(null);
+        setScrapingProgress('🎯 Préparation du scraping...');
+      
+        const startTime = Date.now();
+      
+        try {
+          // DÉTERMINER LES VILLES À SCRAPER
+          let villesToScrape: Ville[] = [];
+          if (filters.ville.length > 0) {
+            villesToScrape = villes.filter(v => filters.ville.includes(v.code));
+          } else {
+            villesToScrape = villes;
+          }
+      
+          if (villesToScrape.length === 0) {
+            setErrorMessage('Aucune ville trouvée');
+            setIsLoading(false);
+            return;
+          }
+      
+          // LANCER LE SCRAPING OPTIMISÉ
+          const resultats = await scrapeOptimise(
+            villesToScrape,
+            filters.nombre_resultats,
+            filters.activite,
+            setScrapingProgress
+          );
+      
+          const dureeSecondes = Math.round((Date.now() - startTime) / 1000);
+      
+          // AFFICHER LES RÉSULTATS
+          setEntreprises(resultats);
+          setHasSearched(true);
+          setScrapingProgress('');
+      
+          // STATS
+          const statsFinales = {
+            total_vise: filters.nombre_resultats,
+            total_trouve: resultats.length,
+            avec_telephone: resultats.filter(e => e.telephone && e.telephone !== 'Non disponible').length,
+            avec_email: resultats.filter(e => e.email && e.email !== 'Non disponible').length,
+            avec_siret: resultats.filter(e => e.siret && e.siret !== 'Non disponible').length,
+            avec_gerant: resultats.filter(e => e.prenom && e.nom).length,
+            duree_secondes: dureeSecondes,
+            villes_scrappees: villesToScrape.map(v => v.nom)
+          };
+          setStats(statsFinales);
+      
+          const minutes = Math.floor(dureeSecondes / 60);
+          const secondes = dureeSecondes % 60;
+          const dureeFormatee = minutes > 0 ? `${minutes}m ${secondes}s` : `${secondes}s`;
+      
+          alert(`✅ Scraping terminé en ${dureeFormatee} !\n${resultats.length} entreprises trouvées`);
+        } catch (error: any) {
+          console.error('❌ Erreur scraping:', error);
+          setErrorMessage(error.message || 'Erreur lors du scraping');
+          setScrapingProgress('');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
     
-    // ✅ ARRÊT SI OBJECTIF ATTEINT
-    if (tousLesResultats.length >= limiteResultats) break;
-    
-    // 🎯 PAUSE ANTI-DÉTECTION INTELLIGENTE
-    if (i + CONFIG.TAILLE_LOT < villesTriees.length) {
-      const pauseLongue = totalVillesScrapees >= CONFIG.SEUIL_PAUSE_LONGUE && 
-                          totalVillesScrapees % CONFIG.SEUIL_PAUSE_LONGUE === 0;
-      
-      const pauseMinutes = pauseLongue ? CONFIG.PAUSE_LONGUE_MINUTES : CONFIG.PAUSE_MINUTES;
-      const pauseSecondes = pauseMinutes * 60;
-      
-      console.log(`\n⏸️ Pause anti-détection: ${pauseMinutes}min (${totalVillesScrapees} villes scrapées)`);
-      setScrapingProgress(`⏸️ Pause: ${pauseMinutes}min...`);
-      
-      // ✅ PAUSE AVEC COMPTE À REBOURS (mise à jour toutes les 10s)
-      for (let sec = pauseSecondes; sec > 0; sec -= 10) {
-        // Vérifier si l'objectif a été atteint pendant la pause (rare mais possible)
-        if (tousLesResultats.length >= limiteResultats) break;
-        
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        
-        const minRestantes = Math.floor(sec / 60);
-        const secRestantes = sec % 60;
-        setScrapingProgress(`⏸️ Reprise dans ${minRestantes}:${secRestantes.toString().padStart(2, '0')}...`);
-      }
-      
-      setScrapingProgress('🕷️ Scraping en cours...');
-    }
-  }
-  
-  // 📈 STATISTIQUES FINALES
-  const dureeSecondes = Math.round((Date.now() - startTime) / 1000);
-  const dureeMinutes = Math.floor(dureeSecondes / 60);
-  const dureeSec = dureeSecondes % 60;
-  const perfParMinute = dureeSecondes > 0 
-    ? Math.round(tousLesResultats.length / dureeSecondes * 60) 
-    : 0;
-  
-  console.log(`\n✨ SCRAPING TERMINÉ`);
-  console.log(`📊 Résultats: ${tousLesResultats.length}/${limiteResultats}`);
-  console.log(`📍 Villes: ${totalVillesScrapees}/${villesBrutes.length}`);
-  console.log(`⏱️ Durée: ${dureeMinutes}m ${dureeSec}s`);
-  console.log(`🚀 Performance: ${perfParMinute} entreprises/minute`);
-  
-  return tousLesResultats.slice(0, limiteResultats);
-};
-
-
-// const scrapeOptimiseAntiDetection = async (
-//   villesBrutes: Ville[],
-//   limiteResultats: number
-// ) => {
-//   const villesTriees = [...villesBrutes].sort((a, b) => 
-//     (b.population || 0) - (a.population || 0)
-//   );
-  
-//   const CONFIG = {
-//     TAILLE_LOT: 15,           // 15 villes par lot (OK avec 32GB RAM)
-//     PARALLEL_CHUNK: 10,        // Traite 10 villes en VRAI parallèle
-//     PAUSE_SECONDES: 30,       // Pause réduite à 45s
-//     MAX_ENTREPRISES_PAR_VILLE: 40  // Augmenté pour servir le parallélisme
-//   };
-  
-//   const tousLesResultats: EntrepriseScraped[] = [];
-//   const siretsSeen = new Set<string>();
-//   let totalVillesScrapees = 0;
-//   const startTime = Date.now();
-  
-//   // 🎯 BOUCLE PAR LOTS DE VILLES
-//   for (let i = 0; i < villesTriees.length; i += CONFIG.TAILLE_LOT) {
-//     // Arrêt immédiat si objectif atteint
-//     if (tousLesResultats.length >= limiteResultats) {
-//       console.log(`🎯 OBJECTIF ATTEINT AVANT LOT SUIVANT`);
-//       break;
-//     }
-    
-//     const lot = villesTriees.slice(i, i + CONFIG.TAILLE_LOT);
-//     console.log(`\n📦 LOT ${Math.floor(i/CONFIG.TAILLE_LOT) + 1}: ${lot.length} villes`);
-    
-//     // 🎯 CRÉATION DE TOUTES LES PROMESSES POUR CE LOT
-//     const promesses = lot.map(ville => {
-//       const restant = limiteResultats - tousLesResultats.length;
-//       if (restant <= 0) return Promise.resolve(null);
-      
-//       const nbARecuperer = Math.min(
-//         CONFIG.MAX_ENTREPRISES_PAR_VILLE, 
-//         Math.max(15, restant)  // Minimum 15 par ville pour justifier le parallélisme
-//       );
-      
-//       console.log(`📡 ${ville.nom}: demande ${nbARecuperer} entreprises`);
-      
-//       return scrapeGoogleMaps({
-//         region: filters.region,
-//         departement: filters.departement,
-//         ville: [ville.code],
-//         activite: filters.activite,
-//         nombre_resultats: nbARecuperer
-//       }).then(response => ({ 
-//         ville, 
-//         response,
-//         timestamp: Date.now()
-//       }));
-//     });
-    
-//     // 🎯 TRAITEMENT SEMI-PARALLÈLE : PAR GROUPES DE 5
-//     for (let j = 0; j < promesses.length; j += CONFIG.PARALLEL_CHUNK) {
-//       // Vérifier avant chaque groupe
-//       if (tousLesResultats.length >= limiteResultats) break;
-      
-//       const chunk = promesses.slice(j, j + CONFIG.PARALLEL_CHUNK);
-//       const villesChunk = lot.slice(j, j + CONFIG.PARALLEL_CHUNK);
-      
-//       console.log(`\n⚡ Groupe ${Math.floor(j/CONFIG.PARALLEL_CHUNK) + 1}: ${villesChunk.map(v => v.nom).join(', ')}`);
-      
-//       // 🎯 EXÉCUTION PARALLÈLE DU GROUPE
-//       try {
-//         const results = await Promise.allSettled(chunk);
-        
-//         // 🎯 TRAITEMENT PARALLÈLE DES RÉSULTATS
-//         const traitementPromises = results.map(async (result, index) => {
-//           const ville = villesChunk[index];
-          
-//           if (result.status === 'fulfilled' && result.value) {
-//             const { ville, response } = result.value;
-            
-//             if (response && response.entreprises) {
-//               let entreprisesAjoutees = 0;
-              
-//               for (const entreprise of response.entreprises) {
-//                 // Vérification atomique avec mutex implicite
-//                 if (tousLesResultats.length >= limiteResultats) break;
-                
-//                 // Déduplication thread-safe
-//                 if (entreprise.siret) {
-//                   // Simuler un mutex pour éviter les doublons parallèles
-//                   if (siretsSeen.has(entreprise.siret)) continue;
-//                   siretsSeen.add(entreprise.siret);
-//                 }
-                
-//                 // Ajout sécurisé
-//                 tousLesResultats.push(entreprise);
-//                 entreprisesAjoutees++;
-                
-//                 // Log optimisé
-//                 if (entreprisesAjoutees === 1) {
-//                   console.log(`✅ ${ville.nom}: +${response.entreprises.length} entreprises`);
-//                 }
-                
-//                 // Vérifier après chaque ajout
-//                 if (tousLesResultats.length >= limiteResultats) {
-//                   console.log(`🎯 LIMITE FRANCHIE DANS ${ville.nom}`);
-//                   break;
-//                 }
-//               }
-              
-//               totalVillesScrapees++;
-//               return entreprisesAjoutees;
-//             }
-//           } else if (result.status === 'rejected') {
-//             console.log(`❌ ${ville?.nom || 'Inconnue'}: ${result.reason?.message || 'Erreur'}`);
-//           }
-//           return 0;
-//         });
-        
-//         // Attendre que tous les traitements du groupe soient terminés
-//         await Promise.all(traitementPromises);
-        
-//         // 🎯 VÉRIFICATION RAPIDE APRÈS CHAQUE GROUPE
-//         console.log(`📊 Progression: ${tousLesResultats.length}/${limiteResultats}`);
-        
-//         if (tousLesResultats.length >= limiteResultats) {
-//           console.log(`\n🎯 OBJECTIF ATTEINT APRÈS GROUPE !`);
-//           break;
-//         }
-        
-//       } catch (error) {
-//         // console.error(`💥 Erreur groupe:`, error.message);
-//       }
-//     }
-    
-//     // 🎯 PAUSE ANTI-DÉTECTION INTELLIGENTE
-//     if (tousLesResultats.length < limiteResultats && 
-//         i + CONFIG.TAILLE_LOT < villesTriees.length) {
-      
-//       // Pause progressive : plus longue si on a beaucoup scrapé
-//       const villesScrapeesDansSession = totalVillesScrapees;
-//       const pauseSecondes = villesScrapeesDansSession > 30 ? 90 : CONFIG.PAUSE_SECONDES;
-      
-//       console.log(`\n⏸️ Pause anti-détection: ${pauseSecondes}s (${villesScrapeesDansSession} villes scrapées)`);
-//       setScrapingProgress(`⏸️ Pause: ${pauseSecondes}s...`);
-      
-//       // Pause avec mises à jour progressives
-//       for (let sec = pauseSecondes; sec > 0; sec -= 15) {
-//         if (tousLesResultats.length >= limiteResultats) break;
-//         await new Promise(resolve => setTimeout(resolve, 15000));
-//         setScrapingProgress(`⏸️ Reprise dans ${sec}s...`);
-//       }
-      
-//       if (tousLesResultats.length < limiteResultats) {
-//         setScrapingProgress('🕷️ Scraping en cours...');
-//       }
-//     }
-//   }
-  
-//   // 📈 STATISTIQUES FINALES
-//   const dureeSecondes = Math.round((Date.now() - startTime) / 1000);
-//   const dureeMinutes = Math.floor(dureeSecondes / 60);
-//   const dureeSec = dureeSecondes % 60;
-  
-//   console.log(`\n✨ SCRAPING TERMINÉ`);
-//   console.log(`📊 Résultats: ${tousLesResultats.length}/${limiteResultats}`);
-//   console.log(`📍 Villes: ${totalVillesScrapees}/${villesBrutes.length}`);
-//   console.log(`⏱️ Durée: ${dureeMinutes}m ${dureeSec}s`);
-//   console.log(`🚀 Performance: ${Math.round(tousLesResultats.length / dureeSecondes * 60)} entreprises/minute`);
-  
-//   return tousLesResultats.slice(0, limiteResultats);
-// };
-    /***fin de scrapingpage sans detection  */
-
     // RECHERCHER
-  
-const handleSearch = async () => {
-  // VALIDATIONS
-  if (!filters.region) {
-    setErrorMessage('Veuillez sélectionner une région');
-    return;
-  }
-
-  if (filters.departement.length === 0) {
-    setErrorMessage('Veuillez sélectionner au moins un département');
-    return;
-  }
-
-  if (!filters.activite) {
-    setErrorMessage('Veuillez sélectionner une activité');
-    return;
-  }
-
-  if (filters.nombre_resultats < 5 || filters.nombre_resultats > 500) {
-    setErrorMessage('Le nombre de résultats doit être entre 5 et 500');
-    return;
-  }
-
-  // INITIALISATION
-  setIsLoading(true);
-  setSelectedIds(new Set());
-  setErrorMessage('');
-  setEntreprises([]);
-  setStats(null);
-  setScrapingProgress('🎯 Préparation du scraping...');
-
-  // CAPTURER L'HEURE DE DÉBUT
-  const startTime = Date.now();
-
-  try {
-
-    // DÉTERMINER LES VILLES À SCRAPER
-    let villesToScrape: Ville[] = [];
-
-    if (filters.ville.length > 0) {
-      villesToScrape = villes.filter(v => filters.ville.includes(v.code));
-      console.log(`${villesToScrape.length} villes sélectionnées par l'utilisateur\n`);
-    } else {
-      villesToScrape = villes;
-      console.log(`${villesToScrape.length} villes disponibles dans les départements\n`);
-    }
-
-    if (villesToScrape.length === 0) {
-      setErrorMessage('Aucune ville trouvée');
-      setIsLoading(false);
-      return;
-    }
-
-    // LANCER LE SCRAPING OPTIMISÉ
-    const resultats = await scrapeOptimiseAntiDetection(
-      villesToScrape,
-      filters.nombre_resultats
-    );
-
-    // CALCULER LA DURÉE TOTALE
-    const dureeSecondes = Math.round((Date.now() - startTime) / 1000);
-
-    // AFFICHER LES RÉSULTATS
-    setEntreprises(resultats);
-    setHasSearched(true);
-    setScrapingProgress('');
-
-    // STATS AVEC DURÉE RÉELLE
-    const statsFinales = {
-      total_vise: filters.nombre_resultats,
-      total_trouve: resultats.length,
-      avec_telephone: resultats.filter(e => e.telephone && e.telephone !== 'Non disponible').length,
-      avec_email: resultats.filter(e => e.email && e.email !== 'Non disponible').length,
-      avec_siret: resultats.filter(e => e.siret && e.siret !== 'Non disponible').length,
-      avec_gerant: resultats.filter(e => e.prenom && e.nom).length,
-      duree_secondes: dureeSecondes  // DURÉE CALCULÉE
-    };
-
-    setStats(statsFinales);
-
-    // AFFICHER LA DURÉE DANS L'ALERT
-    const minutes = Math.floor(dureeSecondes / 60);
-    const secondes = dureeSecondes % 60;
-    const dureeFormatee = minutes > 0 
-      ? `${minutes}m ${secondes}s` 
-      : `${secondes}s`;
-
-    alert(`✅ Scraping terminé en ${dureeFormatee} !\n${resultats.length} entreprises trouvées`);
-
-  } catch (error: any) {
-    console.error('❌ Erreur scraping:', error);
-    setErrorMessage(error.message || 'Erreur lors du scraping');
-    setScrapingProgress('');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
 
     // RÉINITIALISER
     const handleReset = () => {
@@ -756,61 +305,61 @@ const handleSearch = async () => {
     };
 
 
-const handleExportFrontend = () => {
-    const dataToExport = selectedIds.size > 0 
-        ? entreprises.filter(e => selectedIds.has(e.id))
-        : entreprises;
+    const handleExportFrontend = () => {
+        const dataToExport = selectedIds.size > 0
+            ? entreprises.filter(e => selectedIds.has(e.id))
+            : entreprises;
 
-    if (dataToExport.length === 0) {
-        alert('Aucune donnée à exporter');
-        return;
-    }
+        if (dataToExport.length === 0) {
+            alert('Aucune donnée à exporter');
+            return;
+        }
 
-    // BOM UTF-8 pour Excel (évite les problèmes d'encodage)
-    const BOM = '\uFEFF';
+        // BOM UTF-8 pour Excel (évite les problèmes d'encodage)
+        const BOM = '\uFEFF';
 
-    const headers = [
-        'Nom Société',
-        'Gérant',
-        'Activité',
-        'Téléphone',
-        'Email',
-        'SIRET',
-        'Adresse',
-        'Code Postal',
-        'Ville',
-        'Département',
-        'Note',
-        'Nombre Avis'
-    ];
+        const headers = [
+            'Nom Société',
+            'Gérant',
+            'Activité',
+            'Téléphone',
+            'Email',
+            'SIRET',
+            'Adresse',
+            'Code Postal',
+            'Ville',
+            'Département',
+            'Note',
+            'Nombre Avis'
+        ];
 
-    const csvRows = dataToExport.map(e => [
-        `"${e.nom_societe}"`,
-        `"${e.prenom && e.nom ? `${e.prenom} ${e.nom}` : 'Non disponible'}"`,
-        `"${e.activite}"`,
-        `"${e.telephone}"`,
-        `"${e.email}"`,
-        `"${e.siret}"`,
-        `"${e.adresse_etablissement || e.adresse || 'Non disponible'}"`,
-        `"${e.code_postal_etablissement || e.code_postal || ''}"`,
-        `"${e.ville_etablissement || e.ville || ''}"`,
-        `"${e.departement || ''}"`,
-        e.note || '',
-        e.nombre_avis || 0
-    ].join(';'));  
+        const csvRows = dataToExport.map(e => [
+            `"${e.nom_societe}"`,
+            `"${e.prenom && e.nom ? `${e.prenom} ${e.nom}` : 'Non disponible'}"`,
+            `"${e.activite}"`,
+            `"${e.telephone}"`,
+            `"${e.email}"`,
+            `"${e.siret}"`,
+            `"${e.adresse_etablissement || e.adresse || 'Non disponible'}"`,
+            `"${e.code_postal_etablissement || e.code_postal || ''}"`,
+            `"${e.ville_etablissement || e.ville || ''}"`,
+            `"${e.departement || ''}"`,
+            e.note || '',
+            e.nombre_avis || 0
+        ].join(';'));
 
-    const csvContent = BOM + [headers.join(';'), ...csvRows].join('\n');
+        const csvContent = BOM + [headers.join(';'), ...csvRows].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `entreprises_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `entreprises_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
 
     // CAMPAGNE SMS
@@ -856,10 +405,10 @@ const handleExportFrontend = () => {
                             <i className="fas fa-envelope"></i>
                             <span>Email: {stats.avec_email}</span>
                         </div>
-                        <div className="scraping-stat-item">
+                        {/* <div className="scraping-stat-item">
                             <i className="fas fa-id-card"></i>
                             <span>SIRET: {stats.avec_siret}</span>
-                        </div>
+                        </div> */}
                         <div className="scraping-stat-item">
                             <i className="fas fa-clock"></i>
                             <span>{stats.duree_secondes}s</span>
@@ -978,22 +527,22 @@ const handleExportFrontend = () => {
                                 className="scraping-filter-select"
                                 style={{ padding: '12px 16px' }}
                             /> */}
-  <input
-    type="text"
-    value={filters.nombre_resultats === 0 ? "" : filters.nombre_resultats.toString()}
-    onChange={(e) => {
-        const value = e.target.value;
-        // Permettre seulement les chiffres
-        if (value === "" || /^\d+$/.test(value)) {
-            const numValue = value === "" ? 0 : Number(value);
-            handleFilterChange('nombre_resultats', numValue);
-        }
-    }}
-    min="5"
-    max="100"
-    className="scraping-filter-select"
-    style={{ padding: '12px 16px' }}
-/>
+                            <input
+                                type="text"
+                                value={filters.nombre_resultats === 0 ? "" : filters.nombre_resultats.toString()}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Permettre seulement les chiffres
+                                    if (value === "" || /^\d+$/.test(value)) {
+                                        const numValue = value === "" ? 0 : Number(value);
+                                        handleFilterChange('nombre_resultats', numValue);
+                                    }
+                                }}
+                                min="5"
+                                max="100"
+                                className="scraping-filter-select"
+                                style={{ padding: '12px 16px' }}
+                            />
                         </div>
                     </div>
 
@@ -1124,10 +673,10 @@ const handleExportFrontend = () => {
                                         </th>
                                         <th>Entreprise</th>
                                         <th>Contact</th>
-                                        <th>Description</th>
-                                        <th>SIRET</th>
+                                        {/* <th>Description</th>
+                                        <th>SIRET</th> */}
                                         <th>Localisation</th>
-                                        <th>Note</th>
+                                        {/* <th>Note</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1166,14 +715,14 @@ const handleExportFrontend = () => {
                                                     )}
                                                 </div>
                                             </td>
-                                            <td>
+                                            {/* <td>
                                                 <span className="scraping-badge scraping-badge-activite">
                                                     {entreprise.activite}
                                                 </span>
                                             </td>
                                             <td style={{ fontSize: '12px', color: 'var(--color-gray-secondary)' }}>
                                                 {entreprise.siret}
-                                            </td>
+                                            </td> */}
                                             <td style={{ fontSize: '12px' }}>
                                                 {entreprise.ville_etablissement || entreprise.ville ? (
                                                     <>
@@ -1195,7 +744,7 @@ const handleExportFrontend = () => {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td>
+                                            {/* <td>
                                                 {entreprise.note ? (
                                                     <div className="scraping-rating">
                                                         <span className="scraping-rating-stars">
@@ -1214,7 +763,7 @@ const handleExportFrontend = () => {
                                                         Pas d'avis
                                                     </span>
                                                 )}
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>

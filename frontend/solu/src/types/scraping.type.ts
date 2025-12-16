@@ -22,6 +22,11 @@ export interface EntrepriseScraped {
   ville: string;
   departement: string;
   note?: number;
+  site_web?:string;
+  description?:string;
+  website?:string;
+  // response?:string[];
+  // site_web?:string;
   nombre_avis?: number;
   adresse_etablissement?: string;
   code_postal_etablissement?: string;
