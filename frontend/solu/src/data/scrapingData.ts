@@ -208,277 +208,456 @@ export const mockVilles: VilleOption[] = [
 //   { id: 'garage', nom: 'Garage automobile', categorie: 'Automobile' },
 //   { id: 'pharmacie', nom: 'Pharmacie', categorie: 'Santé' }
 // ];
-export const mockActivites: ActiviteOption[] = [
-  // ============================================
-  // BTP - GROS ŒUVRE
-  // ============================================
-  { id: 'maçon', nom: 'Maçon', categorie: 'BTP - Gros œuvre' },
-  { id: 'terrassement', nom: 'Terrassement', categorie: 'BTP - Gros œuvre' },
-  { id: 'demolition', nom: 'Démolition', categorie: 'BTP - Gros œuvre' },
-  { id: 'charpentier', nom: 'Charpentier', categorie: 'BTP - Gros œuvre' },
-  { id: 'couvreur', nom: 'Couvreur', categorie: 'BTP - Gros œuvre' },
-  { id: 'zingueur', nom: 'Zingueur', categorie: 'BTP - Gros œuvre' },
-  { id: 'construction-bois', nom: 'Construction bois', categorie: 'BTP - Gros œuvre' },
-  { id: 'constructeur-maison', nom: 'Constructeur de maisons', categorie: 'BTP - Gros œuvre' },
+// export const mockActivites: ActiviteOption[] = [
+//   // ============================================
+//   // BTP - GROS ŒUVRE
+//   // ============================================
+//   { id: 'maçon', nom: 'Maçon', categorie: 'BTP - Gros œuvre' },
+//   { id: 'terrassement', nom: 'Terrassement', categorie: 'BTP - Gros œuvre' },
+//   { id: 'demolition', nom: 'Démolition', categorie: 'BTP - Gros œuvre' },
+//   { id: 'charpentier', nom: 'Charpentier', categorie: 'BTP - Gros œuvre' },
+//   { id: 'couvreur', nom: 'Couvreur', categorie: 'BTP - Gros œuvre' },
+//   { id: 'zingueur', nom: 'Zingueur', categorie: 'BTP - Gros œuvre' },
+//   { id: 'construction-bois', nom: 'Construction bois', categorie: 'BTP - Gros œuvre' },
+//   { id: 'constructeur-maison', nom: 'Constructeur de maisons', categorie: 'BTP - Gros œuvre' },
 
-  // ============================================
-  // BTP - SECOND ŒUVRE
-  // ============================================
-  { id: 'plombier', nom: 'Plombier', categorie: 'BTP - Second œuvre' },
-  { id: 'plombier-chauffagiste', nom: 'Plombier-Chauffagiste', categorie: 'BTP - Second œuvre' },
-  { id: 'electricien', nom: 'Électricien', categorie: 'BTP - Second œuvre' },
-  { id: 'chauffagiste', nom: 'Chauffagiste', categorie: 'BTP - Second œuvre' },
-  { id: 'climatisation', nom: 'Climatisation', categorie: 'BTP - Second œuvre' },
-  { id: 'menuisier', nom: 'Menuisier', categorie: 'BTP - Second œuvre' },
-  { id: 'menuiserie-alu', nom: 'Menuiserie aluminium', categorie: 'BTP - Second œuvre' },
-  { id: 'menuiserie-pvc', nom: 'Menuiserie PVC', categorie: 'BTP - Second œuvre' },
-  { id: 'plaquiste', nom: 'Plaquiste', categorie: 'BTP - Second œuvre' },
-  { id: 'peintre', nom: 'Peintre en bâtiment', categorie: 'BTP - Second œuvre' },
-  { id: 'carreleur', nom: 'Carreleur', categorie: 'BTP - Second œuvre' },
-  { id: 'parqueteur', nom: 'Parqueteur', categorie: 'BTP - Second œuvre' },
-  { id: 'platrier', nom: 'Plâtrier', categorie: 'BTP - Second œuvre' },
-  { id: 'isolation', nom: 'Isolation', categorie: 'BTP - Second œuvre' },
-  { id: 'etancheite', nom: 'Étanchéité', categorie: 'BTP - Second œuvre' },
-  { id: 'vitrerie', nom: 'Vitrerie', categorie: 'BTP - Second œuvre' },
-  { id: 'miroiterie', nom: 'Miroiterie', categorie: 'BTP - Second œuvre' },
+//   // ============================================
+//   // BTP - SECOND ŒUVRE
+//   // ============================================
+//   { id: 'plombier', nom: 'Plombier', categorie: 'BTP - Second œuvre' },
+//   { id: 'plombier-chauffagiste', nom: 'Plombier-Chauffagiste', categorie: 'BTP - Second œuvre' },
+//   { id: 'electricien', nom: 'Électricien', categorie: 'BTP - Second œuvre' },
+//   { id: 'chauffagiste', nom: 'Chauffagiste', categorie: 'BTP - Second œuvre' },
+//   { id: 'climatisation', nom: 'Climatisation', categorie: 'BTP - Second œuvre' },
+//   { id: 'menuisier', nom: 'Menuisier', categorie: 'BTP - Second œuvre' },
+//   { id: 'menuiserie-alu', nom: 'Menuiserie aluminium', categorie: 'BTP - Second œuvre' },
+//   { id: 'menuiserie-pvc', nom: 'Menuiserie PVC', categorie: 'BTP - Second œuvre' },
+//   { id: 'plaquiste', nom: 'Plaquiste', categorie: 'BTP - Second œuvre' },
+//   { id: 'peintre', nom: 'Peintre en bâtiment', categorie: 'BTP - Second œuvre' },
+//   { id: 'carreleur', nom: 'Carreleur', categorie: 'BTP - Second œuvre' },
+//   { id: 'parqueteur', nom: 'Parqueteur', categorie: 'BTP - Second œuvre' },
+//   { id: 'platrier', nom: 'Plâtrier', categorie: 'BTP - Second œuvre' },
+//   { id: 'isolation', nom: 'Isolation', categorie: 'BTP - Second œuvre' },
+//   { id: 'etancheite', nom: 'Étanchéité', categorie: 'BTP - Second œuvre' },
+//   { id: 'vitrerie', nom: 'Vitrerie', categorie: 'BTP - Second œuvre' },
+//   { id: 'miroiterie', nom: 'Miroiterie', categorie: 'BTP - Second œuvre' },
 
-  // ============================================
-  // BTP - FINITIONS
-  // ============================================
-  { id: 'decoration', nom: 'Décoration intérieure', categorie: 'BTP - Finitions' },
-  { id: 'revetement-sol', nom: 'Revêtement de sol', categorie: 'BTP - Finitions' },
-  { id: 'moquette', nom: 'Pose de moquette', categorie: 'BTP - Finitions' },
-  { id: 'papier-peint', nom: 'Pose de papier peint', categorie: 'BTP - Finitions' },
-  { id: 'staff', nom: 'Staff', categorie: 'BTP - Finitions' },
-  { id: 'stucateur', nom: 'Stucateur', categorie: 'BTP - Finitions' },
+//   // ============================================
+//   // BTP - FINITIONS
+//   // ============================================
+//   { id: 'decoration', nom: 'Décoration intérieure', categorie: 'BTP - Finitions' },
+//   { id: 'revetement-sol', nom: 'Revêtement de sol', categorie: 'BTP - Finitions' },
+//   { id: 'moquette', nom: 'Pose de moquette', categorie: 'BTP - Finitions' },
+//   { id: 'papier-peint', nom: 'Pose de papier peint', categorie: 'BTP - Finitions' },
+//   { id: 'staff', nom: 'Staff', categorie: 'BTP - Finitions' },
+//   { id: 'stucateur', nom: 'Stucateur', categorie: 'BTP - Finitions' },
 
-  // ============================================
-  // BTP - EXTÉRIEUR & AMÉNAGEMENT
-  // ============================================
-  { id: 'paysagiste', nom: 'Paysagiste', categorie: 'BTP - Extérieur' },
-  { id: 'jardinier', nom: 'Jardinier', categorie: 'BTP - Extérieur' },
-  { id: 'elagage', nom: 'Élagage', categorie: 'BTP - Extérieur' },
-  { id: 'piscine', nom: 'Pisciniste', categorie: 'BTP - Extérieur' },
-  { id: 'cloture', nom: 'Clôture', categorie: 'BTP - Extérieur' },
-  { id: 'portail', nom: 'Portail automatique', categorie: 'BTP - Extérieur' },
-  { id: 'pergola', nom: 'Pergola', categorie: 'BTP - Extérieur' },
-  { id: 'terrasse', nom: 'Terrasse', categorie: 'BTP - Extérieur' },
-  { id: 'allees', nom: 'Allées et accès', categorie: 'BTP - Extérieur' },
+//   // ============================================
+//   // BTP - EXTÉRIEUR & AMÉNAGEMENT
+//   // ============================================
+//   { id: 'paysagiste', nom: 'Paysagiste', categorie: 'BTP - Extérieur' },
+//   { id: 'jardinier', nom: 'Jardinier', categorie: 'BTP - Extérieur' },
+//   { id: 'elagage', nom: 'Élagage', categorie: 'BTP - Extérieur' },
+//   { id: 'piscine', nom: 'Pisciniste', categorie: 'BTP - Extérieur' },
+//   { id: 'cloture', nom: 'Clôture', categorie: 'BTP - Extérieur' },
+//   { id: 'portail', nom: 'Portail automatique', categorie: 'BTP - Extérieur' },
+//   { id: 'pergola', nom: 'Pergola', categorie: 'BTP - Extérieur' },
+//   { id: 'terrasse', nom: 'Terrasse', categorie: 'BTP - Extérieur' },
+//   { id: 'allees', nom: 'Allées et accès', categorie: 'BTP - Extérieur' },
 
-  // ============================================
-  // BTP - SPÉCIALISÉS
-  // ============================================
-  { id: 'assainissement', nom: 'Assainissement', categorie: 'BTP - Spécialisé' },
-  { id: 'forage', nom: 'Forage', categorie: 'BTP - Spécialisé' },
-  { id: 'ramonage', nom: 'Ramonage', categorie: 'BTP - Spécialisé' },
-  { id: 'domotique', nom: 'Domotique', categorie: 'BTP - Spécialisé' },
-  { id: 'alarme', nom: 'Alarme et sécurité', categorie: 'BTP - Spécialisé' },
-  { id: 'antenne', nom: 'Antenne et parabole', categorie: 'BTP - Spécialisé' },
-  { id: 'panneau-solaire', nom: 'Panneaux solaires', categorie: 'BTP - Spécialisé' },
-  { id: 'pompe-chaleur', nom: 'Pompe à chaleur', categorie: 'BTP - Spécialisé' },
-  { id: 'ventilation', nom: 'Ventilation VMC', categorie: 'BTP - Spécialisé' },
+//   // ============================================
+//   // BTP - SPÉCIALISÉS
+//   // ============================================
+//   { id: 'assainissement', nom: 'Assainissement', categorie: 'BTP - Spécialisé' },
+//   { id: 'forage', nom: 'Forage', categorie: 'BTP - Spécialisé' },
+//   { id: 'ramonage', nom: 'Ramonage', categorie: 'BTP - Spécialisé' },
+//   { id: 'domotique', nom: 'Domotique', categorie: 'BTP - Spécialisé' },
+//   { id: 'alarme', nom: 'Alarme et sécurité', categorie: 'BTP - Spécialisé' },
+//   { id: 'antenne', nom: 'Antenne et parabole', categorie: 'BTP - Spécialisé' },
+//   { id: 'panneau-solaire', nom: 'Panneaux solaires', categorie: 'BTP - Spécialisé' },
+//   { id: 'pompe-chaleur', nom: 'Pompe à chaleur', categorie: 'BTP - Spécialisé' },
+//   { id: 'ventilation', nom: 'Ventilation VMC', categorie: 'BTP - Spécialisé' },
 
-  // ============================================
-  // BTP - RÉNOVATION
-  // ============================================
-  { id: 'renovation-complete', nom: 'Rénovation complète', categorie: 'BTP - Rénovation' },
-  { id: 'renovation-appartement', nom: 'Rénovation appartement', categorie: 'BTP - Rénovation' },
-  { id: 'renovation-maison', nom: 'Rénovation maison', categorie: 'BTP - Rénovation' },
-  { id: 'renovation-salle-bain', nom: 'Rénovation salle de bain', categorie: 'BTP - Rénovation' },
-  { id: 'renovation-cuisine', nom: 'Rénovation cuisine', categorie: 'BTP - Rénovation' },
-  { id: 'renovation-energetique', nom: 'Rénovation énergétique', categorie: 'BTP - Rénovation' },
+//   // ============================================
+//   // BTP - RÉNOVATION
+//   // ============================================
+//   { id: 'renovation-complete', nom: 'Rénovation complète', categorie: 'BTP - Rénovation' },
+//   { id: 'renovation-appartement', nom: 'Rénovation appartement', categorie: 'BTP - Rénovation' },
+//   { id: 'renovation-maison', nom: 'Rénovation maison', categorie: 'BTP - Rénovation' },
+//   { id: 'renovation-salle-bain', nom: 'Rénovation salle de bain', categorie: 'BTP - Rénovation' },
+//   { id: 'renovation-cuisine', nom: 'Rénovation cuisine', categorie: 'BTP - Rénovation' },
+//   { id: 'renovation-energetique', nom: 'Rénovation énergétique', categorie: 'BTP - Rénovation' },
 
-  // ============================================
+//   // ============================================
+//   // AUTOMOBILE
+//   // ============================================
+//   { id: 'garage', nom: 'Garage automobile', categorie: 'Automobile' },
+//   { id: 'carrosserie', nom: 'Carrosserie', categorie: 'Automobile' },
+//   { id: 'peinture-auto', nom: 'Peinture automobile', categorie: 'Automobile' },
+//   { id: 'mecanique', nom: 'Mécanique', categorie: 'Automobile' },
+//   { id: 'pneumatique', nom: 'Pneumatique', categorie: 'Automobile' },
+//   { id: 'pare-brise', nom: 'Pare-brise', categorie: 'Automobile' },
+//   { id: 'controle-technique', nom: 'Contrôle technique', categorie: 'Automobile' },
+//   { id: 'depannage-auto', nom: 'Dépannage automobile', categorie: 'Automobile' },
+//   { id: 'lavage-auto', nom: 'Lavage automobile', categorie: 'Automobile' },
+//   { id: 'vente-voiture', nom: 'Vente de voitures', categorie: 'Automobile' },
+
+//   // ============================================
+//   // SANTÉ
+//   // ============================================
+//   { id: 'medecin', nom: 'Médecin généraliste', categorie: 'Santé' },
+//   { id: 'dentiste', nom: 'Dentiste', categorie: 'Santé' },
+//   { id: 'pharmacie', nom: 'Pharmacie', categorie: 'Santé' },
+//   { id: 'kine', nom: 'Kinésithérapeute', categorie: 'Santé' },
+//   { id: 'osteopathe', nom: 'Ostéopathe', categorie: 'Santé' },
+//   { id: 'infirmier', nom: 'Infirmier', categorie: 'Santé' },
+//   { id: 'podologue', nom: 'Podologue', categorie: 'Santé' },
+//   { id: 'opticien', nom: 'Opticien', categorie: 'Santé' },
+//   { id: 'audioprothesiste', nom: 'Audioprothésiste', categorie: 'Santé' },
+//   { id: 'psychologue', nom: 'Psychologue', categorie: 'Santé' },
+//   { id: 'veterinaire', nom: 'Vétérinaire', categorie: 'Santé' },
+
+//   // ============================================
+//   // SERVICES À LA PERSONNE
+//   // ============================================
+//   { id: 'coiffeur', nom: 'Coiffeur', categorie: 'Services à la personne' },
+//   { id: 'esthetique', nom: 'Esthétique', categorie: 'Services à la personne' },
+//   { id: 'massage', nom: 'Massage', categorie: 'Services à la personne' },
+//   { id: 'manucure', nom: 'Manucure', categorie: 'Services à la personne' },
+//   { id: 'spa', nom: 'Spa', categorie: 'Services à la personne' },
+//   { id: 'tatouage', nom: 'Tatouage', categorie: 'Services à la personne' },
+//   { id: 'pressing', nom: 'Pressing', categorie: 'Services à la personne' },
+//   { id: 'cordonnerie', nom: 'Cordonnerie', categorie: 'Services à la personne' },
+//   { id: 'retouche', nom: 'Retouche vêtements', categorie: 'Services à la personne' },
+
+//   // ============================================
+//   // RESTAURATION
+//   // ============================================
+//   { id: 'restaurant', nom: 'Restaurant', categorie: 'Restauration' },
+//   { id: 'pizzeria', nom: 'Pizzeria', categorie: 'Restauration' },
+//   { id: 'creperie', nom: 'Crêperie', categorie: 'Restauration' },
+//   { id: 'kebab', nom: 'Kebab', categorie: 'Restauration' },
+//   { id: 'sushi', nom: 'Sushi', categorie: 'Restauration' },
+//   { id: 'cafe', nom: 'Café', categorie: 'Restauration' },
+//   { id: 'bar', nom: 'Bar', categorie: 'Restauration' },
+//   { id: 'brasserie', nom: 'Brasserie', categorie: 'Restauration' },
+//   { id: 'traiteur', nom: 'Traiteur', categorie: 'Restauration' },
+//   { id: 'food-truck', nom: 'Food truck', categorie: 'Restauration' },
+
+//   // ============================================
+//   // ALIMENTATION
+//   // ============================================
+//   { id: 'boulangerie', nom: 'Boulangerie', categorie: 'Alimentation' },
+//   { id: 'patisserie', nom: 'Pâtisserie', categorie: 'Alimentation' },
+//   { id: 'boucherie', nom: 'Boucherie', categorie: 'Alimentation' },
+//   { id: 'charcuterie', nom: 'Charcuterie', categorie: 'Alimentation' },
+//   { id: 'poissonnerie', nom: 'Poissonnerie', categorie: 'Alimentation' },
+//   { id: 'fromagerie', nom: 'Fromagerie', categorie: 'Alimentation' },
+//   { id: 'primeur', nom: 'Primeur', categorie: 'Alimentation' },
+//   { id: 'epicerie', nom: 'Épicerie', categorie: 'Alimentation' },
+//   { id: 'superette', nom: 'Supérette', categorie: 'Alimentation' },
+//   { id: 'cave', nom: 'Cave à vin', categorie: 'Alimentation' },
+//   { id: 'chocolaterie', nom: 'Chocolaterie', categorie: 'Alimentation' },
+
+//   // ============================================
+//   // IMMOBILIER
+//   // ============================================
+//   { id: 'agence-immobiliere', nom: 'Agence immobilière', categorie: 'Immobilier' },
+//   { id: 'syndic', nom: 'Syndic de copropriété', categorie: 'Immobilier' },
+//   { id: 'gestion-locative', nom: 'Gestion locative', categorie: 'Immobilier' },
+//   { id: 'expert-immobilier', nom: 'Expert immobilier', categorie: 'Immobilier' },
+//   { id: 'promoteur', nom: 'Promoteur immobilier', categorie: 'Immobilier' },
+//   { id: 'home-staging', nom: 'Home staging', categorie: 'Immobilier' },
+
+//   // ============================================
+//   // SERVICES PROFESSIONNELS
+//   // ============================================
+//   { id: 'avocat', nom: 'Avocat', categorie: 'Services professionnels' },
+//   { id: 'notaire', nom: 'Notaire', categorie: 'Services professionnels' },
+//   { id: 'expert-comptable', nom: 'Expert-comptable', categorie: 'Services professionnels' },
+//   { id: 'assurance', nom: 'Assurance', categorie: 'Services professionnels' },
+//   { id: 'banque', nom: 'Banque', categorie: 'Services professionnels' },
+//   { id: 'architecte', nom: 'Architecte', categorie: 'Services professionnels' },
+//   { id: 'geometre', nom: 'Géomètre', categorie: 'Services professionnels' },
+//   { id: 'huissier', nom: 'Huissier', categorie: 'Services professionnels' },
+
+//   // ============================================
+//   // INFORMATIQUE & TÉLÉCOMS
+//   // ============================================
+//   { id: 'informatique', nom: 'Informatique', categorie: 'Informatique' },
+//   { id: 'reparation-pc', nom: 'Réparation ordinateur', categorie: 'Informatique' },
+//   { id: 'reparation-smartphone', nom: 'Réparation smartphone', categorie: 'Informatique' },
+//   { id: 'reseau', nom: 'Réseau informatique', categorie: 'Informatique' },
+//   { id: 'web-agency', nom: 'Agence web', categorie: 'Informatique' },
+//   { id: 'telephonie', nom: 'Téléphonie', categorie: 'Informatique' },
+
+//   // ============================================
+//   // COMMERCE
+//   // ============================================
+//   { id: 'vetements', nom: 'Vêtements', categorie: 'Commerce' },
+//   { id: 'chaussures', nom: 'Chaussures', categorie: 'Commerce' },
+//   { id: 'bijouterie', nom: 'Bijouterie', categorie: 'Commerce' },
+//   { id: 'horlogerie', nom: 'Horlogerie', categorie: 'Commerce' },
+//   { id: 'maroquinerie', nom: 'Maroquinerie', categorie: 'Commerce' },
+//   { id: 'parfumerie', nom: 'Parfumerie', categorie: 'Commerce' },
+//   { id: 'librairie', nom: 'Librairie', categorie: 'Commerce' },
+//   { id: 'papeterie', nom: 'Papeterie', categorie: 'Commerce' },
+//   { id: 'jouets', nom: 'Jouets', categorie: 'Commerce' },
+//   { id: 'electromenager', nom: 'Électroménager', categorie: 'Commerce' },
+//   { id: 'meuble', nom: 'Meubles', categorie: 'Commerce' },
+//   { id: 'decoration-maison', nom: 'Décoration maison', categorie: 'Commerce' },
+//   { id: 'bricolage', nom: 'Bricolage', categorie: 'Commerce' },
+//   { id: 'jardinerie', nom: 'Jardinerie', categorie: 'Commerce' },
+//   { id: 'animalerie', nom: 'Animalerie', categorie: 'Commerce' },
+//   { id: 'fleuriste', nom: 'Fleuriste', categorie: 'Commerce' },
+
+//   // ============================================
+//   // TRANSPORT & LOGISTIQUE
+//   // ============================================
+//   { id: 'demenagement', nom: 'Déménagement', categorie: 'Transport' },
+//   { id: 'transport', nom: 'Transport', categorie: 'Transport' },
+//   { id: 'taxi', nom: 'Taxi', categorie: 'Transport' },
+//   { id: 'vtc', nom: 'VTC', categorie: 'Transport' },
+//   { id: 'ambulance', nom: 'Ambulance', categorie: 'Transport' },
+//   { id: 'location-vehicule', nom: 'Location de véhicules', categorie: 'Transport' },
+//   { id: 'coursier', nom: 'Coursier', categorie: 'Transport' },
+
+//   // ============================================
+//   // NETTOYAGE & ENTRETIEN
+//   // ============================================
+//   { id: 'nettoyage', nom: 'Nettoyage', categorie: 'Nettoyage' },
+//   { id: 'menage', nom: 'Ménage', categorie: 'Nettoyage' },
+//   { id: 'vitrerie-nettoyage', nom: 'Nettoyage de vitres', categorie: 'Nettoyage' },
+//   { id: 'desinfection', nom: 'Désinfection', categorie: 'Nettoyage' },
+//   { id: 'debarras', nom: 'Débarras', categorie: 'Nettoyage' },
+
+//   // ============================================
+//   // SÉCURITÉ
+//   // ============================================
+//   { id: 'serrurier', nom: 'Serrurier', categorie: 'Sécurité' },
+//   { id: 'vigile', nom: 'Sécurité privée', categorie: 'Sécurité' },
+//   { id: 'videosurveillance', nom: 'Vidéosurveillance', categorie: 'Sécurité' },
+
+//   // ============================================
+//   // FORMATION & ÉDUCATION
+//   // ============================================
+//   { id: 'auto-ecole', nom: 'Auto-école', categorie: 'Formation' },
+//   { id: 'cours-particuliers', nom: 'Cours particuliers', categorie: 'Formation' },
+//   { id: 'formation', nom: 'Centre de formation', categorie: 'Formation' },
+//   { id: 'creche', nom: 'Crèche', categorie: 'Formation' },
+//   { id: 'garde-enfant', nom: 'Garde d\'enfants', categorie: 'Formation' },
+
+//   // ============================================
+//   // LOISIRS & TOURISME
+//   // ============================================
+//   { id: 'hotel', nom: 'Hôtel', categorie: 'Tourisme' },
+//   { id: 'gite', nom: 'Gîte', categorie: 'Tourisme' },
+//   { id: 'camping', nom: 'Camping', categorie: 'Tourisme' },
+//   { id: 'agence-voyage', nom: 'Agence de voyage', categorie: 'Tourisme' },
+//   { id: 'musee', nom: 'Musée', categorie: 'Tourisme' },
+//   { id: 'salle-sport', nom: 'Salle de sport', categorie: 'Loisirs' },
+//   { id: 'piscine-publique', nom: 'Piscine', categorie: 'Loisirs' },
+//   { id: 'cinema', nom: 'Cinéma', categorie: 'Loisirs' },
+//   { id: 'theatre', nom: 'Théâtre', categorie: 'Loisirs' },
+
+//   // ============================================
+//   // ÉVÉNEMENTIEL
+//   // ============================================
+//   { id: 'photographe', nom: 'Photographe', categorie: 'Événementiel' },
+//   { id: 'videaste', nom: 'Vidéaste', categorie: 'Événementiel' },
+//   { id: 'dj', nom: 'DJ', categorie: 'Événementiel' },
+//   { id: 'location-materiel', nom: 'Location de matériel', categorie: 'Événementiel' },
+//   { id: 'organisation-evenement', nom: 'Organisation événement', categorie: 'Événementiel' },
+//   { id: 'wedding-planner', nom: 'Wedding planner', categorie: 'Événementiel' },
+
+//   // ============================================
+//   // AUTRES SERVICES
+//   // ============================================
+//   { id: 'imprimerie', nom: 'Imprimerie', categorie: 'Autres' },
+//   { id: 'publicite', nom: 'Publicité', categorie: 'Autres' },
+//   { id: 'graphiste', nom: 'Graphiste', categorie: 'Autres' },
+//   { id: 'traduction', nom: 'Traduction', categorie: 'Autres' },
+//   { id: 'marquage-publicitaire', nom: 'Marquage publicitaire', categorie: 'Autres' },
+// ];
+
+
+
+export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
+  // ======================
+  // BTP – GROS ŒUVRE
+  // ======================
+  'maçon': 'masonry-contractor',
+  'terrassement': 'excavating-contractor',
+  'demolition': 'demolition-contractor',
+  'charpentier': 'carpenter',
+  'couvreur': 'roofer',
+  'zingueur': 'roofer',
+  'construction-bois': 'general-contractor',
+  'constructeur-maison': 'general-contractor',
+
+  // ======================
+  // BTP – SECOND ŒUVRE
+  // ======================
+  'plombier': 'plumber',
+  'plombier-chauffagiste': 'plumber',
+  'electricien': 'electrician',
+  'chauffagiste': 'hvac-contractor',
+  'climatisation': 'hvac-contractor',
+  'menuisier': 'carpenter',
+  'menuiserie-alu': 'carpenter',
+  'menuiserie-pvc': 'carpenter',
+  'plaquiste': 'drywall-contractor',
+  'peintre': 'painter',
+  'carreleur': 'tile-contractor',
+  'parqueteur': 'flooring-contractor',
+  'platrier': 'plasterer',
+  'isolation': 'insulation-contractor',
+  'etancheite': 'waterproofing-contractor',
+  'vitrerie': 'glass-repair',
+  'miroiterie': 'glass-repair',
+
+  // ======================
+  // EXTÉRIEUR
+  // ======================
+  'paysagiste': 'landscaper',
+  'jardinier': 'gardener',
+  'elagage': 'tree-service',
+  'piscine': 'swimming-pool-contractor',
+  'cloture': 'fence-contractor',
+  'portail': 'fence-contractor',
+  'pergola': 'deck-builder',
+  'terrasse': 'deck-builder',
+  'allees': 'paving-contractor',
+
+  // ======================
+  // SPÉCIALISÉS
+  // ======================
+  'assainissement': 'septic-system-service',
+  'forage': 'drilling-contractor',
+  'ramonage': 'chimney-sweep',
+  'domotique': 'home-automation',
+  'alarme': 'security-system-supplier',
+  'antenne': 'antenna-service',
+  'panneau-solaire': 'solar-energy-company',
+  'pompe-chaleur': 'hvac-contractor',
+  'ventilation': 'hvac-contractor',
+
+  // ======================
   // AUTOMOBILE
-  // ============================================
-  { id: 'garage', nom: 'Garage automobile', categorie: 'Automobile' },
-  { id: 'carrosserie', nom: 'Carrosserie', categorie: 'Automobile' },
-  { id: 'peinture-auto', nom: 'Peinture automobile', categorie: 'Automobile' },
-  { id: 'mecanique', nom: 'Mécanique', categorie: 'Automobile' },
-  { id: 'pneumatique', nom: 'Pneumatique', categorie: 'Automobile' },
-  { id: 'pare-brise', nom: 'Pare-brise', categorie: 'Automobile' },
-  { id: 'controle-technique', nom: 'Contrôle technique', categorie: 'Automobile' },
-  { id: 'depannage-auto', nom: 'Dépannage automobile', categorie: 'Automobile' },
-  { id: 'lavage-auto', nom: 'Lavage automobile', categorie: 'Automobile' },
-  { id: 'vente-voiture', nom: 'Vente de voitures', categorie: 'Automobile' },
+  // ======================
+  'garage': 'auto-repair',
+  'carrosserie': 'auto-body-shop',
+  'peinture-auto': 'auto-body-shop',
+  'mecanique': 'auto-repair',
+  'pneumatique': 'tire-shop',
+  'pare-brise': 'auto-glass-service',
+  'controle-technique': 'car-inspection-station',
+  'depannage-auto': 'towing-service',
+  'lavage-auto': 'car-wash',
+  'vente-voiture': 'car-dealer',
 
-  // ============================================
+  // ======================
   // SANTÉ
-  // ============================================
-  { id: 'medecin', nom: 'Médecin généraliste', categorie: 'Santé' },
-  { id: 'dentiste', nom: 'Dentiste', categorie: 'Santé' },
-  { id: 'pharmacie', nom: 'Pharmacie', categorie: 'Santé' },
-  { id: 'kine', nom: 'Kinésithérapeute', categorie: 'Santé' },
-  { id: 'osteopathe', nom: 'Ostéopathe', categorie: 'Santé' },
-  { id: 'infirmier', nom: 'Infirmier', categorie: 'Santé' },
-  { id: 'podologue', nom: 'Podologue', categorie: 'Santé' },
-  { id: 'opticien', nom: 'Opticien', categorie: 'Santé' },
-  { id: 'audioprothesiste', nom: 'Audioprothésiste', categorie: 'Santé' },
-  { id: 'psychologue', nom: 'Psychologue', categorie: 'Santé' },
-  { id: 'veterinaire', nom: 'Vétérinaire', categorie: 'Santé' },
+  // ======================
+  'medecin': 'doctor',
+  'dentiste': 'dentist',
+  'pharmacie': 'pharmacy',
+  'kine': 'physical-therapist',
+  'osteopathe': 'osteopath',
+  'infirmier': 'nursing-agency',
+  'podologue': 'podiatrist',
+  'opticien': 'optician',
+  'audioprothesiste': 'hearing-aid-store',
+  'psychologue': 'psychologist',
+  'veterinaire': 'veterinary-care',
 
-  // ============================================
-  // SERVICES À LA PERSONNE
-  // ============================================
-  { id: 'coiffeur', nom: 'Coiffeur', categorie: 'Services à la personne' },
-  { id: 'esthetique', nom: 'Esthétique', categorie: 'Services à la personne' },
-  { id: 'massage', nom: 'Massage', categorie: 'Services à la personne' },
-  { id: 'manucure', nom: 'Manucure', categorie: 'Services à la personne' },
-  { id: 'spa', nom: 'Spa', categorie: 'Services à la personne' },
-  { id: 'tatouage', nom: 'Tatouage', categorie: 'Services à la personne' },
-  { id: 'pressing', nom: 'Pressing', categorie: 'Services à la personne' },
-  { id: 'cordonnerie', nom: 'Cordonnerie', categorie: 'Services à la personne' },
-  { id: 'retouche', nom: 'Retouche vêtements', categorie: 'Services à la personne' },
+  // ======================
+  // SERVICES
+  // ======================
+  'coiffeur': 'hair-salon',
+  'esthetique': 'beauty-salon',
+  'massage': 'massage-therapist',
+  'manucure': 'nail-salon',
+  'spa': 'spa',
+  'tatouage': 'tattoo-shop',
+  'pressing': 'laundry',
+  'cordonnerie': 'shoe-repair',
+  'retouche': 'tailor',
 
-  // ============================================
+  // ======================
   // RESTAURATION
-  // ============================================
-  { id: 'restaurant', nom: 'Restaurant', categorie: 'Restauration' },
-  { id: 'pizzeria', nom: 'Pizzeria', categorie: 'Restauration' },
-  { id: 'creperie', nom: 'Crêperie', categorie: 'Restauration' },
-  { id: 'kebab', nom: 'Kebab', categorie: 'Restauration' },
-  { id: 'sushi', nom: 'Sushi', categorie: 'Restauration' },
-  { id: 'cafe', nom: 'Café', categorie: 'Restauration' },
-  { id: 'bar', nom: 'Bar', categorie: 'Restauration' },
-  { id: 'brasserie', nom: 'Brasserie', categorie: 'Restauration' },
-  { id: 'traiteur', nom: 'Traiteur', categorie: 'Restauration' },
-  { id: 'food-truck', nom: 'Food truck', categorie: 'Restauration' },
+  // ======================
+  'restaurant': 'restaurant',
+  'pizzeria': 'pizza-restaurant',
+  'creperie': 'creperie',
+  'kebab': 'kebab-shop',
+  'sushi': 'sushi-restaurant',
+  'cafe': 'cafe',
+  'bar': 'bar',
+  'brasserie': 'brasserie',
+  'traiteur': 'caterer',
+  'food-truck': 'food-truck',
 
-  // ============================================
-  // ALIMENTATION
-  // ============================================
-  { id: 'boulangerie', nom: 'Boulangerie', categorie: 'Alimentation' },
-  { id: 'patisserie', nom: 'Pâtisserie', categorie: 'Alimentation' },
-  { id: 'boucherie', nom: 'Boucherie', categorie: 'Alimentation' },
-  { id: 'charcuterie', nom: 'Charcuterie', categorie: 'Alimentation' },
-  { id: 'poissonnerie', nom: 'Poissonnerie', categorie: 'Alimentation' },
-  { id: 'fromagerie', nom: 'Fromagerie', categorie: 'Alimentation' },
-  { id: 'primeur', nom: 'Primeur', categorie: 'Alimentation' },
-  { id: 'epicerie', nom: 'Épicerie', categorie: 'Alimentation' },
-  { id: 'superette', nom: 'Supérette', categorie: 'Alimentation' },
-  { id: 'cave', nom: 'Cave à vin', categorie: 'Alimentation' },
-  { id: 'chocolaterie', nom: 'Chocolaterie', categorie: 'Alimentation' },
-
-  // ============================================
+  // ======================
   // IMMOBILIER
-  // ============================================
-  { id: 'agence-immobiliere', nom: 'Agence immobilière', categorie: 'Immobilier' },
-  { id: 'syndic', nom: 'Syndic de copropriété', categorie: 'Immobilier' },
-  { id: 'gestion-locative', nom: 'Gestion locative', categorie: 'Immobilier' },
-  { id: 'expert-immobilier', nom: 'Expert immobilier', categorie: 'Immobilier' },
-  { id: 'promoteur', nom: 'Promoteur immobilier', categorie: 'Immobilier' },
-  { id: 'home-staging', nom: 'Home staging', categorie: 'Immobilier' },
+  // ======================
+  'agence-immobiliere': 'real-estate-agency',
+  'syndic': 'property-management',
+  'gestion-locative': 'property-management',
+  'expert-immobilier': 'real-estate-appraiser',
+  'promoteur': 'real-estate-developer',
+  'home-staging': 'interior-designer',
 
-  // ============================================
-  // SERVICES PROFESSIONNELS
-  // ============================================
-  { id: 'avocat', nom: 'Avocat', categorie: 'Services professionnels' },
-  { id: 'notaire', nom: 'Notaire', categorie: 'Services professionnels' },
-  { id: 'expert-comptable', nom: 'Expert-comptable', categorie: 'Services professionnels' },
-  { id: 'assurance', nom: 'Assurance', categorie: 'Services professionnels' },
-  { id: 'banque', nom: 'Banque', categorie: 'Services professionnels' },
-  { id: 'architecte', nom: 'Architecte', categorie: 'Services professionnels' },
-  { id: 'geometre', nom: 'Géomètre', categorie: 'Services professionnels' },
-  { id: 'huissier', nom: 'Huissier', categorie: 'Services professionnels' },
+  // ======================
+  // PRO
+  // ======================
+  'avocat': 'lawyer',
+  'notaire': 'notary-public',
+  'expert-comptable': 'accountant',
+  'assurance': 'insurance-agency',
+  'banque': 'bank',
+  'architecte': 'architect',
+  'geometre': 'land-surveyor',
+  'huissier': 'bailiff',
 
-  // ============================================
-  // INFORMATIQUE & TÉLÉCOMS
-  // ============================================
-  { id: 'informatique', nom: 'Informatique', categorie: 'Informatique' },
-  { id: 'reparation-pc', nom: 'Réparation ordinateur', categorie: 'Informatique' },
-  { id: 'reparation-smartphone', nom: 'Réparation smartphone', categorie: 'Informatique' },
-  { id: 'reseau', nom: 'Réseau informatique', categorie: 'Informatique' },
-  { id: 'web-agency', nom: 'Agence web', categorie: 'Informatique' },
-  { id: 'telephonie', nom: 'Téléphonie', categorie: 'Informatique' },
+  // ======================
+  // INFORMATIQUE
+  // ======================
+  'informatique': 'it-services',
+  'reparation-pc': 'computer-repair',
+  'reparation-smartphone': 'mobile-phone-repair',
+  'reseau': 'it-services',
+  'web-agency': 'software-company',
+  'telephonie': 'telecommunications-service',
 
-  // ============================================
-  // COMMERCE
-  // ============================================
-  { id: 'vetements', nom: 'Vêtements', categorie: 'Commerce' },
-  { id: 'chaussures', nom: 'Chaussures', categorie: 'Commerce' },
-  { id: 'bijouterie', nom: 'Bijouterie', categorie: 'Commerce' },
-  { id: 'horlogerie', nom: 'Horlogerie', categorie: 'Commerce' },
-  { id: 'maroquinerie', nom: 'Maroquinerie', categorie: 'Commerce' },
-  { id: 'parfumerie', nom: 'Parfumerie', categorie: 'Commerce' },
-  { id: 'librairie', nom: 'Librairie', categorie: 'Commerce' },
-  { id: 'papeterie', nom: 'Papeterie', categorie: 'Commerce' },
-  { id: 'jouets', nom: 'Jouets', categorie: 'Commerce' },
-  { id: 'electromenager', nom: 'Électroménager', categorie: 'Commerce' },
-  { id: 'meuble', nom: 'Meubles', categorie: 'Commerce' },
-  { id: 'decoration-maison', nom: 'Décoration maison', categorie: 'Commerce' },
-  { id: 'bricolage', nom: 'Bricolage', categorie: 'Commerce' },
-  { id: 'jardinerie', nom: 'Jardinerie', categorie: 'Commerce' },
-  { id: 'animalerie', nom: 'Animalerie', categorie: 'Commerce' },
-  { id: 'fleuriste', nom: 'Fleuriste', categorie: 'Commerce' },
+  // ======================
+  // TRANSPORT
+  // ======================
+  'demenagement': 'moving-company',
+  'transport': 'logistics-service',
+  'taxi': 'taxi-service',
+  'vtc': 'ride-hailing-service',
+  'ambulance': 'ambulance-service',
+  'location-vehicule': 'car-rental',
+  'coursier': 'courier-service',
 
-  // ============================================
-  // TRANSPORT & LOGISTIQUE
-  // ============================================
-  { id: 'demenagement', nom: 'Déménagement', categorie: 'Transport' },
-  { id: 'transport', nom: 'Transport', categorie: 'Transport' },
-  { id: 'taxi', nom: 'Taxi', categorie: 'Transport' },
-  { id: 'vtc', nom: 'VTC', categorie: 'Transport' },
-  { id: 'ambulance', nom: 'Ambulance', categorie: 'Transport' },
-  { id: 'location-vehicule', nom: 'Location de véhicules', categorie: 'Transport' },
-  { id: 'coursier', nom: 'Coursier', categorie: 'Transport' },
+  // ======================
+  // NETTOYAGE
+  // ======================
+  'nettoyage': 'cleaning-service',
+  'menage': 'house-cleaning-service',
+  'vitrerie-nettoyage': 'window-cleaning-service',
+  'desinfection': 'sanitation-service',
+  'debarras': 'waste-removal',
 
-  // ============================================
-  // NETTOYAGE & ENTRETIEN
-  // ============================================
-  { id: 'nettoyage', nom: 'Nettoyage', categorie: 'Nettoyage' },
-  { id: 'menage', nom: 'Ménage', categorie: 'Nettoyage' },
-  { id: 'vitrerie-nettoyage', nom: 'Nettoyage de vitres', categorie: 'Nettoyage' },
-  { id: 'desinfection', nom: 'Désinfection', categorie: 'Nettoyage' },
-  { id: 'debarras', nom: 'Débarras', categorie: 'Nettoyage' },
-
-  // ============================================
+  // ======================
   // SÉCURITÉ
-  // ============================================
-  { id: 'serrurier', nom: 'Serrurier', categorie: 'Sécurité' },
-  { id: 'vigile', nom: 'Sécurité privée', categorie: 'Sécurité' },
-  { id: 'videosurveillance', nom: 'Vidéosurveillance', categorie: 'Sécurité' },
+  // ======================
+  'serrurier': 'locksmith',
+  'vigile': 'security-service',
+  'videosurveillance': 'security-system-supplier',
+}
 
-  // ============================================
-  // FORMATION & ÉDUCATION
-  // ============================================
-  { id: 'auto-ecole', nom: 'Auto-école', categorie: 'Formation' },
-  { id: 'cours-particuliers', nom: 'Cours particuliers', categorie: 'Formation' },
-  { id: 'formation', nom: 'Centre de formation', categorie: 'Formation' },
-  { id: 'creche', nom: 'Crèche', categorie: 'Formation' },
-  { id: 'garde-enfant', nom: 'Garde d\'enfants', categorie: 'Formation' },
-
-  // ============================================
-  // LOISIRS & TOURISME
-  // ============================================
-  { id: 'hotel', nom: 'Hôtel', categorie: 'Tourisme' },
-  { id: 'gite', nom: 'Gîte', categorie: 'Tourisme' },
-  { id: 'camping', nom: 'Camping', categorie: 'Tourisme' },
-  { id: 'agence-voyage', nom: 'Agence de voyage', categorie: 'Tourisme' },
-  { id: 'musee', nom: 'Musée', categorie: 'Tourisme' },
-  { id: 'salle-sport', nom: 'Salle de sport', categorie: 'Loisirs' },
-  { id: 'piscine-publique', nom: 'Piscine', categorie: 'Loisirs' },
-  { id: 'cinema', nom: 'Cinéma', categorie: 'Loisirs' },
-  { id: 'theatre', nom: 'Théâtre', categorie: 'Loisirs' },
-
-  // ============================================
-  // ÉVÉNEMENTIEL
-  // ============================================
-  { id: 'photographe', nom: 'Photographe', categorie: 'Événementiel' },
-  { id: 'videaste', nom: 'Vidéaste', categorie: 'Événementiel' },
-  { id: 'dj', nom: 'DJ', categorie: 'Événementiel' },
-  { id: 'location-materiel', nom: 'Location de matériel', categorie: 'Événementiel' },
-  { id: 'organisation-evenement', nom: 'Organisation événement', categorie: 'Événementiel' },
-  { id: 'wedding-planner', nom: 'Wedding planner', categorie: 'Événementiel' },
-
-  // ============================================
-  // AUTRES SERVICES
-  // ============================================
-  { id: 'imprimerie', nom: 'Imprimerie', categorie: 'Autres' },
-  { id: 'publicite', nom: 'Publicité', categorie: 'Autres' },
-  { id: 'graphiste', nom: 'Graphiste', categorie: 'Autres' },
-  { id: 'traduction', nom: 'Traduction', categorie: 'Autres' },
-  { id: 'marquage-publicitaire', nom: 'Marquage publicitaire', categorie: 'Autres' },
-];
 export const mockEntreprises: EntrepriseScraped[] = [
   {
     id: '1',
@@ -691,3 +870,13 @@ export const mockRegions: RegionOption[] = [
   { code: 'PAC', nom: "Provence-Alpes-Côte d'Azur" },
   { code: 'CVF', nom: 'Centre-Val de France' }
 ];
+
+export const mockActivites: ActiviteOption[] = Object.keys(
+  ACTIVITE_TO_GOOGLE_TYPE
+).map((key) => ({
+  id: key,
+  nom: key
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase()),
+  categorie: 'BTP - Gros œuvre'
+}))

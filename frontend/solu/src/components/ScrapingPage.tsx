@@ -33,7 +33,7 @@ const ScrapingPage: React.FC = () => {
     const [regions, setRegions] = useState<Region[]>([]);
     const [departements, setDepartements] = useState<Departement[]>([]);
     const [villes, setVilles] = useState<Ville[]>([]);
-    const [activites] = useState<ActiviteOption[]>(mockActivites);
+     const [activites] = useState<ActiviteOption[]>(mockActivites);
 
     // Loading states
     const [loadingRegions, setLoadingRegions] = useState(false);

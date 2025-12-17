@@ -1,105 +1,7 @@
 
 
-// import type { EntrepriseScraped } from '../types/scraping.type'
-// import axios from 'axios'
 
-// const SCRAPIO_BASE_URL = 'https://scrap.io/api/v1'
-// const API_KEY = import.meta.env.VITE_SCRAPIO_API_KEY
-
-// interface ScrapIoApiResponse {
-//   meta: {
-//     status: string
-//     per_page: number
-//     has_more_pages: boolean
-//     next_cursor?: string
-//   }
-//   data: any[]
-// }
-
-// export const scrapeScrapIo = async (
-//   activite: string,
-//   ville: string,
-//   limit: number
-// ): Promise<EntrepriseScraped[]> => {
-
-//   const results: EntrepriseScraped[] = []
-//   const seen = new Set<string>()
-//   let cursor: string | undefined = undefined
-
-//   console.log(`🔍 Scrap.io: ${activite} à ${ville} (objectif ${limit})`)
-
-//   while (results.length < limit) {
-//     const response = await axios.get<ScrapIoApiResponse>(
-//       `${SCRAPIO_BASE_URL}/gmap/search`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${API_KEY}`
-//         },
-//         params: {
-//           query: activite,
-//           city: ville,
-//           country_code: 'FR',
-//           cursor
-//         }
-//       }
-//     )
-
-//     const { data, meta } = response.data
-
-//     for (const item of data) {
-//       if (results.length >= limit) break
-//       if (seen.has(item.google_id)) continue
-
-//       seen.add(item.google_id)
-
-//       // EMAIL
-//       let email = 'Non disponible'
-//       const emails = item.website_data?.emails
-//       if (Array.isArray(emails) && emails[0]?.email) {
-//         email = emails[0].email
-//       }
-
-//       // DESCRIPTION (Google Maps)
-//       const description =
-//         Array.isArray(item.descriptions) && item.descriptions.length > 0
-//           ? item.descriptions[0]
-//           : ''
-
-//       results.push({
-//         id: item.google_id,
-//         nom_societe: item.name,
-//         prenom: '',
-//         nom: '',
-//         telephone: item.phone || item.phone_international || 'Non disponible',
-//         email,
-//         site_web: item.website,
-//         adresse: item.location_street_1 || item.location_full_address || '',
-//         adresse_etablissement: item.location_full_address,
-//         code_postal: item.location_postal_code || '',
-//         code_postal_etablissement: item.location_postal_code,
-//         ville: item.location_city || ville,
-//         ville_etablissement: item.location_city,
-//         departement: '',
-//         activite,
-//         siret: 'Non disponible',
-//         note: typeof item.reviews_rating === 'number' ? item.reviews_rating : undefined,
-//         nombre_avis: typeof item.reviews_count === 'number' ? item.reviews_count : 0,
-//         description
-//       })
-//     }
-
-//     if (!meta.has_more_pages || !meta.next_cursor) {
-//       break
-//     }
-
-//     cursor = meta.next_cursor
-//   }
-
-//   console.log(`✅ Scrap.io terminé: ${results.length} résultats`)
-//   return results
-// }
-
-
+import { ACTIVITE_TO_GOOGLE_TYPE } from '../data/scrapingData'
 import type { EntrepriseScraped } from '../types/scraping.type'
 import axios from 'axios'
 
@@ -129,6 +31,16 @@ export const scrapeScrapIo = async (
   let cursor: string | undefined = undefined
 
   console.log(`🔍 Scrap.io: ${activite} à ${ville} (objectif ${limit})`)
+  const googleType = ACTIVITE_TO_GOOGLE_TYPE[activite] ?? null
+  const params = {
+    city: ville,
+    country_code: 'FR',
+    cursor,
+    ...(googleType
+      ? { type: googleType, query: activite }
+      : { query: activite }
+    )
+  }
 
   do {
     // Solution 1: Type explicite pour la réponse
@@ -136,7 +48,8 @@ export const scrapeScrapIo = async (
       `${SCRAPIO_BASE_URL}/gmap/search`,
       {
         headers: { Authorization: `Bearer ${API_KEY}` },
-        params: { query: activite, city: ville, country_code: 'FR', cursor }
+        params
+
       }
     )
 
