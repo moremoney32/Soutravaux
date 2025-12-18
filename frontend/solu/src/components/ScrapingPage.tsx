@@ -39,6 +39,8 @@ const ScrapingPage: React.FC = () => {
     const [loadingRegions, setLoadingRegions] = useState(false);
     const [loadingDepartements, setLoadingDepartements] = useState(false);
     const [loadingVilles, setLoadingVilles] = useState(false);
+    const [emailOnly, setEmailOnly] = useState(false);
+
 
     const [entreprises, setEntreprises] = useState<EntrepriseScraped[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -57,6 +59,9 @@ const ScrapingPage: React.FC = () => {
         duree_secondes: number;
         villes_scrappees?: string[];
     } | null>(null);
+    const entreprisesAffichees = emailOnly
+    ? entreprises.filter(e => e.email && e.email !== 'Non disponible')
+    : entreprises;
 
     // CHARGER LES RÉGIONS AU MONTAGE
     useEffect(() => {
@@ -297,10 +302,10 @@ const ScrapingPage: React.FC = () => {
     };
 
     const handleSelectAll = () => {
-        if (selectedIds.size === entreprises.length) {
+        if (selectedIds.size === entreprisesAffichees.length) {
             setSelectedIds(new Set());
         } else {
-            setSelectedIds(new Set(entreprises.map(e => e.id)));
+            setSelectedIds(new Set(entreprisesAffichees.map(e => e.id)));
         }
     };
 
@@ -360,6 +365,10 @@ const ScrapingPage: React.FC = () => {
         link.click();
         document.body.removeChild(link);
     };
+    const handleEmailFilter = () => {
+        setEmailOnly(prev => !prev);
+    };
+    
 
 
     // CAMPAGNE SMS
@@ -368,6 +377,7 @@ const ScrapingPage: React.FC = () => {
         const selected = entreprises.filter(e => selectedIds.has(e.id));
         alert(`Campagne SMS à ${selected.length} entreprises`);
     };
+   
 
 
     // RENDER
@@ -570,6 +580,15 @@ const ScrapingPage: React.FC = () => {
                             <i className="fas fa-redo"></i>
                             Réinitialiser
                         </button>
+                        <button
+  className="scraping-btn-reset"
+  onClick={handleEmailFilter}
+  disabled={entreprisesAffichees.length === 0}
+>
+  <i className="fas fa-envelope"></i>
+  {emailOnly ? 'Afficher tout' : 'Filtrer par email'}
+</button>
+
                     </div>
                 </section>
 
@@ -579,14 +598,14 @@ const ScrapingPage: React.FC = () => {
                         <h3 className="scraping-results-title">
                             <i className="fas fa-list"></i>
                             Résultats
-                            <span className="scraping-results-count">{entreprises.length}</span>
+                            <span className="scraping-results-count">{entreprisesAffichees.length}</span>
                         </h3>
 
                         <div className="scraping-actions-group">
                             <button
                                 className="scraping-btn-reset"
                                 // onClick={handleExportFrontend}
-                                disabled={entreprises.length === 0}
+                                disabled={entreprisesAffichees.length === 0}
                             >
                                 <i className="fas fa-envelope"></i>
                                 Envoyer campagne DE Mails
@@ -599,7 +618,7 @@ const ScrapingPage: React.FC = () => {
                             <button
                                 className="scraping-btn-reset"
                                 onClick={handleExportFrontend}
-                                disabled={entreprises.length === 0}
+                                disabled={entreprisesAffichees.length === 0}
                             >
                                 <i className="fas fa-file-export"></i>
                                 Exporter
@@ -613,11 +632,11 @@ const ScrapingPage: React.FC = () => {
                             <button
                                 className="scraping-btn-select-all"
                                 onClick={handleSelectAll}
-                                disabled={entreprises.length === 0}
+                                disabled={entreprisesAffichees.length === 0}
                             >
-                                <i className={selectedIds.size === entreprises.length ?
+                                <i className={selectedIds.size === entreprisesAffichees.length ?
                                     'fas fa-check-square' : 'far fa-square'}></i>
-                                {selectedIds.size === entreprises.length ?
+                                {selectedIds.size === entreprisesAffichees.length ?
                                     'Tout désélectionner' : 'Tout sélectionner'}
                             </button>
 
@@ -667,7 +686,10 @@ const ScrapingPage: React.FC = () => {
                                             <input
                                                 type="checkbox"
                                                 className="scraping-checkbox"
-                                                checked={selectedIds.size === entreprises.length}
+                                                checked={
+                                                    entreprisesAffichees.length > 0 &&
+                                                    selectedIds.size === entreprisesAffichees.length
+                                                  }
                                                 onChange={handleSelectAll}
                                             />
                                         </th>
@@ -680,7 +702,7 @@ const ScrapingPage: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {entreprises.map(entreprise => (
+                                    {entreprisesAffichees.map(entreprise => (
                                         <tr
                                             key={entreprise.id}
                                             className={selectedIds.has(entreprise.id) ? 'scraping-row-selected' : ''}
