@@ -14,7 +14,7 @@ export const mockCalendars: Calendar[] = [
   },
   {
     id: 'work',
-    name: 'Travail - Solutravaux',
+    name: 'Travail - Solutravo',
     color: '#FF6B35', // Variante orange
     isVisible: true
   },
@@ -55,7 +55,7 @@ export const generateMockEvents = (baseDate: Date = new Date()): CalendarEvent[]
     // Lundi 10:00 - 11:00
     {
       id: 'event-1',
-      title: 'Réunion d\'équipe - Solutravaux',
+      title: 'Réunion d\'équipe - Solutravo',
       description: 'Planification hebdomadaire du projet',
       startTime: new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 1, 10, 0),
       endTime: new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 1, 11, 0),
@@ -115,7 +115,7 @@ export const generateMockEvents = (baseDate: Date = new Date()): CalendarEvent[]
       endTime: new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 4, 11, 30),
       color: '#E77131',
       calendar: 'work',
-      attendees: ['Franck', 'Équipe Solutravaux']
+      attendees: ['Franck', 'Équipe Solutravo']
     },
     // Vendredi 15:00 - 16:00
     {

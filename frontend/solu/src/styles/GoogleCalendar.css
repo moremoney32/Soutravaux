@@ -59,7 +59,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-medium);
   font-family: var(--font-montserrat);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
   color: var(--color-gray-primary);
   cursor: pointer;
@@ -101,7 +101,7 @@
 
 .calendar-mini-month {
   font-family: var(--font-gotham);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-gray-primary);
 }
@@ -125,7 +125,7 @@
 .calendar-weekday {
   text-align: center;
   font-family: var(--font-gotham);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 11px;
   color: var(--color-gray-secondary);
   padding: 4px 0;
@@ -182,7 +182,7 @@
 
 .calendar-section-title {
   font-family: var(--font-gotham);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-gray-primary);
   margin: 0;
@@ -292,7 +292,7 @@
   align-items: center;
   gap: 12px;
   font-family: var(--font-gotham);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 22px;
   color: var(--color-orange-primary);
 }
@@ -459,7 +459,7 @@
 
 .calendar-day-name {
   font-family: var(--font-gotham);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 12px;
   color: var(--color-gray-secondary);
   text-transform: uppercase;
@@ -558,7 +558,7 @@
 }
 
 .calendar-event-time {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 10px;
   margin-bottom: 2px;
 }
@@ -798,7 +798,7 @@
   margin: 0;
   color: white;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: var(--font-gotham);
 }
 
@@ -841,7 +841,7 @@
 }
 
 .calendar-form-label {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-gray-primary);
   text-transform: uppercase;
@@ -936,7 +936,7 @@
 
 .calendar-detail-label {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-gray-secondary);
   text-transform: uppercase;
 }
@@ -968,7 +968,7 @@
   border: none;
   border-radius: var(--radius-small);
   font-family: var(--font-montserrat);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   cursor: pointer;
   transition: var(--transition-fast);
@@ -1026,7 +1026,7 @@
 
 .calendar-month-day-name {
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 12px;
   color: var(--color-gray-secondary);
   text-transform: uppercase;
@@ -1078,7 +1078,7 @@
 }
 
 .calendar-month-day-number {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-gray-primary);
 }
