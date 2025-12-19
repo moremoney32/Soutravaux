@@ -1,6 +1,6 @@
 // src/mocks/scrapingData.ts
 
-import type { ActiviteOption, DepartementOption, EntrepriseScraped, RegionOption, VilleOption } from "../types/scraping.type";
+import type { DepartementOption, EntrepriseScraped, RegionOption, VilleOption } from "../types/scraping.type";
 
 export const mockDepartements: DepartementOption[] = [
   // Île-de-France
@@ -482,18 +482,205 @@ export const mockVilles: VilleOption[] = [
 
 
 
+// export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
+//   // ======================
+//   // BTP – GROS ŒUVRE
+//   // ======================
+//   'maçon': 'masonry-contractor',
+//   'terrassement': 'excavating-contractor',
+//   'demolition': 'demolition-contractor',
+//   'charpentier': 'carpenter',
+//   'couvreur': 'roofer',
+//   'zingueur': 'roofer',
+//   'construction-bois': 'general-contractor',
+//   'constructeur-maison': 'general-contractor',
+
+//   // ======================
+//   // BTP – SECOND ŒUVRE
+//   // ======================
+//   'plombier': 'plumber',
+//   'plombier-chauffagiste': 'plumber',
+//   'electricien': 'electrician',
+//   'chauffagiste': 'hvac-contractor',
+//   'climatisation': 'hvac-contractor',
+//   'menuisier': 'carpenter',
+//   'menuiserie-alu': 'carpenter',
+//   'menuiserie-pvc': 'carpenter',
+//   'plaquiste': 'drywall-contractor',
+//   'peintre': 'painter',
+//   'carreleur': 'tile-contractor',
+//   'parqueteur': 'flooring-contractor',
+//   'platrier': 'plasterer',
+//   'isolation': 'insulation-contractor',
+//   'etancheite': 'waterproofing-contractor',
+//   'vitrerie': 'glass-repair',
+//   'miroiterie': 'glass-repair',
+
+//   // ======================
+//   // EXTÉRIEUR
+//   // ======================
+//   'paysagiste': 'landscaper',
+//   'jardinier': 'gardener',
+//   'elagage': 'tree-service',
+//   'piscine': 'swimming-pool-contractor',
+//   'cloture': 'fence-contractor',
+//   'portail': 'fence-contractor',
+//   'pergola': 'deck-builder',
+//   'terrasse': 'deck-builder',
+//   'allees': 'paving-contractor',
+
+//   // ======================
+//   // SPÉCIALISÉS
+//   // ======================
+//   'assainissement': 'septic-system-service',
+//   'forage': 'drilling-contractor',
+//   'ramonage': 'chimney-sweep',
+//   'domotique': 'home-automation',
+//   'alarme': 'security-system-supplier',
+//   'antenne': 'antenna-service',
+//   'panneau-solaire': 'solar-energy-company',
+//   'pompe-chaleur': 'hvac-contractor',
+//   'ventilation': 'hvac-contractor',
+
+//   // ======================
+//   // AUTOMOBILE
+//   // ======================
+//   'garage': 'auto-repair',
+//   'carrosserie': 'auto-body-shop',
+//   'peinture-auto': 'auto-body-shop',
+//   'mecanique': 'auto-repair',
+//   'pneumatique': 'tire-shop',
+//   'pare-brise': 'auto-glass-service',
+//   'controle-technique': 'car-inspection-station',
+//   'depannage-auto': 'towing-service',
+//   'lavage-auto': 'car-wash',
+//   'vente-voiture': 'car-dealer',
+
+//   // ======================
+//   // SANTÉ
+//   // ======================
+//   'medecin': 'doctor',
+//   'dentiste': 'dentist',
+//   'pharmacie': 'pharmacy',
+//   'kine': 'physical-therapist',
+//   'osteopathe': 'osteopath',
+//   'infirmier': 'nursing-agency',
+//   'podologue': 'podiatrist',
+//   'opticien': 'optician',
+//   'audioprothesiste': 'hearing-aid-store',
+//   'psychologue': 'psychologist',
+//   'veterinaire': 'veterinary-care',
+
+//   // ======================
+//   // SERVICES
+//   // ======================
+//   'coiffeur': 'hair-salon',
+//   'esthetique': 'beauty-salon',
+//   'massage': 'massage-therapist',
+//   'manucure': 'nail-salon',
+//   'spa': 'spa',
+//   'tatouage': 'tattoo-shop',
+//   'pressing': 'laundry',
+//   'cordonnerie': 'shoe-repair',
+//   'retouche': 'tailor',
+
+//   // ======================
+//   // RESTAURATION
+//   // ======================
+//   'restaurant': 'restaurant',
+//   'pizzeria': 'pizza-restaurant',
+//   'creperie': 'creperie',
+//   'kebab': 'kebab-shop',
+//   'sushi': 'sushi-restaurant',
+//   'cafe': 'cafe',
+//   'bar': 'bar',
+//   'brasserie': 'brasserie',
+//   'traiteur': 'caterer',
+//   'food-truck': 'food-truck',
+
+//   // ======================
+//   // IMMOBILIER
+//   // ======================
+//   'agence-immobiliere': 'real-estate-agency',
+//   'syndic': 'property-management',
+//   'gestion-locative': 'property-management',
+//   'expert-immobilier': 'real-estate-appraiser',
+//   'promoteur': 'real-estate-developer',
+//   'home-staging': 'interior-designer',
+
+//   // ======================
+//   // PRO
+//   // ======================
+//   'avocat': 'lawyer',
+//   'notaire': 'notary-public',
+//   'expert-comptable': 'accountant',
+//   'assurance': 'insurance-agency',
+//   'banque': 'bank',
+//   'architecte': 'architect',
+//   'geometre': 'land-surveyor',
+//   'huissier': 'bailiff',
+
+//   // ======================
+//   // INFORMATIQUE
+//   // ======================
+//   'informatique': 'it-services',
+//   'reparation-pc': 'computer-repair',
+//   'reparation-smartphone': 'mobile-phone-repair',
+//   'reseau': 'it-services',
+//   'web-agency': 'software-company',
+//   'telephonie': 'telecommunications-service',
+
+//   // ======================
+//   // TRANSPORT
+//   // ======================
+//   'demenagement': 'moving-company',
+//   'transport': 'logistics-service',
+//   'taxi': 'taxi-service',
+//   'vtc': 'ride-hailing-service',
+//   'ambulance': 'ambulance-service',
+//   'location-vehicule': 'car-rental',
+//   'coursier': 'courier-service',
+
+//   // ======================
+//   // NETTOYAGE
+//   // ======================
+//   'nettoyage': 'cleaning-service',
+//   'menage': 'house-cleaning-service',
+//   'vitrerie-nettoyage': 'window-cleaning-service',
+//   'desinfection': 'sanitation-service',
+//   'debarras': 'waste-removal',
+
+//   // ======================
+//   // SÉCURITÉ
+//   // ======================
+//   'serrurier': 'locksmith',
+//   'vigile': 'security-service',
+//   'videosurveillance': 'security-system-supplier',
+// }
+
+
+/**
+ * MAPPING OFFICIEL DES ACTIVITÉS VERS LES CATÉGORIES SCRAP.IO
+ * Source: https://help.scrap.io/fr/article/puis-je-avoir-une-liste-des-categories-sur-scrapio-166zcc1/
+ * 
+ * ⚠️ IMPORTANT: Scrap.io utilise les catégories Google Maps EN FRANÇAIS
+ * Les valeurs DOIVENT correspondre EXACTEMENT aux noms de la liste officielle
+ */
+
 export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   // ======================
   // BTP – GROS ŒUVRE
   // ======================
-  'maçon': 'masonry-contractor',
-  'terrassement': 'excavating-contractor',
-  'demolition': 'demolition-contractor',
+  'maçon': 'general-contractor',
+  'maconnerie': 'general-contractor',
+  'terrassement': 'general-contractor',
+  'demolition': 'general-contractor',
   'charpentier': 'carpenter',
-  'couvreur': 'roofer',
-  'zingueur': 'roofer',
-  'construction-bois': 'general-contractor',
-  'constructeur-maison': 'general-contractor',
+  'couvreur': 'roofing-contractor',
+  'zingueur': 'roofing-contractor',
+  'construction-bois': 'home-builder',
+  'constructeur-maison': 'home-builder',
+  'constructeur': 'general-contractor',
 
   // ======================
   // BTP – SECOND ŒUVRE
@@ -504,53 +691,53 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   'chauffagiste': 'hvac-contractor',
   'climatisation': 'hvac-contractor',
   'menuisier': 'carpenter',
-  'menuiserie-alu': 'carpenter',
-  'menuiserie-pvc': 'carpenter',
+  'menuiserie-alu': 'window-installation-service',
+  'menuiserie-pvc': 'window-installation-service',
   'plaquiste': 'drywall-contractor',
   'peintre': 'painter',
   'carreleur': 'tile-contractor',
   'parqueteur': 'flooring-contractor',
-  'platrier': 'plasterer',
+  'platrier': 'drywall-contractor',
   'isolation': 'insulation-contractor',
-  'etancheite': 'waterproofing-contractor',
-  'vitrerie': 'glass-repair',
-  'miroiterie': 'glass-repair',
+  'etancheite': 'waterproofing-service',
+  'vitrerie': 'glass-repair-service',
+  'miroiterie': 'glass-repair-service',
 
   // ======================
   // EXTÉRIEUR
   // ======================
-  'paysagiste': 'landscaper',
-  'jardinier': 'gardener',
-  'elagage': 'tree-service',
-  'piscine': 'swimming-pool-contractor',
-  'cloture': 'fence-contractor',
-  'portail': 'fence-contractor',
-  'pergola': 'deck-builder',
-  'terrasse': 'deck-builder',
-  'allees': 'paving-contractor',
+  // 'paysagiste': 'Architecte paysagiste',
+  // 'jardinier': 'Jardinier',
+  // 'elagage': 'Arboriste et arboriculteur',
+  // 'piscine': 'Société de construction de piscine',
+  // 'cloture': 'Magasin de matériel pour clôtures',
+  // 'portail': 'Magasin de portes',
+  // 'pergola': 'Constructeur de kiosques/pavillons de jardin',
+  // 'terrasse': 'Constructeur de terrasses',
+  // 'allees': 'Entrepreneur spécialisé dans le pavage',
 
-  // ======================
-  // SPÉCIALISÉS
-  // ======================
-  'assainissement': 'septic-system-service',
-  'forage': 'drilling-contractor',
-  'ramonage': 'chimney-sweep',
-  'domotique': 'home-automation',
-  'alarme': 'security-system-supplier',
-  'antenne': 'antenna-service',
-  'panneau-solaire': 'solar-energy-company',
-  'pompe-chaleur': 'hvac-contractor',
-  'ventilation': 'hvac-contractor',
+  // // ======================
+  // // SPÉCIALISÉS
+  // // ======================
+  // 'assainissement': 'Service d\'assainissement',
+  // 'forage': 'Entrepreneur spécialisé dans le forage',
+  // 'ramonage': 'Ramoneur',
+  // 'domotique': 'Entreprise de domotique',
+  // 'alarme': 'Agence de sécurité',
+  // 'antenne': 'Entretien d\'antennes',
+  // 'panneau-solaire': 'Entrepreneur en énergie solaire',
+  // 'pompe-chaleur': 'Chauffagiste',
+  // 'ventilation': 'Chauffagiste',
 
   // ======================
   // AUTOMOBILE
   // ======================
-  'garage': 'auto-repair',
+  'garage': 'auto-repair-shop',
   'carrosserie': 'auto-body-shop',
   'peinture-auto': 'auto-body-shop',
-  'mecanique': 'auto-repair',
+  'mecanique': 'car-repair',
   'pneumatique': 'tire-shop',
-  'pare-brise': 'auto-glass-service',
+  'pare-brise': 'auto-glass-shop',
   'controle-technique': 'car-inspection-station',
   'depannage-auto': 'towing-service',
   'lavage-auto': 'car-wash',
@@ -562,26 +749,27 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   'medecin': 'doctor',
   'dentiste': 'dentist',
   'pharmacie': 'pharmacy',
-  'kine': 'physical-therapist',
+  'kine': 'physiotherapist',
   'osteopathe': 'osteopath',
-  'infirmier': 'nursing-agency',
+  'infirmier': 'nurse',
   'podologue': 'podiatrist',
   'opticien': 'optician',
   'audioprothesiste': 'hearing-aid-store',
   'psychologue': 'psychologist',
-  'veterinaire': 'veterinary-care',
+  'veterinaire': 'veterinarian',
 
   // ======================
   // SERVICES
   // ======================
   'coiffeur': 'hair-salon',
+  'salon-coiffure': 'hair-salon',
   'esthetique': 'beauty-salon',
   'massage': 'massage-therapist',
   'manucure': 'nail-salon',
   'spa': 'spa',
   'tatouage': 'tattoo-shop',
-  'pressing': 'laundry',
-  'cordonnerie': 'shoe-repair',
+  'pressing': 'dry-cleaner',
+  'cordonnerie': 'shoe-repair-shop',
   'retouche': 'tailor',
 
   // ======================
@@ -597,19 +785,21 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   'brasserie': 'brasserie',
   'traiteur': 'caterer',
   'food-truck': 'food-truck',
+  'boulangerie': 'bakery',
+  'patisserie': 'pastry-shop',
 
   // ======================
   // IMMOBILIER
   // ======================
   'agence-immobiliere': 'real-estate-agency',
-  'syndic': 'property-management',
-  'gestion-locative': 'property-management',
+  'syndic': 'property-management-company',
+  'gestion-locative': 'property-management-company',
   'expert-immobilier': 'real-estate-appraiser',
   'promoteur': 'real-estate-developer',
   'home-staging': 'interior-designer',
 
   // ======================
-  // PRO
+  // PROFESSIONS LIBÉRALES
   // ======================
   'avocat': 'lawyer',
   'notaire': 'notary-public',
@@ -623,12 +813,12 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   // ======================
   // INFORMATIQUE
   // ======================
-  'informatique': 'it-services',
-  'reparation-pc': 'computer-repair',
-  'reparation-smartphone': 'mobile-phone-repair',
-  'reseau': 'it-services',
+  'informatique': 'computer-support-and-services',
+  'reparation-pc': 'computer-repair-service',
+  'reparation-smartphone': 'cell-phone-store',
+  'reseau': 'telecommunications-service-provider',
   'web-agency': 'software-company',
-  'telephonie': 'telecommunications-service',
+  'telephonie': 'telecommunications-service-provider',
 
   // ======================
   // TRANSPORT
@@ -636,9 +826,9 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   'demenagement': 'moving-company',
   'transport': 'logistics-service',
   'taxi': 'taxi-service',
-  'vtc': 'ride-hailing-service',
+  'vtc': 'taxi-service',
   'ambulance': 'ambulance-service',
-  'location-vehicule': 'car-rental',
+  'location-vehicule': 'car-rental-agency',
   'coursier': 'courier-service',
 
   // ======================
@@ -647,16 +837,107 @@ export const ACTIVITE_TO_GOOGLE_TYPE: Record<string, string | null> = {
   'nettoyage': 'cleaning-service',
   'menage': 'house-cleaning-service',
   'vitrerie-nettoyage': 'window-cleaning-service',
-  'desinfection': 'sanitation-service',
-  'debarras': 'waste-removal',
+  'desinfection': 'cleaning-service',
+  'debarras': 'waste-management-service',
 
   // ======================
   // SÉCURITÉ
   // ======================
   'serrurier': 'locksmith',
   'vigile': 'security-service',
-  'videosurveillance': 'security-system-supplier',
+  'videosurveillance': 'security-system-installer',
+
+  // ======================
+  // EXTÉRIEUR
+  // ======================
+  'paysagiste': 'landscape-designer',
+  'jardinier': 'landscaper',
+  'elagage': 'tree-service',
+  'piscine': 'swimming-pool-contractor',
+  'cloture': 'fence-contractor',
+  'portail': 'fence-contractor',
+  'pergola': 'deck-builder',
+  'terrasse': 'deck-builder',
+  'allees': 'paving-contractor',
+
+  // ======================
+  // SPÉCIALISÉS
+  // ======================
+  'assainissement': 'septic-system-service',
+  'forage': 'drilling-contractor',
+  'ramonage': 'chimney-sweep',
+  'domotique': 'home-automation-company',
+  'alarme': 'security-system-installer',
+  'antenne': 'antenna-service',
+  'panneau-solaire': 'solar-energy-equipment-supplier',
+  'pompe-chaleur': 'hvac-contractor',
+  'ventilation': 'hvac-contractor',
 }
+
+/**
+ * Liste des activités disponibles pour l'UI avec catégories
+ */
+export const mockActivites = Object.entries(ACTIVITE_TO_GOOGLE_TYPE)
+  .filter(([_, category]) => category !== null) // Exclure les null
+  .map(([key, category]) => ({
+    id: key,
+    nom: formatActiviteName(key),
+    categorie: getCategorieFromKey(key),
+    scrapio_category: category as string
+  }))
+  .sort((a, b) => a.nom.localeCompare(b.nom))
+
+/**
+ * Formate le nom de l'activité pour l'affichage
+ */
+function formatActiviteName(key: string): string {
+  return key
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+/**
+ * Détermine la catégorie UI à partir de la clé
+ */
+function getCategorieFromKey(key: string): string {
+  const categories: Record<string, string[]> = {
+    'BTP - Gros œuvre': ['maçon', 'terrassement', 'demolition', 'charpentier', 'couvreur', 'constructeur'],
+    'BTP - Second œuvre': ['plombier', 'electricien', 'menuisier', 'peintre', 'carreleur', 'plaquiste'],
+    'Extérieur': ['paysagiste', 'jardinier', 'elagage', 'piscine', 'terrasse'],
+    'Automobile': ['garage', 'carrosserie', 'mecanique', 'pneumatique', 'lavage-auto'],
+    'Santé': ['medecin', 'dentiste', 'pharmacie', 'kine', 'infirmier'],
+    'Services': ['coiffeur', 'esthetique', 'massage', 'pressing', 'cordonnerie'],
+    'Restauration': ['restaurant', 'pizzeria', 'cafe', 'bar', 'boulangerie', 'patisserie'],
+    'Immobilier': ['agence-immobiliere', 'syndic', 'promoteur'],
+    'Commerce': ['fleuriste', 'boucherie', 'epicerie', 'librairie', 'bijouterie'],
+    'Professions libérales': ['avocat', 'notaire', 'expert-comptable', 'architecte'],
+    'Informatique': ['informatique', 'reparation-pc', 'web-agency'],
+    'Transport': ['demenagement', 'taxi', 'vtc', 'coursier'],
+    'Éducation': ['auto-ecole', 'ecole-langue', 'cours-particuliers'],
+    'Loisirs': ['salle-sport', 'cinema', 'theatre', 'musee']
+  }
+
+  for (const [categorie, keys] of Object.entries(categories)) {
+    if (keys.some(k => key.includes(k))) {
+      return categorie
+    }
+  }
+
+  return 'Autres'
+}
+
+/**
+ * Interface pour les options d'activités
+ */
+export interface ActiviteOption {
+  id: string
+  nom: string
+  categorie: string
+  scrapio_category: string
+}
+
+
 
 export const mockEntreprises: EntrepriseScraped[] = [
   {
@@ -871,12 +1152,12 @@ export const mockRegions: RegionOption[] = [
   { code: 'CVF', nom: 'Centre-Val de France' }
 ];
 
-export const mockActivites: ActiviteOption[] = Object.keys(
-  ACTIVITE_TO_GOOGLE_TYPE
-).map((key) => ({
-  id: key,
-  nom: key
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase()),
-  categorie: 'BTP - Gros œuvre'
-}))
+// export const mockActivites: ActiviteOption[] = Object.keys(
+//   ACTIVITE_TO_GOOGLE_TYPE
+// ).map((key) => ({
+//   id: key,
+//   nom: key
+//     .replace(/-/g, ' ')
+//     .replace(/\b\w/g, (l) => l.toUpperCase()),
+//   categorie: 'BTP - Gros œuvre'
+// }))
