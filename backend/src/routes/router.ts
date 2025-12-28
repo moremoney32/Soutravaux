@@ -26,6 +26,7 @@ import handleImageUpload from "../middleware/uploadMiddleware";
 import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
 import sseRoutes from './sse.routes';
 import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
+import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -47,6 +48,22 @@ router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
 router.post("/downgrade-to-free", UpdatePlanFree);
 router.post("/google-maps", scrapeGoogleMapsController);
+
+
+// GET - Récupérer toutes les listes d'une société avec compteur
+router.get('/contact-lists/societe/:societeId', getContactListsController);
+
+// GET - Récupérer une liste spécifique avec ses contacts
+router.get('/contact-lists/:listId/societe/:societeId', getContactListByIdController);
+
+// POST - Récupérer numéros de téléphone de plusieurs listes (pour campagne SMS)
+router.post('/contact-lists/phone-numbers', getPhoneNumbersController);
+
+// POST - Récupérer contacts complets de plusieurs listes
+router.post('/contact-lists/contacts', getContactsFromListsController);
+
+// POST - Compter contacts totaux de plusieurs listes
+router.post('/contact-lists/count', countContactsController);
 
 
 
