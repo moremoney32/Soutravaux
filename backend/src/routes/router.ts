@@ -25,7 +25,7 @@ import UpdatePlanFree from "../controllers/UpdatePlanFree";
 import handleImageUpload from "../middleware/uploadMiddleware";
 import { getActivitesController, getDepartementsController, getPreSocietesController, getSocietesController, getStatsController, sendNotificationController } from "../controllers/PushNotificationsControllers";
 import sseRoutes from './sse.routes';
-import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
+// import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
 
 const router: Router = express.Router();
@@ -47,7 +47,7 @@ router.delete("/plans/:id", deletePlan);
 router.put("/subscription-settings", updateSettings);
 router.get("/subscription-settings", getSettings);
 router.post("/downgrade-to-free", UpdatePlanFree);
-router.post("/google-maps", scrapeGoogleMapsController);
+// router.post("/google-maps", scrapeGoogleMapsController);
 
 
 // GET - Récupérer toutes les listes d'une société avec compteur
