@@ -466,7 +466,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { CampagneData, ContactList } from '../types/campagne.types';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 interface Etape2ContactsProps {
     data: CampagneData;
@@ -476,11 +476,11 @@ interface Etape2ContactsProps {
 }
 
 const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2ContactsProps) => {
-    const [activeTab, setActiveTab] = useState<'manuelle' | 'enregistres' | 'nouvelle'>('manuelle');
+    const [activeTab, setActiveTab] = useState<'manuelle' | 'enregistres'>('manuelle');
     const [textareaValue, setTextareaValue] = useState('');
     const [expediteurNom, setExpediteurNom] = useState(data.expediteur || '');
     const [erreur, setErreur] = useState('');
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     
     //let membreIds = localStorage.getItem("membreId");
     //let membreId = Number(membreIds);
@@ -747,12 +747,12 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                     >
                         Contacts enregistrés
                     </button>
-                    <button
+                    {/* <button
                         className={`tab-campagne ${activeTab === 'nouvelle' ? 'active-campagne' : ''}`}
                         onClick={() => setActiveTab('nouvelle')}
                     >
                         Nouvelle liste de contact
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* ONGLET LISTE MANUELLE */}
@@ -876,7 +876,7 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                 )}
 
                 {/* ONGLET NOUVELLE LISTE */}
-                {activeTab === 'nouvelle' && (
+                {/* {activeTab === 'nouvelle' && (
                     <div className="tab-content-campagne">
                         <p className="nouvelle-liste-text-campagne">
                             Pour pouvoir réutiliser les contacts plus tard, vous pouvez{' '}
@@ -892,7 +892,7 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
                             </a>
                         </p>
                     </div>
-                )}
+                )} */}
                 
                 <div className="actions-campagne">
                     {erreur && (

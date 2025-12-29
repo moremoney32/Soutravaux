@@ -130,25 +130,25 @@ const CampagnePage = () => {
        
         
         // Réinitialiser les données
-      //   setCampagneData({
-      //     nom: "",
-      //     marketingPurpose: false,
-      //     contacts: [],
-      //     contactsValides: 0,
-      //     expediteur: '',
-      //     message: '',
-      //     messageLength: 0,
-      //     smsCount: 0,
-      //     planification: {
-      //       type: 'differe',
-      //       date: new Date().toISOString().split('T')[0],
-      //       heure: new Date().toTimeString().slice(0, 5)
-      //     }
-      //   });
+        setCampagneData({
+          nom: "",
+          marketingPurpose: false,
+          contacts: [],
+          contactsValides: 0,
+          expediteur: '',
+          message: '',
+          messageLength: 0,
+          smsCount: 0,
+          planification: {
+            type: 'differe',
+            date: new Date().toISOString().split('T')[0],
+            heure: new Date().toTimeString().slice(0, 5)
+          }
+        });
       
-      // setTimeout(() => {
-      //   window.location.href = `/campagne/${userId}`;
-      // }, 500);
+      setTimeout(() => {
+        window.location.href = `/campagne/${userId}`;
+      }, 500);
       })
       .catch(error => {
         console.error('Erreur API:', error);
