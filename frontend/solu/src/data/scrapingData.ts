@@ -1009,23 +1009,45 @@ export interface ActiviteOption {
 //   categorie: string;
 // }
 
+// LISTE COMPLÈTE DES ACTIVITÉS SCRAP.IO
+// Basée EXACTEMENT sur le document officiel fourni (15/05/2024)
+
+// export interface ActiviteOption {
+//   id: string;
+//   nom: string;
+//   categorie: string;
+// }
+
 export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   // ======================
   // BTP – GROS ŒUVRE
   // ======================
+  { id: 'macon', nom: 'Maçon', categorie: 'BTP - Gros œuvre' },
   { id: 'charpentier', nom: 'Charpentier', categorie: 'BTP - Gros œuvre' },
   { id: 'couvreur', nom: 'Couvreur', categorie: 'BTP - Gros œuvre' },
-  { id: 'constructeur-maison-bois', nom: 'Constructeur de maisons en bois', categorie: 'BTP - Gros œuvre' },
-  { id: 'constructeur-maison-personnalisee', nom: 'Constructeur de maisons personnalisées', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-maisons-bois', nom: 'Constructeur de maisons en bois', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-maisons-modulaires', nom: 'Constructeur de maisons modulaires', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-maisons-personnalisees', nom: 'Constructeur de maisons personnalisées', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-automobile', nom: 'Constructeur Automobile', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-abris-jardin', nom: 'Constructeur d\'abris de jardin', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-garages', nom: 'Constructeur de garages', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-kiosques', nom: 'Constructeur de kiosques/pavillons de jardin', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-mausolees', nom: 'Constructeur de mausolées', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-poeles', nom: 'Constructeur de poêles', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-structures-beton', nom: 'Constructeur de structures en béton', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-terrains-basket', nom: 'Constructeur de terrains de basket-ball', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-terrasses', nom: 'Constructeur de terrasses', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeur-acier', nom: 'Constructeur en acier', categorie: 'BTP - Gros œuvre' },
   { id: 'constructeur-immobilier', nom: 'Constructeur immobilier', categorie: 'BTP - Gros œuvre' },
+  { id: 'constructeurs-bateaux', nom: 'Constructeurs de bateaux', categorie: 'BTP - Gros œuvre' },
   { id: 'entreprise-construction', nom: 'Entreprise de construction', categorie: 'BTP - Gros œuvre' },
   { id: 'entreprise-genie-civil', nom: 'Entreprise de génie civil', categorie: 'BTP - Gros œuvre' },
   { id: 'entreprise-terrassement', nom: 'Entreprise de terrassement', categorie: 'BTP - Gros œuvre' },
-  { id: 'entrepreneur-demolition', nom: 'Entrepreneur spécialisé dans la démolition', categorie: 'BTP - Gros œuvre' },
-  { id: 'constructeur-beton', nom: 'Constructeur de structures en béton', categorie: 'BTP - Gros œuvre' },
-  { id: 'construction-metallique', nom: 'Compagnie de construction métallique', categorie: 'BTP - Gros œuvre' },
-  { id: 'constructeur-acier', nom: 'Constructeur en acier', categorie: 'BTP - Gros œuvre' },
+  { id: 'compagnie-construction-metallique', nom: 'Compagnie de construction métallique', categorie: 'BTP - Gros œuvre' },
   { id: 'entrepreneur-maconnerie', nom: 'Entrepreneur en maçonnerie', categorie: 'BTP - Gros œuvre' },
+  { id: 'entrepreneur-demolition', nom: 'Entrepreneur spécialisé dans la démolition', categorie: 'BTP - Gros œuvre' },
+  { id: 'entrepreneur-excavation', nom: 'Entrepreneur spécialisé dans l\'excavation', categorie: 'BTP - Gros œuvre' },
+  { id: 'entrepreneur-pavage', nom: 'Entrepreneur spécialisé dans le pavage', categorie: 'BTP - Gros œuvre' },
 
   // ======================
   // BTP – SECOND ŒUVRE
@@ -1035,6 +1057,7 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'chauffagiste', nom: 'Chauffagiste', categorie: 'BTP - Second œuvre' },
   { id: 'entrepreneur-climatisation', nom: 'Entrepreneur en climatisation', categorie: 'BTP - Second œuvre' },
   { id: 'menuisier', nom: 'Menuisier', categorie: 'BTP - Second œuvre' },
+  { id: 'menuisiers', nom: 'Menuisiers', categorie: 'BTP - Second œuvre' },
   { id: 'atelier-menuiserie', nom: 'Atelier de menuiserie', categorie: 'BTP - Second œuvre' },
   { id: 'peintre-batiment', nom: 'Peintre en bâtiment', categorie: 'BTP - Second œuvre' },
   { id: 'atelier-peinture', nom: 'Atelier de peinture', categorie: 'BTP - Second œuvre' },
@@ -1048,6 +1071,9 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'service-pose-parquet', nom: 'Service de pose de parquet', categorie: 'BTP - Second œuvre' },
   { id: 'magasin-materiel-plomberie', nom: 'Magasin de matériel de plomberie', categorie: 'BTP - Second œuvre' },
   { id: 'magasin-carrelage', nom: 'Magasin de carrelage', categorie: 'BTP - Second œuvre' },
+  { id: 'installateur-double-vitrage', nom: 'Installateur de double vitrage', categorie: 'BTP - Second œuvre' },
+  { id: 'poseur-moquette', nom: 'Poseur de moquette', categorie: 'BTP - Second œuvre' },
+  { id: 'ebeniste', nom: 'Ébéniste', categorie: 'BTP - Second œuvre' },
 
   // ======================
   // AUTOMOBILE
@@ -1055,6 +1081,7 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'garage-automobile', nom: 'Garage automobile', categorie: 'Automobile' },
   { id: 'atelier-reparation-auto', nom: 'Atelier de réparation automobile', categorie: 'Automobile' },
   { id: 'atelier-carrosserie', nom: 'Atelier de carrosserie automobile', categorie: 'Automobile' },
+  { id: 'mecanicien', nom: 'Mécanicien', categorie: 'Automobile' },
   { id: 'mecanicien-carrosserie', nom: 'Mécanicien de carrosserie automobile', categorie: 'Automobile' },
   { id: 'peinture-automobile', nom: 'Peinture automobile', categorie: 'Automobile' },
   { id: 'atelier-mecanique-auto', nom: 'Atelier de mécanique automobile', categorie: 'Automobile' },
@@ -1079,6 +1106,8 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'medecin', nom: 'Médecin', categorie: 'Santé' },
   { id: 'medecin-generaliste', nom: 'Médecin généraliste', categorie: 'Santé' },
   { id: 'medecin-famille', nom: 'Médecin de famille', categorie: 'Santé' },
+  { id: 'medecin-sport', nom: 'Médecin du sport', categorie: 'Santé' },
+  { id: 'medecin-travail', nom: 'Médecin du travail', categorie: 'Santé' },
   { id: 'cabinet-medical', nom: 'Cabinet médical', categorie: 'Santé' },
   { id: 'dentiste', nom: 'Dentiste', categorie: 'Santé' },
   { id: 'cabinet-dentaire', nom: 'Cabinet dentaire', categorie: 'Santé' },
@@ -1110,6 +1139,9 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'sage-femme', nom: 'Sage-femme', categorie: 'Santé' },
   { id: 'dieteticien', nom: 'Diététicien', categorie: 'Santé' },
   { id: 'nutritionniste', nom: 'Nutritionniste', categorie: 'Santé' },
+  { id: 'acupuncteur', nom: 'Acupuncteur', categorie: 'Santé' },
+  { id: 'allergologue', nom: 'Allergologue', categorie: 'Santé' },
+  { id: 'anesthesiste', nom: 'Anesthésiste', categorie: 'Santé' },
 
   // ======================
   // SERVICES
@@ -1120,6 +1152,7 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'estheticien', nom: 'Esthéticien/Esthéticienne', categorie: 'Services' },
   { id: 'institut-beaute', nom: 'Institut de beauté', categorie: 'Services' },
   { id: 'massotherapeute', nom: 'Massothérapeute', categorie: 'Services' },
+  { id: 'masseur', nom: 'Masseur', categorie: 'Services' },
   { id: 'institut-massages', nom: 'Institut de massages', categorie: 'Services' },
   { id: 'salon-manucure', nom: 'Salon de manucure', categorie: 'Services' },
   { id: 'spa', nom: 'Spa', categorie: 'Services' },
@@ -1135,6 +1168,7 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'service-retouche-vetements', nom: 'Service de retouche de vêtements', categorie: 'Services' },
   { id: 'couturier', nom: 'Couturier', categorie: 'Services' },
   { id: 'tailleur', nom: 'Tailleur', categorie: 'Services' },
+  { id: 'toiletteur', nom: 'Toiletteur', categorie: 'Services' },
 
   // ======================
   // RESTAURATION
@@ -1263,9 +1297,6 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'societe-construction-piscine', nom: 'Société de construction de piscine', categorie: 'Extérieur' },
   { id: 'service-nettoyage-piscines', nom: 'Service de nettoyage de piscines', categorie: 'Extérieur' },
   { id: 'entrepreneur-clotures', nom: 'Entrepreneur spécialisé dans les clôtures', categorie: 'Extérieur' },
-  { id: 'constructeur-kiosques-pavillons', nom: 'Constructeur de kiosques/pavillons de jardin', categorie: 'Extérieur' },
-  { id: 'constructeur-terrasses', nom: 'Constructeur de terrasses', categorie: 'Extérieur' },
-  { id: 'entrepreneur-pavage', nom: 'Entrepreneur spécialisé dans le pavage', categorie: 'Extérieur' },
   { id: 'pepiniere', nom: 'Pépinière', categorie: 'Extérieur' },
   { id: 'service-entretien-pelouse', nom: 'Service d\'entretien de pelouse', categorie: 'Extérieur' },
 
@@ -1285,7 +1316,6 @@ export const ACTIVITES_DISPONIBLES: ActiviteOption[] = [
   { id: 'service-controle-animaux', nom: 'Service de contrôle des animaux', categorie: 'Spécialisés' },
   { id: 'service-maintenance-ascenseurs', nom: 'Service de maintenance d\'ascenseurs', categorie: 'Spécialisés' },
   { id: 'fabricant-cheminee', nom: 'Fabricant de cheminée', categorie: 'Spécialisés' },
-  { id: 'constructeur-poeles', nom: 'Constructeur de poêles', categorie: 'Spécialisés' },
 
   // ======================
   // COMMERCE
