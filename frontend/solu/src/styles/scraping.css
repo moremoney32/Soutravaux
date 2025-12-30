@@ -8,6 +8,11 @@
   /* padding: 10px; */
   font-family: var(--font-montserrat);
 }
+.color_gris{
+  opacity: 0.3;
+  display: none ;
+  cursor: not-allowed;
+}
 
 /* .scraping-container {
   max-width: 1440px;

@@ -603,7 +603,7 @@ const ScrapingPage: React.FC = () => {
 
                         <div className="scraping-actions-group">
                             <button
-                                className="scraping-btn-reset"
+                                className="scraping-btn-reset color_gris"
                                 // onClick={handleExportFrontend}
                                 disabled={entreprisesAffichees.length === 0}
                             >
@@ -641,7 +641,7 @@ const ScrapingPage: React.FC = () => {
                             </button>
 
                             <button
-                                className="scraping-btn-send-campaign"
+                                className="scraping-btn-send-campaign color_gris"
                                 onClick={handleSendCampaign}
                                 disabled={selectedIds.size === 0}
                             >
