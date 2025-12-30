@@ -690,6 +690,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       onClose();
     }
   };
+  console.log(handleComplete)
 
   const handleCancelEvent = (): void => {
     if (event && confirm('Annuler cet événement ?')) {
@@ -697,6 +698,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       onClose();
     }
   };
+  console.log(handleCancelEvent)
 
   const colorOptions = [
     { label: 'Orange', value: '#E77131' },

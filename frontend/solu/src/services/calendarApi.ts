@@ -1227,7 +1227,7 @@ export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
 export function convertFrontendEventToAPI(
   event: any,
   societeId: number,
-  creatorId: number
+   creatorId: number
 ): CreateEventInput {
   // ✅ FIX DATE : Utiliser getDate() au lieu de getUTCDate()
   const year = event.startTime.getFullYear();
@@ -1242,6 +1242,7 @@ export function convertFrontendEventToAPI(
   const endHour = String(event.endTime.getHours()).padStart(2, '0');
   const endMin = String(event.endTime.getMinutes()).padStart(2, '0');
   const endTime = `${endHour}:${endMin}`;
+  console.log(creatorId)
 
   console.log('📤 Conversion Frontend→API:', {
     title: event.title,
