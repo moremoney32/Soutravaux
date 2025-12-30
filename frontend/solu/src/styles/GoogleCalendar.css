@@ -1151,3 +1151,27 @@
   }
 }
 
+
+/* Événements passés */
+.calendar-event.event-past {
+  opacity: 1;
+  /* filter: grayscale(80%);
+  cursor: not-allowed; */
+  position: relative;
+}
+
+.calendar-event.event-past:hover::after {
+  content: "Événement terminé";
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 1000;
+}
+

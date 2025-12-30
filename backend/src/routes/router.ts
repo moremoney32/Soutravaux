@@ -27,6 +27,7 @@ import { getActivitesController, getDepartementsController, getPreSocietesContro
 import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
+import { createEventController, deleteEventController, getAttendeesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -193,6 +194,39 @@ router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
     url: url
   });
 });
+
+
+
+
+
+/**
+ * ROUTES CALENDRIER
+ */
+
+// GET /api/calendar/events - Récupérer événements
+router.get('/calendar/events', getEventsController);
+
+// POST /api/calendar/events - Créer événement
+router.post('/calendar/events', createEventController);
+
+// PUT /api/calendar/events/:eventId - Modifier événement
+router.put('/calendar/events/:eventId', updateEventController);
+
+// DELETE /api/calendar/events/:eventId - Supprimer événement
+router.delete('/calendar/events/:eventId', deleteEventController);
+
+// GET /api/calendar/events/:eventId/attendees - Récupérer participants
+router.get('/calendar/events/:eventId/attendees', getAttendeesController);
+
+// POST /api/calendar/events/:eventId/invite - Inviter sociétés
+router.post('/calendar/events/:eventId/invite', inviteAttendeesController);
+
+// POST /api/calendar/events/:eventId/respond - Répondre invitation
+router.post('/calendar/events/:eventId/respond', respondToInviteController);
+
+// GET /api/calendar/societes - Liste sociétés disponibles (au lieu de artisans)
+router.get('/calendar/societes', getPreSocietesController);
+
 
 
 /**
