@@ -4,6 +4,7 @@ export interface CampagneData {
   nom: string;
   marketingPurpose: boolean;
   contacts: string[]; 
+  pushtype: 'alert' | 'transactional';
   contactsValides: number;
   contactType?: 'manuelle' | 'enregistres';
   list_contact_id?: string[] | null; 

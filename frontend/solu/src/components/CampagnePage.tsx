@@ -14,6 +14,7 @@ import CampagnesListFiltres from './CampagnesListFiltres';
 import '../styles/campagne.css';
 import '../styles/filtres-campagne.css';
 import type { CampagneData } from '../types/campagne.types';
+import SuccessPopup from './SuccessPopup';
 // import {useNavigate } from 'react-router-dom';
 
 
@@ -30,9 +31,12 @@ const CampagnePage = () => {
   // PAR DÉFAUT : MODE LISTE (showFiltres = true)
   const [showFiltres, setShowFiltres] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [campagneData, setCampagneData] = useState<CampagneData>({
     nom: "",
     marketingPurpose: false,
+    pushtype: "alert",
     contacts: [],
     contactsValides: 0,
     expediteur: '',
@@ -47,11 +51,13 @@ const CampagnePage = () => {
   });
 
   const formaterPayloadPourAPI = (data: CampagneData) => {
+    console.log(data)
     const maintenant = new Date();
     
     const payload: any = {
       name: data.nom,
       message: data.message,
+      pushtype:data.pushtype,
       links: data.links || [],
       sender: data.expediteur,
       societe_id: userId,
@@ -122,7 +128,9 @@ const CampagnePage = () => {
       })
       .then(data => {
         console.log('Succès:', data);
-        alert('Campagne créée avec succès !');
+        setSuccessMessage(`La campagne "${campagneData.nom}" a été créée avec succès !`);
+        setShowSuccessPopup(true);
+        // alert('Campagne créée avec succès !');
         
         // Retour à la liste des campagnes
         setShowFiltres(true);
@@ -132,6 +140,7 @@ const CampagnePage = () => {
         // Réinitialiser les données
         setCampagneData({
           nom: "",
+          pushtype: "alert",
           marketingPurpose: false,
           contacts: [],
           contactsValides: 0,
@@ -147,8 +156,9 @@ const CampagnePage = () => {
         });
       
       setTimeout(() => {
+        setShowFiltres(true);
         window.location.href = `/campagne/${userId}`;
-      }, 500);
+      }, 4000);
       })
       .catch(error => {
         console.error('Erreur API:', error);
@@ -311,6 +321,16 @@ const CampagnePage = () => {
           </AnimatePresence>
         </div>
       </div>
+      {/* ⬅️ POPUP DE SUCCÈS */}
+      <AnimatePresence>
+        {showSuccessPopup && (
+          <SuccessPopup
+            message={successMessage}
+            onClose={() => setShowSuccessPopup(false)}
+            autoCloseDuration={4000}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

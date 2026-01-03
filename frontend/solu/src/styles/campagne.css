@@ -2374,3 +2374,20 @@
 @media (prefers-color-scheme: dark) {
   /* Si tu veux supporter le dark mode plus tard */
 }
+
+
+/* Style spécifique pour la mention STOP */
+.insert-stop-campagne {
+  background: #FFF3CD !important;
+  border: 1px solid #FFC107 !important;
+  color: #856404 !important;
+}
+
+.insert-stop-campagne i {
+  color: #FF6B00;
+}
+
+.insert-stop-text-campagne {
+  font-weight: 600;
+  font-size: 14px;
+}
