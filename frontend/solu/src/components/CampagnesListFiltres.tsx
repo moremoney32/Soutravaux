@@ -82,14 +82,58 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
   useEffect(() => {
     loadCampagnes(1);
   }, []);
-  const handleDeleteCampagne = async (campagneId: string, campagneName: string) => {
+  // const handleDeleteCampagne = async (campagneId: string, campagneName: string) => {
+  //   // Confirmation avant suppression
+  //   const confirmation = window.confirm(
+  //     `Êtes-vous sûr de vouloir supprimer la campagne "${campagneName}" ?\n\nCette action est irréversible.`
+  //   );
+
+  //   if (!confirmation) return;
+
+  //   try {
+  //     const response = await fetch(
+  //       `https://backendstaging.solutravo-compta.fr/api/campaigns/${campagneId}`,
+  //       {
+  //         method: 'DELETE',
+  //         headers: {
+  //           'accept': 'application/json',
+  //           'X-CSRF-TOKEN': '',
+  //         },
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       alert('Campagne supprimée avec succès !');
+
+  //       // Gestion intelligente de la pagination
+  //       if (campagnes.length === 1 && currentPage > 1) {
+  //         loadCampagnes(currentPage - 1, filters);
+  //       } else {
+  //         loadCampagnes(currentPage, filters);
+  //       }
+  //     } else {
+  //       const errorData = await response.json();
+  //       alert(`Erreur : ${errorData.message || 'Erreur inconnue'}`);
+  //     }
+  //   } catch (error) {
+  //     alert('Une erreur est survenue lors de la suppression');
+  //   }
+  // };
+
+  const handleDeleteCampagne = async (
+    campagneId: string, 
+    campagneName: string,
+    e: React.MouseEvent // ⬅️ Ajouter l'événement
+  ) => {
+    e.stopPropagation(); // ⬅️ Empêcher la propagation vers le <tr>
+  
     // Confirmation avant suppression
     const confirmation = window.confirm(
       `Êtes-vous sûr de vouloir supprimer la campagne "${campagneName}" ?\n\nCette action est irréversible.`
     );
-
+  
     if (!confirmation) return;
-
+  
     try {
       const response = await fetch(
         `https://backendstaging.solutravo-compta.fr/api/campaigns/${campagneId}`,
@@ -101,10 +145,10 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
           },
         }
       );
-
+  
       if (response.ok) {
         alert('Campagne supprimée avec succès !');
-
+  
         // Gestion intelligente de la pagination
         if (campagnes.length === 1 && currentPage > 1) {
           loadCampagnes(currentPage - 1, filters);
@@ -387,6 +431,10 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
                           <div className="action-buttons">
                             <button
                               className="btn-action btn-view"
+                              onClick={(e) => {
+                                e.stopPropagation(); // ⬅️ Empêcher propagation
+                                handleViewDetails(campagne.id);
+                              }}                    
                               // onClick={() => handleViewDetails(campagne.id)}
                               title="Voir les statistiques"
                             >
@@ -394,7 +442,8 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
                             </button>
                             <button
                               className="btn-action btn-delete"
-                              onClick={() => handleDeleteCampagne(campagne.id, campagne.name)}
+                              // onClick={() => handleDeleteCampagne(campagne.id, campagne.name)}
+                              onClick={(e) => handleDeleteCampagne(campagne.id, campagne.name, e)}
                               title="Supprimer"
                             >
                               <i className="fa-solid fa-trash"></i>
