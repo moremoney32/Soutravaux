@@ -6,7 +6,7 @@ import '../styles/modals-campagne.css';
 import type { CampagneData } from '../types/campagne.types';
 import ModalInsererLien from './ModalInsererLien';
 import ModalInsererFichier from './ModalInsererFichier';
-import ModalInsererStop from './ModalInsererStop';
+
 
 const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
 
@@ -49,7 +49,6 @@ const Etape3Message = ({ data, onUpdate, onSuivant, onPrecedent }: Etape3Message
     const [showEmoji, setShowEmoji] = useState(false);
     const [showModalLien, setShowModalLien] = useState(false);
     const [showModalFichier, setShowModalFichier] = useState(false);
-    const [showModalStop, setShowModalStop] = useState(false);
     const [stopMention, setStopMention] = useState<string | null>(null);
     const [message, setMessage] = useState(data.message);
     const [liens, setLiens] = useState<string[]>(data.links || []); //dInitialiser depuis data.links
@@ -82,8 +81,10 @@ const Etape3Message = ({ data, onUpdate, onSuivant, onPrecedent }: Etape3Message
 
         loadTemplates();
     }, []);
-       // ⬅️ NOUVELLE FONCTION : Insérer STOP
-       const handleInsertStop = (stopText: string) => {
+    // ⬅️ NOUVELLE FONCTION SIMPLIFIÉE : Insérer STOP directement
+    const handleInsertStopDirect = () => {
+        const stopText = 'STOP'; // Numéro fixe
+        
         // Ajouter STOP à la fin du message
         const newMessage = message + (message ? ' ' : '') + stopText;
         handleMessageChange(newMessage);
@@ -91,16 +92,14 @@ const Etape3Message = ({ data, onUpdate, onSuivant, onPrecedent }: Etape3Message
         // Sauvegarder la mention STOP
         setStopMention(stopText);
         
-        // ⬅️ CHANGER LE PUSHTYPE À "transactional"
+        // ⬅️ CHANGER LE PUSHTYPE À "marketing"
         onUpdate({ 
-            pushtype: 'transactional',
-            marketingPurpose: true // Indiquer que c'est une campagne marketing
+            pushtype: 'marketing',
+            marketingPurpose: true
         });
-        
-        setShowModalStop(false);
     };
 
-    // ⬅️ NOUVELLE FONCTION : Supprimer STOP
+    // ⬅️ FONCTION : Supprimer STOP
     const handleRemoveStop = () => {
         if (stopMention) {
             // Supprimer la mention STOP du message
@@ -292,8 +291,8 @@ const Etape3Message = ({ data, onUpdate, onSuivant, onPrecedent }: Etape3Message
                 </button>
                 <button
                     className="btn-tertiary btn-icon-campagne"
-                    onClick={() => setShowModalStop(true)}
-                    disabled={!!stopMention} // Désactiver si STOP déjà présent
+                    onClick={handleInsertStopDirect}
+                    disabled={!!stopMention}
                     style={{
                         opacity: stopMention ? 0.5 : 1,
                         cursor: stopMention ? 'not-allowed' : 'pointer'
@@ -429,10 +428,12 @@ const Etape3Message = ({ data, onUpdate, onSuivant, onPrecedent }: Etape3Message
                     <i className="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-            {showModalStop && (
-                <ModalInsererStop
-                    onClose={() => setShowModalStop(false)}
-                    onInsert={handleInsertStop}
+           {/* ⬅️ SUPPRIMER LE MODAL STOP */}
+            
+           {showModalLien && (
+                <ModalInsererLien
+                    onClose={() => setShowModalLien(false)}
+                    onInsert={handleInsertLien}
                 />
             )}
 
