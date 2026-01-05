@@ -48,7 +48,7 @@ const Etape1Nom = ({ data, onUpdate, onSuivant }: Etape1NomProps) => {
         )}
       </div>
 
-      {/* <div className="checkbox-group-campagne">
+       <div className="checkbox-group-campagne">
         <input
           type="checkbox"
           id="marketing-campagne"
@@ -56,7 +56,7 @@ const Etape1Nom = ({ data, onUpdate, onSuivant }: Etape1NomProps) => {
           onChange={(e) => onUpdate({ marketingPurpose: e.target.checked })}
         />
         <label htmlFor="marketing-campagne">Campagne à but marketing</label>
-      </div> */}
+      </div> 
 
       <div className="actions-campagne">
         <button className="btn-primary check_button" onClick={handleSuivant}>

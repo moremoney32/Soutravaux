@@ -504,55 +504,117 @@ export async function getEvents(
 /**
  * ✅ CRÉER ÉVÉNEMENT AVEC event_type
  */
-export async function createEvent(data: CreateEventInput): Promise<number> {
-  const conn = await pool.getConnection();
+// export async function createEvent(data: CreateEventInput): Promise<number> {
+//   const conn = await pool.getConnection();
 
-  try {
-    await conn.beginTransaction();
+//   try {
+//     await conn.beginTransaction();
 
-    // ✅ INCLURE event_type dans INSERT
-    const [result] = await conn.query<any>(
-      `INSERT INTO calendar_events 
-       (societe_id, title, description, event_date, start_time, end_time, location, color, status, event_type)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
-      [
-        data.societe_id,
-        data.title,
-        data.description || null,
-        data.event_date,
-        data.start_time,
-        data.end_time,
-        data.location || null,
-        data.color || '#E77131',
-        data.event_type || 'task'  // ← AJOUTÉ
-      ]
-    );
+//     // ✅ INCLURE event_type dans INSERT
+//     const [result] = await conn.query<any>(
+//       `INSERT INTO calendar_events 
+//        (societe_id, title, description, event_date, start_time, end_time, location, color, status, event_type)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+//       [
+//         data.societe_id,
+//         data.title,
+//         data.description || null,
+//         data.event_date,
+//         data.start_time,
+//         data.end_time,
+//         data.location || null,
+//         data.color || '#E77131',
+//         data.event_type || 'task'  // ← AJOUTÉ
+//       ]
+//     );
 
-    const eventId = result.insertId;
+//     const eventId = result.insertId;
 
-    if (data.attendee_societe_ids && data.attendee_societe_ids.length > 0) {
-      const inviteMethod = data.invite_method || 'push';
+//     if (data.attendee_societe_ids && data.attendee_societe_ids.length > 0) {
+//       const inviteMethod = data.invite_method || 'push';
       
-      for (const attendeeSocieteId of data.attendee_societe_ids) {
-        await conn.query(
-          `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
-           VALUES (?, ?, ?, NOW())`,
-          [eventId, attendeeSocieteId, inviteMethod]
-        );
-      }
-    }
+//       for (const attendeeSocieteId of data.attendee_societe_ids) {
+//         await conn.query(
+//           `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
+//            VALUES (?, ?, ?, NOW())`,
+//           [eventId, attendeeSocieteId, inviteMethod]
+//         );
+//       }
+//     }
 
-    await conn.commit();
-    console.log(`✅ Événement ${eventId} créé avec type: ${data.event_type}`);
-    return eventId;
-  } catch (error: any) {
-    await conn.rollback();
-    console.error('Erreur createEvent:', error);
-    throw new Error("Erreur création événement");
-  } finally {
-    conn.release();
+//     await conn.commit();
+//     console.log(`✅ Événement ${eventId} créé avec type: ${data.event_type}`);
+//     return eventId;
+//   } catch (error: any) {
+//     await conn.rollback();
+//     console.error('Erreur createEvent:', error);
+//     throw new Error("Erreur création événement");
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+export async function createEvent(data: CreateEventInput): Promise<number> {
+    const conn = await pool.getConnection();
+  
+    try {
+      await conn.beginTransaction();
+  
+      // ✅ NETTOYER LA DATE (enlever timestamp si présent)
+      const eventDate = data.event_date.includes('T') 
+        ? data.event_date.split('T')[0] 
+        : data.event_date;
+  
+      console.log('📅 DEBUG Création événement:', {
+        date_reçue_brute: data.event_date,
+        date_nettoyée: eventDate,
+        type_date: typeof data.event_date,
+        start_time: data.start_time,
+        event_type: data.event_type
+      });
+  
+      const [result] = await conn.query<any>(
+        `INSERT INTO calendar_events 
+         (societe_id, title, description, event_date, start_time, end_time, location, color, status, event_type)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+        [
+          data.societe_id,
+          data.title,
+          data.description || null,
+          eventDate,  // ✅ Date propre : "2026-01-08"
+          data.start_time,
+          data.end_time,
+          data.location || null,
+          data.color || '#E77131',
+          data.event_type || 'task'
+        ]
+      );
+  
+      const eventId = result.insertId;
+  
+      if (data.attendee_societe_ids && data.attendee_societe_ids.length > 0) {
+        const inviteMethod = data.invite_method || 'push';
+        
+        for (const attendeeSocieteId of data.attendee_societe_ids) {
+          await conn.query(
+            `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
+             VALUES (?, ?, ?, NOW())`,
+            [eventId, attendeeSocieteId, inviteMethod]
+          );
+        }
+      }
+  
+      await conn.commit();
+      console.log(`✅ Événement ${eventId} créé le ${eventDate} à ${data.start_time}`);
+      return eventId;
+    } catch (error: any) {
+      await conn.rollback();
+      console.error('❌ Erreur createEvent:', error);
+      throw new Error("Erreur création événement");
+    } finally {
+      conn.release();
+    }
   }
-}
 
 /**
  * ✅ MODIFIER ÉVÉNEMENT AVEC event_type

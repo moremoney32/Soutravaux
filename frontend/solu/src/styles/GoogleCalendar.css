@@ -800,6 +800,9 @@
   font-size: 18px;
   font-weight: 500;
   font-family: var(--font-gotham);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .calendar-modal-close {
@@ -825,6 +828,9 @@
 /* Corps du modal */
 .calendar-modal-body {
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 /* Formulaire d'événement */
@@ -837,7 +843,7 @@
 .calendar-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
 .calendar-form-label {
