@@ -1,0 +1,316 @@
+// services/emailNotificationService.ts
+
+import axios from 'axios';
+import pool from '../config/db';
+import { RowDataPacket } from 'mysql2';
+
+const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
+const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
+
+interface EventData {
+  id: number;
+  title: string;
+  description?: string;
+  event_date: string;
+  start_time: string;
+  location?: string;
+  societe_id: number;
+}
+
+interface RecipientData {
+  email: string;
+  nomsociete: string;
+}
+
+/**
+ * Envoyer un email de notification
+ */
+export async function envoyerEmailNotification(
+  notificationId: number
+): Promise<boolean> {
+  
+  const conn = await pool.getConnection();
+  
+  try {
+    // 1. Récupérer les infos de la notification
+    const [notifRows] = await conn.query<RowDataPacket[]>(
+      `SELECT * FROM event_notifications WHERE id = ?`,
+      [notificationId]
+    );
+    
+    if (notifRows.length === 0) {
+      console.warn(`⚠️ Notification ${notificationId} introuvable`);
+      return false;
+    }
+    
+    const notification = notifRows[0];
+    
+    // 2. Récupérer les infos de l'événement
+    const [eventRows] = await conn.query<RowDataPacket[]>(
+      `SELECT * FROM calendar_events WHERE id = ?`,
+      [notification.event_id]
+    );
+    
+    if (eventRows.length === 0) {
+      console.warn(`⚠️ Événement ${notification.event_id} introuvable`);
+      return false;
+    }
+    
+    const event = eventRows[0] as EventData;
+    
+    // 3. Récupérer les infos du destinataire
+    const [recipientRows] = await conn.query<RowDataPacket[]>(
+      `SELECT email, nomsociete FROM societes WHERE id = ?`,
+      [notification.recipient_societe_id]
+    );
+    
+    if (recipientRows.length === 0) {
+      console.warn(`⚠️ Destinataire ${notification.recipient_societe_id} introuvable`);
+      return false;
+    }
+    
+    const recipient = recipientRows[0] as RecipientData;
+    
+    if (!recipient.email) {
+      console.warn(`⚠️ Pas d'email pour la société ${notification.recipient_societe_id}`);
+      return false;
+    }
+    
+    // 4. Construire l'email selon le type
+    const { subject, message } = construireEmail(
+      event,
+      recipient,
+      notification.notification_type
+    );
+    
+    // 5. Envoyer l'email
+    console.log(`📧 Envoi email à ${recipient.email} (${notification.notification_type})`);
+    
+    const response = await axios.post(EMAIL_API_URL, {
+      sender: DEFAULT_SENDER,
+      receiver: recipient.email,
+      subject,
+      message
+    });
+    console.log(response)
+    
+    // 6. Marquer comme envoyé
+    await conn.query(
+      `UPDATE event_notifications 
+       SET sent_at = NOW(), 
+           email_status = 'sent',
+           email_response = ?
+       WHERE id = ?`,
+      [JSON.stringify({ status: response.status }), notificationId]
+    );
+    
+    console.log(`✅ Email envoyé avec succès (notification ${notificationId})`);
+    return true;
+    
+  } catch (error: any) {
+    console.error(`❌ Erreur envoi email (notification ${notificationId}):`, error.message);
+    
+    // Marquer comme échoué
+    await conn.query(
+      `UPDATE event_notifications 
+       SET email_status = 'failed',
+           email_response = ?
+       WHERE id = ?`,
+      [JSON.stringify({ error: error.message }), notificationId]
+    );
+    
+    return false;
+    
+  } finally {
+    conn.release();
+  }
+}
+
+/**
+ * Construire le contenu de l'email selon le type de notification
+ */
+function construireEmail(
+  event: EventData,
+  recipient: RecipientData,
+  notificationType: string
+): { subject: string; message: string } {
+  
+  // Formater la date et l'heure
+  const dateFormatee = formaterDate(event.event_date);
+  const heureFormatee = event.start_time.substring(0, 5); // "10:00"
+  
+  const prenom = recipient.nomsociete.split(' ')[0]; // Premier mot du nom
+  
+  let subject = '';
+  let message = '';
+  
+  switch (notificationType) {
+    case '1_day_before':
+      subject = `📅 Rappel : ${event.title} demain à ${heureFormatee}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">📅 Rappel : Événement demain</h2>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Vous avez un événement prévu <strong>demain</strong> :
+            </p>
+            
+            <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
+              <p style="font-size: 18px; font-weight: bold; color: #E77131; margin: 0 0 15px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📅 Date :</strong> ${dateFormatee}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>⏰ Heure :</strong> ${heureFormatee}
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📍 Lieu :</strong> ${event.location}
+              </p>
+              ` : ''}
+              
+              ${event.description ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                <strong>📝 Description :</strong><br/>
+                ${event.description}
+              </p>
+              ` : ''}
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
+              Pour gérer vos notifications, connectez-vous à votre espace.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case '1_hour_before':
+      subject = `⏰ Dans 1 heure : ${event.title}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">⏰ Votre événement commence bientôt</h2>
+          </div>
+          
+          <div style="background: #FFF9E6; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Votre événement commence <strong style="color: #FF9800;">dans 1 heure</strong> :
+            </p>
+            
+            <div style="background: white; padding: 20px; border-left: 4px solid #FF9800; border-radius: 5px; margin-bottom: 25px;">
+              <p style="font-size: 20px; font-weight: bold; color: #FF9800; margin: 0 0 15px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 16px;">
+                <strong>⏰ Heure :</strong> <span style="color: #FF9800; font-size: 18px;">${heureFormatee}</span>
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📍 Lieu :</strong> ${event.location}
+              </p>
+              ` : ''}
+              
+              ${event.description ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                ${event.description}
+              </p>
+              ` : ''}
+            </div>
+            
+            <div style="background: #FFE0B2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+              <p style="margin: 0; font-size: 14px; color: #E65100;">
+                💡 <strong>Conseil :</strong> Préparez-vous et vérifiez votre équipement si nécessaire.
+              </p>
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case 'at_time':
+      subject = `🔔 C'est maintenant : ${event.title}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">🔔 C'est l'heure !</h2>
+          </div>
+          
+          <div style="background: #E8F5E9; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Votre événement commence <strong style="color: #4CAF50;">maintenant</strong> :
+            </p>
+            
+            <div style="background: white; padding: 25px; border-left: 4px solid #4CAF50; border-radius: 5px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 0 0 20px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 0; font-size: 18px; color: #4CAF50;">
+                ⏰ <strong>${heureFormatee}</strong>
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px;">
+                <strong>📍</strong> ${event.location}
+              </p>
+              ` : ''}
+            </div>
+            
+            <div style="background: #C8E6C9; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 16px; color: #2E7D32;">
+                ✅ <strong>Bonne chance !</strong>
+              </p>
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+  }
+  
+  return { subject, message };
+}
+
+/**
+ * Formater une date au format français
+ */
+function formaterDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-');
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  
+  const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  
+  const jourSemaine = jours[date.getDay()];
+  const jour = date.getDate();
+  const moisNom = mois[date.getMonth()];
+  const annee = date.getFullYear();
+  
+  return `${jourSemaine} ${jour} ${moisNom} ${annee}`;
+}

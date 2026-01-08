@@ -38,7 +38,7 @@ const GoogleCalendar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [newEventDate, setNewEventDate] = useState<Date | null>(null);  // ← NOUVEAU
 
-  const societeId = Number(localStorage.getItem("societeId") || "11");
+  const societeId = Number(localStorage.getItem("societeId") || "12");
 
   const visibleCalendarIds = useMemo(
     () => calendars.filter((cal) => cal.isVisible).map((cal) => cal.id),

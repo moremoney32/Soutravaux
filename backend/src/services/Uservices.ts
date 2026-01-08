@@ -318,7 +318,7 @@ export async function CompleteRegistration({ email, passe }: CompleteRegistratio
     const response = await axios.post("https://auth.solutravo-app.fr/send-email.php", {
       receiver:"vincent@solutravo.fr",
       sender: "noreply@solutravo-compta.fr",
-      subject: `🎉 Bienvenue sur Solutravo !`,
+      subject: `🎉 Bienvenue sur Solutravo !`, 
       message: `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <h2 style="color: #e67131;">Félicitations à ${updatedUser.prenom || "cher utilisateur"} ! 🎉</h2>

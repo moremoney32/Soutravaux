@@ -1,426 +1,315 @@
-// services/calendarService.ts - VERSION CORRIGÉE
+// services/emailNotificationService.ts
 
-import pool from '../config/database';
+import axios from 'axios';
+import pool from '../config/db';
 import { RowDataPacket } from 'mysql2';
 
-/**
- * Interfaces TypeScript
- */
-export interface CalendarEvent {
+const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
+const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
+
+interface EventData {
   id: number;
-  societe_id: number;                             // Société créatrice
   title: string;
   description?: string;
   event_date: string;
   start_time: string;
-  end_time: string;
   location?: string;
-  color: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  created_at: string;
-  updated_at: string;
-  societe_name?: string;                          // Nom société créatrice
-  attendees?: EventAttendee[];
+  societe_id: number;
 }
 
-export interface EventAttendee {
-  id: number;
-  event_id: number;
-  societe_id: number;                             // Société invitée
-  societe_name: string;
-  contact_email?: string;
-  contact_phone?: string;
-  invite_method: 'email' | 'sms' | 'push' | 'contact';
-  status: 'pending' | 'accepted' | 'declined';
-  notified_at?: string;
-  responded_at?: string;
-}
-
-export interface CreateEventInput {
-  societe_id: number;                             // Société qui crée
-  title: string;
-  description?: string;
-  event_date: string;
-  start_time: string;
-  end_time: string;
-  location?: string;
-  color?: string;
-  attendee_societe_ids?: number[];                // Sociétés invitées
-  invite_method?: 'email' | 'sms' | 'push' | 'contact';
+interface RecipientData {
+  email: string;
+  nomsociete: string;
 }
 
 /**
- * RÉCUPÉRER ÉVÉNEMENTS D'UNE SOCIÉTÉ
- * Inclut: événements créés + événements où la société est invitée
+ * Envoyer un email de notification
  */
-export async function getEvents(
-  societeId: number,
-  startDate: string,
-  endDate: string
-): Promise<CalendarEvent[]> {
+export async function envoyerEmailNotification(
+  notificationId: number
+): Promise<boolean> {
+  
   const conn = await pool.getConnection();
-
+  
   try {
-    // Récupérer événements créés par la société OU où elle est invitée
-    const [rows] = await conn.query<RowDataPacket[]>(
-      `SELECT DISTINCT
-        ce.*,
-        s.nom_societe as societe_name
-      FROM calendar_events ce
-      LEFT JOIN societes s ON ce.societe_id = s.id
-      WHERE ce.event_date BETWEEN ? AND ?
-        AND (
-          ce.societe_id = ?                         -- Événements créés
-          OR EXISTS (                               -- OU invitée
-            SELECT 1 FROM event_attendees ea 
-            WHERE ea.event_id = ce.id 
-              AND ea.societe_id = ?
-          )
-        )
-      ORDER BY ce.event_date, ce.start_time`,
-      [startDate, endDate, societeId, societeId]
+    // 1. Récupérer les infos de la notification
+    const [notifRows] = await conn.query<RowDataPacket[]>(
+      `SELECT * FROM event_notifications WHERE id = ?`,
+      [notificationId]
     );
-
-    const events = rows as CalendarEvent[];
     
-    // Charger les participants pour chaque événement
-    for (const event of events) {
-      event.attendees = await getEventAttendees(event.id);
+    if (notifRows.length === 0) {
+      console.warn(`⚠️ Notification ${notificationId} introuvable`);
+      return false;
     }
-
-    return events;
-  } catch (error: any) {
-    console.error('Erreur getEvents:', error);
-    throw new Error("Erreur récupération événements");
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * CRÉER UN ÉVÉNEMENT + INVITER SOCIÉTÉS
- */
-export async function createEvent(data: CreateEventInput): Promise<number> {
-  const conn = await pool.getConnection();
-
-  try {
-    await conn.beginTransaction();
-
-    // 1. Créer l'événement
-    const [result] = await conn.query<any>(
-      `INSERT INTO calendar_events 
-       (societe_id, title, description, event_date, start_time, end_time, location, color)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        data.societe_id,
-        data.title,
-        data.description || null,
-        data.event_date,
-        data.start_time,
-        data.end_time,
-        data.location || null,
-        data.color || '#E77131'
-      ]
-    );
-
-    const eventId = result.insertId;
-
-    // 2. Inviter les sociétés
-    if (data.attendee_societe_ids && data.attendee_societe_ids.length > 0) {
-      const inviteMethod = data.invite_method || 'push';
-      
-      for (const attendeeSocieteId of data.attendee_societe_ids) {
-        await conn.query(
-          `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
-           VALUES (?, ?, ?, NOW())`,
-          [eventId, attendeeSocieteId, inviteMethod]
-        );
-
-        // 3. Envoyer notification
-        await sendInviteNotification(attendeeSocieteId, eventId, inviteMethod);
-      }
-    }
-
-    await conn.commit();
-    return eventId;
-  } catch (error: any) {
-    await conn.rollback();
-    console.error('Erreur createEvent:', error);
-    throw new Error("Erreur création événement");
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * MODIFIER UN ÉVÉNEMENT
- */
-export async function updateEvent(
-  eventId: number,
-  data: Partial<CreateEventInput>,
-  societeId: number                                // Vérifier société créatrice
-): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    // Vérifier que la société est la créatrice
-    const [rows] = await conn.query<RowDataPacket[]>(
-      `SELECT id FROM calendar_events WHERE id = ? AND societe_id = ?`,
-      [eventId, societeId]
-    );
-
-    if (rows.length === 0) {
-      throw new Error("Événement introuvable ou accès refusé");
-    }
-
-    const updates: string[] = [];
-    const params: any[] = [];
-
-    if (data.title) {
-      updates.push('title = ?');
-      params.push(data.title);
-    }
-    if (data.description !== undefined) {
-      updates.push('description = ?');
-      params.push(data.description);
-    }
-    if (data.event_date) {
-      updates.push('event_date = ?');
-      params.push(data.event_date);
-    }
-    if (data.start_time) {
-      updates.push('start_time = ?');
-      params.push(data.start_time);
-    }
-    if (data.end_time) {
-      updates.push('end_time = ?');
-      params.push(data.end_time);
-    }
-    if (data.location !== undefined) {
-      updates.push('location = ?');
-      params.push(data.location);
-    }
-    if (data.color) {
-      updates.push('color = ?');
-      params.push(data.color);
-    }
-
-    if (updates.length > 0) {
-      params.push(eventId);
-      await conn.query(
-        `UPDATE calendar_events SET ${updates.join(', ')} WHERE id = ?`,
-        params
-      );
-    }
-  } catch (error: any) {
-    console.error('Erreur updateEvent:', error);
-    throw error;
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * SUPPRIMER UN ÉVÉNEMENT
- */
-export async function deleteEvent(eventId: number, societeId: number): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    const [result] = await conn.query<any>(
-      `DELETE FROM calendar_events WHERE id = ? AND societe_id = ?`,
-      [eventId, societeId]
-    );
-
-    if (result.affectedRows === 0) {
-      throw new Error("Événement introuvable ou accès refusé");
-    }
-  } catch (error: any) {
-    console.error('Erreur deleteEvent:', error);
-    throw error;
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * RÉCUPÉRER PARTICIPANTS (SOCIÉTÉS) D'UN ÉVÉNEMENT
- */
-export async function getEventAttendees(eventId: number): Promise<EventAttendee[]> {
-  const conn = await pool.getConnection();
-
-  try {
-    const [rows] = await conn.query<RowDataPacket[]>(
-      `SELECT 
-        ea.*,
-        s.nom_societe as societe_name,
-        s.email as contact_email,
-        s.telephone as contact_phone
-      FROM event_attendees ea
-      LEFT JOIN societes s ON ea.societe_id = s.id
-      WHERE ea.event_id = ?
-      ORDER BY ea.created_at`,
-      [eventId]
-    );
-
-    return rows as EventAttendee[];
-  } catch (error: any) {
-    console.error('Erreur getEventAttendees:', error);
-    return [];
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * INVITER DES SOCIÉTÉS À UN ÉVÉNEMENT
- */
-export async function inviteAttendees(
-  eventId: number,
-  societeIds: number[],
-  inviteMethod: 'email' | 'sms' | 'push' | 'contact'
-): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    await conn.beginTransaction();
-
-    for (const societeId of societeIds) {
-      // Vérifier si déjà invitée
-      const [existing] = await conn.query<RowDataPacket[]>(
-        `SELECT id FROM event_attendees WHERE event_id = ? AND societe_id = ?`,
-        [eventId, societeId]
-      );
-
-      if (existing.length === 0) {
-        await conn.query(
-          `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
-           VALUES (?, ?, ?, NOW())`,
-          [eventId, societeId, inviteMethod]
-        );
-
-        await sendInviteNotification(societeId, eventId, inviteMethod);
-      }
-    }
-
-    await conn.commit();
-  } catch (error: any) {
-    await conn.rollback();
-    console.error('Erreur inviteAttendees:', error);
-    throw new Error("Erreur invitation sociétés");
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * RÉPONDRE À UNE INVITATION
- */
-export async function respondToInvite(
-  eventId: number,
-  societeId: number,
-  status: 'accepted' | 'declined'
-): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    await conn.query(
-      `UPDATE event_attendees 
-       SET status = ?, responded_at = NOW()
-       WHERE event_id = ? AND societe_id = ?`,
-      [status, eventId, societeId]
-    );
-  } catch (error: any) {
-    console.error('Erreur respondToInvite:', error);
-    throw new Error("Erreur réponse invitation");
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * RÉCUPÉRER SOCIÉTÉS DISPONIBLES (pour invitation)
- * Toutes les sociétés sauf la créatrice
- */
-export async function getAvailableSocietes(
-  excludeSocieteId?: number
-): Promise<any[]> {
-  const conn = await pool.getConnection();
-
-  try {
-    let query = `
-      SELECT 
-        id,
-        nom_societe as name,
-        email,
-        telephone as phone
-      FROM societes
-      WHERE 1=1
-    `;
-
-    const params: any[] = [];
-
-    if (excludeSocieteId) {
-      query += ` AND id != ?`;
-      params.push(excludeSocieteId);
-    }
-
-    query += ` ORDER BY nom_societe`;
-
-    const [rows] = await conn.query<RowDataPacket[]>(query, params);
-    return rows;
-  } catch (error: any) {
-    console.error('Erreur getAvailableSocietes:', error);
-    return [];
-  } finally {
-    conn.release();
-  }
-}
-
-/**
- * ENVOYER NOTIFICATION D'INVITATION
- * TODO: Connecter à vos endpoints existants
- */
-async function sendInviteNotification(
-  societeId: number,
-  eventId: number,
-  method: 'email' | 'sms' | 'push' | 'contact'
-): Promise<void> {
-  try {
-    // Récupérer infos société et événement
-    const conn = await pool.getConnection();
     
-    const [societe] = await conn.query<RowDataPacket[]>(
-      `SELECT * FROM societes WHERE id = ?`,
-      [societeId]
-    );
-
-    const [event] = await conn.query<RowDataPacket[]>(
+    const notification = notifRows[0];
+    
+    // 2. Récupérer les infos de l'événement
+    const [eventRows] = await conn.query<RowDataPacket[]>(
       `SELECT * FROM calendar_events WHERE id = ?`,
-      [eventId]
+      [notification.event_id]
     );
-
-    conn.release();
-
-    if (societe.length === 0 || event.length === 0) return;
-
-    const s = societe[0];
-    const e = event[0];
-
-    // Message d'invitation
-    const message = `Vous êtes invité à "${e.title}" le ${e.event_date} de ${e.start_time} à ${e.end_time}`;
-
-    if (method === 'email' && s.email) {
-      // TODO: Appeler votre endpoint email
-      console.log(`Email envoyé à ${s.email}: ${message}`);
-    } else if (method === 'sms' && s.telephone) {
-      // TODO: Appeler votre endpoint SMS
-      console.log(`SMS envoyé à ${s.telephone}: ${message}`);
-    } else if (method === 'push') {
-      // TODO: Appeler votre endpoint push
-      console.log(`Push envoyé à société ${societeId}: ${message}`);
+    
+    if (eventRows.length === 0) {
+      console.warn(`⚠️ Événement ${notification.event_id} introuvable`);
+      return false;
     }
-  } catch (error) {
-    console.error('Erreur sendInviteNotification:', error);
+    
+    const event = eventRows[0] as EventData;
+    
+    // 3. Récupérer les infos du destinataire
+    const [recipientRows] = await conn.query<RowDataPacket[]>(
+      `SELECT email, nomsociete FROM societes WHERE id = ?`,
+      [notification.recipient_societe_id]
+    );
+    
+    if (recipientRows.length === 0) {
+      console.warn(`⚠️ Destinataire ${notification.recipient_societe_id} introuvable`);
+      return false;
+    }
+    
+    const recipient = recipientRows[0] as RecipientData;
+    
+    if (!recipient.email) {
+      console.warn(`⚠️ Pas d'email pour la société ${notification.recipient_societe_id}`);
+      return false;
+    }
+    
+    // 4. Construire l'email selon le type
+    const { subject, message } = construireEmail(
+      event,
+      recipient,
+      notification.notification_type
+    );
+    
+    // 5. Envoyer l'email
+    console.log(`📧 Envoi email à ${recipient.email} (${notification.notification_type})`);
+    
+    const response = await axios.post(EMAIL_API_URL, {
+      sender: DEFAULT_SENDER,
+      receiver: recipient.email,
+      subject,
+      message
+    });
+    
+    // 6. Marquer comme envoyé
+    await conn.query(
+      `UPDATE event_notifications 
+       SET sent_at = NOW(), 
+           email_status = 'sent',
+           email_response = ?
+       WHERE id = ?`,
+      [JSON.stringify({ status: response.status }), notificationId]
+    );
+    
+    console.log(`✅ Email envoyé avec succès (notification ${notificationId})`);
+    return true;
+    
+  } catch (error: any) {
+    console.error(`❌ Erreur envoi email (notification ${notificationId}):`, error.message);
+    
+    // Marquer comme échoué
+    await conn.query(
+      `UPDATE event_notifications 
+       SET email_status = 'failed',
+           email_response = ?
+       WHERE id = ?`,
+      [JSON.stringify({ error: error.message }), notificationId]
+    );
+    
+    return false;
+    
+  } finally {
+    conn.release();
   }
+}
+
+/**
+ * Construire le contenu de l'email selon le type de notification
+ */
+function construireEmail(
+  event: EventData,
+  recipient: RecipientData,
+  notificationType: string
+): { subject: string; message: string } {
+  
+  // Formater la date et l'heure
+  const dateFormatee = formaterDate(event.event_date);
+  const heureFormatee = event.start_time.substring(0, 5); // "10:00"
+  
+  const prenom = recipient.nomsociete.split(' ')[0]; // Premier mot du nom
+  
+  let subject = '';
+  let message = '';
+  
+  switch (notificationType) {
+    case '1_day_before':
+      subject = `📅 Rappel : ${event.title} demain à ${heureFormatee}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">📅 Rappel : Événement demain</h2>
+          </div>
+          
+          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Vous avez un événement prévu <strong>demain</strong> :
+            </p>
+            
+            <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
+              <p style="font-size: 18px; font-weight: bold; color: #E77131; margin: 0 0 15px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📅 Date :</strong> ${dateFormatee}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>⏰ Heure :</strong> ${heureFormatee}
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📍 Lieu :</strong> ${event.location}
+              </p>
+              ` : ''}
+              
+              ${event.description ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                <strong>📝 Description :</strong><br/>
+                ${event.description}
+              </p>
+              ` : ''}
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
+              Pour gérer vos notifications, connectez-vous à votre espace.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case '1_hour_before':
+      subject = `⏰ Dans 1 heure : ${event.title}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">⏰ Votre événement commence bientôt</h2>
+          </div>
+          
+          <div style="background: #FFF9E6; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Votre événement commence <strong style="color: #FF9800;">dans 1 heure</strong> :
+            </p>
+            
+            <div style="background: white; padding: 20px; border-left: 4px solid #FF9800; border-radius: 5px; margin-bottom: 25px;">
+              <p style="font-size: 20px; font-weight: bold; color: #FF9800; margin: 0 0 15px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 8px 0; font-size: 16px;">
+                <strong>⏰ Heure :</strong> <span style="color: #FF9800; font-size: 18px;">${heureFormatee}</span>
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 8px 0; font-size: 14px;">
+                <strong>📍 Lieu :</strong> ${event.location}
+              </p>
+              ` : ''}
+              
+              ${event.description ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                ${event.description}
+              </p>
+              ` : ''}
+            </div>
+            
+            <div style="background: #FFE0B2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+              <p style="margin: 0; font-size: 14px; color: #E65100;">
+                💡 <strong>Conseil :</strong> Préparez-vous et vérifiez votre équipement si nécessaire.
+              </p>
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case 'at_time':
+      subject = `🔔 C'est maintenant : ${event.title}`;
+      message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+            <h2 style="color: white; margin: 0;">🔔 C'est l'heure !</h2>
+          </div>
+          
+          <div style="background: #E8F5E9; padding: 30px; border-radius: 0 0 10px 10px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+            <p style="font-size: 15px; margin-bottom: 25px;">
+              Votre événement commence <strong style="color: #4CAF50;">maintenant</strong> :
+            </p>
+            
+            <div style="background: white; padding: 25px; border-left: 4px solid #4CAF50; border-radius: 5px; margin-bottom: 25px; text-align: center;">
+              <p style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 0 0 20px 0;">
+                ${event.title}
+              </p>
+              
+              <p style="margin: 0; font-size: 18px; color: #4CAF50;">
+                ⏰ <strong>${heureFormatee}</strong>
+              </p>
+              
+              ${event.location ? `
+              <p style="margin: 15px 0 0 0; font-size: 14px;">
+                <strong>📍</strong> ${event.location}
+              </p>
+              ` : ''}
+            </div>
+            
+            <div style="background: #C8E6C9; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 16px; color: #2E7D32;">
+                ✅ <strong>Bonne chance !</strong>
+              </p>
+            </div>
+            
+            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.
+            </p>
+          </div>
+        </div>
+      `;
+      break;
+  }
+  
+  return { subject, message };
+}
+
+/**
+ * Formater une date au format français
+ */
+function formaterDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-');
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  
+  const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  
+  const jourSemaine = jours[date.getDay()];
+  const jour = date.getDate();
+  const moisNom = mois[date.getMonth()];
+  const annee = date.getFullYear();
+  
+  return `${jourSemaine} ${jour} ${moisNom} ${annee}`;
 }

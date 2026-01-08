@@ -1,6 +1,7 @@
 import app from "./app";
 import dotenv from "dotenv";
 import { cleanupSseService, initSseService } from "./src/services/SseServices";
+import { demarrerCronNotifications } from "./src/services/notificationCron";
 
 
 dotenv.config({ path: "./.env" });
@@ -8,6 +9,7 @@ dotenv.config({ path: "./.env" });
 const PORT = process.env.PORT || 3000;
 initSseService();
 const server = app.listen(PORT, () => {
+  demarrerCronNotifications();
   console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
 
