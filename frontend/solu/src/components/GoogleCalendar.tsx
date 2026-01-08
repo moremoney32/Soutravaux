@@ -2,6 +2,7 @@
 // GoogleCalendar.tsx - CRÉATION DATE CORRIGÉE
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import '../styles/GoogleCalendar.css';
 import type { Calendar, CalendarEvent, ViewType } from '../types/calendar';
 import CalendarWeekView from './CalendarWeekView';
@@ -38,7 +39,12 @@ const GoogleCalendar: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [newEventDate, setNewEventDate] = useState<Date | null>(null);  // ← NOUVEAU
 
-  const societeId = Number(localStorage.getItem("societeId") || "11");
+  const { societeId: societeIdParam } = useParams<{ societeId: string }>();
+  
+  // ✅ CHANGEMENT 2 : Convertir en nombre (avec fallback sur localStorage si URL vide)
+  const societeId = Number(societeIdParam);
+
+  //const societeId = Number(localStorage.getItem("societeId") || "11");
 
   const visibleCalendarIds = useMemo(
     () => calendars.filter((cal) => cal.isVisible).map((cal) => cal.id),
@@ -59,7 +65,7 @@ const GoogleCalendar: React.FC = () => {
       const apiEvents = await fetchEvents(societeId, startDate, endDate);
       const frontendEvents = apiEvents.map(convertAPIEventToFrontend);
       
-      console.log('📅 Événements chargés:', frontendEvents);
+      // console.log('📅 Événements chargés:', frontendEvents);
       setAllEvents(frontendEvents);
     } catch (error) {
       console.error('Erreur chargement événements:', error);

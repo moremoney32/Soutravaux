@@ -717,13 +717,13 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       description: 'Pour vous seulement',
       color: '#42A5F5'
     },
-    { 
-      value: 'work' as EventType, 
-      label: 'Chantier/Travail', 
-      icon: '👷',
-      description: 'Avec d\'autres sociétés',
-      color: '#E77131'
-    },
+    // { 
+    //   value: 'work' as EventType, 
+    //   label: 'Chantier/Travail', 
+    //   icon: '👷',
+    //   description: 'Avec d\'autres sociétés',
+    //   color: '#E77131'
+    // },
     { 
       value: 'meeting' as EventType, 
       label: 'Réunion', 

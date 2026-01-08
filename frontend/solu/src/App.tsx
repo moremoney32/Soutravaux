@@ -33,7 +33,7 @@ function App() {
            <Route path="/create-liste" element={<CreateListePage />} />
             <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} /> 
              <Route path="/scraping" element={<ScrapingPage/>} />
-                <Route path="/calendar" element={<GoogleCalendar/>} />
+                <Route path="/calendar/:societeId" element={<GoogleCalendar/>} />
 
       </Routes>
     </BrowserRouter>
