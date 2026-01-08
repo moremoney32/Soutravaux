@@ -1,6 +1,6 @@
 
 
-// // InviteAttendeesModal.tsx - VERSION CORRIGÉE SOCIÉTÉS
+
 
 // import React, { useState, useEffect } from 'react';
 
