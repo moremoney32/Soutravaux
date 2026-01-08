@@ -1,6 +1,7 @@
 
 
-const API_BASE_URL = 'http://localhost:3000/api';
+//const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
 export interface CalendarEventAPI {
   id: number;
