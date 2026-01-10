@@ -1,7 +1,19 @@
 
 
-//const API_BASE_URL = 'http://localhost:3000/api';
-const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'http://localhost:3000/api';
+//const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+
+export interface EventCategory {
+  id: number;
+  label: string;
+  icon: string;
+  color: string;
+  is_predefined: boolean;
+  requires_location: boolean;
+  created_by_societe_id?: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface CalendarEventAPI {
   id: number;
@@ -14,11 +26,15 @@ export interface CalendarEventAPI {
   location?: string;
   color: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  event_type: 'task' | 'work' | 'meeting';  // ← AJOUTÉ
+  event_type?: 'task' | 'work' | 'meeting';
+  scope: 'personal' | 'collaborative';
+  event_category_id?: number;
+  custom_category_label?: string;
   created_at: string;
   updated_at: string;
   societe_name?: string;
   attendees?: any[];
+  category?: EventCategory;
 }
 
 export interface CreateEventInput {
@@ -31,7 +47,9 @@ export interface CreateEventInput {
   location?: string;
   color?: string;
   status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  event_type?: 'task' | 'work' | 'meeting';  // ← AJOUTÉ
+  scope: 'personal' | 'collaborative';
+  event_category_id?: number;
+  custom_category_label?: string;
   attendee_societe_ids?: number[];
   invite_method?: 'email' | 'sms' | 'push' | 'contact';
 }
@@ -52,6 +70,57 @@ export async function fetchEvents(
 
   if (!result.success) {
     throw new Error(result.message || 'Erreur récupération événements');
+  }
+
+  return result.data;
+}
+
+/**
+ * Récupérer les catégories d'événements (prédéfinies + personnalisées)
+ */
+export async function fetchCategories(societeId: number): Promise<EventCategory[]> {
+  const params = new URLSearchParams({
+    societe_id: String(societeId)
+  });
+
+  const response = await fetch(`${API_BASE_URL}/calendar/categories?${params}`);
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur récupération catégories');
+  }
+
+  return result.data;
+}
+
+/**
+ * Créer une catégorie personnalisée
+ */
+export async function createCategory(
+  societeId: number,
+  label: string,
+  icon?: string,
+  color?: string,
+  requires_location?: boolean
+): Promise<EventCategory> {
+  const response = await fetch(`${API_BASE_URL}/calendar/categories`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      societe_id: societeId,
+      label,
+      icon,
+      color,
+      requires_location
+    })
+  });
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur création catégorie');
   }
 
   return result.data;
@@ -235,14 +304,13 @@ export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
   }
 
 /**
- * ✅ Convertir Frontend → API AVEC event_type
+ * ✅ Convertir Frontend → API avec scope et catégories
  */
 export function convertFrontendEventToAPI(
   event: any,
   societeId: number,
    creatorId: number
 ): CreateEventInput {
-  // ✅ FIX DATE : Utiliser getDate() au lieu de getUTCDate()
   const year = event.startTime.getFullYear();
   const month = String(event.startTime.getMonth() + 1).padStart(2, '0');
   const day = String(event.startTime.getDate()).padStart(2, '0');
@@ -259,13 +327,14 @@ export function convertFrontendEventToAPI(
 
   console.log('📤 Conversion Frontend→API:', {
     title: event.title,
-    event_type: event.event_type,  // ← LOG
+    scope: event.scope,
+    event_category_id: event.event_category_id,
+    custom_category_label: event.custom_category_label,
     event_date: eventDate,
     start_time: startTime,
-    jour_semaine: event.startTime.toLocaleDateString('fr-FR', { weekday: 'long' })
   });
 
-  return {
+  const payload: CreateEventInput = {
     societe_id: societeId,
     title: event.title,
     description: event.description,
@@ -275,6 +344,16 @@ export function convertFrontendEventToAPI(
     end_time: endTime,
     color: event.color || '#E77131',
     status: event.status || 'pending',
-    event_type: event.event_type || 'task'  // ← AJOUTÉ
+    scope: event.scope || 'personal',
+    event_category_id: event.event_category_id || undefined,
+    custom_category_label: event.custom_category_label || undefined
   };
+
+  // Si collaboratif, ajouter les invitées et méthode
+  if (event.scope === 'collaborative' && event.attendees && event.attendees.length > 0) {
+    payload.attendee_societe_ids = event.attendees;
+    payload.invite_method = event.invite_method || 'email';
+  }
+
+  return payload;
 }

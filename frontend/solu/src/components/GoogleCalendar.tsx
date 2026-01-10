@@ -1,10 +1,431 @@
 
-// GoogleCalendar.tsx - CRÉATION DATE CORRIGÉE
+// // GoogleCalendar.tsx - CRÉATION DATE CORRIGÉE
+
+// import React, { useState, useCallback, useMemo, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import '../styles/GoogleCalendar.css';
+// import type { Calendar, CalendarEvent, ViewType } from '../types/calendar';
+// import CalendarWeekView from './CalendarWeekView';
+// import CalendarMonthView from './CalendarMonthView';
+// import CalendarEventModal from './CalendarEventModal';
+// import CalendarSidebar from './CalendarSidebar';
+// import InviteAttendeesModal from './InvitesAttentesModal';
+// import {
+//   fetchEvents,
+//   createCalendarEvent,
+//   updateCalendarEvent,
+//   deleteCalendarEvent,
+//   inviteArtisans,
+//   convertAPIEventToFrontend,
+//   convertFrontendEventToAPI
+// } from '../services/calendarApi';
+// import CalendarDayView from './CalendarDayView';
+
+// const mockCalendars: Calendar[] = [
+//   { id: 'personal', name: 'Personnel', color: '#E77131', isVisible: true },
+//   { id: 'work', name: 'Travail', color: '#FF6B35', isVisible: true },
+//   { id: 'meetings', name: 'Réunions', color: '#F4A460', isVisible: true }
+// ];
+
+// const GoogleCalendar: React.FC = () => {
+//   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+//   // const [viewType, setViewType] = useState<ViewType>('week');
+//   const [viewType, setViewType] = useState<ViewType>('week');
+//   const [calendars, setCalendars] = useState<Calendar[]>(mockCalendars);
+//   const [allEvents, setAllEvents] = useState<CalendarEvent[]>([]);
+//   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+//   const [showEventModal, setShowEventModal] = useState<boolean>(false);
+//   const [isCreatingNewEvent, setIsCreatingNewEvent] = useState<boolean>(false);
+//   const [showInviteModal, setShowInviteModal] = useState(false);
+//   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [newEventDate, setNewEventDate] = useState<Date | null>(null);  // ← NOUVEAU
+
+//   const { societeId: societeIdParam } = useParams<{ societeId: string }>();
+
+//   // ✅ CHANGEMENT 2 : Convertir en nombre (avec fallback sur localStorage si URL vide)
+//   const societeId = Number(societeIdParam);
+
+ 
+
+//   const visibleCalendarIds = useMemo(
+//     () => calendars.filter((cal) => cal.isVisible).map((cal) => cal.id),
+//     [calendars]
+//   );
+
+//   const handlePrevious = useCallback((): void => {
+//     setCurrentDate((prev) => {
+//       const newDate = new Date(prev);
+//       if (viewType === 'day') {
+//         newDate.setDate(newDate.getDate() - 1);  // Jour précédent
+//       } else if (viewType === 'week') {
+//         newDate.setDate(newDate.getDate() - 7);  // Semaine précédente
+//       } else {
+//         newDate.setMonth(newDate.getMonth() - 1);  // Mois précédent
+//       }
+//       return newDate;
+//     });
+//   }, [viewType]);
+
+//   const handleNext = useCallback((): void => {
+//     setCurrentDate((prev) => {
+//       const newDate = new Date(prev);
+//       if (viewType === 'day') {
+//         newDate.setDate(newDate.getDate() + 1);  // Jour suivant
+//       } else if (viewType === 'week') {
+//         newDate.setDate(newDate.getDate() + 7);  // Semaine suivante
+//       } else {
+//         newDate.setMonth(newDate.getMonth() + 1);  // Mois suivant
+//       }
+//       return newDate;
+//     });
+//   }, [viewType]);
+
+//   const loadEvents = useCallback(async () => {
+//     setIsLoading(true);
+//     try {
+//       const weekStart = new Date(currentDate);
+//       weekStart.setDate(weekStart.getDate() - 7);
+//       const weekEnd = new Date(currentDate);
+//       weekEnd.setDate(weekEnd.getDate() + 14);
+
+//       const startDate = weekStart.toISOString().split('T')[0];
+//       const endDate = weekEnd.toISOString().split('T')[0];
+
+//       const apiEvents = await fetchEvents(societeId, startDate, endDate);
+//       const frontendEvents = apiEvents.map(convertAPIEventToFrontend);
+
+//       // console.log('📅 Événements chargés:', frontendEvents);
+//       setAllEvents(frontendEvents);
+//     } catch (error) {
+//       console.error('Erreur chargement événements:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }, [currentDate, societeId]);
+
+//   useEffect(() => {
+//     loadEvents();
+//   }, [loadEvents]);
+
+//   const toggleCalendar = useCallback((id: string): void => {
+//     setCalendars((prev) =>
+//       prev.map((cal) =>
+//         cal.id === id ? { ...cal, isVisible: !cal.isVisible } : cal
+//       )
+//     );
+//   }, []);
+
+  
+//   const handleToday = useCallback((): void => {
+//     setCurrentDate(new Date());
+//   }, []);
+
+//   // ✅ CORRIGÉ : Créer événement avec date choisie
+//   const handleCreateEvent = useCallback((): void => {
+//     setSelectedEvent(null);
+//     setNewEventDate(currentDate);  // ← Utiliser currentDate
+//     setIsCreatingNewEvent(true);
+//     setShowEventModal(true);
+//   }, [currentDate]);
+
+//   const handleEventClick = useCallback((event: CalendarEvent): void => {
+//     setSelectedEvent(event);
+//     setNewEventDate(null);
+//     setIsCreatingNewEvent(false);
+//     setShowEventModal(true);
+//   }, []);
+
+//   // ✅ CORRIGÉ : Créer événement à la date/heure cliquée
+//   const handleTimeSlotClick = useCallback((date: Date, hour: number): void => {
+//     console.log('🕐 Clic créneau:', { date: date.toString(), hour });
+
+//     // Créer date avec l'heure cliquée
+//     const eventDate = new Date(date);
+//     eventDate.setHours(hour, 0, 0, 0);
+
+//     setNewEventDate(eventDate);  // ← Date précise
+//     setSelectedEvent(null);
+//     setIsCreatingNewEvent(true);
+//     setShowEventModal(true);
+//   }, []);
+
+//   // ✅ CORRIGÉ : Sélectionner date dans mini calendrier
+//   const handleDateSelect = useCallback((date: Date): void => {
+//     console.log('📅 Date sélectionnée:', date.toString());
+//     setCurrentDate(date);
+//   }, []);
+
+//   // ✅ CORRIGÉ : Utiliser newEventDate pour création
+//   const handleSaveEvent = useCallback(async (event: CalendarEvent): Promise<void> => {
+//     try {
+//       if (isCreatingNewEvent) {
+//         // ✅ CORRECTION : Utiliser newEventDate si disponible
+//         const eventToCreate = { ...event };
+//         if (newEventDate) {
+//           console.log('📆 Création événement pour date:', newEventDate.toString());
+
+//           // Garder les heures du formulaire, mais utiliser la date choisie
+//           const startHours = eventToCreate.startTime.getHours();
+//           const startMinutes = eventToCreate.startTime.getMinutes();
+//           const endHours = eventToCreate.endTime.getHours();
+//           const endMinutes = eventToCreate.endTime.getMinutes();
+
+//           eventToCreate.startTime = new Date(newEventDate);
+//           eventToCreate.startTime.setHours(startHours, startMinutes, 0, 0);
+
+//           eventToCreate.endTime = new Date(newEventDate);
+//           eventToCreate.endTime.setHours(endHours, endMinutes, 0, 0);
+//         }
+
+//         const apiData = convertFrontendEventToAPI(eventToCreate, societeId, societeId);
+//         console.log('📤 Envoi API:', apiData);
+
+//         const eventId = await createCalendarEvent(apiData);
+//         console.log('✅ Événement créé:', eventId);
+//       } else {
+//         const apiData = convertFrontendEventToAPI(event, societeId, societeId);
+//         await updateCalendarEvent(Number(event.id), societeId, apiData);
+//         console.log('✅ Événement modifié:', event.id);
+//       }
+
+//       await loadEvents();
+//       setNewEventDate(null);  // Reset
+//     } catch (error) {
+//       console.error('Erreur sauvegarde événement:', error);
+//       alert('Erreur lors de la sauvegarde');
+//     }
+//   }, [isCreatingNewEvent, societeId, loadEvents, newEventDate]);
+
+//   const handleDeleteEvent = useCallback(async (eventId: string): Promise<void> => {
+//     if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+//       return;
+//     }
+
+//     try {
+//       await deleteCalendarEvent(Number(eventId), societeId);
+//       console.log('✅ Événement supprimé:', eventId);
+//       await loadEvents();
+//     } catch (error) {
+//       console.error('Erreur suppression événement:', error);
+//       alert('Erreur lors de la suppression');
+//     }
+//   }, [societeId, loadEvents]);
+
+//   const handleInviteClick = (eventId: string) => {
+//     setSelectedEventId(Number(eventId));
+//     setShowInviteModal(true);
+//   };
+
+//   const handleInvite = async (
+//     eventId: number,
+//     societeIds: number[],
+//     method: 'email' | 'sms' | 'push' | 'contact'
+//   ) => {
+//     try {
+//       await inviteArtisans(eventId, societeIds, method);
+//       alert(`${societeIds.length} société(s) invitée(s) par ${method}`);
+//       setShowInviteModal(false);
+//     } catch (error) {
+//       console.error('Erreur invitation:', error);
+//       alert('Erreur lors de l\'envoi des invitations');
+//     }
+//   };
+
+//   const formatDateRange = (): string => {
+//     const weekStart = new Date(currentDate);
+//     weekStart.setDate(weekStart.getDate() - (weekStart.getDay() || 7) + 1);
+//     const weekEnd = new Date(weekStart);
+//     weekEnd.setDate(weekEnd.getDate() + 6);
+
+//     const startMonth = weekStart.toLocaleDateString('fr-FR', {
+//       month: 'long',
+//       year: 'numeric'
+//     });
+//     const endMonth = weekEnd.toLocaleDateString('fr-FR', {
+//       month: 'long',
+//       year: 'numeric'
+//     });
+
+//     return startMonth === endMonth
+//       ? startMonth
+//       : `${startMonth} - ${endMonth}`;
+//   };
+
+//   return (
+//     <div className="calendar-container">
+//       <CalendarSidebar
+//         currentDate={currentDate}
+//         calendars={calendars}
+//         onToggleCalendar={toggleCalendar}
+//         onCreateEvent={handleCreateEvent}
+//         onDateSelect={handleDateSelect}
+//       />
+
+//       <div className="calendar-main">
+//         <div className="calendar-header">
+//           <div className="calendar-header-left">
+//             <button className="calendar-hamburger" title="Menu">
+//               <i className="fas fa-bars"></i>
+//             </button>
+//             <div className="calendar-logo">
+//               <i className="fas fa-calendar"></i>
+//               <span>Agenda</span>
+//             </div>
+//           </div>
+
+//           <div className="calendar-header-center">
+//             <button
+//               className="calendar-btn-today"
+//               onClick={handleToday}
+//               title="Aller à aujourd'hui"
+//             >
+//               Aujourd'hui
+//             </button>
+//             <div className="calendar-navigation">
+//               <button
+//                 onClick={handlePrevious}
+//                 title="Semaine précédente"
+//                 className="calendar-nav-btn"
+//               >
+//                 <i className="fas fa-chevron-left"></i>
+//               </button>
+//               <button
+//                 onClick={handleNext}
+//                 title="Semaine suivante"
+//                 className="calendar-nav-btn"
+//               >
+//                 <i className="fas fa-chevron-right"></i>
+//               </button>
+//             </div>
+//             <span className="calendar-month-year">
+//               {formatDateRange()}
+//             </span>
+//           </div>
+
+//           <div className="calendar-header-right">
+//             <button className="calendar-btn-search" title="Rechercher">
+//               <i className="fas fa-search"></i>
+//             </button>
+//             <button className="calendar-btn-help" title="Aide">
+//               <i className="fas fa-question-circle"></i>
+//             </button>
+//             <button className="calendar-btn-settings" title="Paramètres">
+//               <i className="fas fa-cog"></i>
+//             </button>
+
+           
+//             <div className="calendar-view-dropdown">
+//               <select 
+//                 className="calendar-view-select"
+//                 value={viewType}
+//                 onChange={(e) => setViewType(e.target.value as ViewType)}
+//               >
+//                 <option value="day">Jour</option>
+//                 <option value="week">Semaine</option>
+//                 <option value="month">Mois</option>
+//               </select>
+//               <i className="fas fa-chevron-down"></i>
+//             </div>
+
+//             <button className="calendar-btn-apps" title="Applications">
+//               <i className="fas fa-th-large"></i>
+//             </button>
+//             <div className="calendar-user-avatar" title="Profil">
+//               F
+//             </div>
+//           </div>
+//         </div>
+
+        
+
+//         {/* ✅ AFFICHER LA VUE SELON LE TYPE */}
+//         {!isLoading && viewType === 'day' && (
+//           <CalendarDayView
+//             currentDate={currentDate}
+//             events={allEvents}
+//             visibleCalendars={visibleCalendarIds}
+//             onEventClick={handleEventClick}
+//             onTimeSlotClick={handleTimeSlotClick}
+//           />
+//         )}
+
+//         {!isLoading && viewType === 'week' && (
+//           <CalendarWeekView
+//             currentDate={currentDate}
+//             events={allEvents}
+//             visibleCalendars={visibleCalendarIds}
+//             onEventClick={handleEventClick}
+//             onTimeSlotClick={handleTimeSlotClick}
+//           />
+//         )}
+
+//         {!isLoading && viewType === 'month' && (
+//           <CalendarMonthView
+//             currentDate={currentDate}
+//             events={allEvents}
+//             visibleCalendars={visibleCalendarIds}
+//             onEventClick={handleEventClick}
+//             onDateClick={handleDateSelect}
+//             onTimeSlotClick={handleTimeSlotClick}
+//           />
+//         )}
+//       </div>
+
+//       <div className="calendar-sidebar-right">
+//         <div className="calendar-notification">
+//           {selectedEvent ? (
+//             <div className="calendar-event-details">
+//               <h4>{selectedEvent.title}</h4>
+//               <p>{selectedEvent.description}</p>
+//               <p>
+//                 {selectedEvent.startTime.toLocaleString('fr-FR')} -{' '}
+//                 {selectedEvent.endTime.toLocaleString('fr-FR')}
+//               </p>
+//             </div>
+//           ) : (
+//             <i className="fas fa-check"></i>
+//           )}
+//         </div>
+//       </div>
+
+//       <CalendarEventModal
+//         onInvite={handleInviteClick}
+//         event={selectedEvent}
+//         isOpen={showEventModal}
+//         onClose={() => {
+//           setShowEventModal(false);
+//           setSelectedEvent(null);
+//           setIsCreatingNewEvent(false);
+//           setNewEventDate(null);  // ← Reset
+//         }}
+//         onSave={handleSaveEvent}
+//         onDelete={handleDeleteEvent}
+//         isNewEvent={isCreatingNewEvent}
+//       />
+
+//       <InviteAttendeesModal
+//         isOpen={showInviteModal}
+//         eventId={selectedEventId!}
+//         societeId={societeId}
+//         onClose={() => setShowInviteModal(false)}
+//         onInvite={handleInvite}
+//       />
+//     </div>
+//   );
+// };
+
+// export default GoogleCalendar;
+
+
+
+
+// GoogleCalendar.tsx - VERSION CORRIGÉE FINALE
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/GoogleCalendar.css';
-import type { Calendar, CalendarEvent, ViewType } from '../types/calendar';
+import type { Calendar, CalendarEvent, ViewType, EventCategory } from '../types/calendar';
 import CalendarWeekView from './CalendarWeekView';
 import CalendarMonthView from './CalendarMonthView';
 import CalendarEventModal from './CalendarEventModal';
@@ -12,6 +433,8 @@ import CalendarSidebar from './CalendarSidebar';
 import InviteAttendeesModal from './InvitesAttentesModal';
 import {
   fetchEvents,
+  fetchCategories,
+  createCategory,
   createCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
@@ -19,6 +442,7 @@ import {
   convertAPIEventToFrontend,
   convertFrontendEventToAPI
 } from '../services/calendarApi';
+import CalendarDayView from './CalendarDayView';
 
 const mockCalendars: Calendar[] = [
   { id: 'personal', name: 'Personnel', color: '#E77131', isVisible: true },
@@ -35,21 +459,50 @@ const GoogleCalendar: React.FC = () => {
   const [showEventModal, setShowEventModal] = useState<boolean>(false);
   const [isCreatingNewEvent, setIsCreatingNewEvent] = useState<boolean>(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [newEventDate, setNewEventDate] = useState<Date | null>(null);  // ← NOUVEAU
+  const [newEventDate, setNewEventDate] = useState<Date | null>(null);
+  
+  // ✅ NOUVEAU : État des catégories
+  const [categories, setCategories] = useState<EventCategory[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  console.log(isLoadingCategories)
 
   const { societeId: societeIdParam } = useParams<{ societeId: string }>();
-  
-  // ✅ CHANGEMENT 2 : Convertir en nombre (avec fallback sur localStorage si URL vide)
   const societeId = Number(societeIdParam);
-
-  //const societeId = Number(localStorage.getItem("societeId") || "11");
 
   const visibleCalendarIds = useMemo(
     () => calendars.filter((cal) => cal.isVisible).map((cal) => cal.id),
     [calendars]
   );
+
+  const handlePrevious = useCallback((): void => {
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      if (viewType === 'day') {
+        newDate.setDate(newDate.getDate() - 1);
+      } else if (viewType === 'week') {
+        newDate.setDate(newDate.getDate() - 7);
+      } else {
+        newDate.setMonth(newDate.getMonth() - 1);
+      }
+      return newDate;
+    });
+  }, [viewType]);
+
+  const handleNext = useCallback((): void => {
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      if (viewType === 'day') {
+        newDate.setDate(newDate.getDate() + 1);
+      } else if (viewType === 'week') {
+        newDate.setDate(newDate.getDate() + 7);
+      } else {
+        newDate.setMonth(newDate.getMonth() + 1);
+      }
+      return newDate;
+    });
+  }, [viewType]);
 
   const loadEvents = useCallback(async () => {
     setIsLoading(true);
@@ -64,8 +517,7 @@ const GoogleCalendar: React.FC = () => {
 
       const apiEvents = await fetchEvents(societeId, startDate, endDate);
       const frontendEvents = apiEvents.map(convertAPIEventToFrontend);
-      
-      // console.log('📅 Événements chargés:', frontendEvents);
+
       setAllEvents(frontendEvents);
     } catch (error) {
       console.error('Erreur chargement événements:', error);
@@ -74,9 +526,42 @@ const GoogleCalendar: React.FC = () => {
     }
   }, [currentDate, societeId]);
 
+  // ✅ NOUVEAU : Charger les catégories au démarrage
+  const loadCategories = useCallback(async () => {
+    setIsLoadingCategories(true);
+    try {
+      const fetchedCategories = await fetchCategories(societeId);
+      setCategories(fetchedCategories);
+      console.log('✅ Catégories chargées:', fetchedCategories);
+    } catch (error) {
+      console.error('Erreur chargement catégories:', error);
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  }, [societeId]);
+
   useEffect(() => {
     loadEvents();
-  }, [loadEvents]);
+    loadCategories();
+  }, [loadEvents, loadCategories]);
+
+  // ✅ NOUVEAU : Handler pour créer une catégorie
+  const handleCreateCategory = useCallback(async (
+    label: string,
+    icon?: string,
+    color?: string,
+    requires_location?: boolean
+  ): Promise<EventCategory> => {
+    try {
+      const newCategory = await createCategory(societeId, label, icon, color, requires_location);
+      setCategories(prev => [...prev, newCategory]);
+      console.log('✅ Catégorie créée:', newCategory);
+      return newCategory;
+    } catch (error) {
+      console.error('Erreur création catégorie:', error);
+      throw error;
+    }
+  }, [societeId]);
 
   const toggleCalendar = useCallback((id: string): void => {
     setCalendars((prev) =>
@@ -86,30 +571,13 @@ const GoogleCalendar: React.FC = () => {
     );
   }, []);
 
-  const handlePreviousWeek = useCallback((): void => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setDate(newDate.getDate() - 7);
-      return newDate;
-    });
-  }, []);
-
-  const handleNextWeek = useCallback((): void => {
-    setCurrentDate((prev) => {
-      const newDate = new Date(prev);
-      newDate.setDate(newDate.getDate() + 7);
-      return newDate;
-    });
-  }, []);
-
   const handleToday = useCallback((): void => {
     setCurrentDate(new Date());
   }, []);
 
-  // ✅ CORRIGÉ : Créer événement avec date choisie
   const handleCreateEvent = useCallback((): void => {
     setSelectedEvent(null);
-    setNewEventDate(currentDate);  // ← Utiliser currentDate
+    setNewEventDate(currentDate);
     setIsCreatingNewEvent(true);
     setShowEventModal(true);
   }, [currentDate]);
@@ -121,61 +589,46 @@ const GoogleCalendar: React.FC = () => {
     setShowEventModal(true);
   }, []);
 
-  // ✅ CORRIGÉ : Créer événement à la date/heure cliquée
   const handleTimeSlotClick = useCallback((date: Date, hour: number): void => {
-    console.log('🕐 Clic créneau:', { date: date.toString(), hour });
-    
-    // Créer date avec l'heure cliquée
     const eventDate = new Date(date);
     eventDate.setHours(hour, 0, 0, 0);
-    
-    setNewEventDate(eventDate);  // ← Date précise
+
+    setNewEventDate(eventDate);
     setSelectedEvent(null);
     setIsCreatingNewEvent(true);
     setShowEventModal(true);
   }, []);
 
-  // ✅ CORRIGÉ : Sélectionner date dans mini calendrier
   const handleDateSelect = useCallback((date: Date): void => {
-    console.log('📅 Date sélectionnée:', date.toString());
     setCurrentDate(date);
   }, []);
 
-  // ✅ CORRIGÉ : Utiliser newEventDate pour création
   const handleSaveEvent = useCallback(async (event: CalendarEvent): Promise<void> => {
     try {
       if (isCreatingNewEvent) {
-        // ✅ CORRECTION : Utiliser newEventDate si disponible
         const eventToCreate = { ...event };
         if (newEventDate) {
-          console.log('📆 Création événement pour date:', newEventDate.toString());
-          
-          // Garder les heures du formulaire, mais utiliser la date choisie
           const startHours = eventToCreate.startTime.getHours();
           const startMinutes = eventToCreate.startTime.getMinutes();
           const endHours = eventToCreate.endTime.getHours();
           const endMinutes = eventToCreate.endTime.getMinutes();
-          
+
           eventToCreate.startTime = new Date(newEventDate);
           eventToCreate.startTime.setHours(startHours, startMinutes, 0, 0);
-          
+
           eventToCreate.endTime = new Date(newEventDate);
           eventToCreate.endTime.setHours(endHours, endMinutes, 0, 0);
         }
-        
+
         const apiData = convertFrontendEventToAPI(eventToCreate, societeId, societeId);
-        console.log('📤 Envoi API:', apiData);
-        
-        const eventId = await createCalendarEvent(apiData);
-        console.log('✅ Événement créé:', eventId);
+        await createCalendarEvent(apiData);
       } else {
         const apiData = convertFrontendEventToAPI(event, societeId, societeId);
         await updateCalendarEvent(Number(event.id), societeId, apiData);
-        console.log('✅ Événement modifié:', event.id);
       }
 
       await loadEvents();
-      setNewEventDate(null);  // Reset
+      setNewEventDate(null);
     } catch (error) {
       console.error('Erreur sauvegarde événement:', error);
       alert('Erreur lors de la sauvegarde');
@@ -189,7 +642,6 @@ const GoogleCalendar: React.FC = () => {
 
     try {
       await deleteCalendarEvent(Number(eventId), societeId);
-      console.log('✅ Événement supprimé:', eventId);
       await loadEvents();
     } catch (error) {
       console.error('Erreur suppression événement:', error);
@@ -197,25 +649,69 @@ const GoogleCalendar: React.FC = () => {
     }
   }, [societeId, loadEvents]);
 
-  const handleInviteClick = (eventId: string) => {
-    setSelectedEventId(Number(eventId));
-    setShowInviteModal(true);
+  // ════════════════════════════════════════════════
+  // ✅ CORRECTION 2 : Handlers Invitations
+  // ════════════════════════════════════════════════
+
+  // Handler pour CalendarEventModal (invitations depuis la modal événement)
+  const handleInviteFromModal = async (eventId: string, societeIds: number[]): Promise<void> => {
+    try {
+      // Convertir eventId en number pour l'API backend
+      const eventIdNum = Number(eventId);
+      
+      await inviteArtisans(eventIdNum, societeIds, 'email');
+      
+      alert(`${societeIds.length} collaborateur(s) invité(s) par email`);
+      
+      // Mettre à jour l'événement dans la liste
+      setAllEvents(prevEvents =>
+        prevEvents.map(e =>
+          e.id === eventId
+            ? { ...e, attendees: [...(e.attendees || []), ...societeIds] }
+            : e
+        )
+      );
+    } catch (error) {
+      console.error('Erreur invitation:', error);
+      throw error; // Relancer pour que CalendarEventModal affiche l'erreur
+    }
   };
 
-  const handleInvite = async (
-    eventId: number,
-    societeIds: number[],
-    method: 'email' | 'sms' | 'push' | 'contact'
-  ) => {
+  // Handler pour InviteAttendeesModal standalone (depuis liste événements)
+  const handleInviteStandalone = async (societeIds: number[]): Promise<void> => {
+    if (!selectedEventId) return;
+
     try {
-      await inviteArtisans(eventId, societeIds, method);
-      alert(`${societeIds.length} société(s) invitée(s) par ${method}`);
+      const eventIdNum = Number(selectedEventId);
+      
+      await inviteArtisans(eventIdNum, societeIds, 'email');
+      
+      alert(`${societeIds.length} collaborateur(s) invité(s)`);
       setShowInviteModal(false);
+      setSelectedEventId(null);
+      
+      await loadEvents(); // Recharger pour voir les mises à jour
     } catch (error) {
       console.error('Erreur invitation:', error);
       alert('Erreur lors de l\'envoi des invitations');
     }
   };
+
+  // ✅ CORRECTION 3 : Handler obsolète (gardé pour rétrocompatibilité)
+  // const handleInvite = async (
+  //   eventId: number,
+  //   societeIds: number[],
+  //   method: 'email' | 'sms' | 'push' | 'contact'
+  // ) => {
+  //   try {
+  //     await inviteArtisans(eventId, societeIds, method);
+  //     alert(`${societeIds.length} société(s) invitée(s) par ${method}`);
+  //     setShowInviteModal(false);
+  //   } catch (error) {
+  //     console.error('Erreur invitation:', error);
+  //     alert('Erreur lors de l\'envoi des invitations');
+  //   }
+  // };
 
   const formatDateRange = (): string => {
     const weekStart = new Date(currentDate);
@@ -260,7 +756,7 @@ const GoogleCalendar: React.FC = () => {
           </div>
 
           <div className="calendar-header-center">
-            <button 
+            <button
               className="calendar-btn-today"
               onClick={handleToday}
               title="Aller à aujourd'hui"
@@ -268,16 +764,16 @@ const GoogleCalendar: React.FC = () => {
               Aujourd'hui
             </button>
             <div className="calendar-navigation">
-              <button 
-                onClick={handlePreviousWeek}
-                title="Semaine précédente"
+              <button
+                onClick={handlePrevious}
+                title="Précédent"
                 className="calendar-nav-btn"
               >
                 <i className="fas fa-chevron-left"></i>
               </button>
-              <button 
-                onClick={handleNextWeek}
-                title="Semaine suivante"
+              <button
+                onClick={handleNext}
+                title="Suivant"
                 className="calendar-nav-btn"
               >
                 <i className="fas fa-chevron-right"></i>
@@ -289,7 +785,7 @@ const GoogleCalendar: React.FC = () => {
           </div>
 
           <div className="calendar-header-right">
-            <button className="calendar-btn-search" title="Rechercher">
+            {/* <button className="calendar-btn-search" title="Rechercher">
               <i className="fas fa-search"></i>
             </button>
             <button className="calendar-btn-help" title="Aide">
@@ -297,39 +793,38 @@ const GoogleCalendar: React.FC = () => {
             </button>
             <button className="calendar-btn-settings" title="Paramètres">
               <i className="fas fa-cog"></i>
-            </button>
-            
-            <div className="calendar-view-selector">
-              <button
-                className={`calendar-view-btn ${viewType === 'week' ? 'active' : ''}`}
-                onClick={() => setViewType('week')}
-                title="Vue semaine"
+            </button> */}
+
+            <div className="calendar-view-dropdown">
+              <select 
+                className="calendar-view-select"
+                value={viewType}
+                onChange={(e) => setViewType(e.target.value as ViewType)}
               >
-                <i className="fas fa-calendar-week"></i>
-              </button>
-              <button
-                className={`calendar-view-btn ${viewType === 'month' ? 'active' : ''}`}
-                onClick={() => setViewType('month')}
-                title="Vue mois"
-              >
-                <i className="fas fa-th"></i>
-              </button>
+                <option value="day">Jour</option>
+                <option value="week">Semaine</option>
+                <option value="month">Mois</option>
+              </select>
+              <i className="fas fa-chevron-down"></i>
             </div>
 
-            <button className="calendar-btn-apps" title="Applications">
+            {/* <button className="calendar-btn-apps" title="Applications">
               <i className="fas fa-th-large"></i>
-            </button>
-            <div className="calendar-user-avatar" title="Profil">
+            </button> */}
+            {/* <div className="calendar-user-avatar" title="Profil">
               F
-            </div>
+            </div> */}
           </div>
         </div>
 
-        {isLoading && (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
-            <i className="fas fa-spinner fa-spin" style={{ fontSize: '24px', color: '#E77131' }}></i>
-            <p>Chargement des événements...</p>
-          </div>
+        {!isLoading && viewType === 'day' && (
+          <CalendarDayView
+            currentDate={currentDate}
+            events={allEvents}
+            visibleCalendars={visibleCalendarIds}
+            onEventClick={handleEventClick}
+            onTimeSlotClick={handleTimeSlotClick}
+          />
         )}
 
         {!isLoading && viewType === 'week' && (
@@ -349,11 +844,12 @@ const GoogleCalendar: React.FC = () => {
             visibleCalendars={visibleCalendarIds}
             onEventClick={handleEventClick}
             onDateClick={handleDateSelect}
+            onTimeSlotClick={handleTimeSlotClick}
           />
         )}
       </div>
 
-      <div className="calendar-sidebar-right">
+      {/* <div className="calendar-sidebar-right">
         <div className="calendar-notification">
           {selectedEvent ? (
             <div className="calendar-event-details">
@@ -368,30 +864,44 @@ const GoogleCalendar: React.FC = () => {
             <i className="fas fa-check"></i>
           )}
         </div>
-      </div>
+      </div> */}
 
+      {/* ════════════════════════════════════════════════ */}
+      {/* ✅ MODAL ÉVÉNEMENT (CORRIGÉE)                    */}
+      {/* ════════════════════════════════════════════════ */}
       <CalendarEventModal
-        onInvite={handleInviteClick}
+        onInvite={handleInviteFromModal}
         event={selectedEvent}
         isOpen={showEventModal}
         onClose={() => {
           setShowEventModal(false);
           setSelectedEvent(null);
           setIsCreatingNewEvent(false);
-          setNewEventDate(null);  // ← Reset
+          setNewEventDate(null);
         }}
         onSave={handleSaveEvent}
         onDelete={handleDeleteEvent}
         isNewEvent={isCreatingNewEvent}
+        categories={categories}
+        onFetchCategories={loadCategories}
+        onCreateCategory={handleCreateCategory}
       />
 
-      <InviteAttendeesModal
-        isOpen={showInviteModal}
-        eventId={selectedEventId!}
-        societeId={societeId}
-        onClose={() => setShowInviteModal(false)}
-        onInvite={handleInvite}
-      />
+      {/* ════════════════════════════════════════════════ */}
+      {/* ✅ MODAL INVITATIONS STANDALONE (CORRIGÉE)       */}
+      {/* ════════════════════════════════════════════════ */}
+      {showInviteModal && selectedEventId && (
+        <InviteAttendeesModal
+          isOpen={showInviteModal}
+          eventId={selectedEventId}  // ✅ string
+          onClose={() => {
+            setShowInviteModal(false);
+            setSelectedEventId(null);
+          }}
+          onInvite={handleInviteStandalone}  // ✅ (societeIds: number[]) => Promise<void>
+          initialSelectedIds={[]}
+        />
+      )}
     </div>
   );
 };

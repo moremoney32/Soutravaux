@@ -1,9 +1,5 @@
 
-
-
-
-
-// // CalendarEventModal.tsx 
+// // CalendarEventModal.tsx - AVEC TYPE ÉVÉNEMENT
 
 // import React, { useState, useEffect } from 'react';
 // import type { CalendarEvent } from '../types/calendar';
@@ -15,8 +11,12 @@
 //   onSave?: (event: CalendarEvent) => void;
 //   onDelete?: (eventId: string) => void;
 //   onInvite?: (eventId: string) => void;
+//   onComplete?: (eventId: string) => void;
+//   onCancel?: (eventId: string) => void;
 //   isNewEvent?: boolean;
 // }
+
+// type EventType = 'task' | 'work' | 'meeting';
 
 // const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 //   event,
@@ -25,24 +25,29 @@
 //   onSave,
 //   onDelete,
 //   onInvite,
+//   onComplete,
+//   onCancel,
 //   isNewEvent = false
 // }) => {
 //   const [title, setTitle] = useState('');
 //   const [description, setDescription] = useState('');
-//   const [location, setLocation] = useState('');  // ← NOUVEAU
+//   const [location, setLocation] = useState('');
 //   const [startTime, setStartTime] = useState('');
 //   const [endTime, setEndTime] = useState('');
 //   const [isEditing, setIsEditing] = useState(isNewEvent);
 //   const [color, setColor] = useState('#E77131');
-//   const [status, setStatus] = useState<'pending' | 'confirmed' | 'cancelled' | 'completed'>('pending');  // ← NOUVEAU
+//   const [eventType, setEventType] = useState<EventType>('task');
 
 //   const isPastEvent = event ? event.endTime < new Date() : false;
+//   const eventStatus = (event as any)?.status || 'pending';
+  
 
 //   useEffect(() => {
 //     if (event && isOpen) {
 //       setTitle(event.title);
 //       setDescription(event.description || '');
-//       setLocation((event as any).location || '');  // ← NOUVEAU
+//       setLocation((event as any).location || '');
+//       setEventType((event as any).event_type || 'task');
 //       setStartTime(event.startTime.toLocaleTimeString('fr-FR', {
 //         hour: '2-digit',
 //         minute: '2-digit'
@@ -52,16 +57,15 @@
 //         minute: '2-digit'
 //       }));
 //       setColor(event.color);
-//       setStatus((event as any).status || 'pending');  // ← NOUVEAU
 //       setIsEditing(false);
 //     } else if (isNewEvent && isOpen) {
 //       setTitle('');
 //       setDescription('');
-//       setLocation('');  // ← NOUVEAU
+//       setLocation('');
+//       setEventType('task');
 //       setStartTime('09:00');
 //       setEndTime('10:00');
 //       setColor('#E77131');
-//       setStatus('pending');  // ← NOUVEAU
 //       setIsEditing(true);
 //     }
 //   }, [event, isOpen, isNewEvent]);
@@ -71,6 +75,11 @@
 //   const handleSave = (): void => {
 //     if (!title.trim()) {
 //       alert('Le titre est requis');
+//       return;
+//     }
+
+//     if (eventType !== 'task' && !location.trim()) {
+//       alert('Le lieu est requis pour les chantiers et réunions');
 //       return;
 //     }
 
@@ -98,8 +107,9 @@
 //       ),
 //       color,
 //       calendar: event?.calendar || 'personal',
-//       location: location.trim() || undefined,  // ← NOUVEAU
-//       status  // ← NOUVEAU
+//       location: location.trim() || undefined,
+//       status: 'pending',
+//       event_type: eventType
 //     } as any;
 
 //     onSave?.(updatedEvent);
@@ -119,31 +129,64 @@
 //     }
 //   };
 
-//   // ✅ NOUVELLES COULEURS (12 au lieu de 5)
+//   const handleComplete = (): void => {
+//     if (event && confirm('Marquer cet événement comme terminé ?')) {
+//       onComplete?.(event.id);
+//       onClose();
+//     }
+//   };
+//   console.log(handleComplete)
+
+//   const handleCancelEvent = (): void => {
+//     if (event && confirm('Annuler cet événement ?')) {
+//       onCancel?.(event.id);
+//       onClose();
+//     }
+//   };
+//   console.log(handleCancelEvent)
+
 //   const colorOptions = [
-//     { label: 'Orange (Primaire)', value: '#E77131' },
+//     { label: 'Orange', value: '#E77131' },
 //     { label: 'Orange clair', value: '#FF6B35' },
 //     { label: 'Orange pastel', value: '#F4A460' },
-//     { label: 'Orange foncé', value: '#D2691E' },
 //     { label: 'Rouge', value: '#EF5350' },
-//     { label: 'Rose', value: '#EC407A' },
-//     { label: 'Violet', value: '#AB47BC' },
 //     { label: 'Bleu', value: '#42A5F5' },
-//     { label: 'Vert', value: '#66BB6A' },
-//     { label: 'Jaune', value: '#FFCA28' },
-//     { label: 'Gris', value: '#505151' },
-//     { label: 'Gris clair', value: '#78909C' }
+//     { label: 'Vert', value: '#66BB6A' }
 //   ];
 
-//   // ✅ STATUTS
-//   const statusOptions = [
-//     { label: 'En attente', value: 'pending', color: '#FFA726', icon: '⏳' },
-//     { label: 'Confirmé', value: 'confirmed', color: '#66BB6A', icon: '✓' },
-//     { label: 'Annulé', value: 'cancelled', color: '#EF5350', icon: '✗' },
-//     { label: 'Terminé', value: 'completed', color: '#78909C', icon: '✔' }
+//   const eventTypes = [
+//     { 
+//       value: 'task' as EventType, 
+//       label: 'Tâche personnelle', 
+//       icon: '📝',
+//       description: 'Pour vous seulement',
+//       color: '#42A5F5'
+//     },
+//     // { 
+//     //   value: 'work' as EventType, 
+//     //   label: 'Chantier/Travail', 
+//     //   icon: '👷',
+//     //   description: 'Avec d\'autres sociétés',
+//     //   color: '#E77131'
+//     // },
+//     { 
+//       value: 'meeting' as EventType, 
+//       label: 'Réunion', 
+//       icon: '📅',
+//       description: 'Rendez-vous collectif',
+//       color: '#66BB6A'
+//     }
 //   ];
 
-//   const currentStatus = statusOptions.find(s => s.value === status) || statusOptions[0];
+//   const statusDisplay = {
+//     pending: { label: 'En attente', color: '#FFA726', icon: '⏳' },
+//     confirmed: { label: 'Confirmé', color: '#66BB6A', icon: '✓' },
+//     cancelled: { label: 'Annulé', color: '#EF5350', icon: '✗' },
+//     completed: { label: 'Terminé', color: '#78909C', icon: '✔' }
+//   };
+
+//   const currentStatus = statusDisplay[eventStatus as keyof typeof statusDisplay] || statusDisplay.pending;
+//   const currentEventType = eventTypes.find(t => t.value === eventType) || eventTypes[0];
 
 //   return (
 //     <div className="calendar-modal-overlay" onClick={onClose}>
@@ -151,28 +194,45 @@
 //         className="calendar-modal-content"
 //         onClick={(e) => e.stopPropagation()}
 //       >
-//         {/* En-tête */}
 //         <div className="calendar-modal-header">
 //           <h2 className="calendar-modal-title">
-//             {isPastEvent && <span className="event-past-badge">Passé</span>}
-//             {isEditing ? (isNewEvent ? 'Créer un événement' : 'Modifier l\'événement') : event?.title}
+//             {isEditing ? (isNewEvent ? 'Créer un événement' : 'Modifier') : event?.title}
 //           </h2>
-//           <button 
-//             className="calendar-modal-close"
-//             onClick={onClose}
-//             title="Fermer"
-//           >
-//             ×
-//           </button>
+//           <button className="calendar-modal-close" onClick={onClose}>×</button>
 //         </div>
 
-//         {/* Contenu */}
 //         <div className="calendar-modal-body">
 //           {isEditing ? (
 //             <form className="calendar-event-form" onSubmit={(e) => {
 //               e.preventDefault();
 //               handleSave();
 //             }}>
+//               {/* Type événement */}
+//               <div className="calendar-form-group">
+//                 <label className="calendar-form-label">Type *</label>
+//                 <div className="event-type-selector">
+//                   {eventTypes.map((type) => (
+//                     <button
+//                       key={type.value}
+//                       type="button"
+//                       className={`event-type-option ${eventType === type.value ? 'active' : ''}`}
+//                       style={{ 
+//                         borderColor: eventType === type.value ? type.color : '#ddd',
+//                         background: eventType === type.value ? `${type.color}10` : 'white'
+//                       }}
+//                       onClick={() => setEventType(type.value)}
+//                     >
+//                       <div className="event-type-icon">{type.icon}</div>
+//                       <div className="event-type-text">
+//                         <div className="event-type-label">{type.label}</div>
+//                         <div className="event-type-desc">{type.description}</div>
+//                       </div>
+//                     </button>
+//                   ))}
+//                 </div>
+//               </div>
+
+//               {/* Titre */}
 //               <div className="calendar-form-group">
 //                 <label className="calendar-form-label">Titre *</label>
 //                 <input
@@ -180,35 +240,42 @@
 //                   className="calendar-form-input"
 //                   value={title}
 //                   onChange={(e) => setTitle(e.target.value)}
-//                   placeholder="Titre de l'événement"
-//                   autoFocus
+//                   placeholder={
+//                     eventType === 'task' ? 'Ex: Appeler client' :
+//                     eventType === 'work' ? 'Ex: Chantier Place du Marché' :
+//                     'Ex: Réunion planification'
+//                   }
 //                   required
 //                 />
 //               </div>
 
+//               {/* Description */}
 //               <div className="calendar-form-group">
 //                 <label className="calendar-form-label">Description</label>
 //                 <textarea
 //                   className="calendar-form-textarea"
 //                   value={description}
 //                   onChange={(e) => setDescription(e.target.value)}
-//                   placeholder="Ajouter une description (optionnel)"
-//                   rows={3}
+//                   rows={2}
 //                 />
 //               </div>
 
-//               {/* ✅ NOUVEAU : Champ Location */}
+//               {/* Lieu */}
 //               <div className="calendar-form-group">
-//                 <label className="calendar-form-label">📍 Lieu</label>
+//                 <label className="calendar-form-label">
+//                   📍 Lieu {eventType !== 'task' && '*'}
+//                 </label>
 //                 <input
 //                   type="text"
 //                   className="calendar-form-input"
 //                   value={location}
 //                   onChange={(e) => setLocation(e.target.value)}
 //                   placeholder="Ex: 12 rue de la Paix, Paris"
+//                   required={eventType !== 'task'}
 //                 />
 //               </div>
 
+//               {/* Heures */}
 //               <div className="calendar-form-row">
 //                 <div className="calendar-form-group">
 //                   <label className="calendar-form-label">Début</label>
@@ -230,30 +297,7 @@
 //                 </div>
 //               </div>
 
-//               {/* ✅ NOUVEAU : Sélecteur statut */}
-//               <div className="calendar-form-group">
-//                 <label className="calendar-form-label">Statut</label>
-//                 <div className="calendar-status-picker">
-//                   {statusOptions.map((option) => (
-//                     <button
-//                       key={option.value}
-//                       type="button"
-//                       className={`calendar-status-option ${
-//                         status === option.value ? 'active' : ''
-//                       }`}
-//                       style={{ 
-//                         borderColor: status === option.value ? option.color : 'transparent',
-//                         color: status === option.value ? option.color : '#999'
-//                       }}
-//                       onClick={() => setStatus(option.value as any)}
-//                     >
-//                       <span>{option.icon}</span>
-//                       <span>{option.label}</span>
-//                     </button>
-//                   ))}
-//                 </div>
-//               </div>
-
+//               {/* Couleur */}
 //               <div className="calendar-form-group">
 //                 <label className="calendar-form-label">Couleur</label>
 //                 <div className="calendar-color-picker">
@@ -261,12 +305,9 @@
 //                     <button
 //                       key={option.value}
 //                       type="button"
-//                       className={`calendar-color-option ${
-//                         color === option.value ? 'active' : ''
-//                       }`}
+//                       className={`calendar-color-option ${color === option.value ? 'active' : ''}`}
 //                       style={{ backgroundColor: option.value }}
 //                       onClick={() => setColor(option.value)}
-//                       title={option.label}
 //                     />
 //                   ))}
 //                 </div>
@@ -274,275 +315,101 @@
 //             </form>
 //           ) : (
 //             <div className="calendar-event-details-view">
-//               {/* ✅ Overlay grisé si passé - MAIS TOUJOURS FERMABLE */}
-//               {isPastEvent && (
-//                 <div className="event-past-overlay" style={{ pointerEvents: 'none' }}>
-//                   <i className="fas fa-history"></i>
-//                   <p>Cet événement est terminé</p>
+//               <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+//                 <div className="badge" style={{ backgroundColor: currentEventType.color }}>
+//                   {currentEventType.icon} {currentEventType.label}
 //                 </div>
-//               )}
-
-//               <div
-//                 className="calendar-event-color-bar"
-//                 style={{ backgroundColor: event?.color }}
-//               ></div>
-
-//               {/* ✅ NOUVEAU : Badge statut */}
-//               <div className="calendar-event-status-badge" style={{ backgroundColor: currentStatus.color }}>
-//                 <span>{currentStatus.icon}</span>
-//                 <span>{currentStatus.label}</span>
+//                 <div className="badge" style={{ backgroundColor: currentStatus.color }}>
+//                   {currentStatus.icon} {currentStatus.label}
+//                 </div>
 //               </div>
 
 //               <div className="calendar-event-info">
-//                 <div className="calendar-detail-item">
-//                   <i className="fas fa-clock"></i>
-//                   <div>
-//                     <div className="calendar-detail-label">Heure</div>
-//                     <div className="calendar-detail-value">
-//                       {event?.startTime.toLocaleTimeString('fr-FR', {
-//                         hour: '2-digit',
-//                         minute: '2-digit'
-//                       })} - {event?.endTime.toLocaleTimeString('fr-FR', {
-//                         hour: '2-digit',
-//                         minute: '2-digit'
-//                       })}
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 <div className="calendar-detail-item">
-//                   <i className="fas fa-calendar"></i>
-//                   <div>
-//                     <div className="calendar-detail-label">Date</div>
-//                     <div className="calendar-detail-value">
-//                       {event?.startTime.toLocaleDateString('fr-FR', {
-//                         weekday: 'long',
-//                         year: 'numeric',
-//                         month: 'long',
-//                         day: 'numeric'
-//                       })}
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 {/* ✅ NOUVEAU : Afficher location */}
-//                 {(event as any)?.location && (
-//                   <div className="calendar-detail-item">
-//                     <i className="fas fa-map-marker-alt"></i>
-//                     <div>
-//                       <div className="calendar-detail-label">Lieu</div>
-//                       <div className="calendar-detail-value">
-//                         {(event as any).location}
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {event?.description && (
-//                   <div className="calendar-detail-item">
-//                     <i className="fas fa-align-left"></i>
-//                     <div>
-//                       <div className="calendar-detail-label">Description</div>
-//                       <div className="calendar-detail-value">
-//                         {event.description}
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {event?.attendees && event.attendees.length > 0 && (
-//                   <div className="calendar-detail-item">
-//                     <i className="fas fa-users"></i>
-//                     <div>
-//                       <div className="calendar-detail-label">Participants</div>
-//                       <div className="calendar-detail-value">
-//                         {event.attendees.join(', ')}
-//                       </div>
-//                     </div>
-//                   </div>
-//                 )}
+//                 <p><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+//                 <p><strong>🕐</strong> {startTime} - {endTime}</p>
+//                 {location && <p><strong>📍</strong> {location}</p>}
+//                 {description && <p><strong>📝</strong> {description}</p>}
 //               </div>
 //             </div>
 //           )}
 //         </div>
 
-//         {/* Pied de page */}
 //         <div className="calendar-modal-footer">
 //           {isEditing ? (
 //             <>
-//               <button
-//                 className="calendar-btn-secondary"
-//                 onClick={() => {
-//                   if (isNewEvent) {
-//                     onClose();
-//                   } else {
-//                     setIsEditing(false);
-//                   }
-//                 }}
-//               >
-//                 Annuler
-//               </button>
-//               <button
-//                 className="calendar-btn-primary"
-//                 onClick={handleSave}
-//               >
-//                 <i className="fas fa-save"></i>
-//                 Enregistrer
-//               </button>
+//               <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
+//               <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
 //             </>
 //           ) : (
 //             <>
-//               {/* ✅ TOUJOURS pouvoir fermer */}
-//               <button
-//                 className="calendar-btn-secondary"
-//                 onClick={onClose}
-//               >
-//                 Fermer
-//               </button>
-
+//               <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>
 //               {!isPastEvent && (
 //                 <>
-//                   <button
-//                     className="calendar-btn-danger"
-//                     onClick={handleDelete}
-//                   >
-//                     <i className="fas fa-trash"></i>
-//                     Supprimer
-//                   </button>
-                  
-//                   {onInvite && (
-//                     <button
-//                       className="calendar-btn-invite"
-//                       onClick={handleInvite}
-//                       title="Inviter des sociétés"
-//                     >
-//                       <i className="fas fa-user-plus"></i>
-//                       Inviter
-//                     </button>
+//                   <button className="calendar-btn-danger" onClick={handleDelete}>Supprimer</button>
+//                   {onInvite && eventType !== 'task' && (
+//                     <button className="calendar-btn-invite" onClick={handleInvite}>Inviter</button>
 //                   )}
-                  
-//                   <div className="calendar-modal-footer-spacer"></div>
-                  
-//                   <button
-//                     className="calendar-btn-primary"
-//                     onClick={() => setIsEditing(true)}
-//                   >
-//                     <i className="fas fa-edit"></i>
-//                     Modifier
-//                   </button>
+//                   <button className="calendar-btn-primary" onClick={() => setIsEditing(true)}>Modifier</button>
 //                 </>
 //               )}
 //             </>
 //           )}
 //         </div>
 
-//         {/* ✅ STYLES */}
 //         <style>{`
-//           .event-past-badge {
-//             display: inline-block;
-//             background: #9e9e9e;
-//             color: white;
-//             padding: 4px 12px;
-//             border-radius: 12px;
-//             font-size: 11px;
-//             font-weight: 600;
-//             margin-right: 8px;
-//             text-transform: uppercase;
+//           .event-type-selector {
+//             display: grid;
+//             gap: 10px;
 //           }
-
-//           .event-past-overlay {
-//             position: absolute;
-//             top: 0;
-//             left: 0;
-//             right: 0;
-//             bottom: 0;
-//             background: rgba(255, 255, 255, 0.85);
+//           .event-type-option {
 //             display: flex;
-//             flex-direction: column;
 //             align-items: center;
-//             justify-content: center;
-//             z-index: 1;
+//             gap: 12px;
+//             padding: 12px;
+//             border: 2px solid #ddd;
 //             border-radius: 8px;
-//           }
-
-//           .event-past-overlay i {
-//             font-size: 48px;
-//             color: #9e9e9e;
-//             margin-bottom: 12px;
-//           }
-
-//           .event-past-overlay p {
-//             font-size: 16px;
-//             color: #9e9e9e;
-//             font-weight: 500;
-//           }
-
-//           .calendar-btn-invite {
-//             padding: 10px 16px;
-//             border: none;
-//             border-radius: 6px;
-//             font-weight: 500;
-//             font-size: 13px;
 //             cursor: pointer;
 //             transition: all 0.2s;
-//             display: flex;
-//             align-items: center;
-//             gap: 6px;
-//             background: #4CAF50;
-//             color: white;
 //           }
-
-//           .calendar-btn-invite:hover {
-//             background: #45a049;
-//             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-//           }
-
-//           .calendar-event-status-badge {
+//           .event-type-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+//           .event-type-option.active { border-width: 2px; }
+//           .event-type-icon { font-size: 28px; }
+//           .event-type-text { flex: 1; text-align: left; }
+//           .event-type-label { font-weight: 600; font-size: 14px; }
+//           .event-type-desc { font-size: 12px; color: #666; }
+//           .badge {
 //             display: inline-flex;
 //             align-items: center;
 //             gap: 6px;
-//             padding: 6px 12px;
-//             border-radius: 16px;
+//             padding: 4px 10px;
+//             border-radius: 12px;
 //             color: white;
-//             font-size: 12px;
+//             font-size: 11px;
 //             font-weight: 600;
-//             margin-bottom: 16px;
 //           }
-
-//           .calendar-status-picker {
-//             display: grid;
-//             grid-template-columns: repeat(2, 1fr);
-//             gap: 8px;
-//           }
-
-//           .calendar-status-option {
-//             display: flex;
-//             align-items: center;
-//             gap: 8px;
-//             padding: 10px 12px;
-//             border: 2px solid transparent;
-//             border-radius: 8px;
-//             background: #f5f5f5;
-//             cursor: pointer;
-//             transition: all 0.2s;
-//             font-size: 13px;
-//             font-weight: 500;
-//           }
-
-//           .calendar-status-option:hover {
-//             background: #eeeeee;
-//           }
-
-//           .calendar-status-option.active {
-//             background: white;
-//             border-width: 2px;
-//             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-//           }
-
 //           .calendar-color-picker {
 //             display: grid;
 //             grid-template-columns: repeat(6, 1fr);
 //             gap: 8px;
+//           }
+//           .calendar-color-option {
+//             width: 40px;
+//             height: 40px;
+//             border-radius: 50%;
+//             border: 2px solid transparent;
+//             cursor: pointer;
+//           }
+//           .calendar-color-option.active {
+//             border-color: #333;
+//             box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+//           }
+//           .calendar-btn-invite {
+//             padding: 10px 16px;
+//             border: none;
+//             border-radius: 6px;
+//             background: #4CAF50;
+//             color: white;
+//             cursor: pointer;
 //           }
 //         `}</style>
 //       </div>
@@ -554,11 +421,13 @@
 
 
 
-// CalendarEventModal.tsx - AVEC TYPE ÉVÉNEMENT
-// CalendarEventModal.tsx - AVEC TYPE ÉVÉNEMENT
+
+// CalendarEventModal.tsx - VERSION FINALE
 
 import React, { useState, useEffect } from 'react';
-import type { CalendarEvent } from '../types/calendar';
+import type { CalendarEvent, EventScope, EventCategory } from '../types/calendar';
+import InviteAttendeesModal from './InvitesAttentesModal';
+
 
 interface CalendarEventModalProps {
   event: CalendarEvent | null;
@@ -566,13 +435,14 @@ interface CalendarEventModalProps {
   onClose: () => void;
   onSave?: (event: CalendarEvent) => void;
   onDelete?: (eventId: string) => void;
-  onInvite?: (eventId: string) => void;
+  onInvite?: (eventId: string, societeIds: number[]) => Promise<void>;
   onComplete?: (eventId: string) => void;
   onCancel?: (eventId: string) => void;
   isNewEvent?: boolean;
+  categories?: EventCategory[];
+  onFetchCategories?: () => Promise<void>;
+  onCreateCategory?: (label: string, icon?: string, color?: string, requires_location?: boolean) => Promise<EventCategory>;
 }
-
-type EventType = 'task' | 'work' | 'meeting';
 
 const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   event,
@@ -581,28 +451,73 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   onSave,
   onDelete,
   onInvite,
-  onComplete,
-  onCancel,
-  isNewEvent = false
+  isNewEvent = false,
+  categories = [],
+  onCreateCategory
 }) => {
+  // ═══════════════════════════════════════════════
+  // ÉTATS
+  // ═══════════════════════════════════════════════
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [isEditing, setIsEditing] = useState(isNewEvent);
   const [color, setColor] = useState('#E77131');
-  const [eventType, setEventType] = useState<EventType>('task');
+  const [isEditing, setIsEditing] = useState(isNewEvent);
+  
+  // ✅ MODIFIÉ : Remplacer eventType par eventCategoryId et customCategoryLabel
+  const [scope, setScope] = useState<EventScope>('personal');
+  const [eventCategoryId, setEventCategoryId] = useState<number | undefined>(undefined);
+  const [customCategoryLabel, setCustomCategoryLabel] = useState('');
+  const [selectedAttendees, setSelectedAttendees] = useState<number[]>([]);
+  const [inviteMethod, setInviteMethod] = useState<'email' | 'sms' | 'push' | 'contact'>('email');
+  console.log('Selected Attendees:', inviteMethod);
+  
+  // Modals
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showCreateCategoryInput, setShowCreateCategoryInput] = useState(false);
+  const [newCategoryLabel, setNewCategoryLabel] = useState('');
+  const [newCategoryIcon, setNewCategoryIcon] = useState('📌');
+  const [newCategoryColor, setNewCategoryColor] = useState('#E77131');
+  const [newCategoryRequiresLocation, setNewCategoryRequiresLocation] = useState(false);
+
+
+  // ═══════════════════════════════════════════════
+  // CONFIGURATION CATÉGORIES (depuis props)
+  // ═══════════════════════════════════════════════
+  const colorOptions = [
+    { label: 'Orange', value: '#E77131' },
+    { label: 'Orange clair', value: '#FF6B35' },
+    { label: 'Orange pastel', value: '#F4A460' },
+    { label: 'Rouge', value: '#EF5350' },
+    { label: 'Bleu', value: '#42A5F5' },
+    { label: 'Vert', value: '#66BB6A' }
+  ];
+
 
   const isPastEvent = event ? event.endTime < new Date() : false;
-  const eventStatus = (event as any)?.status || 'pending';
+  const eventStatus = event?.status || 'pending';
 
+  const statusDisplay = {
+    pending: { label: 'En attente', color: '#FFA726', icon: '⏳' },
+    confirmed: { label: 'Confirmé', color: '#66BB6A', icon: '✓' },
+    cancelled: { label: 'Annulé', color: '#EF5350', icon: '✗' },
+    completed: { label: 'Terminé', color: '#78909C', icon: '✔' }
+  };
+
+  // ═══════════════════════════════════════════════
+  // EFFET : Initialisation des valeurs
+  // ═══════════════════════════════════════════════
   useEffect(() => {
     if (event && isOpen) {
       setTitle(event.title);
       setDescription(event.description || '');
-      setLocation((event as any).location || '');
-      setEventType((event as any).event_type || 'task');
+      setLocation(event.location || '');
+      setScope(event.scope);
+      setEventCategoryId(event.event_category_id);
+      setCustomCategoryLabel(event.custom_category_label || '');
+      setSelectedAttendees(event.attendees || []);
       setStartTime(event.startTime.toLocaleTimeString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit'
@@ -614,34 +529,49 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setColor(event.color);
       setIsEditing(false);
     } else if (isNewEvent && isOpen) {
+      // Reset pour nouvel événement
       setTitle('');
       setDescription('');
       setLocation('');
-      setEventType('task');
+      setScope('personal');
+      setEventCategoryId(undefined);
+      setCustomCategoryLabel('');
+      setSelectedAttendees([]);
       setStartTime('09:00');
       setEndTime('10:00');
       setColor('#E77131');
+      setInviteMethod('email');
       setIsEditing(true);
     }
   }, [event, isOpen, isNewEvent]);
 
   if (!isOpen) return null;
 
+  // ═══════════════════════════════════════════════
+  // HANDLERS
+  // ═══════════════════════════════════════════════
   const handleSave = (): void => {
+    // Validation titre
     if (!title.trim()) {
       alert('Le titre est requis');
       return;
     }
 
-    if (eventType !== 'task' && !location.trim()) {
-      alert('Le lieu est requis pour les chantiers et réunions');
+    // Validation lieu (si requis par la catégorie)
+    const selectedCategory = eventCategoryId 
+      ? categories.find(c => c.id === eventCategoryId)
+      : null;
+    
+    if (selectedCategory?.requires_location && !location.trim()) {
+      alert('Le lieu est requis pour cette catégorie');
       return;
     }
 
+    // Construction dates
     const [startHour, startMin] = startTime.split(':').map(Number);
     const [endHour, endMin] = endTime.split(':').map(Number);
-
     const baseDate = event?.startTime || new Date();
+
     const updatedEvent: CalendarEvent = {
       id: event?.id || `event-${Date.now()}`,
       title: title.trim(),
@@ -664,9 +594,13 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       calendar: event?.calendar || 'personal',
       location: location.trim() || undefined,
       status: 'pending',
-      event_type: eventType
-    } as any;
+      scope,
+      event_category_id: eventCategoryId,
+      custom_category_label: customCategoryLabel || undefined,
+      attendees: scope === 'collaborative' ? selectedAttendees : []
+    };
 
+    console.log('📤 Saving event:', updatedEvent);
     onSave?.(updatedEvent);
     onClose();
   };
@@ -678,297 +612,758 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
-  const handleInvite = (): void => {
-    if (event) {
-      onInvite?.(event.id);
+  const handleInviteComplete = async (societeIds: number[]): Promise<void> => {
+    setSelectedAttendees(societeIds);
+    
+    // Si événement existe et onInvite fourni
+    if (event && event.id && onInvite) {
+      try {
+        await onInvite(event.id, societeIds);
+      } catch (error) {
+        console.error('Erreur invitation:', error);
+        alert('Impossible d\'inviter les participants');
+      }
+    }
+    
+    setShowInviteModal(false);
+  };
+
+  const handleCreateCategory = async (): Promise<void> => {
+    if (!newCategoryLabel.trim()) {
+      alert('Veuillez entrer un nom pour la catégorie');
+      return;
+    }
+
+    if (onCreateCategory) {
+      try {
+        const newCategory = await onCreateCategory(
+          newCategoryLabel.trim(),
+          newCategoryIcon,
+          newCategoryColor,
+          newCategoryRequiresLocation
+        );
+        setEventCategoryId(newCategory.id);
+        setCustomCategoryLabel('');
+        setShowCreateCategoryInput(false);
+        setNewCategoryLabel('');
+        setNewCategoryIcon('📌');
+        setNewCategoryColor('#E77131');
+        setNewCategoryRequiresLocation(false);
+      } catch (error) {
+        console.error('Erreur création catégorie:', error);
+        alert('Erreur lors de la création de la catégorie');
+      }
     }
   };
 
-  const handleComplete = (): void => {
-    if (event && confirm('Marquer cet événement comme terminé ?')) {
-      onComplete?.(event.id);
-      onClose();
-    }
-  };
-  console.log(handleComplete)
+  // const handleComplete = (): void => {
+  //   if (event && confirm('Marquer cet événement comme terminé ?')) {
+  //     onComplete?.(event.id);
+  //     onClose();
+  //   }
+  // };
 
-  const handleCancelEvent = (): void => {
-    if (event && confirm('Annuler cet événement ?')) {
-      onCancel?.(event.id);
-      onClose();
-    }
-  };
-  console.log(handleCancelEvent)
+  // const handleCancelEvent = (): void => {
+  //   if (event && confirm('Annuler cet événement ?')) {
+  //     onCancel?.(event.id);
+  //     onClose();
+  //   }
+  // };
 
-  const colorOptions = [
-    { label: 'Orange', value: '#E77131' },
-    { label: 'Orange clair', value: '#FF6B35' },
-    { label: 'Orange pastel', value: '#F4A460' },
-    { label: 'Rouge', value: '#EF5350' },
-    { label: 'Bleu', value: '#42A5F5' },
-    { label: 'Vert', value: '#66BB6A' }
-  ];
 
-  const eventTypes = [
-    { 
-      value: 'task' as EventType, 
-      label: 'Tâche personnelle', 
-      icon: '📝',
-      description: 'Pour vous seulement',
-      color: '#42A5F5'
-    },
-    // { 
-    //   value: 'work' as EventType, 
-    //   label: 'Chantier/Travail', 
-    //   icon: '👷',
-    //   description: 'Avec d\'autres sociétés',
-    //   color: '#E77131'
-    // },
-    { 
-      value: 'meeting' as EventType, 
-      label: 'Réunion', 
-      icon: '📅',
-      description: 'Rendez-vous collectif',
-      color: '#66BB6A'
-    }
-  ];
-
-  const statusDisplay = {
-    pending: { label: 'En attente', color: '#FFA726', icon: '⏳' },
-    confirmed: { label: 'Confirmé', color: '#66BB6A', icon: '✓' },
-    cancelled: { label: 'Annulé', color: '#EF5350', icon: '✗' },
-    completed: { label: 'Terminé', color: '#78909C', icon: '✔' }
-  };
+  // ═══════════════════════════════════════════════
+  // HELPERS
+  // ═══════════════════════════════════════════════
+  const selectedCategory = eventCategoryId 
+    ? categories.find(c => c.id === eventCategoryId)
+    : null;
 
   const currentStatus = statusDisplay[eventStatus as keyof typeof statusDisplay] || statusDisplay.pending;
-  const currentEventType = eventTypes.find(t => t.value === eventType) || eventTypes[0];
 
+  // ═══════════════════════════════════════════════
+  // RENDER
+  // ═══════════════════════════════════════════════
   return (
-    <div className="calendar-modal-overlay" onClick={onClose}>
-      <div 
-        className="calendar-modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="calendar-modal-header">
-          <h2 className="calendar-modal-title">
-            {isEditing ? (isNewEvent ? 'Créer un événement' : 'Modifier') : event?.title}
-          </h2>
-          <button className="calendar-modal-close" onClick={onClose}>×</button>
-        </div>
+    <>
+      <div className="calendar-modal-overlay" onClick={onClose}>
+        <div 
+          className="calendar-modal-content"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* HEADER */}
+          <div className="calendar-modal-header">
+            <h2 className="calendar-modal-title">
+              {isEditing ? (isNewEvent ? 'Créer un événement' : 'Modifier') : event?.title}
+            </h2>
+            <button className="calendar-modal-close" onClick={onClose}>×</button>
+          </div>
 
-        <div className="calendar-modal-body">
-          {isEditing ? (
-            <form className="calendar-event-form" onSubmit={(e) => {
-              e.preventDefault();
-              handleSave();
-            }}>
-              {/* Type événement */}
-              <div className="calendar-form-group">
-                <label className="calendar-form-label">Type *</label>
-                <div className="event-type-selector">
-                  {eventTypes.map((type) => (
-                    <button
-                      key={type.value}
-                      type="button"
-                      className={`event-type-option ${eventType === type.value ? 'active' : ''}`}
-                      style={{ 
-                        borderColor: eventType === type.value ? type.color : '#ddd',
-                        background: eventType === type.value ? `${type.color}10` : 'white'
+          {/* BODY */}
+          <div className="calendar-modal-body">
+            {isEditing ? (
+              <form className="calendar-event-form" onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}>
+                
+                {/* ════════════════════════════════════ */}
+                {/* 1️⃣ PORTÉE (Personnel / Collaboratif) */}
+                {/* ════════════════════════════════════ */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">
+                    Portée de l'événement *
+                  </label>
+                  
+                  <div className="scope-selector">
+                    <label 
+                      className={`scope-option ${scope === 'personal' ? 'active' : ''}`}
+                      style={{
+                        borderColor: scope === 'personal' ? '#42A5F5' : '#ddd',
+                        background: scope === 'personal' ? '#E3F2FD' : 'white'
                       }}
-                      onClick={() => setEventType(type.value)}
                     >
-                      <div className="event-type-icon">{type.icon}</div>
-                      <div className="event-type-text">
-                        <div className="event-type-label">{type.label}</div>
-                        <div className="event-type-desc">{type.description}</div>
+                      <input
+                        type="radio"
+                        name="scope"
+                        value="personal"
+                        checked={scope === 'personal'}
+                        onChange={() => setScope('personal')}
+                      />
+                      <div className="scope-content">
+                        <div className="scope-icon">🙋‍♂️</div>
+                        <div className="scope-text">
+                          <div className="scope-title">Moi uniquement</div>
+                          <div className="scope-desc">Événement personnel, pas d'invitation</div>
+                        </div>
                       </div>
-                    </button>
-                  ))}
+                    </label>
+
+                    <label 
+                      className={`scope-option ${scope === 'collaborative' ? 'active' : ''}`}
+                      style={{
+                        borderColor: scope === 'collaborative' ? '#4CAF50' : '#ddd',
+                        background: scope === 'collaborative' ? '#E8F5E9' : 'white'
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="scope"
+                        value="collaborative"
+                        checked={scope === 'collaborative'}
+                        onChange={() => setScope('collaborative')}
+                      />
+                      <div className="scope-content">
+                        <div className="scope-icon">👥</div>
+                        <div className="scope-text">
+                          <div className="scope-title">Avec d'autres</div>
+                          <div className="scope-desc">Inviter des collaborateurs/sociétés</div>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              {/* Titre */}
-              <div className="calendar-form-group">
-                <label className="calendar-form-label">Titre *</label>
-                <input
-                  type="text"
-                  className="calendar-form-input"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={
-                    eventType === 'task' ? 'Ex: Appeler client' :
-                    eventType === 'work' ? 'Ex: Chantier Place du Marché' :
-                    'Ex: Réunion planification'
-                  }
-                  required
-                />
-              </div>
-
-              {/* Description */}
-              <div className="calendar-form-group">
-                <label className="calendar-form-label">Description</label>
-                <textarea
-                  className="calendar-form-textarea"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={2}
-                />
-              </div>
-
-              {/* Lieu */}
-              <div className="calendar-form-group">
-                <label className="calendar-form-label">
-                  📍 Lieu {eventType !== 'task' && '*'}
-                </label>
-                <input
-                  type="text"
-                  className="calendar-form-input"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Ex: 12 rue de la Paix, Paris"
-                  required={eventType !== 'task'}
-                />
-              </div>
-
-              {/* Heures */}
-              <div className="calendar-form-row">
+                {/* ════════════════════════════════════ */}
+                {/* 2️⃣ CATÉGORIE D'ÉVÉNEMENT            */}
+                {/* ════════════════════════════════════ */}
                 <div className="calendar-form-group">
-                  <label className="calendar-form-label">Début</label>
-                  <input
-                    type="time"
-                    className="calendar-form-input"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                </div>
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Fin</label>
-                  <input
-                    type="time"
-                    className="calendar-form-input"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Couleur */}
-              <div className="calendar-form-group">
-                <label className="calendar-form-label">Couleur</label>
-                <div className="calendar-color-picker">
-                  {colorOptions.map((option) => (
+                  <label className="calendar-form-label">
+                    Catégorie d'événement
+                  </label>
+                  
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <select
+                      className="calendar-form-select"
+                      value={eventCategoryId || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value) {
+                          setEventCategoryId(Number(value));
+                          setCustomCategoryLabel('');
+                        } else {
+                          setEventCategoryId(undefined);
+                        }
+                      }}
+                      style={{ flex: 1 }}
+                    >
+                      <option value="">-- Sélectionner une catégorie --</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.icon} {category.label}
+                        </option>
+                      ))}
+                    </select>
+                    
                     <button
-                      key={option.value}
                       type="button"
-                      className={`calendar-color-option ${color === option.value ? 'active' : ''}`}
-                      style={{ backgroundColor: option.value }}
-                      onClick={() => setColor(option.value)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </form>
-          ) : (
-            <div className="calendar-event-details-view">
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                <div className="badge" style={{ backgroundColor: currentEventType.color }}>
-                  {currentEventType.icon} {currentEventType.label}
-                </div>
-                <div className="badge" style={{ backgroundColor: currentStatus.color }}>
-                  {currentStatus.icon} {currentStatus.label}
-                </div>
-              </div>
+                      onClick={() => setShowCreateCategoryInput(!showCreateCategoryInput)}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      + Nouvelle catégorie
+                    </button>
+                  </div>
 
-              <div className="calendar-event-info">
-                <p><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-                <p><strong>🕐</strong> {startTime} - {endTime}</p>
-                {location && <p><strong>📍</strong> {location}</p>}
-                {description && <p><strong>📝</strong> {description}</p>}
-              </div>
-            </div>
-          )}
-        </div>
+                  {/* Formulaire création catégorie */}
+                  {showCreateCategoryInput && (
+                    <div style={{
+                      padding: '12px',
+                      backgroundColor: '#f5f5f5',
+                      borderRadius: '4px',
+                      marginBottom: '12px',
+                      border: '1px solid #ddd'
+                    }}>
+                      <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Label *</label>
+                        <input
+                          type="text"
+                          value={newCategoryLabel}
+                          onChange={(e) => setNewCategoryLabel(e.target.value)}
+                          placeholder="Ex: Visite client"
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            marginTop: '4px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            fontSize: '14px',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
 
-        <div className="calendar-modal-footer">
-          {isEditing ? (
-            <>
-              <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
-              <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
-            </>
-          ) : (
-            <>
-              <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>
-              {!isPastEvent && (
-                <>
-                  <button className="calendar-btn-danger" onClick={handleDelete}>Supprimer</button>
-                  {onInvite && eventType !== 'task' && (
-                    <button className="calendar-btn-invite" onClick={handleInvite}>Inviter</button>
+                      <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Icône</label>
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
+                          {['📌', '💼', '🏗️', '🔧', '🤝', '📦', '⚙️', '📋', '🎓', '✏️', '🎯', '🚀'].map((icon) => (
+                            <button
+                              key={icon}
+                              type="button"
+                              onClick={() => setNewCategoryIcon(icon)}
+                              style={{
+                                padding: '8px 12px',
+                                backgroundColor: newCategoryIcon === icon ? '#42A5F5' : '#e0e0e0',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                color: newCategoryIcon === icon ? 'white' : 'black'
+                              }}
+                            >
+                              {icon}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Couleur</label>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                          {['#E77131', '#FF6B35', '#F4A460', '#EF5350', '#42A5F5', '#66BB6A'].map((c) => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => setNewCategoryColor(c)}
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                backgroundColor: c,
+                                border: newCategoryColor === c ? '3px solid black' : '1px solid #ddd',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div> */}
+
+                      {/* <div className="calendar-form-group" style={{ marginBottom: '12px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={newCategoryRequiresLocation}
+                            onChange={(e) => setNewCategoryRequiresLocation(e.target.checked)}
+                          />
+                          <span style={{ fontSize: '14px' }}>Cette catégorie requiert un lieu</span>
+                        </label>
+                      </div> */}
+
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={handleCreateCategory}
+                          style={{
+                            flex: 1,
+                            padding: '8px',
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                          }}
+                        >
+                          Créer
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowCreateCategoryInput(false);
+                            setNewCategoryLabel('');
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '8px',
+                            backgroundColor: '#999',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                          }}
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
                   )}
-                  <button className="calendar-btn-primary" onClick={() => setIsEditing(true)}>Modifier</button>
-                </>
-              )}
-            </>
-          )}
-        </div>
 
-        <style>{`
-          .event-type-selector {
-            display: grid;
-            gap: 10px;
-          }
-          .event-type-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-          .event-type-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-          .event-type-option.active { border-width: 2px; }
-          .event-type-icon { font-size: 28px; }
-          .event-type-text { flex: 1; text-align: left; }
-          .event-type-label { font-weight: 600; font-size: 14px; }
-          .event-type-desc { font-size: 12px; color: #666; }
-          .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-          }
-          .calendar-color-picker {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-          }
-          .calendar-color-option {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            cursor: pointer;
-          }
-          .calendar-color-option.active {
-            border-color: #333;
-            box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
-          }
-          .calendar-btn-invite {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
-          }
-        `}</style>
+                  {/* Catégorie personnalisée sans référence */}
+                  {!eventCategoryId && customCategoryLabel && (
+                    <div style={{
+                      padding: '8px',
+                      backgroundColor: '#f0f0f0',
+                      borderRadius: '4px',
+                      marginTop: '8px',
+                      fontSize: '12px'
+                    }}>
+                      📌 {customCategoryLabel}
+                    </div>
+                  )}
+                </div>
+
+                {/* ════════════════════════════════════ */}
+                {/* BOUTON INVITER (Si Collaboratif)     */}
+                {/* ════════════════════════════════════ */}
+                {scope === 'collaborative' && (
+                  <div className="calendar-form-group invite-participants-group">
+                    <button
+                      type="button"
+                      className="calendar-btn-invite-full"
+                      onClick={() => setShowInviteModal(true)}
+                    >
+                      <span className="icon">👥</span>
+                      <span>Inviter des participants</span>
+                      {selectedAttendees.length > 0 && (
+                        <span className="badge-count">{selectedAttendees.length}</span>
+                      )}
+                    </button>
+                  </div>
+                )}
+
+                {/* ════════════════════════════════════ */}
+                {/* TITRE                                 */}
+                {/* ════════════════════════════════════ */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">Titre *</label>
+                  <input
+                    type="text"
+                    className="calendar-form-input"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Ex: Réunion client"
+                    required
+                  />
+                </div>
+
+                {/* ════════════════════════════════════ */}
+                {/* DESCRIPTION                           */}
+                {/* ════════════════════════════════════ */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">Description</label>
+                  <textarea
+                    className="calendar-form-textarea"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    placeholder="Détails de l'événement..."
+                  />
+                </div>
+
+                {/* ════════════════════════════════════ */}
+                {/* LIEU                                  */}
+                {/* ════════════════════════════════════ */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">
+                    📍 Lieu 
+                  </label>
+                  <input
+                    type="text"
+                    className="calendar-form-input"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Ex: 12 rue de la Paix, Paris"
+                    required={selectedCategory?.requires_location}
+                  />
+                </div>
+
+                {/* ════════════════════════════════════ */}
+                {/* HEURES DÉBUT/FIN                      */}
+                {/* ════════════════════════════════════ */}
+                <div className="calendar-form-row">
+                  <div className="calendar-form-group">
+                    <label className="calendar-form-label">Début</label>
+                    <input
+                      type="time"
+                      className="calendar-form-input"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                    />
+                  </div>
+                  <div className="calendar-form-group">
+                    <label className="calendar-form-label">Fin</label>
+                    <input
+                      type="time"
+                      className="calendar-form-input"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* ════════════════════════════════════ */}
+                {/* COULEUR                               */}
+                {/* ════════════════════════════════════ */}
+                 <div className="calendar-form-group">
+                  <label className="calendar-form-label">Couleur</label>
+                  <div className="calendar-color-picker">
+                    {colorOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`calendar-color-option ${color === option.value ? 'active' : ''}`}
+                        style={{ backgroundColor: option.value }}
+                        onClick={() => setColor(option.value)}
+                      />
+                    ))}
+                  </div>
+                </div> 
+              </form>
+            ) : (
+              // ════════════════════════════════════
+              // VUE DÉTAILS (Mode lecture)
+              // ════════════════════════════════════
+              <div className="calendar-event-details-view">
+                <div className="event-info-header">
+                  <div className="badge" style={{ backgroundColor: selectedCategory?.color || '#E77131' }}>
+                    {selectedCategory?.icon || '📌'} {selectedCategory?.label || customCategoryLabel || 'Événement'}
+                  </div>
+                  <div className="badge" style={{ backgroundColor: currentStatus.color }}>
+                    {currentStatus.icon} {currentStatus.label}
+                  </div>
+                  {scope === 'collaborative' && (
+                    <div className="badge" style={{ backgroundColor: '#4CAF50' }}>
+                      👥 Collaboratif
+                    </div>
+                  )}
+                </div>
+
+                <div className="calendar-event-info">
+                  <p><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                  <p><strong>🕐</strong> {startTime} - {endTime}</p>
+                  {location && <p><strong>📍</strong> {location}</p>}
+                  {description && <p><strong>📝</strong> {description}</p>}
+                  {selectedAttendees.length > 0 && (
+                    <p><strong>👥</strong> {selectedAttendees.length} participant(s) invité(s)</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* FOOTER */}
+          <div className="calendar-modal-footer">
+            {isEditing ? (
+              <>
+                <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
+                <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
+              </>
+            ) : (
+              <>
+                <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>
+                {!isPastEvent && (
+                  <>
+                    <button className="calendar-btn-danger" onClick={handleDelete}>Supprimer</button>
+                    {scope === 'collaborative' && (
+                      <button className="calendar-btn-invite" onClick={() => setShowInviteModal(true)}>
+                        👥 Gérer invités
+                      </button>
+                    )}
+                    {/* {eventStatus === 'pending' && (
+                      <>
+                         <button className="calendar-btn-success" onClick={handleComplete}>
+                          ✓ Terminer
+                        </button> 
+                        <button className="calendar-btn-warning" onClick={handleCancelEvent}>
+                          ✗ Annuler
+                        </button>
+                      </>
+                    )} */}
+                    <button className="calendar-btn-primary" onClick={() => setIsEditing(true)}>Modifier</button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* STYLES */}
+          <style>{`
+            /* Scope Selector */
+            .scope-selector {
+              display: grid;
+              gap: 12px;
+            }
+            
+            .scope-option {
+              display: block;
+              padding: 14px;
+              border: 2px solid #ddd;
+              border-radius: 10px;
+              cursor: pointer;
+              transition: all 0.2s;
+            }
+            
+            .scope-option:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            .scope-option input[type="radio"] {
+              display: none;
+            }
+              .invite-participants-group{
+              display: flex;
+              gap:10px;
+              align-items:center ! important;
+              }
+            
+            .scope-content {
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            }
+            
+            .scope-icon {
+              font-size: 32px;
+            }
+            
+            .scope-text {
+              flex: 1;
+              text-align: left;
+            }
+            
+            .scope-title {
+              font-weight: 500;
+              font-size: 13px;
+              margin-bottom: 4px;
+              color: #333;
+            }
+            
+            .scope-desc {
+              font-size: 12px;
+              color: #666;
+            }
+            
+            /* Select & Custom Type */
+            .calendar-form-select {
+              width: 100%;
+              padding: 10px 12px;
+              border: 1px solid #ddd;
+              border-radius: 6px;
+              font-size: 14px;
+              background: white;
+              cursor: pointer;
+            }
+            
+            .create-type-link {
+              margin-top: 8px;
+              background: none;
+              border: none;
+              color: #4CAF50;
+              font-size: 13px;
+              cursor: pointer;
+              text-decoration: underline;
+              padding: 0;
+            }
+            
+            .custom-type-creator {
+              margin-top: 12px;
+              padding: 12px;
+              background: #f5f5f5;
+              border-radius: 8px;
+            }
+            
+            /* Bouton Inviter */
+            .calendar-btn-invite-full {
+              width: 100%;
+              padding: 14px 20px;
+              background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+              color: white;
+              border: none;
+              border-radius: 10px;
+              font-weight: 500;
+              font-size: 13px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+              transition: all 0.2s;
+              box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25);
+            }
+            
+            .calendar-btn-invite-full:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 16px rgba(76, 175, 80, 0.35);
+            }
+            
+            .calendar-btn-invite-full .icon {
+              font-size: 20px;
+            }
+            
+            .calendar-btn-invite-full .badge-count {
+              background: rgba(255,255,255,0.25);
+              padding: 3px 10px;
+              border-radius: 12px;
+              font-size: 12px;
+              font-weight: 500;
+            }
+            
+            /* Badges */
+            .badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              padding: 5px 12px;
+              border-radius: 14px;
+              color: white;
+              font-size: 11px;
+              font-weight: 500;
+            }
+            
+            .event-info-header {
+              display: flex;
+              gap: 8px;
+              margin-bottom: 16px;
+              flex-wrap: wrap;
+            }
+            
+            /* Petits boutons */
+            .calendar-btn-primary-sm,
+            .calendar-btn-secondary-sm {
+              padding: 6px 12px;
+              border-radius: 4px;
+              font-size: 12px;
+              border: none;
+              cursor: pointer;
+              font-weight:450;
+            }
+            
+            .calendar-btn-primary-sm {
+              background: #4CAF50;
+              color: white;
+            }
+            
+            .calendar-btn-primary-sm:hover {
+              background: #45a049;
+            }
+            
+            .calendar-btn-secondary-sm {
+              background: #eee;
+              color: #333;
+            }
+            
+            .calendar-btn-secondary-sm:hover {
+              background: #ddd;
+            }
+            
+            /* Boutons footer */
+            .calendar-btn-success {
+              padding: 10px 16px;
+              border: none;
+              border-radius: 6px;
+              background: #4CAF50;
+              color: white;
+              cursor: pointer;
+              font-weight:450;
+            }
+            
+            .calendar-btn-warning {
+              padding: 10px 16px;
+              border: none;
+              border-radius: 6px;
+              background: #FFA726;
+              color: white;
+              cursor: pointer;
+              font-weight:450;
+            }
+            
+            .calendar-btn-invite {
+              padding: 10px 16px;
+              border: none;
+              border-radius: 6px;
+              background: #4CAF50;
+              color: white;
+              cursor: pointer;
+              font-weight: 450;
+            }
+            
+            /* Color picker */
+            .calendar-color-picker {
+              display: grid;
+              grid-template-columns: repeat(6, 1fr);
+              gap: 5px;
+            }
+            
+            .calendar-color-option {
+              width: 25px;
+              height: 25px;
+              border-radius: 50%;
+              border: 2px solid transparent;
+              cursor: pointer;
+              transition: all 0.2s;
+            }
+            
+            .calendar-color-option:hover {
+              transform: scale(1.1);
+            }
+            
+            .calendar-color-option.active {
+              border-color: #333;
+              box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+            }
+          `}</style>
+        </div>
       </div>
-    </div>
+
+      {/* Modal Invitations */}
+      {showInviteModal && (
+  <InviteAttendeesModal
+    isOpen={showInviteModal}
+    onClose={() => setShowInviteModal(false)}
+    onInvite={handleInviteComplete}  // ✅ Type correct
+    eventId={event?.id || `temp-${Date.now()}`}  // ✅ String
+    initialSelectedIds={selectedAttendees}  // ✅ Prop acceptée
+  />
+)}
+    </>
   );
 };
 

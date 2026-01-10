@@ -11,6 +11,7 @@ import {
   respondToInvite,
   getAvailableSocietes
 } from '../services/CalendarService';
+import { createCategory, getCategories } from '../services/CategoryService';
 
 /**
  * GET /api/calendar/events
@@ -65,6 +66,29 @@ export const createEventController = async (
         message: "Données manquantes (societe_id, title, event_date, start_time, end_time requis)"
       });
       return;
+    }
+
+    // Validate / normalize `scope`
+    if (!eventData.scope) {
+      eventData.scope = 'personal';
+    } else if (!['personal', 'collaborative'].includes(eventData.scope)) {
+      res.status(400).json({ success: false, message: 'scope invalide (personal|collaborative)' });
+      return;
+    }
+
+    // Validate invite_method if provided
+    if (eventData.invite_method && !['email', 'sms', 'push', 'contact'].includes(eventData.invite_method)) {
+      res.status(400).json({ success: false, message: 'invite_method invalide (email|sms|push|contact)' });
+      return;
+    }
+
+    // Coerce numeric ids if provided as strings
+    if (eventData.event_category_id) {
+      eventData.event_category_id = Number(eventData.event_category_id);
+      if (Number.isNaN(eventData.event_category_id)) {
+        res.status(400).json({ success: false, message: 'event_category_id invalide' });
+        return;
+      }
     }
 
     const eventId = await createEvent(eventData);
@@ -262,3 +286,76 @@ export const getSocietesController = async (
     next(err);
   }
 };
+
+
+export const getCategoriesController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { societe_id } = req.query;
+  
+      if (!societe_id) {
+        res.status(400).json({
+          success: false,
+          message: "societe_id requis"
+        });
+        return;
+      }
+  
+      const categories = await getCategories(Number(societe_id));
+  
+      res.status(200).json({
+        success: true,
+        data: categories
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+  
+  /**
+   * POST /api/calendar/categories
+   * Créer catégorie personnalisée
+   */
+  export const createCategoryController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { societe_id, label, icon, color, requires_location } = req.body;
+  
+      if (!societe_id || !label) {
+        res.status(400).json({
+          success: false,
+          message: "societe_id et label requis"
+        });
+        return;
+      }
+  
+      const category = await createCategory({
+        societe_id: Number(societe_id),
+        label,
+        icon,
+        color,
+        requires_location
+      });
+  
+      res.status(201).json({
+        success: true,
+        data: category,
+        message: "Catégorie créée avec succès"
+      });
+    } catch (err: any) {
+      if (err.message.includes('existe déjà')) {
+        res.status(409).json({
+          success: false,
+          message: err.message
+        });
+        return;
+      }
+      next(err);
+    }
+  };

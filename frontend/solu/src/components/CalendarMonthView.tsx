@@ -7,6 +7,7 @@ interface CalendarMonthViewProps {
   visibleCalendars: string[];
   onEventClick?: (event: CalendarEvent) => void;
   onDateClick?: (date: Date) => void;
+  onTimeSlotClick?: (date: Date, hour: number) => void;
 }
 
 /**
@@ -18,7 +19,8 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
   events,
   visibleCalendars,
   onEventClick,
-  onDateClick
+  onDateClick,
+  onTimeSlotClick
 }) => {
   const getDaysInMonth = (date: Date): number => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -72,6 +74,16 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
     );
   };
 
+  // const handleDayClick = (day: number | null): void => {
+  //   if (day) {
+  //     const selectedDate = new Date(
+  //       currentDate.getFullYear(),
+  //       currentDate.getMonth(),
+  //       day
+  //     );
+  //     onDateClick?.(selectedDate);
+  //   }
+  // };
   const handleDayClick = (day: number | null): void => {
     if (day) {
       const selectedDate = new Date(
@@ -79,7 +91,13 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
         currentDate.getMonth(),
         day
       );
-      onDateClick?.(selectedDate);
+      
+      // ✅ NOUVEAU : Ouvrir modal au lieu de juste sélectionner
+      if (onTimeSlotClick) {
+        onTimeSlotClick(selectedDate, 9);  // Par défaut 9h
+      } else {
+        onDateClick?.(selectedDate);
+      }
     }
   };
 

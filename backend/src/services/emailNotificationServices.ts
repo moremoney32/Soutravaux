@@ -3,6 +3,8 @@
 import axios from 'axios';
 import pool from '../config/db';
 import { RowDataPacket } from 'mysql2';
+import { getCategoryById } from './CategoryService';
+import { EventCategory } from '../types/calendar';
 
 const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
@@ -15,6 +17,7 @@ interface EventData {
   start_time: string;
   location?: string;
   societe_id: number;
+  event_category_id?: number;
 }
 
 interface RecipientData {
@@ -57,6 +60,25 @@ export async function envoyerEmailNotification(
     }
     
     const event = eventRows[0] as EventData;
+    let category = null;
+    if (event.event_category_id) {
+      category = await getCategoryById(event.event_category_id);
+    }
+
+    // Si pas de catégorie référencée mais label personnalisé présent, construire un objet category minimal
+    if (!category && (event as any).custom_category_label) {
+      category = {
+        label: (event as any).custom_category_label,
+        icon: '📌',
+        color: '#E77131',
+        is_predefined: false,
+        requires_location: false,
+        created_by_societe_id: undefined,
+        created_at: '',
+        updated_at: ''
+      } as EventCategory;
+    }
+
     
     // 3. Récupérer les infos du destinataire
     const [recipientRows] = await conn.query<RowDataPacket[]>(
@@ -80,7 +102,8 @@ export async function envoyerEmailNotification(
     const { subject, message } = construireEmail(
       event,
       recipient,
-      notification.notification_type
+      notification.notification_type,
+      category
     );
     
     // 5. Envoyer l'email
@@ -132,7 +155,8 @@ export async function envoyerEmailNotification(
 function construireEmail(
   event: EventData,
   recipient: RecipientData,
-  notificationType: string
+  notificationType: string,
+  category: EventCategory | null 
 ): { subject: string; message: string } {
   
   // Formater la date et l'heure
@@ -140,6 +164,10 @@ function construireEmail(
   const heureFormatee = event.start_time.substring(0, 5); // "10:00"
   
   const prenom = recipient.nomsociete.split(' ')[0]; // Premier mot du nom
+  //RÉCUPÉRER ICÔNE + LABEL CATÉGORIE
+  const categoryIcon = category?.icon || '📅';
+  const categoryLabel = category?.label || 'Événement';
+  const categoryColor = category?.color || '#E77131';
   
   let subject = '';
   let message = '';
@@ -148,52 +176,84 @@ function construireEmail(
     case '1_day_before':
       subject = `📅 Rappel : ${event.title} demain à ${heureFormatee}`;
       message = `
-        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
-            <h2 style="color: white; margin: 0;">📅 Rappel : Événement demain</h2>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, ${categoryColor} 0%, ${categoryColor}dd 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="color: white; font-size: 48px; margin: 0;">${categoryIcon}</h1>
+          <h2 style="color: white; margin: 10px 0 0 0;">${categoryLabel}</h2>
+        </div>
+        
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+          <p style="font-size: 16px;">Bonjour <strong>${prenom}</strong>,</p>
+          
+          <p style="font-size: 15px; margin: 20px 0;">
+            Rappel : Vous avez un <strong>${categoryLabel.toLowerCase()}</strong> prévu <strong>demain</strong> :
+          </p>
+          
+          <div style="background: white; padding: 20px; border-left: 4px solid ${categoryColor}; border-radius: 5px; margin: 20px 0;">
+            <p style="font-size: 18px; font-weight: bold; color: ${categoryColor}; margin: 0 0 15px 0;">
+              ${event.title}
+            </p>
+            
+            <p style="margin: 8px 0;"><strong>📅 Date :</strong> ${dateFormatee}</p>
+            <p style="margin: 8px 0;"><strong>⏰ Heure :</strong> ${heureFormatee}</p>
+            
+            ${event.location ? `<p style="margin: 8px 0;"><strong>📍 Lieu :</strong> ${event.location}</p>` : ''}
+            ${event.description ? `<p style="margin: 15px 0 0 0; color: #666;">${event.description}</p>` : ''}
           </div>
           
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-            <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
-            
-            <p style="font-size: 15px; margin-bottom: 25px;">
-              Vous avez un événement prévu <strong>demain</strong> :
-            </p>
-            
-            <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
-              <p style="font-size: 18px; font-weight: bold; color: #E77131; margin: 0 0 15px 0;">
-                ${event.title}
-              </p>
-              
-              <p style="margin: 8px 0; font-size: 14px;">
-                <strong>📅 Date :</strong> ${dateFormatee}
-              </p>
-              
-              <p style="margin: 8px 0; font-size: 14px;">
-                <strong>⏰ Heure :</strong> ${heureFormatee}
-              </p>
-              
-              ${event.location ? `
-              <p style="margin: 8px 0; font-size: 14px;">
-                <strong>📍 Lieu :</strong> ${event.location}
-              </p>
-              ` : ''}
-              
-              ${event.description ? `
-              <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
-                <strong>📝 Description :</strong><br/>
-                ${event.description}
-              </p>
-              ` : ''}
-            </div>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
-              Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
-              Pour gérer vos notifications, connectez-vous à votre espace.
-            </p>
-          </div>
+          <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            Email automatique - <strong style="color: #E77131;">Solutravo</strong>
+          </p>
         </div>
-      `;
+      </div>
+    `;
+    //   message = `
+    //     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+    //       <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+    //         <h2 style="color: white; margin: 0;">📅 Rappel : Événement demain</h2>
+    //       </div>
+          
+    //       <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+    //         <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+            
+    //         <p style="font-size: 15px; margin-bottom: 25px;">
+    //           Vous avez un événement prévu <strong>demain</strong> :
+    //         </p>
+            
+    //         <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
+    //           <p style="font-size: 18px; font-weight: bold; color: #E77131; margin: 0 0 15px 0;">
+    //             ${event.title}
+    //           </p>
+              
+    //           <p style="margin: 8px 0; font-size: 14px;">
+    //             <strong>📅 Date :</strong> ${dateFormatee}
+    //           </p>
+              
+    //           <p style="margin: 8px 0; font-size: 14px;">
+    //             <strong>⏰ Heure :</strong> ${heureFormatee}
+    //           </p>
+              
+    //           ${event.location ? `
+    //           <p style="margin: 8px 0; font-size: 14px;">
+    //             <strong>📍 Lieu :</strong> ${event.location}
+    //           </p>
+    //           ` : ''}
+              
+    //           ${event.description ? `
+    //           <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+    //             <strong>📝 Description :</strong><br/>
+    //             ${event.description}
+    //           </p>
+    //           ` : ''}
+    //         </div>
+            
+    //         <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+    //           Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
+    //           Pour gérer vos notifications, connectez-vous à votre espace.
+    //         </p>
+    //       </div>
+    //     </div>
+    //   `;
       break;
       
     case '1_hour_before':

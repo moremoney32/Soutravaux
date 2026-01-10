@@ -147,12 +147,12 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
       <div className="calendar-settings-section">
         <div className="calendar-section-header">
           <h3 className="calendar-settings-title">Pages de réservation</h3>
-          <button 
+          {/* <button 
             className="calendar-add-btn"
             title="Ajouter une page de réservation"
           >
             <i className="fas fa-plus"></i>
-          </button>
+          </button> */}
         </div>
       </div>
 

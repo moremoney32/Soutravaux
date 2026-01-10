@@ -27,7 +27,7 @@ import { getActivitesController, getDepartementsController, getPreSocietesContro
 import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
-import { createEventController, deleteEventController, getAttendeesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
+import { createCategoryController, createEventController, deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -226,6 +226,9 @@ router.post('/calendar/events/:eventId/respond', respondToInviteController);
 
 // GET /api/calendar/societes - Liste sociétés disponibles (au lieu de artisans)
 router.get('/calendar/societes', getPreSocietesController);
+
+router.get('/calendar/categories', getCategoriesController);
+router.post('/calendar/categories', createCategoryController);
 
 
 

@@ -2,40 +2,43 @@
 
 
 
+// // InviteAttendeesModal.tsx - VERSION EMAIL UNIQUEMENT
+
 // import React, { useState, useEffect } from 'react';
 
 // interface Societe {
 //   id: number;
-//   name: string;           // nom_societe
+//   name: string;
 //   email?: string;
-//   phone?: string;         // telephone
+//   phone?: string;
 // }
 
 // interface InviteAttendeesModalProps {
 //   isOpen: boolean;
 //   eventId: number;
-//   societeId: number;      // Société créatrice (à exclure)
+//   societeId: number;
 //   onClose: () => void;
 //   onInvite: (eventId: number, societeIds: number[], method: 'email') => Promise<void>;
 // }
 
+
+
+
 // const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
 //   isOpen,
 //   eventId,
-//   societeId,            // Société créatrice
+//   societeId,
 //   onClose,
 //   onInvite
 // }) => {
 //   const [societes, setSocietes] = useState<Societe[]>([]);
 //   const [selectedSocietes, setSelectedSocietes] = useState<number[]>([]);
-//   const [inviteMethod, setInviteMethod] = useState("email");
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [searchTerm, setSearchTerm] = useState('');
+//   //const API_BASE_URL = 'http://localhost:3000/api';
 
-// //   const API_BASE_URL = 'http://localhost:3000/api';
-// const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+//   const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
-//   // Charger sociétés disponibles (sauf la créatrice)
 //   useEffect(() => {
 //     if (isOpen) {
 //       loadSocietes();
@@ -85,12 +88,9 @@
 //   };
 
 //   const filteredSocietes = societes.filter(societe =>
-//     societe.name.toLowerCase().includes(searchTerm.toLowerCase())
+//     societe.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+//     societe.email // ✅ Afficher uniquement ceux qui ont un email
 //   );
-
-//   // Vérifier disponibilité méthode invitation
-//   const canUseEmail = (societe: Societe) => societe.email;
-//   const canUseSMS = (societe: Societe) => societe.phone;
 
 //   if (!isOpen) return null;
 
@@ -105,7 +105,7 @@
 //         <div className="calendar-modal-header">
 //           <h2 className="calendar-modal-title">
 //             <i className="fas fa-building"></i>
-//             Inviter des collaborateurs de votre societe
+//             Inviter des collaborateurs
 //           </h2>
 //           <button className="calendar-modal-close" onClick={onClose}>×</button>
 //         </div>
@@ -124,88 +124,49 @@
 //             />
 //           </div>
 
-//           {/* Méthode d'invitation */}
-//           <div className="calendar-form-group">
-//             <label className="calendar-form-label">Méthode d'invitation</label>
-//             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-//               <button
-//                 type="button"
-//                 className={`invite-method-btn ${inviteMethod === 'push' ? 'active' : ''}`}
-//                 onClick={() => setInviteMethod('push')}
-//               >
-//                 <i className="fas fa-bell"></i>
-//                 Notification
-//               </button>
-//               <button
-//                 type="button"
-//                 className={`invite-method-btn ${inviteMethod === 'email' ? 'active' : ''}`}
-//                 onClick={() => setInviteMethod('email')}
-//               >
-//                 <i className="fas fa-envelope"></i>
-//                 Email
-//               </button>
-//               <button
-//                 type="button"
-//                 className={`invite-method-btn ${inviteMethod === 'sms' ? 'active' : ''}`}
-//                 onClick={() => setInviteMethod('sms')}
-//               >
-//                 <i className="fas fa-sms"></i>
-//                 SMS
-//               </button>
-//               <button
-//                 type="button"
-//                 className={`invite-method-btn ${inviteMethod === 'contact' ? 'active' : ''}`}
-//                 onClick={() => setInviteMethod('contact')}
-//               >
-//                 <i className="fas fa-address-book"></i>
-//                 Contact
-//               </button>
-//             </div>
+//           {/* ✅ Info méthode (fixe) */}
+//           <div className="invite-method-info">
+//             <i className="fas fa-envelope"></i>
+//             Les invitations seront envoyées par <strong>email</strong>
 //           </div>
 
 //           {/* Liste sociétés */}
 //           <div className="calendar-form-group">
 //             <label className="calendar-form-label">
-//               Sociétés disponibles ({filteredSocietes.length})
+//               Collaborateurs disponibles ({filteredSocietes.length})
 //             </label>
 //             <div className="artisans-list">
 //               {filteredSocietes.length === 0 ? (
 //                 <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>
-//                   Aucun collaborateur disponible
+//                   {searchTerm 
+//                     ? 'Aucun collaborateur trouvé' 
+//                     : 'Aucun collaborateur avec email disponible'
+//                   }
 //                 </p>
 //               ) : (
-//                 filteredSocietes.map(societe => {
-//                   const canInvite = 
-//                     inviteMethod === 'push' || 
-//                     inviteMethod === 'contact' ||
-//                     (inviteMethod === 'email' && canUseEmail(societe)) ||
-//                     (inviteMethod === 'sms' && canUseSMS(societe));
-
-//                   return (
-//                     <label
-//                       key={societe.id}
-//                       className={`artisan-item ${!canInvite ? 'disabled' : ''}`}
-//                       title={!canInvite ? `${inviteMethod === 'email' ? 'Email' : 'Téléphone'} manquant` : ''}
-//                     >
-//                       <input
-//                         type="checkbox"
-//                         checked={selectedSocietes.includes(societe.id)}
-//                         onChange={() => handleToggleSociete(societe.id)}
-//                         disabled={!canInvite}
-//                       />
-//                       <div className="artisan-info">
-//                         <div className="artisan-name">
-//                           <i className="fas fa-building" style={{ marginRight: '8px', color: '#E77131' }}></i>
-//                           {societe.name}
-//                         </div>
-//                         <div className="artisan-contact">
-//                           {societe.email && <span><i className="fas fa-envelope"></i> {societe.email}</span>}
-//                           {societe.phone && <span><i className="fas fa-phone"></i> {societe.phone}</span>}
-//                         </div>
+//                 filteredSocietes.map(societe => (
+//                   <label
+//                     key={societe.id}
+//                     className="artisan-item"
+//                   >
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedSocietes.includes(societe.id)}
+//                       onChange={() => handleToggleSociete(societe.id)}
+//                     />
+//                     <div className="artisan-info">
+//                       <div className="artisan-name">
+//                         <i className="fas fa-building" style={{ marginRight: '8px', color: '#E77131' }}></i>
+//                         {societe.name}
 //                       </div>
-//                     </label>
-//                   );
-//                 })
+//                       <div className="artisan-contact">
+//                         <span>
+//                           <i className="fas fa-envelope"></i> {societe.email}
+//                         </span>
+//                       </div>
+//                     </div>
+//                   </label>
+//                 ))
 //               )}
 //             </div>
 //           </div>
@@ -214,7 +175,7 @@
 //           {selectedSocietes.length > 0 && (
 //             <div className="selection-info">
 //               <i className="fas fa-check-circle"></i>
-//               {selectedSocietes.length} société{selectedSocietes.length > 1 ? 's' : ''} sélectionnée{selectedSocietes.length > 1 ? 's' : ''}
+//               {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
 //             </div>
 //           )}
 //         </div>
@@ -245,28 +206,21 @@
 //       </div>
 
 //       <style>{`
-//         .invite-method-btn {
-//           padding: 8px 16px;
-//           border: 1px solid var(--color-border);
-//           background: white;
-//           border-radius: 20px;
-//           cursor: pointer;
-//           transition: all 0.2s;
+//         .invite-method-info {
 //           display: flex;
 //           align-items: center;
-//           gap: 6px;
-//           font-size: 13px;
-//           color: var(--color-gray-primary);
+//           gap: 8px;
+//           padding: 12px 16px;
+//           background: #E8F5E9;
+//           border-left: 3px solid #4CAF50;
+//           border-radius: 4px;
+//           margin-bottom: 16px;
+//           font-size: 14px;
+//           color: #2E7D32;
 //         }
 
-//         .invite-method-btn:hover {
-//           background: var(--color-light-gray);
-//         }
-
-//         .invite-method-btn.active {
-//           background: var(--color-primary);
-//           color: white;
-//           border-color: var(--color-primary);
+//         .invite-method-info i {
+//           font-size: 16px;
 //         }
 
 //         .artisans-list {
@@ -289,14 +243,9 @@
 //           border: 1px solid transparent;
 //         }
 
-//         .artisan-item:hover:not(.disabled) {
+//         .artisan-item:hover {
 //           background: var(--color-light-gray);
 //           border-color: var(--color-primary);
-//         }
-
-//         .artisan-item.disabled {
-//           opacity: 0.4;
-//           cursor: not-allowed;
 //         }
 
 //         .artisan-item input[type="checkbox"] {
@@ -321,7 +270,7 @@
 //         .artisan-contact {
 //           display: flex;
 //           gap: 12px;
-//           font-size: 11px;
+//           font-size: 12px;
 //           color: var(--color-gray-secondary);
 //         }
 
@@ -336,8 +285,8 @@
 //           align-items: center;
 //           gap: 8px;
 //           padding: 12px;
-//           background: #e8f5e9;
-//           color: #2e7d32;
+//           background: #E8F5E9;
+//           color: #2E7D32;
 //           border-radius: 4px;
 //           font-weight: 500;
 //           font-size: 13px;
@@ -354,8 +303,7 @@
 // export default InviteAttendeesModal;
 
 
-
-// InviteAttendeesModal.tsx - VERSION EMAIL UNIQUEMENT
+// InviteAttendeesModal.tsx - VERSION CORRIGÉE
 
 import React, { useState, useEffect } from 'react';
 
@@ -366,37 +314,51 @@ interface Societe {
   phone?: string;
 }
 
+// ✅ PROPS CORRIGÉES
 interface InviteAttendeesModalProps {
   isOpen: boolean;
-  eventId: number;
-  societeId: number;
+  eventId: string;  // ✅ string au lieu de number
   onClose: () => void;
-  onInvite: (eventId: number, societeIds: number[], method: 'email') => Promise<void>;
+  onInvite: (societeIds: number[]) => Promise<void>;  // ✅ Simplifié
+  initialSelectedIds?: number[];  // ✅ Ajouté
 }
 
 const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
   isOpen,
-  eventId,
-  societeId,
+  // eventId,
   onClose,
-  onInvite
+  onInvite,
+  initialSelectedIds = []
 }) => {
   const [societes, setSocietes] = useState<Societe[]>([]);
-  const [selectedSocietes, setSelectedSocietes] = useState<number[]>([]);
+  const [selectedSocietes, setSelectedSocietes] = useState<number[]>(initialSelectedIds);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  //const API_BASE_URL = 'http://localhost:3000/api';
 
-  const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+  //const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+  const API_BASE_URL = 'http://localhost:3000/api';
+
+  // ✅ Récupérer societeId depuis le localStorage ou context
+  const getSocieteId = (): number => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      return user.societeId || 0;
+    }
+    return 0;
+  };
 
   useEffect(() => {
     if (isOpen) {
       loadSocietes();
+      // ✅ Réinitialiser avec les IDs initiaux
+      setSelectedSocietes(initialSelectedIds);
     }
-  }, [isOpen, societeId]);
+  }, [isOpen, initialSelectedIds]);
 
   const loadSocietes = async () => {
     try {
+      const societeId = getSocieteId();
       const response = await fetch(
         `${API_BASE_URL}/calendar/societes?exclude_societe_id=${societeId}`
       );
@@ -418,6 +380,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
     }
   };
 
+  // ✅ Handler simplifié
   const handleInvite = async () => {
     if (selectedSocietes.length === 0) {
       alert('Sélectionnez au moins un collaborateur');
@@ -426,7 +389,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
 
     setIsLoading(true);
     try {
-      await onInvite(eventId, selectedSocietes, 'email');
+      await onInvite(selectedSocietes);  // ✅ Passe juste les IDs
       setSelectedSocietes([]);
       onClose();
     } catch (error) {
@@ -439,7 +402,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
 
   const filteredSocietes = societes.filter(societe =>
     societe.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    societe.email // ✅ Afficher uniquement ceux qui ont un email
+    societe.email
   );
 
   if (!isOpen) return null;
@@ -454,8 +417,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
         {/* En-tête */}
         <div className="calendar-modal-header">
           <h2 className="calendar-modal-title">
-            <i className="fas fa-building"></i>
-            Inviter des collaborateurs
+            👥 Inviter des collaborateurs
           </h2>
           <button className="calendar-modal-close" onClick={onClose}>×</button>
         </div>
@@ -467,17 +429,16 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
             <input
               type="text"
               className="calendar-form-input"
-              placeholder="Rechercher un collaborateur..."
+              placeholder="🔍 Rechercher un collaborateur..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               autoFocus
             />
           </div>
 
-          {/* ✅ Info méthode (fixe) */}
+          {/* Info méthode */}
           <div className="invite-method-info">
-            <i className="fas fa-envelope"></i>
-            Les invitations seront envoyées par <strong>email</strong>
+            ✉️ Les invitations seront envoyées par <strong>email</strong>
           </div>
 
           {/* Liste sociétés */}
@@ -497,7 +458,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
                 filteredSocietes.map(societe => (
                   <label
                     key={societe.id}
-                    className="artisan-item"
+                    className={`artisan-item ${selectedSocietes.includes(societe.id) ? 'selected' : ''}`}
                   >
                     <input
                       type="checkbox"
@@ -506,12 +467,11 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
                     />
                     <div className="artisan-info">
                       <div className="artisan-name">
-                        <i className="fas fa-building" style={{ marginRight: '8px', color: '#E77131' }}></i>
-                        {societe.name}
+                        🏢 {societe.name}
                       </div>
                       <div className="artisan-contact">
                         <span>
-                          <i className="fas fa-envelope"></i> {societe.email}
+                          ✉️ {societe.email}
                         </span>
                       </div>
                     </div>
@@ -524,8 +484,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           {/* Sélection */}
           {selectedSocietes.length > 0 && (
             <div className="selection-info">
-              <i className="fas fa-check-circle"></i>
-              {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
+              ✓ {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
             </div>
           )}
         </div>
@@ -541,15 +500,9 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
             disabled={isLoading || selectedSocietes.length === 0}
           >
             {isLoading ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                Envoi...
-              </>
+              <>⏳ Envoi...</>
             ) : (
-              <>
-                <i className="fas fa-paper-plane"></i>
-                Inviter ({selectedSocietes.length})
-              </>
+              <>📧 Inviter ({selectedSocietes.length})</>
             )}
           </button>
         </div>
@@ -569,15 +522,11 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           color: #2E7D32;
         }
 
-        .invite-method-info i {
-          font-size: 16px;
-        }
-
         .artisans-list {
-          max-height: 300px;
+          max-height: 350px;
           overflow-y: auto;
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-small);
+          border: 1px solid #ddd;
+          border-radius: 8px;
           padding: 8px;
         }
 
@@ -585,24 +534,30 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 12px;
-          border-radius: 4px;
+          padding: 14px;
+          border-radius: 6px;
           cursor: pointer;
           transition: all 0.2s;
           margin-bottom: 8px;
-          border: 1px solid transparent;
+          border: 2px solid transparent;
+          background: white;
         }
 
         .artisan-item:hover {
-          background: var(--color-light-gray);
-          border-color: var(--color-primary);
+          background: #f5f5f5;
+          border-color: #E77131;
+        }
+
+        .artisan-item.selected {
+          background: #FFF3E0;
+          border-color: #E77131;
         }
 
         .artisan-item input[type="checkbox"] {
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           cursor: pointer;
-          accent-color: var(--color-primary);
+          accent-color: #E77131;
         }
 
         .artisan-info {
@@ -611,39 +566,37 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
 
         .artisan-name {
           font-weight: 500;
-          color: var(--color-gray-primary);
+          color: #333;
           margin-bottom: 4px;
           display: flex;
           align-items: center;
+          gap: 8px;
+          font-size: 14px;
         }
 
         .artisan-contact {
           display: flex;
           gap: 12px;
-          font-size: 12px;
-          color: var(--color-gray-secondary);
+          font-size: 13px;
+          color: #666;
         }
 
         .artisan-contact span {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
         }
 
         .selection-info {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 12px;
+          padding: 12px 16px;
           background: #E8F5E9;
           color: #2E7D32;
-          border-radius: 4px;
+          border-radius: 6px;
           font-weight: 500;
           font-size: 13px;
-        }
-
-        .selection-info i {
-          font-size: 16px;
         }
       `}</style>
     </div>
