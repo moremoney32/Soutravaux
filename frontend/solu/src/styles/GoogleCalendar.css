@@ -1415,6 +1415,14 @@
   .calendar-modal-footer {
     flex-wrap: wrap;
   }
+  .calendar-color-option {
+              width: 15px;
+              height: 15px;
+              border-radius: 50%;
+              border: 2px solid transparent;
+              cursor: pointer;
+              transition: all 0.2s;
+            }
 }
 
 

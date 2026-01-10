@@ -848,7 +848,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                               type="button"
                               onClick={() => setNewCategoryIcon(icon)}
                               style={{
-                                padding: '8px 12px',
+                                padding: '8px 10px',
                                 backgroundColor: newCategoryIcon === icon ? '#42A5F5' : '#e0e0e0',
                                 border: 'none',
                                 borderRadius: '4px',
