@@ -1415,14 +1415,14 @@
   .calendar-modal-footer {
     flex-wrap: wrap;
   }
-  .calendar-color-option {
-              width: 15px;
-              height: 15px;
-              border-radius: 50%;
-              border: 2px solid transparent;
-              cursor: pointer;
-              transition: all 0.2s;
-            }
+  /* .calendar-color-option {
+  width: 25px !important;
+  height: 25px !important;
+  border-radius: 100% !important;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+            } */
 }
 
 

@@ -335,8 +335,8 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
-  //const API_BASE_URL = 'http://localhost:3000/api';
+  //const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+  const API_BASE_URL = 'http://localhost:3000/api';
 
   // ✅ Récupérer societeId depuis le localStorage ou context
   const getSocieteId = (): number => {
