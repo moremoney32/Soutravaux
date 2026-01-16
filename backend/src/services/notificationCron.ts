@@ -4,26 +4,42 @@ import cron from 'node-cron';
 import pool from '../config/db';
 import { RowDataPacket } from 'mysql2';
 import { envoyerEmailNotification } from './emailNotificationServices';
-// import { envoyerEmailNotification } from '../services/emailNotificationService';
+import { sendEventReminders, cleanupOldInvitations } from './InvitationReminderService';  // ✅ NOUVEAU
 
 /**
  * Démarrer le cron job de notifications
- * S'exécute toutes les 5 minutes
+ * S'exécute toutes les 3 minutes (au lieu de 5)
  */
 export function demarrerCronNotifications() {
   
-  // Cron pattern: "*/5 * * * *" = toutes les 5 minutes
-  cron.schedule('*/5 * * * *', async () => {
+  // Cron pattern: "*/3 * * * *" = toutes les 3 minutes (réduction pour plus de précision des rappels)
+  cron.schedule('*/3 * * * *', async () => {
     console.log('🔄 [CRON] Vérification des notifications à envoyer...');
     
     try {
+      // ✅ Vérifier les notifications normales
       await verifierEtEnvoyerNotifications();
+      
+      // ✅ NOUVEAU: Vérifier les rappels d'invitations
+      await sendEventReminders();
+      
     } catch (error) {
       console.error('❌ [CRON] Erreur:', error);
     }
   });
   
-  console.log('✅ Cron job de notifications démarré (toutes les 5 minutes)');
+  // Cron job supplémentaire: Nettoyer les vieilles invitations (chaque jour à 2h du matin)
+  cron.schedule('0 2 * * *', async () => {
+    console.log('🧹 [CRON] Nettoyage des invitations anciennes...');
+    try {
+      await cleanupOldInvitations();
+    } catch (error) {
+      console.error('❌ [CRON Cleanup] Erreur:', error);
+    }
+  });
+  
+  console.log('✅ Cron job de notifications démarré (toutes les 3 minutes)');
+  console.log('✅ Cron job de cleanup démarré (chaque jour à 2h)');
 }
 
 /**

@@ -41,7 +41,7 @@ export interface CalendarEvent {
   event_category_id?: number;           // Référence catégorie prédéfinie
   custom_category_label?: string;       // Label personnalisé si pas de catégorie_id
   category?: EventCategory;              // Objet catégorie complet (si chargé)
-  attendees?: number[];                 // IDs sociétés invitées (si collaborative)
+  attendees?: string[];                 // Emails des collaborateurs invités (si collaborative)
 }
 
 export interface Calendar {

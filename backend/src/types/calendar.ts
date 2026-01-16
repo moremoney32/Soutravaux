@@ -75,7 +75,9 @@ export interface CalendarEvent {
     invite_method?: 'email' | 'sms' | 'push' | 'contact';
     
     // Invitations (si scope = collaborative)
-    attendee_societe_ids?: number[];
+    attendee_societe_ids?: number[];      // ✅ ANCIEN: Inviter des societes (artisans)
+    attendee_member_ids?: number[];       // ✅ ANCIEN: Inviter des collaborateurs par ID
+    attendee_emails?: string[];           // ✅ NOUVEAU: Inviter par email directement
   }
   
   export interface CreateCategoryInput {

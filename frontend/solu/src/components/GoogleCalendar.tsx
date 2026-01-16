@@ -17,7 +17,7 @@ import {
   createCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
-  inviteArtisans,
+  inviteCollaboratorsByEmail,  // ✅ NOUVEAU: Invitations par email
   convertAPIEventToFrontend,
   convertFrontendEventToAPI
 } from '../services/calendarApi';
@@ -49,6 +49,9 @@ const GoogleCalendar: React.FC = () => {
 
   const { societeId: societeIdParam } = useParams<{ societeId: string }>();
   const societeId = Number(societeIdParam);
+  if (societeIdParam) {
+    localStorage.setItem('societeId', societeIdParam);
+  }
 
   const visibleCalendarIds = useMemo(
     () => calendars.filter((cal) => cal.isVisible).map((cal) => cal.id),
@@ -233,39 +236,33 @@ const GoogleCalendar: React.FC = () => {
   // ════════════════════════════════════════════════
 
   // Handler pour CalendarEventModal (invitations depuis la modal événement)
-  const handleInviteFromModal = async (eventId: string, societeIds: number[]): Promise<void> => {
+  const handleInviteFromModal = async (emails: string[]): Promise<void> => {
     try {
-      // Convertir eventId en number pour l'API backend
-      const eventIdNum = Number(eventId);
+      console.log('📧 [GoogleCalendar] handleInviteFromModal appelé avec emails:', emails);
+      console.log('   eventId:', selectedEventId);
       
-      await inviteArtisans(eventIdNum, societeIds, 'email');
+      // ✅ Appeler directement inviteCollaboratorsByEmail avec les emails
+      await inviteCollaboratorsByEmail(Number(selectedEventId), emails);
       
-      alert(`${societeIds.length} collaborateur(s) invité(s) par email`);
+      alert(`${emails.length} collaborateur(s) invité(s) par email`);
+      setShowInviteModal(false);
       
-      // Mettre à jour l'événement dans la liste
-      setAllEvents(prevEvents =>
-        prevEvents.map(e =>
-          e.id === eventId
-            ? { ...e, attendees: [...(e.attendees || []), ...societeIds] }
-            : e
-        )
-      );
     } catch (error) {
       console.error('Erreur invitation:', error);
-      throw error; // Relancer pour que CalendarEventModal affiche l'erreur
+      throw error;
     }
   };
 
   // Handler pour InviteAttendeesModal standalone (depuis liste événements)
-  const handleInviteStandalone = async (societeIds: number[]): Promise<void> => {
+  const handleInviteStandalone = async (emails: string[]): Promise<void> => {
     if (!selectedEventId) return;
 
     try {
       const eventIdNum = Number(selectedEventId);
       
-      await inviteArtisans(eventIdNum, societeIds, 'email');
+      await inviteCollaboratorsByEmail(eventIdNum, emails);
       
-      alert(`${societeIds.length} collaborateur(s) invité(s)`);
+      alert(`${emails.length} collaborateur(s) invité(s)`);
       setShowInviteModal(false);
       setSelectedEventId(null);
       
@@ -472,13 +469,12 @@ const GoogleCalendar: React.FC = () => {
       {showInviteModal && selectedEventId && (
         <InviteAttendeesModal
           isOpen={showInviteModal}
-          eventId={selectedEventId}  // ✅ string
           onClose={() => {
             setShowInviteModal(false);
             setSelectedEventId(null);
           }}
-          onInvite={handleInviteStandalone}  // ✅ (societeIds: number[]) => Promise<void>
-          initialSelectedIds={[]}
+          onInvite={handleInviteStandalone}  // ✅ (emails: string[]) => Promise<void>
+          initialSelectedEmails={[]}
         />
       )}
     </div>

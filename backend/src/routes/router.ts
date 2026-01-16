@@ -28,6 +28,7 @@ import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
 import { createCategoryController, createEventController, deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
+import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -229,6 +230,25 @@ router.get('/calendar/societes', getPreSocietesController);
 
 router.get('/calendar/categories', getCategoriesController);
 router.post('/calendar/categories', createCategoryController);
+
+/**
+ * ROUTES COLLABORATEURS
+ */
+
+// GET /api/collaborators/:societeId - Récupérer tous les collaborateurs d'une société
+router.get('/collaborators/:societeId', getCollaboratorsBySocieteController);
+
+// GET /api/collaborators/check/:memberId/:societeId - Vérifier si un membre est collaborateur
+router.get('/collaborators/check/:memberId/:societeId', checkCollaboratorController);
+
+// GET /api/collaborators/member/:memberId - Récupérer les sociétés d'un membre
+router.get('/collaborators/member/:memberId', getSocietesByMemberController);
+
+// POST /api/collaborators - Assigner un collaborateur
+router.post('/collaborators', assignCollaboratorController);
+
+// DELETE /api/collaborators/:memberId/:societeId - Retirer un collaborateur
+router.delete('/collaborators/:memberId/:societeId', removeCollaboratorController);
 
 
 

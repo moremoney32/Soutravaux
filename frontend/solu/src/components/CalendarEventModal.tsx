@@ -13,7 +13,7 @@ interface CalendarEventModalProps {
   onClose: () => void;
   onSave?: (event: CalendarEvent) => void;
   onDelete?: (eventId: string) => void;
-  onInvite?: (eventId: string, societeIds: number[]) => Promise<void>;
+  onInvite?: (emails: string[]) => Promise<void>;  // ✅ Emails des collaborateurs
   onComplete?: (eventId: string) => void;
   onCancel?: (eventId: string) => void;
   isNewEvent?: boolean;
@@ -48,7 +48,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [scope, setScope] = useState<EventScope>('personal');
   const [eventCategoryId, setEventCategoryId] = useState<number | undefined>(undefined);
   const [customCategoryLabel, setCustomCategoryLabel] = useState('');
-  const [selectedAttendees, setSelectedAttendees] = useState<number[]>([]);
+  const [selectedAttendees, setSelectedAttendees] = useState<string[]>([]);  // ✅ Emails des collaborateurs
   const [inviteMethod, setInviteMethod] = useState<'email' | 'sms' | 'push' | 'contact'>('email');
   console.log('Selected Attendees:', inviteMethod);
   
@@ -190,13 +190,13 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
-  const handleInviteComplete = async (societeIds: number[]): Promise<void> => {
-    setSelectedAttendees(societeIds);
+  const handleInviteComplete = async (emails: string[]): Promise<void> => {
+    setSelectedAttendees(emails);  // ✅ Sauvegarder les emails
     
     // Si événement existe et onInvite fourni
     if (event && event.id && onInvite) {
       try {
-        await onInvite(event.id, societeIds);
+        await onInvite(emails);  // ✅ Passer les emails directement
       } catch (error) {
         console.error('Erreur invitation:', error);
         alert('Impossible d\'inviter les participants');
@@ -957,9 +957,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   <InviteAttendeesModal
     isOpen={showInviteModal}
     onClose={() => setShowInviteModal(false)}
-    onInvite={handleInviteComplete}  // ✅ Type correct
-    eventId={event?.id || `temp-${Date.now()}`}  // ✅ String
-    initialSelectedIds={selectedAttendees}  // ✅ Prop acceptée
+    onInvite={handleInviteComplete}  // ✅ (emails: string[]) => Promise<void>
+    initialSelectedEmails={selectedAttendees}  // ✅ Emails sélectionnés
   />
 )}
     </>

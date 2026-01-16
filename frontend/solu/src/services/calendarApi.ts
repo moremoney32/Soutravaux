@@ -1,7 +1,7 @@
 
 
-const API_BASE_URL = 'http://localhost:3000/api';
-//const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+//const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
 export interface EventCategory {
   id: number;
@@ -205,6 +205,64 @@ export async function inviteArtisans(
   }
 }
 
+/**
+ * Inviter les collaborateurs sélectionnés à un événement
+ * @param eventId - ID de l'événement
+ * @param memberIds - Liste des IDs des membres (collaborateurs)
+ * @returns
+ */
+export async function inviteCollaborators(
+  eventId: number,
+  memberIds: number[]
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/invite`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      member_ids: memberIds,
+      invite_method: 'email'
+    })
+  });
+
+  const result = await response.json();
+  console.log('📨 Invitation collaborateurs réponse API:', result);
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur envoi invitations aux collaborateurs');
+  }
+}
+
+/**
+ * ✅ NOUVEAU: Inviter les collaborateurs par EMAIL directement
+ * @param eventId - ID de l'événement
+ * @param emails - Liste des EMAILS des collaborateurs
+ * @returns
+ */
+export async function inviteCollaboratorsByEmail(
+  eventId: number,
+  emails: string[]
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      attendee_emails: emails,
+      invite_method: 'email'
+    })
+  });
+
+  const result = await response.json();
+  console.log('📧 Invitation par email réponse API:', result);
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur envoi invitations par email');
+  }
+}
+
 export async function respondToInvitation(
   eventId: number,
   societeId: number,
@@ -349,11 +407,26 @@ export function convertFrontendEventToAPI(
     custom_category_label: event.custom_category_label || undefined
   };
 
-  // Si collaboratif, ajouter les invitées et méthode
+  // Si collaboratif, ajouter les emails des invités
   if (event.scope === 'collaborative' && event.attendees && event.attendees.length > 0) {
-    payload.attendee_societe_ids = event.attendees;
+    // ✅ NOUVEAU: Envoyer les EMAILS directement au lieu des IDs
+    (payload as any).attendee_emails = event.attendees;  // Les emails des collaborateurs sélectionnés
     payload.invite_method = event.invite_method || 'email';
   }
 
   return payload;
+}
+
+/**
+ * Récupérer les collaborateurs d'une société
+ */
+export async function fetchCollaborators(societeId: number): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/collaborators/${societeId}`);
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur récupération collaborateurs');
+  }
+
+  return result.data || [];
 }

@@ -1,9 +1,5 @@
 
 
-
-
-// // InviteAttendeesModal.tsx - VERSION EMAIL UNIQUEMENT
-
 // import React, { useState, useEffect } from 'react';
 
 // interface Societe {
@@ -13,40 +9,51 @@
 //   phone?: string;
 // }
 
+// // ✅ PROPS CORRIGÉES
 // interface InviteAttendeesModalProps {
 //   isOpen: boolean;
-//   eventId: number;
-//   societeId: number;
+//   eventId: string;  // ✅ string au lieu de number
 //   onClose: () => void;
-//   onInvite: (eventId: number, societeIds: number[], method: 'email') => Promise<void>;
+//   onInvite: (societeIds: number[]) => Promise<void>;  // ✅ Simplifié
+//   initialSelectedIds?: number[];  // ✅ Ajouté
 // }
-
-
-
 
 // const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
 //   isOpen,
-//   eventId,
-//   societeId,
+//   // eventId,
 //   onClose,
-//   onInvite
+//   onInvite,
+//   initialSelectedIds = []
 // }) => {
 //   const [societes, setSocietes] = useState<Societe[]>([]);
-//   const [selectedSocietes, setSelectedSocietes] = useState<number[]>([]);
+//   const [selectedSocietes, setSelectedSocietes] = useState<number[]>(initialSelectedIds);
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [searchTerm, setSearchTerm] = useState('');
-//   //const API_BASE_URL = 'http://localhost:3000/api';
 
-//   const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+//   //const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+//   const API_BASE_URL = 'http://localhost:3000/api';
+
+//   // ✅ Récupérer societeId depuis le localStorage ou context
+//   const getSocieteId = (): number => {
+//     const userStr = localStorage.getItem('user');
+//     if (userStr) {
+//       const user = JSON.parse(userStr);
+//       return user.societeId || 0;
+//     }
+//     return 0;
+//   };
 
 //   useEffect(() => {
 //     if (isOpen) {
 //       loadSocietes();
+//       // ✅ Réinitialiser avec les IDs initiaux
+//       setSelectedSocietes(initialSelectedIds);
 //     }
-//   }, [isOpen, societeId]);
+//   }, [isOpen, initialSelectedIds]);
 
 //   const loadSocietes = async () => {
 //     try {
+//       const societeId = getSocieteId();
 //       const response = await fetch(
 //         `${API_BASE_URL}/calendar/societes?exclude_societe_id=${societeId}`
 //       );
@@ -68,6 +75,7 @@
 //     }
 //   };
 
+//   // ✅ Handler simplifié
 //   const handleInvite = async () => {
 //     if (selectedSocietes.length === 0) {
 //       alert('Sélectionnez au moins un collaborateur');
@@ -76,7 +84,7 @@
 
 //     setIsLoading(true);
 //     try {
-//       await onInvite(eventId, selectedSocietes, 'email');
+//       await onInvite(selectedSocietes);  // ✅ Passe juste les IDs
 //       setSelectedSocietes([]);
 //       onClose();
 //     } catch (error) {
@@ -89,7 +97,7 @@
 
 //   const filteredSocietes = societes.filter(societe =>
 //     societe.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-//     societe.email // ✅ Afficher uniquement ceux qui ont un email
+//     societe.email
 //   );
 
 //   if (!isOpen) return null;
@@ -104,8 +112,7 @@
 //         {/* En-tête */}
 //         <div className="calendar-modal-header">
 //           <h2 className="calendar-modal-title">
-//             <i className="fas fa-building"></i>
-//             Inviter des collaborateurs
+//             👥 Inviter des collaborateurs
 //           </h2>
 //           <button className="calendar-modal-close" onClick={onClose}>×</button>
 //         </div>
@@ -117,17 +124,16 @@
 //             <input
 //               type="text"
 //               className="calendar-form-input"
-//               placeholder="Rechercher un collaborateur..."
+//               placeholder="🔍 Rechercher un collaborateur..."
 //               value={searchTerm}
 //               onChange={(e) => setSearchTerm(e.target.value)}
 //               autoFocus
 //             />
 //           </div>
 
-//           {/* ✅ Info méthode (fixe) */}
+//           {/* Info méthode */}
 //           <div className="invite-method-info">
-//             <i className="fas fa-envelope"></i>
-//             Les invitations seront envoyées par <strong>email</strong>
+//             ✉️ Les invitations seront envoyées par <strong>email</strong>
 //           </div>
 
 //           {/* Liste sociétés */}
@@ -147,7 +153,7 @@
 //                 filteredSocietes.map(societe => (
 //                   <label
 //                     key={societe.id}
-//                     className="artisan-item"
+//                     className={`artisan-item ${selectedSocietes.includes(societe.id) ? 'selected' : ''}`}
 //                   >
 //                     <input
 //                       type="checkbox"
@@ -156,12 +162,11 @@
 //                     />
 //                     <div className="artisan-info">
 //                       <div className="artisan-name">
-//                         <i className="fas fa-building" style={{ marginRight: '8px', color: '#E77131' }}></i>
-//                         {societe.name}
+//                         🏢 {societe.name}
 //                       </div>
 //                       <div className="artisan-contact">
 //                         <span>
-//                           <i className="fas fa-envelope"></i> {societe.email}
+//                           ✉️ {societe.email}
 //                         </span>
 //                       </div>
 //                     </div>
@@ -174,8 +179,7 @@
 //           {/* Sélection */}
 //           {selectedSocietes.length > 0 && (
 //             <div className="selection-info">
-//               <i className="fas fa-check-circle"></i>
-//               {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
+//               ✓ {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
 //             </div>
 //           )}
 //         </div>
@@ -191,15 +195,9 @@
 //             disabled={isLoading || selectedSocietes.length === 0}
 //           >
 //             {isLoading ? (
-//               <>
-//                 <i className="fas fa-spinner fa-spin"></i>
-//                 Envoi...
-//               </>
+//               <>⏳ Envoi...</>
 //             ) : (
-//               <>
-//                 <i className="fas fa-paper-plane"></i>
-//                 Inviter ({selectedSocietes.length})
-//               </>
+//               <>📧 Inviter ({selectedSocietes.length})</>
 //             )}
 //           </button>
 //         </div>
@@ -219,15 +217,11 @@
 //           color: #2E7D32;
 //         }
 
-//         .invite-method-info i {
-//           font-size: 16px;
-//         }
-
 //         .artisans-list {
-//           max-height: 300px;
+//           max-height: 350px;
 //           overflow-y: auto;
-//           border: 1px solid var(--color-border);
-//           border-radius: var(--radius-small);
+//           border: 1px solid #ddd;
+//           border-radius: 8px;
 //           padding: 8px;
 //         }
 
@@ -235,24 +229,30 @@
 //           display: flex;
 //           align-items: center;
 //           gap: 12px;
-//           padding: 12px;
-//           border-radius: 4px;
+//           padding: 14px;
+//           border-radius: 6px;
 //           cursor: pointer;
 //           transition: all 0.2s;
 //           margin-bottom: 8px;
-//           border: 1px solid transparent;
+//           border: 2px solid transparent;
+//           background: white;
 //         }
 
 //         .artisan-item:hover {
-//           background: var(--color-light-gray);
-//           border-color: var(--color-primary);
+//           background: #f5f5f5;
+//           border-color: #E77131;
+//         }
+
+//         .artisan-item.selected {
+//           background: #FFF3E0;
+//           border-color: #E77131;
 //         }
 
 //         .artisan-item input[type="checkbox"] {
-//           width: 18px;
-//           height: 18px;
+//           width: 20px;
+//           height: 20px;
 //           cursor: pointer;
-//           accent-color: var(--color-primary);
+//           accent-color: #E77131;
 //         }
 
 //         .artisan-info {
@@ -261,39 +261,37 @@
 
 //         .artisan-name {
 //           font-weight: 500;
-//           color: var(--color-gray-primary);
+//           color: #333;
 //           margin-bottom: 4px;
 //           display: flex;
 //           align-items: center;
+//           gap: 8px;
+//           font-size: 14px;
 //         }
 
 //         .artisan-contact {
 //           display: flex;
 //           gap: 12px;
-//           font-size: 12px;
-//           color: var(--color-gray-secondary);
+//           font-size: 13px;
+//           color: #666;
 //         }
 
 //         .artisan-contact span {
 //           display: flex;
 //           align-items: center;
-//           gap: 4px;
+//           gap: 6px;
 //         }
 
 //         .selection-info {
 //           display: flex;
 //           align-items: center;
 //           gap: 8px;
-//           padding: 12px;
+//           padding: 12px 16px;
 //           background: #E8F5E9;
 //           color: #2E7D32;
-//           border-radius: 4px;
+//           border-radius: 6px;
 //           font-weight: 500;
 //           font-size: 13px;
-//         }
-
-//         .selection-info i {
-//           font-size: 16px;
 //         }
 //       `}</style>
 //     </div>
@@ -303,94 +301,122 @@
 // export default InviteAttendeesModal;
 
 
-// InviteAttendeesModal.tsx - VERSION CORRIGÉE
+
+
+// InviteAttendeesModal.tsx - VERSION COLLABORATEURS
 
 import React, { useState, useEffect } from 'react';
 
-interface Societe {
+interface Collaborator {
   id: number;
-  name: string;
-  email?: string;
-  phone?: string;
+  membre_id: number;
+  email: string;
+  nom: string;
+  prenom: string;
+  poste_id: bigint;
+  societe_id: number;
+  assigned_at: string;
+  expires_at: string | null;
 }
 
-// ✅ PROPS CORRIGÉES
+// ✅ PROPS POUR INVITATION DES COLLABORATEURS
 interface InviteAttendeesModalProps {
   isOpen: boolean;
-  eventId: string;  // ✅ string au lieu de number
   onClose: () => void;
-  onInvite: (societeIds: number[]) => Promise<void>;  // ✅ Simplifié
-  initialSelectedIds?: number[];  // ✅ Ajouté
+  onInvite: (collaboratorEmails: string[]) => Promise<void>;  // ✅ EMAILS, pas IDs
+  initialSelectedEmails?: string[];  // ✅ Emails
 }
 
 const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
   isOpen,
-  // eventId,
   onClose,
   onInvite,
-  initialSelectedIds = []
+  initialSelectedEmails = []
 }) => {
-  const [societes, setSocietes] = useState<Societe[]>([]);
-  const [selectedSocietes, setSelectedSocietes] = useState<number[]>(initialSelectedIds);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [selectedCollaborators, setSelectedCollaborators] = useState<string[]>(initialSelectedEmails);  // ✅ Emails
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loadingCollaborators, setLoadingCollaborators] = useState(false);
 
-  //const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
-  const API_BASE_URL = 'http://localhost:3000/api';
+  // const API_BASE_URL = 'http://localhost:3000/api';
+  const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
-  // ✅ Récupérer societeId depuis le localStorage ou context
+  // Récupérer societeId depuis le localStorage
   const getSocieteId = (): number => {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('societeId');
     if (userStr) {
-      const user = JSON.parse(userStr);
-      return user.societeId || 0;
+      return Number(userStr);
     }
     return 0;
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      loadSocietes();
-      // ✅ Réinitialiser avec les IDs initiaux
-      setSelectedSocietes(initialSelectedIds);
-    }
-  }, [isOpen, initialSelectedIds]);
-
-  const loadSocietes = async () => {
+  // Charger les collaborateurs de la société
+  const loadCollaborators = async () => {
     try {
+      setLoadingCollaborators(true);
       const societeId = getSocieteId();
+      
+      if (!societeId) {
+        console.error('Erreur: societeId non trouvée');
+        return;
+      }
+
       const response = await fetch(
-        `${API_BASE_URL}/calendar/societes?exclude_societe_id=${societeId}`
+        `${API_BASE_URL}/collaborators/${societeId}`
       );
       const result = await response.json();
       
       if (result.success) {
-        setSocietes(result.data);
+        setCollaborators(result.data || []);
+      } else {
+        console.error('Erreur chargement collaborateurs:', result.message);
       }
     } catch (error) {
-      console.error('Erreur chargement sociétés:', error);
+      console.error('Erreur chargement collaborateurs:', error);
+    } finally {
+      setLoadingCollaborators(false);
     }
   };
 
-  const handleToggleSociete = (societeId: number) => {
-    if (selectedSocietes.includes(societeId)) {
-      setSelectedSocietes(selectedSocietes.filter(id => id !== societeId));
+  useEffect(() => {
+    if (isOpen) {
+      loadCollaborators();
+      setSelectedCollaborators(initialSelectedEmails);
+      setSearchTerm('');
+    }
+  }, [isOpen, initialSelectedEmails]);
+
+  const handleToggleCollaborator = (email: string) => {
+    // ✅ Travailler avec les EMAILS au lieu des IDs
+    if (selectedCollaborators.includes(email)) {
+      setSelectedCollaborators(selectedCollaborators.filter(e => e !== email));
     } else {
-      setSelectedSocietes([...selectedSocietes, societeId]);
+      setSelectedCollaborators([...selectedCollaborators, email]);
     }
   };
 
-  // ✅ Handler simplifié
+  // Sélectionner tous les collaborateurs
+  const handleSelectAll = () => {
+    if (selectedCollaborators.length === filteredCollaborators.length) {
+      setSelectedCollaborators([]);
+    } else {
+      // Stocker les emails, pas les IDs
+      setSelectedCollaborators(filteredCollaborators.map(c => c.email));
+    }
+  };
+
   const handleInvite = async () => {
-    if (selectedSocietes.length === 0) {
+    if (selectedCollaborators.length === 0) {
       alert('Sélectionnez au moins un collaborateur');
       return;
     }
 
     setIsLoading(true);
     try {
-      await onInvite(selectedSocietes);  // ✅ Passe juste les IDs
-      setSelectedSocietes([]);
+      console.log('📧 [Modal] Envoi des invitations avec emails:', selectedCollaborators);
+      await onInvite(selectedCollaborators);  // ← Envoie les emails
+      setSelectedCollaborators([]);
       onClose();
     } catch (error) {
       console.error('Erreur invitation:', error);
@@ -400,9 +426,10 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
     }
   };
 
-  const filteredSocietes = societes.filter(societe =>
-    societe.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    societe.email
+  const filteredCollaborators = collaborators.filter(collab =>
+    `${collab.nom} ${collab.prenom} ${collab.email}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   if (!isOpen) return null;
@@ -412,7 +439,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
       <div 
         className="calendar-modal-content"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '600px' }}
+        style={{ maxWidth: '650px' }}
       >
         {/* En-tête */}
         <div className="calendar-modal-header">
@@ -429,7 +456,7 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
             <input
               type="text"
               className="calendar-form-input"
-              placeholder="🔍 Rechercher un collaborateur..."
+              placeholder="🔍 Rechercher par nom, prénom ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               autoFocus
@@ -441,38 +468,54 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
             ✉️ Les invitations seront envoyées par <strong>email</strong>
           </div>
 
-          {/* Liste sociétés */}
+          {/* Sélectionner tout */}
+          {filteredCollaborators.length > 0 && (
+            <div className="select-all-section">
+              <label className="select-all-label">
+                <input
+                  type="checkbox"
+                  checked={selectedCollaborators.length === filteredCollaborators.length && filteredCollaborators.length > 0}
+                  onChange={handleSelectAll}
+                />
+                <span>Sélectionner tout</span>
+              </label>
+            </div>
+          )}
+
+          {/* Liste collaborateurs */}
           <div className="calendar-form-group">
             <label className="calendar-form-label">
-              Collaborateurs disponibles ({filteredSocietes.length})
+              Collaborateurs disponibles ({filteredCollaborators.length})
             </label>
-            <div className="artisans-list">
-              {filteredSocietes.length === 0 ? (
+            <div className="collaborators-list">
+              {loadingCollaborators ? (
+                <p style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                  Chargement des collaborateurs...
+                </p>
+              ) : filteredCollaborators.length === 0 ? (
                 <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>
-                  {searchTerm 
-                    ? 'Aucun collaborateur trouvé' 
-                    : 'Aucun collaborateur avec email disponible'
+                  {collaborators.length === 0
+                    ? 'Aucun collaborateur trouvé pour votre société'
+                    : 'Aucun collaborateur correspondant à votre recherche'
                   }
                 </p>
               ) : (
-                filteredSocietes.map(societe => (
+                filteredCollaborators.map(collaborator => (
                   <label
-                    key={societe.id}
-                    className={`artisan-item ${selectedSocietes.includes(societe.id) ? 'selected' : ''}`}
+                    key={collaborator.membre_id}
+                    className={`collaborator-item ${selectedCollaborators.includes(collaborator.email) ? 'selected' : ''}`}
                   >
                     <input
                       type="checkbox"
-                      checked={selectedSocietes.includes(societe.id)}
-                      onChange={() => handleToggleSociete(societe.id)}
+                      checked={selectedCollaborators.includes(collaborator.email)}
+                      onChange={() => handleToggleCollaborator(collaborator.email)}
                     />
-                    <div className="artisan-info">
-                      <div className="artisan-name">
-                        🏢 {societe.name}
+                    <div className="collaborator-info">
+                      <div className="collaborator-name">
+                        👤 {collaborator.prenom} {collaborator.nom}
                       </div>
-                      <div className="artisan-contact">
-                        <span>
-                          ✉️ {societe.email}
-                        </span>
+                      <div className="collaborator-contact">
+                        <span>✉️ {collaborator.email}</span>
                       </div>
                     </div>
                   </label>
@@ -481,10 +524,10 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
             </div>
           </div>
 
-          {/* Sélection */}
-          {selectedSocietes.length > 0 && (
+          {/* Sélection actuelle */}
+          {selectedCollaborators.length > 0 && (
             <div className="selection-info">
-              ✓ {selectedSocietes.length} collaborateur{selectedSocietes.length > 1 ? 's' : ''} sélectionné{selectedSocietes.length > 1 ? 's' : ''}
+              ✓ {selectedCollaborators.length} collaborateur{selectedCollaborators.length > 1 ? 's' : ''} sélectionné{selectedCollaborators.length > 1 ? 's' : ''}
             </div>
           )}
         </div>
@@ -497,18 +540,112 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           <button
             className="calendar-btn-primary"
             onClick={handleInvite}
-            disabled={isLoading || selectedSocietes.length === 0}
+            disabled={isLoading || selectedCollaborators.length === 0}
           >
             {isLoading ? (
-              <>⏳ Envoi...</>
+              <>⏳ Envoi en cours...</>
             ) : (
-              <>📧 Inviter ({selectedSocietes.length})</>
+              <>📧 Inviter ({selectedCollaborators.length})</>
             )}
           </button>
         </div>
       </div>
 
       <style>{`
+        .calendar-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .calendar-modal-content {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          max-height: 85vh;
+          display: flex;
+          flex-direction: column;
+          animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .calendar-modal-header {
+          padding: 20px 24px;
+          border-bottom: 1px solid #f0f0f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .calendar-modal-title {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .calendar-modal-close {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: #999;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .calendar-modal-close:hover {
+          color: #333;
+        }
+
+        .calendar-modal-body {
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px 24px;
+        }
+
+        .calendar-form-group {
+          margin-bottom: 16px;
+        }
+
+        .calendar-form-input {
+          width: 100%;
+          padding: 10px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: 14px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .calendar-form-input:focus {
+          outline: none;
+          border-color: #E77131;
+          box-shadow: 0 0 0 3px rgba(231, 113, 49, 0.1);
+        }
+
+        .calendar-form-label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 12px;
+          color: #333;
+          font-size: 14px;
+        }
+
         .invite-method-info {
           display: flex;
           align-items: center;
@@ -516,21 +653,46 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           padding: 12px 16px;
           background: #E8F5E9;
           border-left: 3px solid #4CAF50;
-          border-radius: 4px;
+          border-radius: 6px;
           margin-bottom: 16px;
           font-size: 14px;
           color: #2E7D32;
         }
 
-        .artisans-list {
+        .select-all-section {
+          padding: 12px;
+          background: #f9f9f9;
+          border-radius: 6px;
+          margin-bottom: 12px;
+        }
+
+        .select-all-label {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          font-weight: 500;
+          color: #333;
+          user-select: none;
+        }
+
+        .select-all-label input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+          accent-color: #E77131;
+        }
+
+        .collaborators-list {
           max-height: 350px;
           overflow-y: auto;
           border: 1px solid #ddd;
           border-radius: 8px;
           padding: 8px;
+          background: white;
         }
 
-        .artisan-item {
+        .collaborator-item {
           display: flex;
           align-items: center;
           gap: 12px;
@@ -543,28 +705,30 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           background: white;
         }
 
-        .artisan-item:hover {
+        .collaborator-item:hover {
           background: #f5f5f5;
           border-color: #E77131;
         }
 
-        .artisan-item.selected {
+        .collaborator-item.selected {
           background: #FFF3E0;
           border-color: #E77131;
         }
 
-        .artisan-item input[type="checkbox"] {
+        .collaborator-item input[type="checkbox"] {
           width: 20px;
           height: 20px;
           cursor: pointer;
           accent-color: #E77131;
+          flex-shrink: 0;
         }
 
-        .artisan-info {
+        .collaborator-info {
           flex: 1;
+          min-width: 0;
         }
 
-        .artisan-name {
+        .collaborator-name {
           font-weight: 500;
           color: #333;
           margin-bottom: 4px;
@@ -572,19 +736,21 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           align-items: center;
           gap: 8px;
           font-size: 14px;
+          line-height: 1.25rem;
         }
 
-        .artisan-contact {
+        .collaborator-contact {
           display: flex;
           gap: 12px;
           font-size: 13px;
           color: #666;
         }
 
-        .artisan-contact span {
+        .collaborator-contact span {
           display: flex;
           align-items: center;
           gap: 6px;
+          word-break: break-all;
         }
 
         .selection-info {
@@ -597,10 +763,85 @@ const InviteAttendeesModal: React.FC<InviteAttendeesModalProps> = ({
           border-radius: 6px;
           font-weight: 500;
           font-size: 13px;
+          margin-top: 16px;
         }
+
+        .calendar-modal-footer {
+          padding: 16px 24px;
+          border-top: 1px solid #f0f0f0;
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+        }
+
+        .calendar-btn-secondary,
+        .calendar-btn-primary {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 6px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-size: 14px;
+        }
+
+        .calendar-btn-secondary {
+          background: #f0f0f0;
+          color: #333;
+        }
+
+        .calendar-btn-secondary:hover {
+          background: #e0e0e0;
+        }
+
+        .calendar-btn-primary {
+          background: #E77131;
+          color: white;
+        }
+
+        .calendar-btn-primary:hover:not(:disabled) {
+          background: #d65a1a;
+          box-shadow: 0 4px 12px rgba(231, 113, 49, 0.3);
+        }
+
+        .calendar-btn-primary:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        /* Scrollbar styling */
+        .collaborators-list::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .collaborators-list::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 4px;
+        }
+
+        .collaborators-list::-webkit-scrollbar-thumb {
+          background: #E77131;
+          border-radius: 4px;
+        }
+
+        .collaborators-list::-webkit-scrollbar-thumb:hover {
+          background: #d65a1a;
+        }
+
+        @media (max-width: 768px) {
+         .collaborator-contact {
+          display: flex;
+          gap: 12px;
+          font-size: 13px;
+          color: #666;
+          margin-top: 8px;
+        }
+ 
+  }
       `}</style>
     </div>
   );
 };
 
 export default InviteAttendeesModal;
+

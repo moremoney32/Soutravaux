@@ -602,11 +602,26 @@ export async function createEvent(data: CreateEventInput): Promise<number> {
   const conn = await pool.getConnection();
 
   try {
+    console.log('📥 [CalendarService.createEvent] Données reçues:', {
+      societe_id: data.societe_id,
+      title: data.title,
+      scope: data.scope,
+      event_date: data.event_date,
+      event_type: data.event_type,
+      event_category_id: data.event_category_id,
+      custom_category_label: data.custom_category_label,
+      attendee_societe_ids: data.attendee_societe_ids,
+      attendee_member_ids: (data as any).attendee_member_ids,
+      attendee_emails: (data as any).attendee_emails
+    });
+
     await conn.beginTransaction();
 
     const eventDate = data.event_date.includes('T') 
       ? data.event_date.split('T')[0] 
       : data.event_date;
+    
+    console.log('✅ [CalendarService] eventDate nettoyée:', eventDate);
 
     const [result] = await conn.query<any>(
       `INSERT INTO calendar_events 
@@ -622,10 +637,10 @@ export async function createEvent(data: CreateEventInput): Promise<number> {
         data.end_time,
         data.location || null,
         data.color || '#E77131',
-        data.event_type || 'task',  // ✅ Gardé pour compatibilité
-        data.scope,
-        data.event_category_id || null,
-        data.custom_category_label || null
+        data.event_type || 'task',     // ✅ 9ème paramètre: event_type
+        data.scope || 'personal',      // ✅ 10ème paramètre: scope
+        data.event_category_id || null, // ✅ 11ème paramètre: event_category_id
+        data.custom_category_label || null // ✅ 12ème paramètre: custom_category_label
       ]
     );
 
@@ -641,34 +656,161 @@ export async function createEvent(data: CreateEventInput): Promise<number> {
     );
 
     // Gérer invitations (si scope = collaborative)
-    if (data.scope === 'collaborative' && data.attendee_societe_ids && data.attendee_societe_ids.length > 0) {
-      const inviteMethod = data.invite_method || 'email';
-      for (const attendeeSocieteId of data.attendee_societe_ids) {
-        await conn.query(
-          `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
-           VALUES (?, ?, ?, NOW())`,
-          [eventId, attendeeSocieteId, inviteMethod]
-        );
+    // Support 3 modes: emails, member_ids, ou societe_ids
+    const attendeeEmails = (data as any).attendee_emails;
+    const attendeeMemberIds = (data as any).attendee_member_ids;
+    const attendeeSocieteIds = data.attendee_societe_ids;
+    
+    if (data.scope === 'collaborative') {
+
+      // ✅ MODE 1: Inviter par EMAILS directement (RECOMMANDÉ)
+      if (attendeeEmails && attendeeEmails.length > 0) {
+        console.log(`📧 [CalendarService] MODE 1: Invitations par EMAIL`);
+        console.log(`   Emails à inviter:`, attendeeEmails);
         
-        // Notifications pour invités
-        await planifierNotificationsPourEvenement(
-          conn,
-          eventId,
-          eventDate,
-          data.start_time,
-          attendeeSocieteId
-        );
+        // Importer l'email service
+        const { envoyerEmailNotificationInvitation } = require('./emailNotificationServices');
+        
+        for (const email of attendeeEmails) {
+          console.log(`  ✓ Envoi invitation à: ${email}`);
+          try {
+            const subject = `📅 Invitation à l'événement: ${data.title}`;
+            const htmlMessage = `
+              <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+                  <h2 style="color: white; margin: 0;">📅 Vous êtes invité !</h2>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+                  <p style="font-size: 16px; margin-bottom: 20px;">Bonjour,</p>
+                  
+                  <p style="font-size: 15px; margin-bottom: 25px;">
+                    Vous avez reçu une invitation pour participer à un événement collaboratif :
+                  </p>
+                  
+                  <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
+                    <p style="font-size: 18px; font-weight: bold; color: #E77131; margin: 0 0 15px 0;">
+                      ${data.title}
+                    </p>
+                    
+                    <p style="margin: 8px 0; font-size: 14px;">
+                      <strong>⏰ Heure :</strong> ${data.start_time}
+                    </p>
+                    
+                    <p style="margin: 8px 0; font-size: 14px;">
+                      <strong>📅 Date :</strong> ${eventDate}
+                    </p>
+                    
+                    ${data.location ? `
+                    <p style="margin: 8px 0; font-size: 14px;">
+                      <strong>📍 Lieu :</strong> ${data.location}
+                    </p>
+                    ` : ''}
+                    
+                    ${data.description ? `
+                    <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                      <strong>📝 Description :</strong><br/>
+                      ${data.description}
+                    </p>
+                    ` : ''}
+                  </div>
+                  
+                  <div style="background: #FFE0B2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #E65100;">
+                      ✅ <strong>Bonne chance !</strong>
+                    </p>
+                  </div>
+                  
+                  <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
+                    Vous recevrez des rappels avant l'événement.
+                  </p>
+                </div>
+              </div>
+            `;
+            
+            await envoyerEmailNotificationInvitation(email, subject, htmlMessage);
+            console.log(`  ✅ Email envoyé à: ${email}`);
+            
+            // ✅ NOUVEAU: Insérer dans event_invitations pour les rappels ultérieurs
+            await conn.query(
+              `INSERT INTO event_invitations (event_id, email, status, created_at)
+               VALUES (?, ?, 'sent', NOW())`,
+              [eventId, email]
+            );
+            console.log(`  ✅ Invitation enregistrée pour rappels: ${email}`);
+            
+          } catch (error: any) {
+            console.error(`  ❌ Erreur envoi à ${email}:`, error.message);
+            // Enregistrer comme failed
+            try {
+              await conn.query(
+                `INSERT INTO event_invitations (event_id, email, status, created_at)
+                 VALUES (?, ?, 'failed', NOW())`,
+                [eventId, email]
+              );
+            } catch (e) {
+              console.error(`  ❌ Impossible d'enregistrer l'invitation échouée pour ${email}`);
+            }
+          }
+        }
+        console.log(`✅ [CalendarService] ${attendeeEmails.length} emails envoyés`);
+
+      } 
+      // ✅ MODE 2: Inviter par MEMBER_IDs (convertir en emails)
+      else if (attendeeMemberIds && attendeeMemberIds.length > 0) {
+        console.log(`📧 [CalendarService] MODE 2: Invitations par MEMBER_ID`);
+        console.log(`   Member IDs à inviter:`, attendeeMemberIds);
+        
+        // TODO: Récupérer les emails depuis la table membres
+        console.log(`   [TODO] Convertir les member_ids en emails`);
       }
+      // ✅ MODE 3: Inviter par SOCIETE_IDs (ancien système)
+      else if (attendeeSocieteIds && attendeeSocieteIds.length > 0) {
+        console.log(`📧 [CalendarService] MODE 3: Invitations par SOCIETE_ID (ancien)`);
+        console.log(`   Societe IDs à inviter:`, attendeeSocieteIds);
+        
+        const inviteMethod = data.invite_method || 'email';  // ✅ Déclarer ICI, où on l'utilise
+        for (const attendeeSocieteId of attendeeSocieteIds) {
+          console.log(`  → Invitation à societe_id: ${attendeeSocieteId}`);
+          await conn.query(
+            `INSERT INTO event_attendees (event_id, societe_id, invite_method, notified_at)
+             VALUES (?, ?, ?, NOW())`,
+            [eventId, attendeeSocieteId, inviteMethod]
+          );
+          
+          // Notifications pour invités
+          await planifierNotificationsPourEvenement(
+            conn,
+            eventId,
+            eventDate,
+            data.start_time,
+            attendeeSocieteId
+          );
+        }
+        console.log(`✅ [CalendarService] ${attendeeSocieteIds.length} societes invitées`);
+      }
+      else {
+        console.log(`ℹ️ [CalendarService] Événement COLLABORATIVE mais sans invitations`);
+      }
+    }
+    else {
+      console.log(`ℹ️ [CalendarService] Événement ${eventId} = PERSONNEL (pas d'invitations)`);
     }
 
     await conn.commit();
-    console.log(`✅ Événement ${eventId} créé avec catégorie`);
+    console.log(`✅ [CalendarService] Événement ${eventId} créé avec succès`);
     return eventId;
     
   } catch (error: any) {
     await conn.rollback();
-    console.error('❌ Erreur createEvent:', error);
-    throw new Error("Erreur création événement");
+    console.error('❌ [CalendarService] Erreur createEvent:', {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      sql: error.sql
+    });
+    throw new Error("Erreur création événement: " + error.message);
   } finally {
     conn.release();
   }

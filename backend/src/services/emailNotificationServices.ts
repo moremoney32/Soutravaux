@@ -375,3 +375,39 @@ function formaterDate(dateStr: string): string {
   
   return `${jourSemaine} ${jour} ${moisNom} ${annee}`;
 }
+
+/**
+ * Envoyer un email de notification d'invitation
+ * Format: receiver + sender (pour les rappels d'invitation aux collaborateurs)
+ */
+export async function envoyerEmailNotificationInvitation(
+  recipientEmail: string,
+  subject: string,
+  htmlMessage: string
+): Promise<boolean> {
+  try {
+    const payload = {
+      receiver: recipientEmail,  // ✅ API attend "receiver" pas "to"
+      sender: DEFAULT_SENDER,     // ✅ API attend "sender"
+      subject: subject,
+      message: htmlMessage        // ✅ API attend "message" pas "html"
+    };
+
+    const response = await axios.post(EMAIL_API_URL, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 200 || response.status === 201 || response.data.success) {
+      console.log(`📧 Email d'invitation envoyé à ${recipientEmail}`);
+      return true;
+    } else {
+      console.error(`❌ Erreur envoi email: ${response.statusText}`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`❌ Erreur lors de l'envoi de l'email d'invitation:`, error);
+    return false;
+  }
+}
