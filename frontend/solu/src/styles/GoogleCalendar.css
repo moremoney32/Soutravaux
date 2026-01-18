@@ -951,6 +951,7 @@
 
   .calendar-main {
     flex: 1;
+    padding-top: 14px;
   }
 
   .calendar-week-header {
