@@ -31,7 +31,7 @@ const mockCalendars: Calendar[] = [
 
 const GoogleCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [viewType, setViewType] = useState<ViewType>('week');
+  const [viewType, setViewType] = useState<ViewType>('day');
   const [calendars, setCalendars] = useState<Calendar[]>(mockCalendars);
   const [allEvents, setAllEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -322,9 +322,9 @@ const GoogleCalendar: React.FC = () => {
       <div className="calendar-main">
         <div className="calendar-header">
           <div className="calendar-header-left">
-            <button className="calendar-hamburger" title="Menu">
+            {/* <button className="calendar-hamburger" title="Menu">
               <i className="fas fa-bars"></i>
-            </button>
+            </button> */}
             <div className="calendar-logo">
               <i className="fas fa-calendar"></i>
               <span>Agenda</span>
