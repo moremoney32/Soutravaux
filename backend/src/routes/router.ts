@@ -205,7 +205,7 @@ router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
  */
 
 // GET /api/calendar/events - Récupérer événements
-router.get('/calendar/events', getEventsController);
+router.get('/calendar/events', getEventsController);/*fff***/
 
 // POST /api/calendar/events - Créer événement
 router.post('/calendar/events', createEventController);
