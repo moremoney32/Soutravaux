@@ -756,6 +756,6 @@
   /* Meilleur espacement pour le touch */
   .packs-grid {
     gap: 12px;
-    margin-bottom: 80px; /* Espace pour le bouton sticky */
+    margin-bottom: 40px; /* Espace pour le bouton sticky */
   }
 }
