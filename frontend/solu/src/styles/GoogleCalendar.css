@@ -941,7 +941,9 @@
     border-right: none;
     border-bottom: 1px solid var(--color-border);
     max-height: 200px;
+    display: none;
   }
+
 
   .calendar-sidebar-right {
     display: none;
