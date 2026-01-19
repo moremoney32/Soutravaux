@@ -15,7 +15,7 @@ import PricingFooter from './PricingFooter';
 const baseUrlTest =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "https://solutravo.zeta-app.fr/api";
+    : "https://staging.solutravo.zeta-app.fr/api";
 
 // FONCTIONS HELPERS
 const getIconComponent = (iconName?: string) => {
@@ -148,7 +148,8 @@ const SubscriptionPage: React.FC = () => {
         plan_id: planId
       };
       //https://backendstaging.solutravo-compta.fr/api/stripe/customer
-      const res = await fetch("https://integration-api.solutravo-app.fr/api/stripe/customer", {
+      // const res = await fetch("https://integration-api.solutravo-app.fr/api/stripe/customer", {
+      const res = await fetch("https://backendstaging.solutravo-compta.fr/api/stripe/customer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
