@@ -6,10 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const SseServices_1 = require("./src/services/SseServices");
+const notificationCron_1 = require("./src/services/notificationCron");
 dotenv_1.default.config({ path: "./.env" });
 const PORT = process.env.PORT || 3000;
 (0, SseServices_1.initSseService)();
 const server = app_1.default.listen(PORT, () => {
+    (0, notificationCron_1.demarrerCronNotifications)();
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
 process.on('SIGTERM', () => {

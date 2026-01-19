@@ -9,11 +9,15 @@ const CompanyController_1 = require("../controllers/CompanyController");
 const PlanRoleContollers_1 = require("../controllers/PlanRoleContollers");
 const CheckSubscriptionControllers_1 = require("../controllers/CheckSubscriptionControllers");
 const featuresControllers_1 = require("../controllers/featuresControllers");
-const ScraperController_1 = require("../controllers/ScraperController");
+// import { scrapeGoogleMapsController } from "../controllers/ScraperController";
 const UpdatePlanFree_1 = __importDefault(require("../controllers/UpdatePlanFree"));
 const uploadMiddleware_1 = __importDefault(require("../middleware/uploadMiddleware"));
 const PushNotificationsControllers_1 = require("../controllers/PushNotificationsControllers");
 const sse_routes_1 = __importDefault(require("./sse.routes"));
+// import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
+const ContactListController_1 = require("../controllers/ContactListController");
+const CalendarController_1 = require("../controllers/CalendarController");
+const CollaboratorsController_1 = require("../controllers/CollaboratorsController");
 const router = express_1.default.Router();
 router.use('/sse', sse_routes_1.default);
 router.post("/register", UserControllers_1.UserControllers);
@@ -31,7 +35,17 @@ router.delete("/plans/:id", PlanRoleContollers_1.deletePlan);
 router.put("/subscription-settings", PlanRoleContollers_1.updateSettings);
 router.get("/subscription-settings", PlanRoleContollers_1.getSettings);
 router.post("/downgrade-to-free", UpdatePlanFree_1.default);
-router.post("/google-maps", ScraperController_1.scrapeGoogleMapsController);
+// router.post("/google-maps", scrapeGoogleMapsController);
+// GET - Récupérer toutes les listes d'une société avec compteur
+router.get('/contact-lists/societe/:societeId', ContactListController_1.getContactListsController);
+// GET - Récupérer une liste spécifique avec ses contacts
+router.get('/contact-lists/:listId/societe/:societeId', ContactListController_1.getContactListByIdController);
+// POST - Récupérer numéros de téléphone de plusieurs listes (pour campagne SMS)
+router.post('/contact-lists/phone-numbers', ContactListController_1.getPhoneNumbersController);
+// POST - Récupérer contacts complets de plusieurs listes
+router.post('/contact-lists/contacts', ContactListController_1.getContactsFromListsController);
+// POST - Compter contacts totaux de plusieurs listes
+router.post('/contact-lists/count', ContactListController_1.countContactsController);
 // ROUTES - PLANS
 /**
  * @route   GET /api/admin/plans
@@ -139,6 +153,40 @@ router.post('/upload', uploadMiddleware_1.default, (req, res) => {
         url: url
     });
 });
+/**
+ * ROUTES CALENDRIER
+ */
+// GET /api/calendar/events - Récupérer événements
+router.get('/calendar/events', CalendarController_1.getEventsController); /*fff***/
+// POST /api/calendar/events - Créer événement
+router.post('/calendar/events', CalendarController_1.createEventController);
+// PUT /api/calendar/events/:eventId - Modifier événement
+router.put('/calendar/events/:eventId', CalendarController_1.updateEventController);
+// DELETE /api/calendar/events/:eventId - Supprimer événement
+router.delete('/calendar/events/:eventId', CalendarController_1.deleteEventController);
+// GET /api/calendar/events/:eventId/attendees - Récupérer participants
+router.get('/calendar/events/:eventId/attendees', CalendarController_1.getAttendeesController);
+// POST /api/calendar/events/:eventId/invite - Inviter sociétés
+router.post('/calendar/events/:eventId/invite', CalendarController_1.inviteAttendeesController);
+// POST /api/calendar/events/:eventId/respond - Répondre invitation
+router.post('/calendar/events/:eventId/respond', CalendarController_1.respondToInviteController);
+// GET /api/calendar/societes - Liste sociétés disponibles (au lieu de artisans)
+router.get('/calendar/societes', PushNotificationsControllers_1.getPreSocietesController);
+router.get('/calendar/categories', CalendarController_1.getCategoriesController);
+router.post('/calendar/categories', CalendarController_1.createCategoryController);
+/**
+ * ROUTES COLLABORATEURS
+ */
+// GET /api/collaborators/:societeId - Récupérer tous les collaborateurs d'une société
+router.get('/collaborators/:societeId', CollaboratorsController_1.getCollaboratorsBySocieteController);
+// GET /api/collaborators/check/:memberId/:societeId - Vérifier si un membre est collaborateur
+router.get('/collaborators/check/:memberId/:societeId', CollaboratorsController_1.checkCollaboratorController);
+// GET /api/collaborators/member/:memberId - Récupérer les sociétés d'un membre
+router.get('/collaborators/member/:memberId', CollaboratorsController_1.getSocietesByMemberController);
+// POST /api/collaborators - Assigner un collaborateur
+router.post('/collaborators', CollaboratorsController_1.assignCollaboratorController);
+// DELETE /api/collaborators/:memberId/:societeId - Retirer un collaborateur
+router.delete('/collaborators/:memberId/:societeId', CollaboratorsController_1.removeCollaboratorController);
 /**
  * GET /api/push-notifications/presocietes
  * Récupère les présociétés filtrées

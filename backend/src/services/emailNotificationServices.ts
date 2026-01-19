@@ -176,38 +176,7 @@ function construireEmail(
   switch (notificationType) {
     case '1_day_before':
       subject = `📅 Rappel : ${event.title} demain à ${heureFormatee}`;
-    //   message = `
-    //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    //     <div style="background: linear-gradient(135deg, ${categoryColor} 0%, ${categoryColor}dd 100%); padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
-    //       <h1 style="color: white; font-size: 48px; margin: 0;">${categoryIcon}</h1>
-    //       <h2 style="color: white; margin: 10px 0 0 0;">${categoryLabel}</h2>
-    //     </div>
-        
-    //     <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-    //       <p style="font-size: 16px;">Bonjour <strong>${prenom}</strong>,</p>
-          
-    //       <p style="font-size: 15px; margin: 20px 0;">
-    //         Rappel : Vous avez un <strong>${categoryLabel.toLowerCase()}</strong> prévu <strong>demain</strong> :
-    //       </p>
-          
-    //       <div style="background: white; padding: 20px; border-left: 4px solid ${categoryColor}; border-radius: 5px; margin: 20px 0;">
-    //         <p style="font-size: 18px; font-weight: bold; color: ${categoryColor}; margin: 0 0 15px 0;">
-    //           ${event.title}
-    //         </p>
-            
-    //         <p style="margin: 8px 0;"><strong>📅 Date :</strong> ${dateFormatee}</p>
-    //         <p style="margin: 8px 0;"><strong>⏰ Heure :</strong> ${heureFormatee}</p>
-            
-    //         ${event.location ? `<p style="margin: 8px 0;"><strong>📍 Lieu :</strong> ${event.location}</p>` : ''}
-    //         ${event.description ? `<p style="margin: 15px 0 0 0; color: #666;">${event.description}</p>` : ''}
-    //       </div>
-          
-    //       <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
-    //         Email automatique - <strong style="color: #E77131;">Solutravo</strong>
-    //       </p>
-    //     </div>
-    //   </div>
-    // `;
+   
       message = `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">

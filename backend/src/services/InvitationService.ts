@@ -65,11 +65,8 @@ export async function inviteCollaboratorsToEvent(
           // Envoyer l'email d'invitation
           await envoyerEmailInvitation(
             eventId,
-            collaborator.membre_id,
             collaborator.email,
-            collaborator.nom,
             collaborator.prenom,
-            societeId,
             creatorSocieteId
           );
 
@@ -128,11 +125,8 @@ export async function getEventInvitations(
  */
 async function envoyerEmailInvitation(
   eventId: number,
-  memberId: number,
   email: string,
-  nom: string,
   prenom: string,
-  societeId: number,
   creatorSocieteId: number
 ): Promise<void> {
   try {
@@ -153,12 +147,16 @@ async function envoyerEmailInvitation(
       }
 
       const event = eventRows[0];
-      const creatorRows = await conn.query<RowDataPacket[]>(
-        `SELECT nomsociete FROM societes WHERE id = ?`,
+      
+      // Récupérer le prénom du propriétaire de la société (créateur)
+      const [creatorRows] = await conn.query<RowDataPacket[]>(
+        `SELECT m.prenom 
+         FROM societes s
+         JOIN membres m ON s.refmembre = m.ref
+         WHERE s.id = ?`,
         [creatorSocieteId]
       );
-      console.log(memberId, email, societeId, nom, prenom);
-      const creatorName = creatorRows[0]?.[0]?.nomsociete || 'Solutravo';
+      const creatorPrenom = creatorRows[0]?.prenom || 'Solutravo';
 
       // Formater les données pour l'email
       const dateFormatee = formaterDate(event.event_date);
@@ -172,7 +170,7 @@ async function envoyerEmailInvitation(
         heureFormatee,
         event.location || 'Non spécifié',
         event.description || '',
-        creatorName
+        creatorPrenom
       );
 
       // Envoyer l'email via l'API
@@ -246,9 +244,6 @@ function creerEmailInvitation(
           </a>
         </div>
         
-        <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
-          Connectez-vous à votre espace <strong style="color: #E77131;">Solutravo</strong> pour consulter cet événement et confirmer votre participation.
-        </p>
       </div>
     </div>
   `;

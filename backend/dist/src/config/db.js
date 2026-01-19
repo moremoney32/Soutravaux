@@ -1,8 +1,23 @@
 "use strict";
+// import mysql from "mysql2/promise";
+// import dotenv from "dotenv";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// dotenv.config();
+// const pool = mysql.createPool({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   port: Number(process.env.DB_PORT),
+//   connectionLimit: 10,
+// });
+// pool.getConnection()
+//   .then(() => console.log("Connexion MySQL établie avec succès"))
+//   .catch(err => console.error("Erreur connexion MySQL:", err.message));
+// export default pool;
 const promise_1 = __importDefault(require("mysql2/promise"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -13,9 +28,16 @@ const pool = promise_1.default.createPool({
     database: process.env.DB_NAME,
     port: Number(process.env.DB_PORT),
     connectionLimit: 10,
+    // ✅ SOLUTION UNIVERSELLE : Dates comme strings
+    dateStrings: [
+        'DATE',
+        'DATETIME'
+    ],
+    // ❌ NE PAS METTRE timezone (pour être universel)
+    // timezone: '+01:00'  // ← ENLEVER CETTE LIGNE
 });
 pool.getConnection()
-    .then(() => console.log("Connexion MySQL établie avec succès"))
-    .catch(err => console.error("Erreur connexion MySQL:", err.message));
+    .then(() => console.log("✅ Connexion MySQL établie avec succès"))
+    .catch(err => console.error("❌ Erreur connexion MySQL:", err.message));
 exports.default = pool;
 //# sourceMappingURL=db.js.map

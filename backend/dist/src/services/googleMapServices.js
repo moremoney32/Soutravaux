@@ -4,6 +4,7 @@ exports.initBrowser = initBrowser;
 exports.scrapeGoogleMapsWithOffset = scrapeGoogleMapsWithOffset;
 exports.closeBrowser = closeBrowser;
 const playwright_1 = require("playwright");
+const userAgentsRotation_1 = require("./userAgentsRotation");
 async function initBrowser() {
     console.log('Initialisation du navigateur...');
     const browser = await playwright_1.chromium.launch({
@@ -61,7 +62,9 @@ async function scrollToLoadResults(page, targetCount) {
     const feedSelector = 'div[role="feed"]';
     let scrollAttempts = 0;
     let previousCount = 0;
-    const maxScrollAttempts = 30;
+    let stuckCount = 0; // Compte combien de fois on ne bouge pas
+    const maxScrollAttempts = 20; // Limite dure pour éviter les boucles très longues
+    const maxStuckAttempts = 3; // Si pas de progrès plusieurs fois d'affilée, on arrête
     console.log(`Scroll pour charger ${targetCount} résultats...`);
     while (scrollAttempts < maxScrollAttempts) {
         const currentCount = await page.evaluate((selector) => {
@@ -69,19 +72,48 @@ async function scrollToLoadResults(page, targetCount) {
             return feed ? feed.querySelectorAll('div[jsaction]').length : 0;
         }, feedSelector);
         console.log(`Résultats chargés: ${currentCount}/${targetCount}`);
-        if (currentCount >= targetCount || currentCount === previousCount) {
+        if (currentCount >= targetCount) {
             break;
         }
+        // Si pas de progrès, incrémenter compteur "stuck"
+        if (currentCount === previousCount) {
+            stuckCount++;
+            // S'il n'y a plus de progrès après plusieurs tentatives, arrêter rapidement
+            if (stuckCount >= maxStuckAttempts) {
+                console.log(`⚠️ Plus de résultats à charger (stagnation après ${maxStuckAttempts} tentatives, total: ${currentCount} résultats)`);
+                break;
+            }
+        }
+        else {
+            stuckCount = 0; // Reset si on a du progrès
+        }
+        // SCROLL avec délais maîtrisés
         await page.evaluate((selector) => {
             const feed = document.querySelector(selector);
-            if (feed)
-                feed.scrollTo(0, feed.scrollHeight);
+            if (feed) {
+                // Scroller jusqu'en bas
+                feed.scrollTop = feed.scrollHeight;
+            }
         }, feedSelector);
-        await page.waitForTimeout(2000);
+        const baseDelay = 1200; // 1.2s minimum
+        const scrollBonus = 400; // +0.4s par tentative
+        const delayMs = Math.min(baseDelay + scrollAttempts * scrollBonus, 3000); // max 3s
+        console.log(`  ⏳ Attente ${delayMs}ms avant prochain scroll...`);
+        await page.waitForTimeout(delayMs);
+        // 🎯 Attendre explicitement que le feed change ou que les animations se terminent
+        try {
+            await page.waitForFunction(() => {
+                const feed = document.querySelector('div[role="feed"]');
+                return feed && feed.querySelectorAll('div[jsaction]').length > 0;
+            }, { timeout: 2000 });
+        }
+        catch (_e) {
+            // Si timeout, continuer quand même
+        }
         previousCount = currentCount;
         scrollAttempts++;
     }
-    console.log(`Scroll terminé: ${previousCount} résultats chargés`);
+    console.log(`Scroll terminé: ${previousCount} résultats chargés après ${scrollAttempts} tentatives`);
 }
 async function extractGoogleMapsDataWithOffset(page, offset, limit) {
     console.log(`Extraction ${offset}-${offset + limit}...`);
@@ -145,50 +177,66 @@ async function extractGoogleMapsDataWithOffset(page, offset, limit) {
 async function scrapeGoogleMapsWithOffset(query, offset, limit, existingBrowser, existingPage) {
     let browser = existingBrowser;
     let page = existingPage;
-    if (!browser || !page) {
+    // 1) S'assurer qu'on a un browser
+    if (!browser) {
         browser = await initBrowser();
+    }
+    // 2) Créer une page si nécessaire
+    if (!page) {
         const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
+            userAgent: (0, userAgentsRotation_1.getRandomUserAgent)(),
             locale: 'fr-FR',
             viewport: { width: 1920, height: 1080 }
         });
         page = await context.newPage();
-        // Gérer query.ville qui peut être string | string[] | undefined
-        let villeValue = '';
-        if (Array.isArray(query.ville)) {
-            villeValue = query.ville[0] || '';
-        }
-        else if (typeof query.ville === 'string') {
-            villeValue = query.ville;
-        }
-        let searchQuery = query.activite
-            ? `${query.activite} ${villeValue}`
-            : villeValue;
-        // Gérer query.departement qui peut être string[]
-        if (query.departement && query.departement.length > 0) {
-            searchQuery += ` ${query.departement[0]}`;
-        }
-        const url = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
-        console.log('Navigation vers Google Maps:', url);
-        const response = await page.goto(url, {
-            waitUntil: 'domcontentloaded',
-            timeout: 30000
-        });
-        const status = response?.status();
-        console.log(`📡 Status HTTP: ${status}`);
-        if (status === 403 || status === 429) {
-            throw new Error(`Bloqué par Google (Status ${status})`);
-        }
-        //ACCEPTER LES COOKIES (VERSION RAPIDE)
-        await acceptGoogleCookiesFast(page);
-        await page.waitForSelector('div[role="feed"]', { timeout: 15000 });
-        console.log('Résultats chargés');
-        const isBlocked = await checkIfBlocked(page);
-        if (isBlocked) {
-            throw new Error('IP bloquée par Google');
-        }
+    }
+    // 3) Construire la requête de recherche (ville + activité)
+    // Gérer query.ville qui peut être string | string[] | undefined
+    let villeValue = '';
+    if (Array.isArray(query.ville)) {
+        villeValue = query.ville[0] || '';
+    }
+    else if (typeof query.ville === 'string') {
+        villeValue = query.ville;
+    }
+    let searchQuery = query.activite
+        ? `${query.activite} ${villeValue}`
+        : villeValue;
+    // Gérer query.departement qui peut être string[]
+    if (query.departement && query.departement.length > 0) {
+        searchQuery += ` ${query.departement[0]}`;
+    }
+    const url = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}`;
+    console.log('Navigation vers Google Maps:', url);
+    const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000
+    });
+    const status = response?.status();
+    console.log(`📡 Status HTTP: ${status}`);
+    if (status === 403 || status === 429) {
+        throw new Error(`Bloqué par Google (Status ${status})`);
+    }
+    //ACCEPTER LES COOKIES (VERSION RAPIDE)
+    await acceptGoogleCookiesFast(page);
+    await page.waitForSelector('div[role="feed"]', { timeout: 15000 });
+    console.log('Résultats chargés');
+    const isBlocked = await checkIfBlocked(page);
+    if (isBlocked) {
+        throw new Error('IP bloquée par Google');
     }
     await scrollToLoadResults(page, offset + limit);
+    // 🔍 Vérifier combien on a réellement chargé
+    const loadedCount = await page.evaluate(() => {
+        const feed = document.querySelector('div[role="feed"]');
+        return feed ? feed.querySelectorAll('div[jsaction]').length : 0;
+    });
+    // Si on n'a pas assez de résultats, éventuelle 2ème vague de scroll (mais limitée)
+    if (loadedCount > 0 && loadedCount < offset + limit && loadedCount >= 5) {
+        console.log(`📌 2ème vague de scroll : ${loadedCount} < ${offset + limit}, relancer scroll agressif...`);
+        await page.waitForTimeout(1500); // Pause courte
+        await scrollToLoadResults(page, offset + Math.floor(limit * 1.2)); // Demander un peu plus, sans excès
+    }
     const results = await extractGoogleMapsDataWithOffset(page, offset, limit);
     if (results.length === 0) {
         console.log('Aucun résultat Google Maps pour ce batch');

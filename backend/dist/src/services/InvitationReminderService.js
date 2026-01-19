@@ -1,40 +1,26 @@
+"use strict";
 /**
  * InvitationReminderService.ts
  * Gère les rappels pour les invitations d'événements
  */
-
-import pool from '../config/db';
-import { RowDataPacket } from 'mysql2';
-import { envoyerEmailNotificationInvitation } from './emailNotificationServices';
-
-interface EventInvitation extends RowDataPacket {
-  id: number;
-  event_id: number;
-  email: string;
-  status: 'pending' | 'sent' | 'failed';
-  created_at: string;
-  reminded_at: string | null;
-  event_title: string;
-  event_date: string;
-  start_time: string;
-  end_time: string;
-  location: string | null;
-  description: string | null;
-}
-
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendEventReminders = sendEventReminders;
+exports.cleanupOldInvitations = cleanupOldInvitations;
+const db_1 = __importDefault(require("../config/db"));
+const emailNotificationServices_1 = require("./emailNotificationServices");
 /**
  * ✅ Envoyer des rappels pour les événements à venir
  * Rappels: 24h avant, 1h avant
  */
-export async function sendEventReminders(): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    console.log('📬 [InvitationReminderService] Démarrage vérification des rappels...');
-
-    // Récupérer les événements à rappeler
-    const [invitations] = await conn.query<EventInvitation[]>(
-      `SELECT 
+async function sendEventReminders() {
+    const conn = await db_1.default.getConnection();
+    try {
+        console.log('📬 [InvitationReminderService] Démarrage vérification des rappels...');
+        // Récupérer les événements à rappeler
+        const [invitations] = await conn.query(`SELECT 
         ei.id,
         ei.event_id,
         ei.email,
@@ -52,135 +38,74 @@ export async function sendEventReminders(): Promise<void> {
       WHERE ei.status = 'sent'
         AND ei.reminded_at IS NULL
         AND ce.event_date >= CURDATE()
-        AND ce.event_date <= DATE_ADD(CURDATE(), INTERVAL 2 DAY)`
-    );
-
-    console.log(`📬 [InvitationReminderService] ${invitations.length} invitations à vérifier`);
-
-    for (const invitation of invitations) {
-      try {
-        // ✅ Combiner date + heure de début pour un calcul précis
-        const eventDateTime = new Date(`${invitation.event_date}T${invitation.start_time}`);
-        const now = new Date();
-        const totalMinutesUntilEvent = (eventDateTime.getTime() - now.getTime()) / (1000 * 60);
-        const hoursUntilEvent = totalMinutesUntilEvent / 60;
-
-        console.log(`📧 [InvitationReminderService] Vérification rappel pour: ${invitation.email}`);
-        console.log(`   Temps jusqu'à l'événement: ${hoursUntilEvent.toFixed(2)}h (${Math.round(totalMinutesUntilEvent)}min)`);
-
-        // ✅ Rappel 24h avant (entre 23h50 et 24h10)
-        if (hoursUntilEvent <= 24.17 && hoursUntilEvent > 23.83) {
-          console.log(`   ⏰ Rappel 24h avant l'événement`);
-          await sendReminder(
-            invitation.email,
-            invitation.event_title,
-            invitation.event_date,
-            invitation.start_time,
-            invitation.location || '',
-            invitation.description || '',
-            'demain'
-          );
-          await updateReminderSent(invitation.id, conn);
+        AND ce.event_date <= DATE_ADD(CURDATE(), INTERVAL 2 DAY)`);
+        console.log(`📬 [InvitationReminderService] ${invitations.length} invitations à vérifier`);
+        for (const invitation of invitations) {
+            try {
+                // ✅ Combiner date + heure de début pour un calcul précis
+                const eventDateTime = new Date(`${invitation.event_date}T${invitation.start_time}`);
+                const now = new Date();
+                const totalMinutesUntilEvent = (eventDateTime.getTime() - now.getTime()) / (1000 * 60);
+                const hoursUntilEvent = totalMinutesUntilEvent / 60;
+                console.log(`📧 [InvitationReminderService] Vérification rappel pour: ${invitation.email}`);
+                console.log(`   Temps jusqu'à l'événement: ${hoursUntilEvent.toFixed(2)}h (${Math.round(totalMinutesUntilEvent)}min)`);
+                // ✅ Rappel 24h avant (entre 23h50 et 24h10)
+                if (hoursUntilEvent <= 24.17 && hoursUntilEvent > 23.83) {
+                    console.log(`   ⏰ Rappel 24h avant l'événement`);
+                    await sendReminder(invitation.email, invitation.event_title, invitation.event_date, invitation.start_time, invitation.location || '', invitation.description || '', 'demain');
+                    await updateReminderSent(invitation.id, conn);
+                }
+                // ✅ Rappel 1h avant (entre 50min et 70min)
+                else if (hoursUntilEvent <= 1.17 && hoursUntilEvent > 0.83) {
+                    console.log(`   ⏰ Rappel 1h avant l'événement`);
+                    await sendReminder(invitation.email, invitation.event_title, invitation.event_date, invitation.start_time, invitation.location || '', invitation.description || '', '1 heure');
+                    await updateReminderSent(invitation.id, conn);
+                }
+                // ✅ Rappel maintenant (moins de 5 minutes)
+                else if (totalMinutesUntilEvent <= 5 && totalMinutesUntilEvent > -5) {
+                    console.log(`   ⏰ Rappel MAINTENANT - L'événement commence!`);
+                    await sendReminder(invitation.email, invitation.event_title, invitation.event_date, invitation.start_time, invitation.location || '', invitation.description || '', 'maintenant');
+                    await updateReminderSent(invitation.id, conn);
+                }
+            }
+            catch (error) {
+                console.error(`❌ [InvitationReminderService] Erreur pour ${invitation.email}:`, error.message);
+            }
         }
-        // ✅ Rappel 1h avant (entre 50min et 70min)
-        else if (hoursUntilEvent <= 1.17 && hoursUntilEvent > 0.83) {
-          console.log(`   ⏰ Rappel 1h avant l'événement`);
-          await sendReminder(
-            invitation.email,
-            invitation.event_title,
-            invitation.event_date,
-            invitation.start_time,
-            invitation.location || '',
-            invitation.description || '',
-            '1 heure'
-          );
-          await updateReminderSent(invitation.id, conn);
-        }
-        // ✅ Rappel maintenant (moins de 5 minutes)
-        else if (totalMinutesUntilEvent <= 5 && totalMinutesUntilEvent > -5) {
-          console.log(`   ⏰ Rappel MAINTENANT - L'événement commence!`);
-          await sendReminder(
-            invitation.email,
-            invitation.event_title,
-            invitation.event_date,
-            invitation.start_time,
-            invitation.location || '',
-            invitation.description || '',
-            'maintenant'
-          );
-          await updateReminderSent(invitation.id, conn);
-        }
-
-      } catch (error: any) {
-        console.error(
-          `❌ [InvitationReminderService] Erreur pour ${invitation.email}:`,
-          error.message
-        );
-      }
+        console.log('✅ [InvitationReminderService] Vérification des rappels terminée');
     }
-
-    console.log('✅ [InvitationReminderService] Vérification des rappels terminée');
-
-  } catch (error: any) {
-    console.error('[InvitationReminderService] Erreur générale:', error.message);
-  } finally {
-    conn.release();
-  }
+    catch (error) {
+        console.error('[InvitationReminderService] Erreur générale:', error.message);
+    }
+    finally {
+        conn.release();
+    }
 }
-
 /**
  * ✅ Envoyer un email de rappel
  */
-async function sendReminder(
-  email: string,
-  eventTitle: string,
-  eventDate: string,
-  startTime: string,
-  location: string,
-  description: string,
-  timing: string
-): Promise<void> {
-  try {
-    const { subject, htmlMessage } = construireEmailInvitation(
-      eventTitle,
-      eventDate,
-      startTime,
-      location,
-      description,
-      timing
-    );
-
-    await envoyerEmailNotificationInvitation(email, subject, htmlMessage);
-    console.log(`✅ [InvitationReminderService] Rappel envoyé à: ${email}`);
-
-  } catch (error: any) {
-    console.error(
-      `❌ [InvitationReminderService] Erreur envoi rappel à ${email}:`,
-      error.message
-    );
-    throw error;
-  }
+async function sendReminder(email, eventTitle, eventDate, startTime, location, description, timing) {
+    try {
+        const { subject, htmlMessage } = construireEmailInvitation(eventTitle, eventDate, startTime, location, description, timing);
+        await (0, emailNotificationServices_1.envoyerEmailNotificationInvitation)(email, subject, htmlMessage);
+        console.log(`✅ [InvitationReminderService] Rappel envoyé à: ${email}`);
+    }
+    catch (error) {
+        console.error(`❌ [InvitationReminderService] Erreur envoi rappel à ${email}:`, error.message);
+        throw error;
+    }
 }
-
 /**
  * 🎨 Construire le design d'email pour les rappels d'invitation
  * Utilise le même style que les notifications classiques
  */
-function construireEmailInvitation(
-  eventTitle: string,
-  eventDate: string,
-  startTime: string,
-  location: string,
-  description: string,
-  timing: string
-): { subject: string; htmlMessage: string } {
-  const heureFormatee = startTime.substring(0, 5); // "10:00"
-  let subject = '';
-  let htmlMessage = '';
-
-  if (timing === 'demain') {
-    subject = `📅 Rappel : ${eventTitle} demain à ${heureFormatee}`;
-    htmlMessage = `
+function construireEmailInvitation(eventTitle, eventDate, startTime, location, description, timing) {
+    const heureFormatee = startTime.substring(0, 5); // "10:00"
+    let subject = '';
+    let htmlMessage = '';
+    if (timing === 'demain') {
+        subject = `📅 Rappel : ${eventTitle} demain à ${heureFormatee}`;
+        htmlMessage = `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #E77131 0%, #F59E6C 100%); padding: 20px; border-radius: 10px 10px 0 0;">
           <h2 style="color: white; margin: 0;">📅 Rappel : Événement demain</h2>
@@ -226,9 +151,10 @@ function construireEmailInvitation(
         </div>
       </div>
     `;
-  } else if (timing === '1 heure') {
-    subject = `⏰ Dans 1 heure : ${eventTitle}`;
-    htmlMessage = `
+    }
+    else if (timing === '1 heure') {
+        subject = `⏰ Dans 1 heure : ${eventTitle}`;
+        htmlMessage = `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%); padding: 20px; border-radius: 10px 10px 0 0;">
           <h2 style="color: white; margin: 0;">⏰ Votre événement commence bientôt</h2>
@@ -271,9 +197,10 @@ function construireEmailInvitation(
         </div>
       </div>
     `;
-  } else if (timing === 'maintenant') {
-    subject = `🔔 C'est maintenant : ${eventTitle}`;
-    htmlMessage = `
+    }
+    else if (timing === 'maintenant') {
+        subject = `🔔 C'est maintenant : ${eventTitle}`;
+        htmlMessage = `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); padding: 20px; border-radius: 10px 10px 0 0;">
           <h2 style="color: white; margin: 0;">🔔 C'est l'heure !</h2>
@@ -314,52 +241,44 @@ function construireEmailInvitation(
         </div>
       </div>
     `;
-  }
-
-  return { subject, htmlMessage };
+    }
+    return { subject, htmlMessage };
 }
-
 /**
  * ✅ Mettre à jour que le rappel a été envoyé
  */
-async function updateReminderSent(invitationId: number, conn: any): Promise<void> {
-  try {
-    await conn.query(
-      `UPDATE event_invitations 
+async function updateReminderSent(invitationId, conn) {
+    try {
+        await conn.query(`UPDATE event_invitations 
        SET reminded_at = NOW()
-       WHERE id = ?`,
-      [invitationId]
-    );
-    console.log(`✅ [InvitationReminderService] Rappel enregistré pour invitation ${invitationId}`);
-  } catch (error: any) {
-    console.error(`❌ Erreur update reminder:`, error.message);
-    throw error;
-  }
+       WHERE id = ?`, [invitationId]);
+        console.log(`✅ [InvitationReminderService] Rappel enregistré pour invitation ${invitationId}`);
+    }
+    catch (error) {
+        console.error(`❌ Erreur update reminder:`, error.message);
+        throw error;
+    }
 }
-
 /**
  * ✅ Nettoyer les anciennes invitations (optionnel)
  * Supprimer les invitations d'événements passés
  */
-export async function cleanupOldInvitations(): Promise<void> {
-  const conn = await pool.getConnection();
-
-  try {
-    console.log('🧹 [InvitationReminderService] Nettoyage des invitations anciennes...');
-
-    const [result] = await conn.query(
-      `DELETE FROM event_invitations 
+async function cleanupOldInvitations() {
+    const conn = await db_1.default.getConnection();
+    try {
+        console.log('🧹 [InvitationReminderService] Nettoyage des invitations anciennes...');
+        const [result] = await conn.query(`DELETE FROM event_invitations 
        WHERE event_id IN (
          SELECT id FROM calendar_events 
          WHERE event_date < DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-       )`
-    );
-
-    console.log(`✅ [InvitationReminderService] ${(result as any).affectedRows} anciennes invitations supprimées`);
-
-  } catch (error: any) {
-    console.error('[InvitationReminderService] Erreur cleanup:', error.message);
-  } finally {
-    conn.release();
-  }
+       )`);
+        console.log(`✅ [InvitationReminderService] ${result.affectedRows} anciennes invitations supprimées`);
+    }
+    catch (error) {
+        console.error('[InvitationReminderService] Erreur cleanup:', error.message);
+    }
+    finally {
+        conn.release();
+    }
 }
+//# sourceMappingURL=InvitationReminderService.js.map
