@@ -21,9 +21,9 @@ export interface CollaboratorWithSociete extends Collaborator {
 }
 
 /**
- * Récupérer tous les collaborateurs d'une société
+ * Récupérer tous les collaborateurs d'une société (exclut le propriétaire)
  * @param societeId - ID de la société
- * @returns Liste des collaborateurs avec leurs informations
+ * @returns Liste des collaborateurs avec leurs informations (sans le propriétaire)
  */
 export async function getCollaboratorsBySociete(
   societeId: number
@@ -46,7 +46,9 @@ export async function getCollaboratorsBySociete(
       FROM membre_poste_assignments mpa
       JOIN membres m ON mpa.membre_id = m.id
       JOIN societes s ON mpa.societe_id = s.id
+      JOIN membres owner ON s.refmembre = owner.ref
       WHERE mpa.societe_id = ?
+        AND mpa.membre_id != owner.id
         AND (mpa.expires_at IS NULL OR mpa.expires_at > NOW())
         AND m.statut = 'actif'
       ORDER BY m.nom, m.prenom`,
@@ -60,10 +62,10 @@ export async function getCollaboratorsBySociete(
 }
 
 /**
- * Récupérer les collaborateurs distincts (par email) d'une société
+ * Récupérer les collaborateurs distincts (par email) d'une société (exclut le propriétaire)
  * Utile pour éviter les doublons si un membre a plusieurs postes
  * @param societeId - ID de la société
- * @returns Liste des collaborateurs uniques
+ * @returns Liste des collaborateurs uniques (sans le propriétaire)
  */
 export async function getUniqueCollaboratorsBySociete(
   societeId: number
@@ -83,7 +85,10 @@ export async function getUniqueCollaboratorsBySociete(
         MIN(mpa.expires_at) as expires_at
       FROM membre_poste_assignments mpa
       JOIN membres m ON mpa.membre_id = m.id
+      JOIN societes s ON mpa.societe_id = s.id
+      JOIN membres owner ON s.refmembre = owner.ref
       WHERE mpa.societe_id = ?
+        AND mpa.membre_id != owner.id
         AND (mpa.expires_at IS NULL OR mpa.expires_at > NOW())
         AND m.statut = 'actif'
       GROUP BY m.id
