@@ -263,11 +263,7 @@ function construireEmailInvitation(
             ` : ''}
           </div>
           
-          <div style="background: #FFE0B2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-            <p style="margin: 0; font-size: 14px; color: #E65100;">
-              💡 <strong>Conseil :</strong> Préparez-vous et vérifiez votre équipement si nécessaire.
-            </p>
-          </div>
+          
           
           <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
             Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.
@@ -306,9 +302,9 @@ function construireEmailInvitation(
             ` : ''}
           </div>
           
-          <div style="background: #C8E6C9; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
-            <p style="margin: 0; font-size: 16px; color: #2E7D32;">
-              ✅ <strong>Bonne chance !</strong>
+          <div style="background: #E3F2FD; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 14px; color: #1565C0;">
+              💡 <strong>Conseil :</strong> Préparez-vous pour que tout se passe au mieux.
             </p>
           </div>
           

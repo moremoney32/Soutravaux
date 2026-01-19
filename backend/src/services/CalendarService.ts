@@ -715,9 +715,9 @@ export async function createEvent(data: CreateEventInput): Promise<number> {
                     ` : ''}
                   </div>
                   
-                  <div style="background: #FFE0B2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                    <p style="margin: 0; font-size: 14px; color: #E65100;">
-                      ✅ <strong>Bonne chance !</strong>
+                  <div style="background: #E3F2FD; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #1565C0;">
+                      💡 <strong>Conseil :</strong> Notez cet événement dans votre agenda pour ne pas l'oublier.
                     </p>
                   </div>
                   

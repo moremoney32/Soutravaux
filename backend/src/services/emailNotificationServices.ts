@@ -339,11 +339,7 @@ function construireEmail(
               ` : ''}
             </div>
             
-            <div style="background: #C8E6C9; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
-              <p style="margin: 0; font-size: 16px; color: #2E7D32;">
-                ✅ <strong>Bonne chance !</strong>
-              </p>
-            </div>
+            
             
             <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
               Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.

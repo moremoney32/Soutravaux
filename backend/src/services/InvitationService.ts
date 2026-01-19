@@ -208,10 +208,10 @@ function creerEmailInvitation(
       </div>
       
       <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-        <p style="font-size: 16px; margin-bottom: 20px;">Bonjour <strong>${prenom}</strong>,</p>
+        <p style="font-size: 16px; margin-bottom: 20px;">Bonjour,</p>
         
         <p style="font-size: 15px; margin-bottom: 25px;">
-          <strong>${creatorName}</strong> vous invite à participer à l'événement suivant:
+          Vous avez été ajouté à l'événement suivant par <strong>${creatorName}</strong>:
         </p>
         
         <div style="background: white; padding: 20px; border-left: 4px solid #E77131; border-radius: 5px; margin-bottom: 25px;">
@@ -247,13 +247,14 @@ function creerEmailInvitation(
         </div>
         
         <p style="font-size: 14px; color: #666; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
-          Cet email a été envoyé automatiquement par <strong style="color: #E77131;">Solutravo</strong>.<br/>
-          Connectez-vous à votre espace pour accepter ou décliner l'invitation.
+          Connectez-vous à votre espace <strong style="color: #E77131;">Solutravo</strong> pour consulter cet événement et confirmer votre participation.
         </p>
       </div>
     </div>
   `;
+  console.log(prenom);
 }
+
 
 /**
  * Formater une date au format français
