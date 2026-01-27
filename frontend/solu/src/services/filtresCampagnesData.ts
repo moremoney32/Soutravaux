@@ -3,7 +3,7 @@
 import type { CampagneDetailResponse, CampagneFiltersAPI, CampagneRecipient, CampagnesResponse } from "../types/campagne.types";
 
 
-const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
+const API_BASE_URL = 'https://integration-api.solutravo-app.fr/api';
 
 export const getAllCampagnes = async (
   userId: number,

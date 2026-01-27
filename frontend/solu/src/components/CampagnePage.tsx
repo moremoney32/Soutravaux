@@ -112,7 +112,7 @@ const CampagnePage = () => {
       console.log('Payload pour l\'API:', payloadAPI);
       setIsLoading(true);
       
-      fetch('https://backendstaging.solutravo-compta.fr/api/campaigns', {
+      fetch('https://integration-api.solutravo-app.fr/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

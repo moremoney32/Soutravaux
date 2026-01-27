@@ -92,7 +92,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
 
   //   try {
   //     const response = await fetch(
-  //       `https://backendstaging.solutravo-compta.fr/api/campaigns/${campagneId}`,
+  //       `https://integration-api.solutravo-app.fr/api/campaigns/${campagneId}`,
   //       {
   //         method: 'DELETE',
   //         headers: {
@@ -136,7 +136,7 @@ const CampagnesListFiltres = ({ onCreateCampagne }: CampagnesListFiltresProps) =
   
     try {
       const response = await fetch(
-        `https://backendstaging.solutravo-compta.fr/api/campaigns/${campagneId}`,
+        `https://integration-api.solutravo-app.fr/api/campaigns/${campagneId}`,
         {
           method: 'DELETE',
           headers: {

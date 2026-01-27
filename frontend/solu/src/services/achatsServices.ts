@@ -4,7 +4,7 @@ import type { CreateCheckoutSessionPayload, CreateCheckoutSessionResponse, SMSPa
 
 
 
-const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
+const API_BASE_URL = 'https://integration-api.solutravo-app.fr/api';
 
 /**
  * Récupère la liste des packs SMS actifs

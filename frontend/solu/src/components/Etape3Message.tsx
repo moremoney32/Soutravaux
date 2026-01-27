@@ -8,7 +8,7 @@
 // import ModalInsererFichier from './ModalInsererFichier';
 
 
-// const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
+// const API_BASE_URL = 'https://integration-api.solutravo-app.fr/api';
 
 // export interface MessageTemplate {
 //   id: string; 
@@ -464,7 +464,7 @@ import type { CampagneData } from '../types/campagne.types';
 import ModalInsererLien from './ModalInsererLien';
 import ModalInsererFichier from './ModalInsererFichier';
 
-const API_BASE_URL = 'https://backendstaging.solutravo-compta.fr/api';
+const API_BASE_URL = 'https://integration-api.solutravo-app.fr/api';
 
 export interface MessageTemplate {
   id: string; 

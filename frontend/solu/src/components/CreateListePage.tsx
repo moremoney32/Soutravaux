@@ -73,7 +73,7 @@ const CreateListePage = () => {
 
             console.log('Envoi à l\'API:', payload);
 
-            const response = await fetch('https://backendstaging.solutravo-compta.fr/api/add/lists', {
+            const response = await fetch('https://integration-api.solutravo-app.fr/api/add/lists', {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',

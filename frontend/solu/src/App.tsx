@@ -13,6 +13,7 @@ import CampagneDetails from "./components/CampagneDetails";
 import AchatSMSPage from "./components/AchatSMSPage";
 import ScrapingPage from "./components/ScrapingPage";
 import GoogleCalendar from "./components/GoogleCalendar";
+import { PriceRequest } from "./components/PriceRequest";
 
 function App() {
   
@@ -34,6 +35,8 @@ function App() {
             <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} /> 
              <Route path="/scraping" element={<ScrapingPage/>} />
                 <Route path="/calendar/:societeId" element={<GoogleCalendar/>} />
+                 <Route path="/priceRequest" element={<PriceRequest/>} />
+                 
 
       </Routes>
     </BrowserRouter>
