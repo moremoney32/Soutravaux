@@ -3,7 +3,7 @@ import  solutravo  from "../assets/images/solutravo.png"
 
 import { CartItem } from './CartItem';
 import { ShoppingCart, X} from 'lucide-react';
-import '../styles/PriceRequest.css';
+import '../styles/priceRequest.css';
 import { ProductCard } from './ProductCard';
 import { ProductDetailModal } from './ProductDetailsPrice';
 import { SupplierSelect } from './SupplierSelect';
