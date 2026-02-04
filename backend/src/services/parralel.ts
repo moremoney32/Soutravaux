@@ -13,7 +13,7 @@ export async function parallelLimit<T, R>(
 
   async function executeNext(): Promise<void> {
     const index = currentIndex++;
-    if (index >= items.length) return;
+    if (index >= items.length) return;//fffffff
 
     try {
       results[index] = await asyncFn(items[index], index);
