@@ -1,14 +1,13 @@
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
 import type { PriceRequestItem } from '../data/mockDataPrice';
 
 interface CartItemProps {
   item: PriceRequestItem;
   totalItems: number;
+  isExpanded: boolean;
+  onToggle: () => void;
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onUpdateNote: (productId: string, note: string) => void;
-  onUpdateGeneralNote: (productId: string, note: string) => void;
-  onUpdateUrgency: (productId: string, urgency: 'normal' | 'urgent' | 'very_urgent') => void;
   onUpdateReference: (productId: string, reference: string) => void;
   onRemove: (productId: string) => void;
 }
@@ -16,15 +15,13 @@ interface CartItemProps {
 export const CartItem = ({ 
   item, 
   totalItems, 
+  isExpanded,
+  onToggle,
   onUpdateQuantity, 
   onUpdateNote, 
-  onUpdateGeneralNote,
-  onUpdateUrgency,
   onUpdateReference,
   onRemove 
 }: CartItemProps) => {
-  const [isExpanded, setIsExpanded] = useState(totalItems === 1);
-
   return (
     <div className="price-request-cart-item">
       <div className="price-request-cart-item-header">
@@ -35,7 +32,7 @@ export const CartItem = ({
           {totalItems > 1 && (
             <button
               className="price-request-toggle-button"
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={onToggle}
               title={isExpanded ? 'Replier' : 'Dérouler'}
             >
               {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -85,39 +82,6 @@ export const CartItem = ({
             />
           </div>
 
-          <div>
-            <label className="price-request-note-label">Détails généraux pour ce produit:</label>
-            <textarea
-              value={item.generalNote || ''}
-              onChange={(e) => onUpdateGeneralNote(item.product.id, e.target.value)}
-              className="price-request-note-input"
-              placeholder="Détails spécifiques pour ce produit..."
-            />
-          </div>
-
-          <div>
-            <label className="price-request-note-label">Urgence pour ce produit:</label>
-            <div className="price-request-item-urgency-options">
-              <div
-                className={`price-request-item-urgency-option ${item.urgency === 'normal' ? 'active' : ''}`}
-                onClick={() => onUpdateUrgency(item.product.id, 'normal')}
-              >
-                Normal
-              </div>
-              <div
-                className={`price-request-item-urgency-option ${item.urgency === 'urgent' ? 'active' : ''}`}
-                onClick={() => onUpdateUrgency(item.product.id, 'urgent')}
-              >
-                Urgent
-              </div>
-              <div
-                className={`price-request-item-urgency-option ${item.urgency === 'very_urgent' ? 'active' : ''}`}
-                onClick={() => onUpdateUrgency(item.product.id, 'very_urgent')}
-              >
-                Très urgent
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>

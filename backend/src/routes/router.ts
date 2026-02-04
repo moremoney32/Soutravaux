@@ -29,6 +29,7 @@ import sseRoutes from './sse.routes';
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
 import { createCategoryController, createEventController, deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
 import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
+import { createDemandeController, downloadPDFController, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsController } from "../controllers/DemandesPrixControllers";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -249,6 +250,47 @@ router.post('/collaborators', assignCollaboratorController);
 
 // DELETE /api/collaborators/:memberId/:societeId - Retirer un collaborateur
 router.delete('/collaborators/:memberId/:societeId', removeCollaboratorController);
+
+/**
+ * GET /api/demandes-prix
+ * Récupérer toutes les demandes d'une société
+ * Query params: societe_id, statut?, type_demande?, date_debut?, date_fin?, limit?, offset?
+ */
+router.get('/demandes-prix', getDemandesController);
+
+/**
+ * GET /api/demandes-prix/fournisseurs
+ * Récupérer les fournisseurs accessibles
+ * Query params: societe_id
+ */
+router.get('/demandes-prix/fournisseurs', getFournisseursController);
+
+/**
+ * GET /api/demandes-prix/produits
+ * Récupérer les produits accessibles
+ * Query params: societe_id, library_id?, category_id?
+ */
+router.get('/demandes-prix/produits', getProduitsController);
+
+/**
+ * GET /api/demandes-prix/:id
+ * Récupérer une demande complète par ID
+ * Query params: societe_id
+ */
+router.get('/demandes-prix/:id', getDemandeByIdController);
+
+/**
+ * GET /api/demandes-prix/:id/pdf
+ * Télécharger le PDF d'une demande
+ * Query params: societe_id
+ */
+router.get('/demandes-prix/:id/pdf', downloadPDFController);
+
+/**
+ * POST /api/demandes-prix
+ * Créer une nouvelle demande de prix
+ */
+router.post('/demandes-prix', createDemandeController);
 
 
 

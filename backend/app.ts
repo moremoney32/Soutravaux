@@ -61,15 +61,33 @@ const app: Application = express();
 
 // Middlewares
 //  app.use(cors(corsOptions));
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: "*",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: false
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS policy: Origin not allowed'));
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 app.use(express.json());
 app.use(cookieParser());
 //app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
+
+// Exposer les PDFs générés pour téléchargement (ex: /pdfs/nom.pdf)
+app.use('/pdfs', express.static(path.join(process.cwd(), 'storage', 'pdfs')));
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({

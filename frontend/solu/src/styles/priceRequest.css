@@ -388,14 +388,33 @@
 }
 
 .price-request-form-group {
-  margin-bottom: 28px;
+  margin-bottom: 18px;
+}
+
+/* Right fixed panel spacing tweaks */
+.price-request-right-fixed {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.price-request-email-input .btn-primary {
+  padding: 6px 10px;
+  font-size: 12px;
+  height: 34px;
+}
+
+.price-request-form-textarea {
+  min-height: 80px;
 }
 
 .price-request-form-label {
   font-size: 11px;
   color: #505050;
   font-weight: 400;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
+  margin-top: 10px;
   display: block;
 }
 
@@ -452,31 +471,35 @@
 
 .price-request-urgency-options {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .price-request-urgency-option {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #E0E0E0;
-  border-radius: 8px;
-  background-color: #FFFFFF;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border: 1px solid #E0E0E0;
+  border-radius: 6px;
+  background-color: transparent;
   cursor: pointer;
   text-align: center;
-  font-size: 11px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 500;
   color: #505050;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.18s ease-in-out;
+}
+.price-request-urgency-option input{
+  accent-color: #E77131 !important;
 }
 
 .price-request-urgency-option:hover {
   border-color: #E77131;
+  background-color: rgba(231,113,49,0.04);
 }
 
 .price-request-urgency-option.active {
   border-color: #E77131;
-  background-color: #E77131;
-  color: #FFFFFF;
+  color: #E77131;
+  background-color: rgba(231,113,49,0.06);
 }
 
 .price-request-item-urgency-options {
@@ -800,7 +823,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #E77131;
+  accent-color: #E77131 !important;
 }
 
 .price-request-supplier-selection {
@@ -1463,4 +1486,306 @@
 
 .supplier-select-options::-webkit-scrollbar-thumb:hover {
   background: #B0B0B0;
+}
+
+
+/* ============================================
+   MODAL DÉTAILS - VERSION AMÉLIORÉE
+   ============================================ */
+
+.price-request-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.price-request-modal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.price-request-modal-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.price-request-modal-value {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Produits - Style tableau amélioré */
+.price-request-modal-products {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.price-request-modal-product-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #E77131;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.price-request-modal-product-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  grid-column: 1 / -1;
+}
+
+.price-request-modal-product-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.price-request-modal-product-info {
+  flex: 1;
+}
+
+.price-request-modal-product-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.price-request-modal-product-reference {
+  font-size: 12px;
+  color: #666;
+  background: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.price-request-modal-product-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+  grid-column: 1 / -1;
+}
+
+.price-request-modal-product-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.price-request-modal-product-detail-label {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.price-request-modal-product-detail-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.price-request-modal-product-note {
+  font-size: 12px;
+  color: #666;
+  background: white;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  border-left: 2px solid #E77131;
+  grid-column: 1 / -1;
+}
+
+/* Fournisseurs - Style cartes */
+.price-request-modal-suppliers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.price-request-modal-supplier-item {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.price-request-modal-supplier-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.price-request-modal-supplier-email {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.price-request-modal-supplier-email::before {
+  content: "✉";
+  color: #E77131;
+}
+
+/* Séparateur entre sections */
+.price-request-modal-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 12px 0;
+}
+
+/* Badge statut amélioré */
+.price-request-modal-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.price-request-modal-status-badge.envoyee {
+  background: #E3F2FD;
+  color: #1976D2;
+}
+
+.price-request-modal-status-badge.brouillon {
+  background: #FFF3E0;
+  color: #F57C00;
+}
+
+.price-request-modal-status-badge.validee {
+  background: #E8F5E9;
+  color: #388E3C;
+}
+
+.price-request-modal-status-badge.annulee {
+  background: #FFEBEE;
+  color: #D32F2F;
+}
+
+/* Badge urgence */
+.price-request-modal-urgency-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.price-request-modal-urgency-badge.normal {
+  background: #E8F5E9;
+  color: #388E3C;
+}
+
+.price-request-modal-urgency-badge.urgent {
+  background: #FFF3E0;
+  color: #F57C00;
+}
+
+.price-request-modal-urgency-badge.tres-urgent {
+  background: #FFEBEE;
+  color: #D32F2F;
+}
+
+
+/* Images dans les cartes produits */
+
+
+/* ============================================
+   MODAL DÉTAILS - IMAGE OPTIMISÉE
+   ============================================ */
+
+.price-request-modal-image {
+  width: 100%;
+  min-height: 250px;
+  max-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;  /* ✅ Fond blanc au lieu de gris */
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;  /* ✅ Padding pour espacer l'image */
+}
+
+.price-request-modal-image img {
+  width: 100%;
+  height: 100%;
+  max-height: 350px;
+  object-fit: contain;  /* ✅ Contient l'image sans la déformer */
+  background: transparent;
+}
+
+/* Si l'image a une erreur ou est en chargement */
+.price-request-modal-image::before {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Image dans les cartes produits */
+.price-request-product-image {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+  border: 1px solid #e0e0e0;
+}
+
+.price-request-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.price-request-product-card:hover .price-request-product-image img {
+  transform: scale(1.05);
+}
+
+/* Améliorer l'affichage de la description dans la modal */
+.price-request-modal-value {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-line; /* Préserver les retours à la ligne */
 }
