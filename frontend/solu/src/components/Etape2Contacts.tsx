@@ -496,7 +496,7 @@ const Etape2Contacts = ({ data, onUpdate, onSuivant, onPrecedent }: Etape2Contac
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     //const API_BASE_URL = 'http://localhost:3000/api';
-    const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+    const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
     /**
      * NOUVELLE API - Récupérer les listes avec compteur

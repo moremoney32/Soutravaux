@@ -15,7 +15,7 @@ import PricingFooter from './PricingFooter';
 const baseUrlTest =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "https://solutravo.zeta-app.fr/api";
+    : "https://staging.solutravo.zeta-app.fr/api";
 
 // FONCTIONS HELPERS
 const getIconComponent = (iconName?: string) => {
