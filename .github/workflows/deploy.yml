@@ -280,7 +280,7 @@ jobs:
           echo "ONESIGNAL_REST_API_KEY=${{ secrets.ONESIGNAL_REST_API_KEY }}" >> .env
           echo "ONESIGNAL_APP_ID=${{ secrets.ONESIGNAL_APP_ID }}" >> .env
           echo "NODE_ENV=staging" >> .env
-          echo "APP_URL=http://staging.solutravo.zeta-app.fr">> .env
+          echo "APP_URL=https://staging.solutravo.zeta-app.fr">> .env
           echo "secretKey=${{ secrets.secretKey }}" >> .env
           echo "expiresInn=${{ secrets.expiresInn }}" >> .env
           echo "expiresIn=${{ secrets.expiresIn }}" >> .env
