@@ -10,24 +10,24 @@ import {errorHandler} from "./src/middleware/errorHandler";
   //import { setupSwagger } from "./src/config/swagger";
 dotenv.config({ path: "./.env" });
 const app: Application = express();
-// const allowedOrigins = [
-//   "https://gilded-sunflower-4c737b.netlify.app",
-//   "http://localhost:5173",
-//   "https://frontend.staging.solutravo-compta.fr",
-//   "http://127.0.0.1:5500",
-//   "https://staging.solutravo-compta.fr",
-//   "http://localhost:5174",
-//   "http://localhost:3000",
-//   "https://solutravo.zeta-app.fr",
-//   "https://authentification-entreprise.solutravo-compta.fr",
-//   "https://abonnement.solutravo-compta.fr",
-//   "https://auth.solutravo-compta.fr",
-//   "https://abonnement.solutravo-app.fr",
-//   "https://auth.solutravo-app.fr",
-//   "http://localhost:5500",
-//   "https://staging.solutravo.zeta-app.fr",
-//   "http://localhost"
-// ];
+const allowedOrigins = [
+  "https://gilded-sunflower-4c737b.netlify.app",
+  "http://localhost:5173",
+  "https://frontend.staging.solutravo-compta.fr",
+  "http://127.0.0.1:5500",
+  "https://staging.solutravo-compta.fr",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://solutravo.zeta-app.fr",
+  "https://authentification-entreprise.solutravo-compta.fr",
+  "https://abonnement.solutravo-compta.fr",
+  "https://auth.solutravo-compta.fr",
+  "https://abonnement.solutravo-app.fr",
+  "https://auth.solutravo-app.fr",
+  "http://localhost:5500",
+  "https://staging.solutravo.zeta-app.fr",
+  "http://localhost"
+];
 
 
 // const corsOptions: CorsOptions = {
@@ -61,12 +61,12 @@ const app: Application = express();
 
 // Middlewares
 //  app.use(cors(corsOptions));
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:5174',
-  'http://localhost:3000'
-];
+// const allowedOrigins = [
+//   'http://localhost:5173',
+//   'http://127.0.0.1:5173',
+//   'http://localhost:5174',
+//   'http://localhost:3000'
+// ];
 
 app.use(cors({
   origin: (origin, callback) => {
