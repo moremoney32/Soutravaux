@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchData } from '../helpers/fetchData';
-import solutravo from "../assets/images/solutravo.png"
+// import solutravo from "../assets/images/solutravo.png"
 import { CartItem } from './CartItem';
 import { ShoppingCart, X } from 'lucide-react';
 import '../styles/priceRequest.css';
@@ -286,11 +286,12 @@ export const PriceRequest = () => {
   return (
     <div className="price-request-container">
       <header className="price-request-header">
-        <div className="price-request-logo">
-          <div className="logo">
+         <div className="price-request-logo">
+          {/* <div className="logo">
             <img src={solutravo} alt="Solutravo" className="logo-icon" />
-          </div>
-        </div>
+          </div> */}
+          <span></span>
+        </div> 
         <div className="price-request-tabs">
           <button
             className={`price-request-tab ${showHistory ? 'active' : ''}`}
