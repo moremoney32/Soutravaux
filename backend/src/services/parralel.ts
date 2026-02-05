@@ -18,7 +18,7 @@ export async function parallelLimit<T, R>(
     try {
       results[index] = await asyncFn(items[index], index);//fesfedfs
     } catch (error) {
-      console.error(`❌ Erreur index ${index}:`, error);
+      console.error(`❌ Erreur index ${index}:`, error);//dhsbfj
       results[index] = null as any;
     }
 
