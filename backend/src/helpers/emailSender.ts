@@ -6,7 +6,8 @@ const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
 
 // URL de base publique pour servir les PDFs (peut être surchargée en prod)
-const PDF_BASE_URL = process.env.PDF_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+// const PDF_BASE_URL = process.env.PDF_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://staging.solutravo.zeta-app.fr';
 
 interface SendDemandePrixEmailParams {
   to: string;
