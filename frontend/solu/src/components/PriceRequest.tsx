@@ -938,7 +938,7 @@ export const PriceRequest = () => {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      credentials: 'include',
+      
     })
       .then(res => res.json())
       .then(data => {
@@ -1065,7 +1065,7 @@ export const PriceRequest = () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          credentials: 'include',
+          
         });
         const supData = await supRes.json();
         
@@ -1082,7 +1082,7 @@ export const PriceRequest = () => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          credentials: 'include',
+          
         });
         const prodData = await prodRes.json();
         
@@ -1143,7 +1143,7 @@ export const PriceRequest = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        credentials: 'include',
+        
         body: JSON.stringify(payload),
       });
 
@@ -1234,7 +1234,7 @@ export const PriceRequest = () => {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                       },
-                      credentials: 'include',
+                      
                     });
                     const data = await res.json();
                     if (data?.data) setSelectedHistoryRequest(data.data);
