@@ -888,7 +888,7 @@ import {
 
 type RequestMode = 'by_supplier' | 'by_product' | null;
 
-const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
 
 export const PriceRequest = () => {
   const [mode, setMode] = useState<RequestMode>(null);
