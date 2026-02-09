@@ -96,8 +96,9 @@ export async function sendEventReminders(): Promise<void> {
           );
           await updateReminderSent(invitation.id, conn);
         }
-        // ✅ Rappel maintenant (moins de 5 minutes)
-        else if (totalMinutesUntilEvent <= 5 && totalMinutesUntilEvent > -5) {
+       
+       else if (totalMinutesUntilEvent <= 5 && totalMinutesUntilEvent > 0)
+ {
           console.log(`   ⏰ Rappel MAINTENANT - L'événement commence!`);
           await sendReminder(
             invitation.email,
@@ -363,3 +364,5 @@ export async function cleanupOldInvitations(): Promise<void> {
     conn.release();
   }
 }
+
+

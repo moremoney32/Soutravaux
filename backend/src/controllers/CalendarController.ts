@@ -59,6 +59,7 @@ export const createEventController = async (
 ): Promise<void> => {
   try {
     const eventData = req.body;
+    console.log("🔥 DATA REÇUE BACK CREATE =", eventData);
 
     if (!eventData.societe_id || !eventData.title || !eventData.event_date || !eventData.start_time || !eventData.end_time) {
       res.status(400).json({
@@ -96,7 +97,7 @@ export const createEventController = async (
     res.status(201).json({
       success: true,
       data: { id: eventId },
-      message: "Événement créé avec succès"
+      message: "Événement zoooo"
     });
   } catch (err) {
     next(err);

@@ -1,8 +1,4 @@
-// services/notificationScheduler.ts
 
-// import pool from '../config/db';
-
-// services/notificationScheduler.ts
 import { PoolConnection } from 'mysql2/promise';
 
 interface NotificationSchedule {
@@ -140,4 +136,37 @@ function formatDateTimeForMySQL(date: Date): string {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+export async function planifierNotificationsPourInviteDansEventNotifications(
+  conn:any,
+  eventId:number,
+  email:string
+){
+
+  const [rows]:any = await conn.query(`
+    SELECT event_date,start_time 
+    FROM calendar_events 
+    WHERE id=?
+  `,[eventId]);
+
+  if(!rows.length) return;
+
+  const ev = rows[0];
+
+  const start = new Date(`${ev.event_date} ${ev.start_time}`);
+  const minus1h = new Date(start.getTime() - 60*60*1000);
+
+  await conn.query(`
+    INSERT INTO event_notifications
+    (event_id, recipient_email, notification_type, trigger_at)
+    VALUES(?,?,?,?)
+  `,[eventId,email,'1_hour_before',minus1h]);
+
+  await conn.query(`
+    INSERT INTO event_notifications
+    (event_id, recipient_email, notification_type, trigger_at)
+    VALUES(?,?,?,?)
+  `,[eventId,email,'at_time',start]);
+
+  console.log("📅 rappels invités planifiés :", email);
 }

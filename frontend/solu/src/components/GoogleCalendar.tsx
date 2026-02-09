@@ -273,21 +273,7 @@ const GoogleCalendar: React.FC = () => {
     }
   };
 
-  // ✅ CORRECTION 3 : Handler obsolète (gardé pour rétrocompatibilité)
-  // const handleInvite = async (
-  //   eventId: number,
-  //   societeIds: number[],
-  //   method: 'email' | 'sms' | 'push' | 'contact'
-  // ) => {
-  //   try {
-  //     await inviteArtisans(eventId, societeIds, method);
-  //     alert(`${societeIds.length} société(s) invitée(s) par ${method}`);
-  //     setShowInviteModal(false);
-  //   } catch (error) {
-  //     console.error('Erreur invitation:', error);
-  //     alert('Erreur lors de l\'envoi des invitations');
-  //   }
-  // };
+
 
   const formatDateRange = (): string => {
     const weekStart = new Date(currentDate);
@@ -361,15 +347,7 @@ const GoogleCalendar: React.FC = () => {
           </div>
 
           <div className="calendar-header-right">
-            {/* <button className="calendar-btn-search" title="Rechercher">
-              <i className="fas fa-search"></i>
-            </button>
-            <button className="calendar-btn-help" title="Aide">
-              <i className="fas fa-question-circle"></i>
-            </button>
-            <button className="calendar-btn-settings" title="Paramètres">
-              <i className="fas fa-cog"></i>
-            </button> */}
+            
 
             <div className="calendar-view-dropdown">
               <select 
@@ -384,12 +362,6 @@ const GoogleCalendar: React.FC = () => {
               <i className="fas fa-chevron-down"></i>
             </div>
 
-            {/* <button className="calendar-btn-apps" title="Applications">
-              <i className="fas fa-th-large"></i>
-            </button> */}
-            {/* <div className="calendar-user-avatar" title="Profil">
-              F
-            </div> */}
           </div>
         </div>
 
@@ -425,25 +397,7 @@ const GoogleCalendar: React.FC = () => {
         )}
       </div>
 
-      {/* <div className="calendar-sidebar-right">
-        <div className="calendar-notification">
-          {selectedEvent ? (
-            <div className="calendar-event-details">
-              <h4>{selectedEvent.title}</h4>
-              <p>{selectedEvent.description}</p>
-              <p>
-                {selectedEvent.startTime.toLocaleString('fr-FR')} -{' '}
-                {selectedEvent.endTime.toLocaleString('fr-FR')}
-              </p>
-            </div>
-          ) : (
-            <i className="fas fa-check"></i>
-          )}
-        </div>
-      </div> */}
-
-      {/* ════════════════════════════════════════════════ */}
-      {/* ✅ MODAL ÉVÉNEMENT (CORRIGÉE)                    */}
+      
       {/* ════════════════════════════════════════════════ */}
       <CalendarEventModal
         onInvite={handleInviteFromModal}

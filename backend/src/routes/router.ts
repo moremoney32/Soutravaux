@@ -27,7 +27,7 @@ import { getActivitesController, getDepartementsController, getPreSocietesContro
 import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
-import { createCategoryController, createEventController, deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
+import { createCategoryController,  createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
 import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
 import { createDemandeController, downloadPDFController, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsController } from "../controllers/DemandesPrixControllers";
 
@@ -210,6 +210,11 @@ router.get('/calendar/events', getEventsController);/*fff***/
 
 // POST /api/calendar/events - Créer événement
 router.post('/calendar/events', createEventController);
+
+// router.post('/calendar/events', (_req,res)=>{
+//   console.log("🔥 ROUTE DIRECTE TOUCHÉE");
+//   res.json({ok:true});
+// });
 
 // PUT /api/calendar/events/:eventId - Modifier événement
 router.put('/calendar/events/:eventId', updateEventController);
