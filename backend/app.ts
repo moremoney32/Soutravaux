@@ -58,7 +58,7 @@ app.use(cors({
   preflightContinue: false,    // ✅ Laisser cors gérer le preflight
   optionsSuccessStatus: 204    // ✅ Statut standard pour OPTIONS
 }));
-
+//kekekk
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
