@@ -1,1479 +1,586 @@
 
 
-// import { useState, useEffect, useRef } from 'react';
-// import { useParams } from 'react-router-dom';
-// import { fetchData } from '../helpers/fetchData';
-// // import solutravo from "../assets/images/solutravo.png"
-// import { CartItem } from './CartItem';
-// import { ShoppingCart, X } from 'lucide-react';
-// import '../styles/priceRequest.css';
-// import { ProductCard } from './ProductCard';
-// import { ProductDetailModal } from './ProductDetailsPrice';
-// import { SupplierSelect } from './SupplierSelect';
-// import {  
-//   type PriceRequestItem, 
-//   type Product,
-//   type PriceRequests
-// } from '../data/mockDataPrice';
-
-// type RequestMode = 'by_supplier' | 'by_product' | null;
-
-// export const PriceRequest = () => {
-//   const [mode, setMode] = useState<RequestMode>(null);
-//   const [selectedSupplier, setSelectedSupplier] = useState<string>('');
-//   const [selectedFamilies, setSelectedFamilies] = useState<string[]>([]);
-//   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-//   const [cartItems, setCartItems] = useState<PriceRequestItem[]>([]);
-//   const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
-//   const [reference, setReference] = useState('');
-//   const [generalNote, setGeneralNote] = useState('');
-//   const cartScrollRef = useRef<HTMLDivElement>(null);
-//   const [urgency, setUrgency] = useState<'normal' | 'urgent' | 'tres_urgent'>('normal');
-
-//   const [suppliers, setSuppliers] = useState<any[]>([]);
-//   const [products, setProducts] = useState<any[]>([]);
-//   const [families, setFamilies] = useState<string[]>([]);
-
-//   const params = useParams();
-//   const societeId = params.societeId ? Number(params.societeId) : undefined;
-//   const membreId = params.membreId ? Number(params.membreId) : undefined;
-//   const [deliveryType, setDeliveryType] = useState<'headquarters' | 'new'>('headquarters');
-//   const [newAddress, setNewAddress] = useState('');
-//   const [saveAddress, setSaveAddress] = useState(false);
-
-//   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
-//   const [manualEmails, setManualEmails] = useState<string[]>([]);
-//   const [newEmail, setNewEmail] = useState('');
-//   const [showHistory, setShowHistory] = useState(false);
-//   const [history, setHistory] = useState<PriceRequests[]>([]);
-//   const [selectedHistoryRequest, setSelectedHistoryRequest] = useState<PriceRequests | null>(null);
-//   const [loadingHistoryDetail, setLoadingHistoryDetail] = useState(false);
-  
-//   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
-//   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-//   const [supplierSearchTerm, setSupplierSearchTerm] = useState('');
-//   const [productSearchTerm, setProductSearchTerm] = useState('');
-//   const [familySearchTerm, setFamilySearchTerm] = useState('');
-//   console.log(selectedProducts)
-
-//   // Charger l'historique des demandes de prix depuis le backend
-//   useEffect(() => {
-//     if (!societeId) return;
-//     fetchData<{ success: boolean; data: PriceRequests[] }>(`demandes-prix?societe_id=${societeId}`)
-//       .then(res => {
-//         if (res.result?.data) setHistory(res.result.data);
-//       });
-//   }, [societeId]);
-
-//   // Filter products coming from API
-//   const filteredProducts = products.filter((product) => {
-//     if (mode === 'by_supplier') {
-//       if (selectedFamilies.length > 0) {
-//         if (selectedSupplier && String(product.library_id) !== selectedSupplier) return false;
-//         if (!selectedFamilies.includes(product.famille_name)) return false;
-//       }
-//     }
-
-//     if (mode === 'by_product') {
-//       if (selectedFamilies.length > 0 && !selectedFamilies.includes(product.famille_name)) return false;
-//     }
-
-//     if (productSearchTerm) {
-//       return (
-//         product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
-//         (product.supplier_reference || '').toLowerCase().includes(productSearchTerm.toLowerCase())
-//       );
-//     }
-
-//     return true;
-//   });
-
-//   const handleAddToCart = (product: any) => {
-//     const mappedProduct: Product = {
-//       id: String(product.id),
-//       name: product.name,
-//       reference: product.supplier_reference || '',
-//       familyId: product.famille_name || '',
-//       supplierId: String(product.library_id || ''),
-//       description: product.description || '',
-//       unit: product.unit || '',
-//       imageUrl: product.image || ''
-//     };
-
-//     const existing = cartItems.find((item) => item.product.id === mappedProduct.id);
-//     if (existing) {
-//       setCartItems(
-//         cartItems.map((item) =>
-//           item.product.id === mappedProduct.id ? { ...item, quantity: item.quantity + 1 } : item
-//         )
-//       );
-//     } else {
-//       setCartItems((prev) => {
-//         const next = [...prev, { product: mappedProduct, quantity: 1, note: '' }];
-        
-//         setTimeout(() => {
-//           if (cartScrollRef.current) {
-//             cartScrollRef.current.scrollTo({
-//               top: cartScrollRef.current.scrollHeight,
-//               behavior: 'smooth'
-//             });
-//           }
-//         }, 100);
-        
-//         if (prev.length === 0) setExpandedItemId(mappedProduct.id);
-        
-//         return next;
-//       });
-//     }
-//     setIsRightPanelOpen(true);
-//   };
-
-//   const handleUpdateQuantity = (productId: string, quantity: number) => {
-//     setCartItems(
-//       cartItems.map((item) => (item.product.id === productId ? { ...item, quantity } : item))
-//     );
-//   };
-
-//   const handleUpdateNote = (productId: string, note: string) => {
-//     setCartItems(cartItems.map((item) => (item.product.id === productId ? { ...item, note } : item)));
-//   };
-
-//   const handleUpdateReference = (productId: string, reference: string) => {
-//     setCartItems(cartItems.map((item) => (item.product.id === productId ? { ...item, reference } : item)));
-//   };
-
-//   const handleRemoveFromCart = (productId: string) => {
-//     setCartItems((prev) => {
-//       const next = prev.filter((item) => item.product.id !== productId);
-//       if (expandedItemId === productId) {
-//         setExpandedItemId(next.length > 0 ? next[0].product.id : null);
-//       }
-//       return next;
-//     });
-//   };
-
-//   const handleRemoveEmail = (email: string) => {
-//     setManualEmails(manualEmails.filter((e) => e !== email));
-//   };
-
-//   const handleAddEmail = () => {
-//     if (newEmail && newEmail.includes('@') && !manualEmails.includes(newEmail)) {
-//       setManualEmails([...manualEmails, newEmail]);
-//       setNewEmail('');
-//     }
-//   };
-
-//   const handleSelectAllSuppliers = () => {
-//     if (selectedSuppliers.length === suppliers.length) {
-//       setSelectedSuppliers([]);
-//     } else {
-//       setSelectedSuppliers(suppliers.map((s) => String(s.id)));
-//     }
-//   };
-
-//   useEffect(() => {
-//     const fetchDataAsync = async () => {
-//       if (!societeId) return;
-
-//       try {
-//         const supRes = await fetchData<any>(`demandes-prix/fournisseurs?societe_id=${societeId}`);
-//         if (supRes.result && Array.isArray(supRes.result.data)) {
-//           const mapped = supRes.result.data.map((r: any) => ({ id: String(r.id), name: r.name, image: r.image }));
-//           setSuppliers(mapped);
-//         }
-
-//         const libQuery = selectedSupplier ? `&library_id=${selectedSupplier}` : '';
-//         const prodRes = await fetchData<any>(`demandes-prix/produits?societe_id=${societeId}${libQuery}`);
-//         if (prodRes.result && Array.isArray(prodRes.result.data)) {
-//           setProducts(prodRes.result.data);
-
-//           const fams = Array.from(new Set(prodRes.result.data.map((p: any) => p.famille_name || ''))) as string[];
-//           setFamilies(fams.filter((f) => f));
-//         }
-//       } catch (err: any) {
-//         console.error('Erreur lors du chargement des fournisseurs/produits:', err.message || err);
-//       }
-//     };
-
-//     fetchDataAsync();
-//   }, [societeId, selectedSupplier]);
-
-//   const handleSubmit = async () => {
-//     if (!mode || societeId === undefined || membreId === undefined) return;
-
-//     if (!isFormValid) {
-//       alert(submitDisabledReason || 'Formulaire invalide, vérifiez les champs');
-//       return;
-//     }
-
-//     const composedReference = cartItems.map((i) => (i.reference || i.product.reference || '').toString().trim()).filter(Boolean).join(' | ');
-
-//     const payload: any = {
-//       reference: composedReference || reference || '',
-//       type_demande: mode === 'by_supplier' ? 'par_fournisseur' : 'par_produit',
-//       note_generale: generalNote || undefined,
-//       urgence: urgency || 'normal',
-//       adresse_livraison_type: deliveryType === 'headquarters' ? 'siege' : 'nouvelle',
-//       adresse_livraison: deliveryType === 'new' ? newAddress || undefined : undefined,
-//       societe_id: societeId,
-//       membre_id: membreId,
-//       lignes: cartItems.map((item, index) => ({
-//         product_id: Number(item.product.id),
-//         quantite: item.quantity,
-//         note_ligne: `${(item.reference || item.product.reference || '').toString().trim()}${item.note ? ' — ' + item.note : ''}` || undefined,
-//         ordre: index
-//       })),
-//       destinataires: [] as any[],
-//     };
-
-//     if (mode === 'by_supplier') {
-//       if (selectedSupplier) payload.destinataires.push({ library_id: Number(selectedSupplier) });
-//     } else {
-//       payload.destinataires.push(...selectedSuppliers.map((id) => ({ library_id: Number(id) })));
-//     }
-
-//     payload.destinataires.push(...manualEmails.map((email) => ({ email_manuel: email })));
-
-//     try {
-//       const res = await fetchData<any>('demandes-prix', 'POST', payload);
-//       if (res.status >= 200 && res.status < 300) {
-//         alert('Demande de prix créée et envoyée avec succès');
-//         setCartItems([]);
-//         setReference('');
-//         setGeneralNote('');
-//         setUrgency('normal');
-//         setDeliveryType('headquarters');
-//         setNewAddress('');
-//         setSelectedSuppliers([]);
-//         setManualEmails([]);
-//         setIsRightPanelOpen(false);
-//       }
-//     } catch (err: any) {
-//       console.error('Erreur création demande:', err);
-//       const message = err?.message || (err?.result && err.result.message) || 'Erreur lors de l\'envoi de la demande, réessayer.';
-//       alert(message);
-//     }
-//   };
-
-//   const itemsHaveValidQuantity = cartItems.length > 0 && cartItems.every((i) => typeof i.quantity === 'number' && i.quantity > 0);
-//   const itemsHaveValidReference = cartItems.length > 0 && cartItems.every((i) => ((i.reference || i.product.reference) || '').toString().trim() !== '');
-
-//   const hasRecipientForMode = (() => {
-//     if (mode === 'by_supplier') {
-//       return !!selectedSupplier || manualEmails.length > 0;
-//     }
-//     if (mode === 'by_product') {
-//       return selectedSuppliers.length > 0 || manualEmails.length > 0;
-//     }
-//     return false;
-//   })();
-
-//   const isFormValid = cartItems.length > 0 && itemsHaveValidQuantity && itemsHaveValidReference && societeId !== undefined && membreId !== undefined && hasRecipientForMode;
-
-//   let submitDisabledReason = '';
-//   if (cartItems.length === 0) {
-//     submitDisabledReason = 'Ajoutez au moins un produit à la demande';
-//   } else if (!itemsHaveValidQuantity) {
-//     submitDisabledReason = 'Vérifiez les quantités des produits (>= 1)';
-//   } else if (!itemsHaveValidReference) {
-//     submitDisabledReason = 'Référence produit requise pour chaque ligne';
-//   } else if (!hasRecipientForMode) {
-//     submitDisabledReason = mode === 'by_supplier' ? 'Veuillez sélectionner un fournisseur ou ajouter un email destinataire' : 'Veuillez sélectionner au moins un fournisseur ou ajouter un email destinataire';
-//   } else if (societeId === undefined || membreId === undefined) {
-//     submitDisabledReason = 'Paramètres d\'environnement manquants (societe/membre)';
-//   }
-
-//   return (
-//     <div className="price-request-container">
-//       <header className="price-request-header">
-//          <div className="price-request-logo">
-//           {/* <div className="logo">
-//             <img src={solutravo} alt="Solutravo" className="logo-icon" />
-//           </div> */}
-//           <span></span>
-//         </div> 
-//         <div className="price-request-tabs">
-//           <button
-//             className={`price-request-tab ${showHistory ? 'active' : ''}`}
-//             onClick={() => setShowHistory(!showHistory)}
-//           >
-//             Historique
-//           </button>
-//         </div>
-//       </header>
-
-//       {showHistory ? (
-//         <div className="price-request-panel" style={{ flex: 1 }}>
-//           <div className="price-request-panel-header">
-//             <h3 className="price-request-panel-title">Historique des demandes</h3>
-//           </div>
-//           <div className="price-request-panel-content">
-//             {history.map((request) => (
-//               <div 
-//                 key={request.id} 
-//                 className="price-request-history-item"
-//                 onClick={async () => {
-//                   setLoadingHistoryDetail(true);
-//                   try {
-//                     const res = await fetchData<{ success: boolean; data: PriceRequests }>(`demandes-prix/${request.id}?societe_id=${societeId}`);
-//                     if (res.result?.data) setSelectedHistoryRequest(res.result.data);
-//                   } catch (e) {
-//                     setSelectedHistoryRequest(null);
-//                   } finally {
-//                     setLoadingHistoryDetail(false);
-//                   }
-//                 }}
-//               >
-//                 <div className="price-request-history-header">
-//                   <span className="price-request-history-reference">{request.reference}</span>
-//                   <span className="price-request-history-date">
-//                     {(() => {
-//                       const dateObj = new Date(request.date_creation);
-//                       if (isNaN(dateObj.getTime())) return 'Date invalide';
-//                       return `${dateObj.toLocaleDateString('fr-FR')} à ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-//                     })()}
-//                   </span>
-//                 </div>
-                
-//                 <p className="price-request-history-info">
-//                   {request.nb_lignes || (request.lignes ? request.lignes.length : 0)} produit(s) - {request.nb_destinataires || (request.destinataires ? request.destinataires.length : 0)} fournisseur(s)
-//                 </p>
-                
-//                 <p className="price-request-history-info">
-//                   Livraison: {request.adresse_livraison || (request.adresse_livraison_type === 'siege' ? 'Siège social' : 'Nouvelle adresse')}
-//                 </p>
-                
-//                 <span
-//                   className={`price-request-badge ${
-//                     request.urgence === 'urgent' ? 'urgent' : 
-//                     request.urgence === 'tres_urgent' ? 'very-urgent' : 
-//                     'normal'
-//                   }`}
-//                 >
-//                   {request.urgence === 'urgent' ? 'Urgent' : 
-//                    request.urgence === 'tres_urgent' ? 'Très urgent' : 
-//                    'Normal'}
-//                 </span>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       ) : (
-//         <main className="price-request-main">
-//           <aside className="price-request-panel price-request-panel-left">
-//             <div className="price-request-left-header">
-//               <div className="price-request-mode-tabs">
-//                 <button
-//                   className={`price-request-mode-tab ${mode === 'by_supplier' ? 'active' : ''}`}
-//                   onClick={() => {
-//                     setMode('by_supplier');
-//                     setSelectedSupplier('');
-//                     setSelectedFamilies([]);
-//                     setCartItems([]);
-//                     setProductSearchTerm('');
-//                     setFamilySearchTerm('');
-//                   }}
-//                 >
-//                   Par fournisseur
-//                 </button>
-//                 <button
-//                   className={`price-request-mode-tab ${mode === 'by_product' ? 'active' : ''}`}
-//                   onClick={() => {
-//                     setMode('by_product');
-//                     setSelectedProducts([]);
-//                     setCartItems([]);
-//                     setProductSearchTerm('');
-//                     setFamilySearchTerm('');
-//                   }}
-//                 >
-//                   Par produit(s)
-//                 </button>
-//               </div>
-//             </div>
-
-//             <div className="price-request-panel-header">
-//               <h3 className="price-request-panel-title">
-//                 {mode === 'by_supplier' ? 'Fournisseur' : mode === 'by_product' ? '' : ''}
-//               </h3>
-//               {mode === 'by_supplier' && (
-//                 <input
-//                   type="text"
-//                   placeholder={'Rechercher un fournisseur...'}
-//                   className="price-request-search"
-//                   value={supplierSearchTerm}
-//                   onChange={(e) => setSupplierSearchTerm(e.target.value)}
-//                 />
-//               )}
-//             </div>
-//             <div className="price-request-panel-content">
-//               {mode === null ? (
-//                 <div style={{ textAlign: 'center', padding: '20px', color: '#6c757d', fontSize: '12px' }}>
-//                   Sélectionnez un mode ci-dessus
-//                 </div>
-//               ) : mode === 'by_supplier' ? (
-//                 <>
-//                   <div className="price-request-section-title">Liste</div>
-//                   <div className="price-request-checkbox-group">
-//                     {suppliers
-//                       .filter((s) => !supplierSearchTerm || s.name.toLowerCase().includes(supplierSearchTerm.toLowerCase()))
-//                       .map((supplier) => (
-//                         <div key={supplier.id} className="price-request-checkbox-item">
-//                           <input
-//                             type="checkbox"
-//                             id={`supplier-${supplier.id}`}
-//                             checked={selectedSupplier === String(supplier.id)}
-//                             onChange={() =>
-//                               setSelectedSupplier(selectedSupplier === String(supplier.id) ? '' : String(supplier.id))
-//                             }
-//                           />
-//                           <label htmlFor={`supplier-${supplier.id}`}>{supplier.name}</label>
-//                         </div>
-//                       ))}
-//                   </div>
-
-//                   {selectedSupplier && (
-//                     <>
-//                       <div className="price-request-section-title">Les Familles de produits</div>
-//                       <input
-//                         type="text"
-//                         placeholder="Rechercher une famille de produit"
-//                         className="price-request-search"
-//                         value={familySearchTerm}
-//                         onChange={(e) => setFamilySearchTerm(e.target.value)}
-//                       />
-//                       <div className="price-request-checkbox-group">
-//                         {Array.from(
-//                           new Set(
-//                             products
-//                               .filter((p) => String(p.library_id) === String(selectedSupplier))
-//                               .map((p) => p.famille_name || '')
-//                           )
-//                         )
-//                           .filter((f) => f)
-//                           .filter((family) => !familySearchTerm || family.toLowerCase().includes(familySearchTerm.toLowerCase()))
-//                           .map((family) => (
-//                             <div key={family} className="price-request-checkbox-item">
-//                               <input
-//                                 type="checkbox"
-//                                 id={`family-${family}`}
-//                                 checked={selectedFamilies.includes(family)}
-//                                 onChange={() => {
-//                                   if (selectedFamilies.includes(family)) {
-//                                     setSelectedFamilies(selectedFamilies.filter((id) => id !== family));
-//                                   } else {
-//                                     setSelectedFamilies([...selectedFamilies, family]);
-//                                   }
-//                                 }}
-//                               />
-//                               <label htmlFor={`family-${family}`}>{family}</label>
-//                             </div>
-//                           ))}
-//                       </div>
-//                     </>
-//                   )}
-//                 </>
-//               ) : (
-//                 <>
-//                   <div className="price-request-section-title">Groupes</div>
-//                   <input
-//                     type="text"
-//                     placeholder="Rechercher une famille de produit"
-//                     className="price-request-search"
-//                     value={familySearchTerm}
-//                     onChange={(e) => setFamilySearchTerm(e.target.value)}
-//                   />
-//                   <div className="price-request-checkbox-group">
-//                     {families
-//                       .filter((f) => !familySearchTerm || f.toLowerCase().includes(familySearchTerm.toLowerCase()))
-//                       .map((family) => (
-//                         <div key={family} className="price-request-checkbox-item">
-//                           <input
-//                             type="checkbox"
-//                             id={`family-prod-${family}`}
-//                             checked={selectedFamilies.includes(family)}
-//                             onChange={() => {
-//                               if (selectedFamilies.includes(family)) {
-//                                 setSelectedFamilies(selectedFamilies.filter((id) => id !== family));
-//                               } else {
-//                                 setSelectedFamilies([...selectedFamilies, family]);
-//                               }
-//                             }}
-//                           />
-//                           <label htmlFor={`family-prod-${family}`}>{family}</label>
-//                         </div>
-//                       ))}
-//                   </div>
-//                 </>
-//               )}
-//             </div>
-//           </aside>
-
-//           <section className="price-request-panel price-request-panel-center">
-//             <div className="price-request-center-header">
-//               <input
-//                 type="text"
-//                 placeholder="Rechercher un produit..."
-//                 className="price-request-search"
-//                 value={productSearchTerm}
-//                 onChange={(e) => setProductSearchTerm(e.target.value)}
-//               />
-//             </div>
-//             <div className="price-request-center-content">
-//               {mode === null ? (
-//                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6c757d', fontSize: '16px', flexDirection: 'column', gap: '16px' }}>
-//                   <p>Choisissez un mode pour commencer</p>
-//                   <p style={{ fontSize: '14px', marginTop: '8px' }}>Cliquez sur "Par fournisseur" ou "Par produit(s)" en haut à gauche</p>
-//                 </div>
-//               ) : (
-//                 <div className="price-request-products-grid">
-//                   {filteredProducts.map((product) => {
-//                     const mappedProduct: Product = {
-//                       id: String(product.id),
-//                       name: product.name,
-//                       reference: product.supplier_reference || '',
-//                       familyId: product.famille_name || '',
-//                       supplierId: String(product.library_id || ''),
-//                       description: product.description || '',
-//                       unit: product.unit || '',
-//                       imageUrl: product.image || ''
-//                     };
-
-//                     return (
-//                       <ProductCard
-//                         key={product.id}
-//                         product={mappedProduct}
-//                         onAdd={handleAddToCart}
-//                         onViewDetails={setSelectedProductDetail}
-//                       />
-//                     );
-//                   })}
-
-//                   {filteredProducts.length === 0 && (
-//                     <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#6c757d', fontSize: '14px' }}>
-//                       {mode === 'by_supplier' && !selectedSupplier
-//                         ? 'Produits Solutravo et fournisseurs disponibles ci-dessous'
-//                         : 'Aucun produit trouvé'}
-//                     </div>
-//                   )}
-//                 </div>
-//               )}
-//             </div>
-//           </section>
-
-//           <aside className={`price-request-panel price-request-panel-right ${isRightPanelOpen ? 'open' : ''}`}>
-//             <div className="price-request-panel-header">
-//               <h3 className="price-request-panel-title">Produit(s) sélectionné(s) ({cartItems.length})</h3>
-//             </div>
-
-//             <div className="price-request-right-scrollable" ref={cartScrollRef}>
-//               {cartItems.length === 0 ? (
-//                 <div className="price-request-cart-empty">Aucun produit sélectionné</div>
-//               ) : (
-//                 <div className="price-request-cart-items-list">
-//                   {cartItems.map((item) => (
-//                     <CartItem
-//                       key={item.product.id}
-//                       item={item}
-//                       totalItems={cartItems.length}
-//                       isExpanded={expandedItemId === item.product.id}
-//                       onToggle={() => setExpandedItemId(expandedItemId === item.product.id ? null : item.product.id)}
-//                       onUpdateQuantity={handleUpdateQuantity}
-//                       onUpdateNote={handleUpdateNote}
-//                       onUpdateReference={handleUpdateReference}
-//                       onRemove={handleRemoveFromCart}
-//                     />
-//                   ))}
-//                 </div>
-//               )}
-//             </div>
-
-//             <div className="price-request-right-fixed">
-//               <div className="price-request-form-group">
-//                 <label className="price-request-form-label">Urgence</label>
-//                 <div className="price-request-urgency-options">
-//                   <label className={`price-request-urgency-option ${urgency === 'normal' ? ' active' : ''}`}>
-//                     <input type="radio" name="urgence" checked={urgency === 'normal'} onChange={() => setUrgency('normal')} />
-//                     <span>Normal</span>
-//                   </label>
-//                   <label className={`price-request-urgency-option ${urgency === 'urgent' ? ' active' : ''}`}>
-//                     <input type="radio" name="urgence" checked={urgency === 'urgent'} onChange={() => setUrgency('urgent')} />
-//                     <span>Urgent</span>
-//                   </label>
-//                   <label className={`price-request-urgency-option ${urgency === 'tres_urgent' ? ' active' : ''}`}>
-//                     <input type="radio" name="urgence" checked={urgency === 'tres_urgent'} onChange={() => setUrgency('tres_urgent')} />
-//                     <span>Très urgent</span>
-//                   </label>
-//                 </div>
-//               </div>
-
-//               <div className="price-request-form-group">
-//                 <label className="price-request-form-label">Détails généraux</label>
-//                 <textarea value={generalNote} onChange={(e) => setGeneralNote(e.target.value)} className="price-request-form-textarea" placeholder="Informations générales pour les fournisseurs..." />
-//               </div>
-
-//               <div className="price-request-form-group">
-//                 <label className="price-request-form-label">Adresse de livraison</label>
-//                 <div className="price-request-delivery-options">
-//                   <div className="price-request-delivery-option">
-//                     <input type="radio" id="delivery-hq" name="delivery" checked={deliveryType === 'headquarters'} onChange={() => setDeliveryType('headquarters')} />
-//                     <label htmlFor="delivery-hq">A mon siège</label>
-//                   </div>
-//                   <div className="price-request-delivery-option">
-//                     <input type="radio" id="delivery-new" name="delivery" checked={deliveryType === 'new'} onChange={() => setDeliveryType('new')} />
-//                     <label htmlFor="delivery-new">Nouvelle adresse</label>
-//                   </div>
-//                 </div>
-//                 {deliveryType === 'new' && (
-//                   <div className="price-request-new-address">
-//                     <textarea value={newAddress} onChange={(e) => setNewAddress(e.target.value)} className="price-request-form-textarea" placeholder="Adresse complète de livraison..." />
-//                     <div className="price-request-save-address">
-//                       <input type="checkbox" id="save-address" checked={saveAddress} onChange={(e) => setSaveAddress(e.target.checked)} />
-//                       <label htmlFor="save-address">Enregistrer cette adresse</label>
-//                     </div>
-//                   </div>
-//                 )}
-
-//                 {mode === 'by_product' && (
-//                   <>
-//                     <div className="price-request-form-group">
-//                       <label className="price-request-form-label">Mes fournisseurs de matériaux</label>
-//                       <SupplierSelect suppliers={suppliers} selectedIds={selectedSuppliers} onSelectionChange={setSelectedSuppliers} onSelectAll={handleSelectAllSuppliers} />
-//                     </div>
-
-//                     <div className="price-request-form-group">
-//                       <label className="price-request-form-label">Envoyer par mail</label>
-//                       <p style={{ fontSize: '12px', color: '#6c757d', margin: '0 0 8px 0' }}>Ajoutez le mail de votre contact</p>
-//                       <div className="price-request-email-input">
-//                         <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="price-request-form-input" placeholder="email@example.com" onKeyPress={(e) => e.key === 'Enter' && handleAddEmail()} />
-//                         <button onClick={handleAddEmail} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>Ajouter</button>
-//                       </div>
-//                       {manualEmails.length > 0 && (
-//                         <div className="price-request-file-list">
-//                           {manualEmails.map((email) => (
-//                             <div key={email} className="price-request-file-item">
-//                               <span>{email}</span>
-//                               <button onClick={() => handleRemoveEmail(email)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc3545' }}>
-//                                 <X size={16} />
-//                               </button>
-//                             </div>
-//                           ))}
-//                         </div>
-//                       )}
-//                     </div>
-//                   </>
-//                 )}
-
-//                 <button
-//                   className={`price-request-submit-button ${isFormValid ? 'ready' : ''}`}
-//                   disabled={!isFormValid}
-//                   title={submitDisabledReason}
-//                   onClick={handleSubmit}
-//                 >
-//                   Envoyer ma demande de prix
-//                 </button>
-//               </div>
-//             </div>
-//           </aside>
-//         </main>
-//       )}
-
-//       <button
-//         className="price-request-mobile-toggle"
-//         onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
-//       >
-//         <ShoppingCart size={24} />
-//         {cartItems.length > 0 && <span className="badge">{cartItems.length}</span>}
-//       </button>
-
-//       {selectedProductDetail && (
-//         <ProductDetailModal product={selectedProductDetail} onClose={() => setSelectedProductDetail(null)} />
-//       )}
-
-//       {loadingHistoryDetail && (
-//         <div className="price-request-modal-overlay">
-//           <div className="price-request-modal">
-//             <div style={{padding: 32, textAlign: 'center'}}>Chargement du détail...</div>
-//           </div>
-//         </div>
-//       )}
-
-     
-
-//       {selectedHistoryRequest && !loadingHistoryDetail && (
-//   <div className="price-request-modal-overlay" onClick={() => setSelectedHistoryRequest(null)}>
-//     <div className="price-request-modal" onClick={(e) => e.stopPropagation()}>
-//       <div className="price-request-modal-header">
-//         <h3 className="price-request-modal-title">Détail de la demande</h3>
-//         <button 
-//           className="price-request-modal-close" 
-//           onClick={() => setSelectedHistoryRequest(null)}
-//         >
-//           <X size={24} />
-//         </button>
-//       </div>
-      
-//       <div className="price-request-modal-content">
-//         {/* RÉFÉRENCE */}
-//         <div className="price-request-modal-info">
-//           <div className="price-request-modal-label">Référence</div>
-//           <p className="price-request-modal-value">{selectedHistoryRequest.reference}</p>
-//         </div>
-
-//         {/* DATE */}
-//         <div className="price-request-modal-info">
-//           <div className="price-request-modal-label">Date</div>
-//           <p className="price-request-modal-value">
-//             {(() => {
-//               const dateObj = new Date(selectedHistoryRequest.date_creation);
-//               return `${dateObj.toLocaleDateString('fr-FR')} à ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-//             })()}
-//           </p>
-//         </div>
-
-//         <div className="price-request-modal-divider"></div>
-
-//         {/* STATUT */}
-//         <div className="price-request-modal-info">
-//           <div className="price-request-modal-label">Statut</div>
-//           <span className={`price-request-modal-status-badge ${selectedHistoryRequest.statut}`}>
-//             {selectedHistoryRequest.statut}
-//           </span>
-//         </div>
-
-//         {/* URGENCE */}
-//         <div className="price-request-modal-info">
-//           <div className="price-request-modal-label">Urgence</div>
-//           <span className={`price-request-modal-urgency-badge ${
-//             selectedHistoryRequest.urgence === 'urgent' ? 'urgent' : 
-//             selectedHistoryRequest.urgence === 'tres_urgent' ? 'tres-urgent' : 
-//             'normal'
-//           }`}>
-//             {selectedHistoryRequest.urgence === 'urgent' ? 'Urgent' : 
-//              selectedHistoryRequest.urgence === 'tres_urgent' ? 'Très urgent' : 
-//              'Normal'}
-//           </span>
-//         </div>
-
-//         <div className="price-request-modal-divider"></div>
-
-//         {/* ADRESSE DE LIVRAISON */}
-//         <div className="price-request-modal-info">
-//           <div className="price-request-modal-label">Adresse de livraison</div>
-//           <p className="price-request-modal-value">
-//             {selectedHistoryRequest.adresse_livraison || 
-//              (selectedHistoryRequest.adresse_livraison_type === 'siege' ? 'Siège social' : 'Non spécifiée')}
-//           </p>
-//         </div>
-
-//         <div className="price-request-modal-divider"></div>
-
-//         {/* PRODUITS */}
-//         {selectedHistoryRequest.lignes && selectedHistoryRequest.lignes.length > 0 && (
-//           <div className="price-request-modal-info">
-//             <div className="price-request-modal-label">
-//               Produits ({selectedHistoryRequest.lignes.length})
-//             </div>
-//             <div className="price-request-modal-products">
-//               {selectedHistoryRequest.lignes.map((ligne) => (
-//                 <div key={ligne.id} className="price-request-modal-product-item">
-//                   {/* Nom du produit */}
-//                   <div className="price-request-modal-product-info">
-//                     <h4 className="price-request-modal-product-name">
-//                       {ligne.product_name}
-//                     </h4>
-//                     <span className="price-request-modal-product-reference">
-//                       Réf: {ligne.supplier_reference || 'N/A'}
-//                     </span>
-//                   </div>
-
-//                   {/* Détails produit */}
-//                   <div className="price-request-modal-product-details">
-//                     <div className="price-request-modal-product-detail">
-//                       <span className="price-request-modal-product-detail-label">Quantité</span>
-//                       <span className="price-request-modal-product-detail-value">
-//                         {ligne.quantite} {ligne.unit || ''}
-//                       </span>
-//                     </div>
-                    
-//                     {ligne.public_price && (
-//                       <div className="price-request-modal-product-detail">
-//                         <span className="price-request-modal-product-detail-label">Prix unitaire</span>
-//                         <span className="price-request-modal-product-detail-value">
-//                           {Number(ligne.public_price).toFixed(2)} €
-//                         </span>
-//                       </div>
-//                     )}
-                    
-//                     {ligne.public_price && (
-//                       <div className="price-request-modal-product-detail">
-//                         <span className="price-request-modal-product-detail-label">Total</span>
-//                         <span className="price-request-modal-product-detail-value">
-//                           {(Number(ligne.public_price) * ligne.quantite).toFixed(2)} €
-//                         </span>
-//                       </div>
-//                     )}
-//                   </div>
-
-//                   {/* Note produit */}
-//                   {ligne.note_ligne && (
-//                     <div className="price-request-modal-product-note">
-//                       <strong>Note :</strong> {ligne.note_ligne}
-//                     </div>
-//                   )}
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         )}
-
-//         <div className="price-request-modal-divider"></div>
-
-//         {/* FOURNISSEURS */}
-//         {selectedHistoryRequest.destinataires && selectedHistoryRequest.destinataires.length > 0 && (
-//           <div className="price-request-modal-info">
-//             <div className="price-request-modal-label">
-//               Fournisseurs ({selectedHistoryRequest.destinataires.length})
-//             </div>
-//             <div className="price-request-modal-suppliers">
-//               {selectedHistoryRequest.destinataires.map((dest) => (
-//                 <div key={dest.id} className="price-request-modal-supplier-item">
-//                   <span className="price-request-modal-supplier-name">
-//                     {dest.library_name || dest.nom_manuel || 'Fournisseur'}
-//                   </span>
-//                   {(dest.library_email || dest.email_manuel) && (
-//                     <span className="price-request-modal-supplier-email">
-//                       {dest.library_email || dest.email_manuel}
-//                     </span>
-//                   )}
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         )}
-
-//         {/* NOTE GÉNÉRALE */}
-//         {selectedHistoryRequest.note_generale && (
-//           <>
-//             <div className="price-request-modal-divider"></div>
-//             <div className="price-request-modal-info">
-//               <div className="price-request-modal-label">Note générale</div>
-//               <p className="price-request-modal-value">{selectedHistoryRequest.note_generale}</p>
-//             </div>
-//           </>
-//         )}
-//       </div>
-//     </div>
-//   </div>
-// )}
-//     </div>
-//   );
-// };
-
-
-
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-// import solutravo from "../assets/images/solutravo.png"
 import { CartItem } from './CartItem';
-import { ShoppingCart, X } from 'lucide-react';
+import { ShoppingCart, X, Info, Paperclip } from 'lucide-react';
 import '../styles/priceRequest.css';
 import { ProductCard } from './ProductCard';
 import { ProductDetailModal } from './ProductDetailsPrice';
 import { SupplierSelect } from './SupplierSelect';
-import {  
-  type PriceRequestItem, 
+import { getProductImageUrl } from '../helpers/BaseFileUrl';
+import {
+  type PriceRequestItem,
   type Product,
   type PriceRequests
 } from '../data/mockDataPrice';
 
 type RequestMode = 'by_supplier' | 'by_product' | null;
+type DeliveryType = 'siege' | 'retrait' | 'nouvelle';
 
-const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+const MAX_ATTACHMENTS = 5;
+
+interface Relance {
+  id: string;
+  type: 'x_jours_avant' | '1_jour_avant';
+  nb_jours?: number;
+}
 
 export const PriceRequest = () => {
+  const { societeId: societeIdParam, membreId: membreIdParam } = useParams<{
+    societeId: string;
+    membreId: string;
+  }>();
+  const societeId = societeIdParam ? Number(societeIdParam) : undefined;
+  const membreId = membreIdParam ? Number(membreIdParam) : undefined;
+
   const [mode, setMode] = useState<RequestMode>(null);
-  const [selectedSupplier, setSelectedSupplier] = useState<string>('');
-  const [selectedFamilies, setSelectedFamilies] = useState<string[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  // Mode par_fournisseur
+  const [libraries, setLibraries] = useState<any[]>([]);
+  const [selectedLibraryId, setSelectedLibraryId] = useState<string>('');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [libraryProducts, setLibraryProducts] = useState<any[]>([]);
+  const [loadingLibraryProducts, setLoadingLibraryProducts] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+
+  // Mode par_produit
+  const [catalogueProducts, setCatalogueProducts] = useState<any[]>([]);
+  const [fournisseurs, setFournisseurs] = useState<any[]>([]);
+  const [selectedFournisseurIds, setSelectedFournisseurIds] = useState<string[]>([]);
+
+  // Panier
   const [cartItems, setCartItems] = useState<PriceRequestItem[]>([]);
-  const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
-  const [reference, setReference] = useState('');
-  const [generalNote, setGeneralNote] = useState('');
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const cartScrollRef = useRef<HTMLDivElement>(null);
+
+  // Formulaire
+  const [reference, setReference] = useState('');
   const [urgency, setUrgency] = useState<'normal' | 'urgent' | 'tres_urgent'>('normal');
-
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [families, setFamilies] = useState<string[]>([]);
-
-  const params = useParams();
-  const societeId = params.societeId ? Number(params.societeId) : undefined;
-  const membreId = params.membreId ? Number(params.membreId) : undefined;
-  const [deliveryType, setDeliveryType] = useState<'headquarters' | 'new'>('headquarters');
+  const [generalNote, setGeneralNote] = useState('');
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>('siege');
   const [newAddress, setNewAddress] = useState('');
   const [saveAddress, setSaveAddress] = useState(false);
+  const [dateLimite, setDateLimite] = useState('');
+  const [relances, setRelances] = useState<Relance[]>([]);
 
-  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
+  // PJ max 5
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ✅ Email manuel : visible dans les DEUX modes
   const [manualEmails, setManualEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
+
+  // Recherche
+  const [librarySearchTerm, setLibrarySearchTerm] = useState('');
+  const [categorySearchTerm, setCategorySearchTerm] = useState('');
+  const [productSearchTerm, setProductSearchTerm] = useState('');
+
+  // Historique
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<PriceRequests[]>([]);
+  const [historySearch, setHistorySearch] = useState('');
+  const [historyStatutFilter, setHistoryStatutFilter] = useState<'all' | 'envoyee' | 'archivee'>('all');
   const [selectedHistoryRequest, setSelectedHistoryRequest] = useState<PriceRequests | null>(null);
   const [loadingHistoryDetail, setLoadingHistoryDetail] = useState(false);
-  
+
+  const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
-  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-  const [supplierSearchTerm, setSupplierSearchTerm] = useState('');
-  const [productSearchTerm, setProductSearchTerm] = useState('');
-  const [familySearchTerm, setFamilySearchTerm] = useState('');
-  console.log(selectedProducts)
+  const [submitting, setSubmitting] = useState(false);
 
-  // Charger l'historique des demandes de prix depuis le backend
+  // ── Chargement initial ────────────────────────────────────
   useEffect(() => {
-    if (!societeId) return;
-    
-    fetch(`${API_BASE_URL}/demandes-prix?societe_id=${societeId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.data) setHistory(data.data);
-      })
-      .catch(err => console.error('Erreur chargement historique:', err));
-  }, [societeId]);
+    if (!societeId || !membreId) return;
 
-  // Filter products coming from API
-  const filteredProducts = products.filter((product) => {
-    if (mode === 'by_supplier') {
-      if (selectedFamilies.length > 0) {
-        if (selectedSupplier && String(product.library_id) !== selectedSupplier) return false;
-        if (!selectedFamilies.includes(product.famille_name)) return false;
-      }
-    }
+    fetch(`${API_BASE_URL}/demandes-prix?societe_id=${societeId}`)
+      .then(r => r.json()).then(d => { if (d?.data) setHistory(d.data); }).catch(console.error);
 
-    if (mode === 'by_product') {
-      if (selectedFamilies.length > 0 && !selectedFamilies.includes(product.famille_name)) return false;
-    }
+    fetch(`${API_BASE_URL}/demandes-prix/bibliotheques?societe_id=${societeId}`)
+      .then(r => r.json()).then(d => { if (d?.data) setLibraries(d.data); }).catch(console.error);
 
-    if (productSearchTerm) {
-      return (
-        product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
-        (product.supplier_reference || '').toLowerCase().includes(productSearchTerm.toLowerCase())
-      );
-    }
+    // Fournisseurs de la société (sa base)
+    fetch(`${API_BASE_URL}/demandes-prix/fournisseurs?societe_id=${societeId}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d?.data) setFournisseurs(d.data.map((f: any) => ({ id: String(f.id), name: f.name })));
+      }).catch(console.error);
 
-    return true;
+    // ✅ Catalogue global (TOUS les produits) + Solutravo — pas de filtre societe_id
+    fetch(`${API_BASE_URL}/demandes-prix/catalogue`)
+      .then(r => r.json()).then(d => { if (d?.data) setCatalogueProducts(d.data); }).catch(console.error);
+  }, [societeId, membreId]);
+
+  // Catégories
+  useEffect(() => {
+    if (!selectedLibraryId || !societeId) return;
+    setLoadingCategories(true);
+    setCategories([]); setSelectedCategoryIds([]); setLibraryProducts([]);
+    fetch(`${API_BASE_URL}/demandes-prix/bibliotheques/${selectedLibraryId}/categories`)
+      .then(r => r.json()).then(d => { if (d?.data) setCategories(d.data); }).catch(console.error)
+      .finally(() => setLoadingCategories(false));
+  }, [selectedLibraryId, societeId]);
+
+  // Produits bibliothèque
+  useEffect(() => {
+    if (!selectedLibraryId) return;
+    setLoadingLibraryProducts(true);
+    const catParam = selectedCategoryIds.length === 1 ? `?category_id=${selectedCategoryIds[0]}` : '';
+    fetch(`${API_BASE_URL}/demandes-prix/bibliotheques/${selectedLibraryId}/produits${catParam}`)
+      .then(r => r.json()).then(d => { if (d?.data) setLibraryProducts(d.data); }).catch(console.error)
+      .finally(() => setLoadingLibraryProducts(false));
+  }, [selectedLibraryId, selectedCategoryIds]);
+
+  const toProduct = (p: any): Product => ({
+    id: String(p.id),
+    name: p.name || p.nom || '',
+    reference: p.supplier_reference || p.reference || '',
+    familyId: p.famille_name || p.category_name || p.famille || '',
+    supplierId: String(p.source || p.library_id || ''),
+    description: p.description || '',
+    unit: p.unit || p.unite || '',
+    imageUrl: getProductImageUrl(p.image || p.image_path || null) || ''
   });
 
-  const handleAddToCart = (product: any) => {
-    const mappedProduct: Product = {
-      id: String(product.id),
-      name: product.name,
-      reference: product.supplier_reference || '',
-      familyId: product.famille_name || '',
-      supplierId: String(product.library_id || ''),
-      description: product.description || '',
-      unit: product.unit || '',
-      imageUrl: product.image || ''
-    };
+  const rawProducts = mode === 'by_supplier' ? libraryProducts : catalogueProducts;
+  const filteredProducts = rawProducts.filter(p => {
+    if (!productSearchTerm) return true;
+    const t = productSearchTerm.toLowerCase();
+    return (p.name || p.nom || '').toLowerCase().includes(t)
+      || (p.supplier_reference || '').toLowerCase().includes(t)
+      || (p.description || '').toLowerCase().includes(t);
+  });
 
-    const existing = cartItems.find((item) => item.product.id === mappedProduct.id);
+  const filteredHistory = history.filter(req => {
+    const matchSearch = !historySearch || req.reference.toLowerCase().includes(historySearch.toLowerCase());
+    const matchStatut = historyStatutFilter === 'all' || req.statut === historyStatutFilter;
+    return matchSearch && matchStatut;
+  });
+
+  // Panier
+  const handleAddToCart = (product: any) => {
+    const mapped = toProduct(product);
+    const existing = cartItems.find(i => i.product.id === mapped.id);
     if (existing) {
-      setCartItems(
-        cartItems.map((item) =>
-          item.product.id === mappedProduct.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
-      );
+      setCartItems(cartItems.map(i => i.product.id === mapped.id ? { ...i, quantity: i.quantity + 1 } : i));
     } else {
-      setCartItems((prev) => {
-        const next = [...prev, { product: mappedProduct, quantity: 1, note: '' }];
-        
-        setTimeout(() => {
-          if (cartScrollRef.current) {
-            cartScrollRef.current.scrollTo({
-              top: cartScrollRef.current.scrollHeight,
-              behavior: 'smooth'
-            });
-          }
-        }, 100);
-        
-        if (prev.length === 0) setExpandedItemId(mappedProduct.id);
-        
+      setCartItems(prev => {
+        const next = [...prev, { product: mapped, quantity: 1, note: '' }];
+        setTimeout(() => cartScrollRef.current?.scrollTo({ top: cartScrollRef.current.scrollHeight, behavior: 'smooth' }), 100);
+        if (prev.length === 0) setExpandedItemId(mapped.id);
         return next;
       });
     }
     setIsRightPanelOpen(true);
   };
 
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
-    setCartItems(
-      cartItems.map((item) => (item.product.id === productId ? { ...item, quantity } : item))
-    );
-  };
-
-  const handleUpdateNote = (productId: string, note: string) => {
-    setCartItems(cartItems.map((item) => (item.product.id === productId ? { ...item, note } : item)));
-  };
-
-  const handleUpdateReference = (productId: string, reference: string) => {
-    setCartItems(cartItems.map((item) => (item.product.id === productId ? { ...item, reference } : item)));
-  };
-
-  const handleRemoveFromCart = (productId: string) => {
-    setCartItems((prev) => {
-      const next = prev.filter((item) => item.product.id !== productId);
-      if (expandedItemId === productId) {
-        setExpandedItemId(next.length > 0 ? next[0].product.id : null);
-      }
+  const handleUpdateQuantity = (id: string, qty: number) =>
+    setCartItems(cartItems.map(i => i.product.id === id ? { ...i, quantity: qty } : i));
+  const handleUpdateNote = (id: string, note: string) =>
+    setCartItems(cartItems.map(i => i.product.id === id ? { ...i, note } : i));
+  const handleRemoveFromCart = (id: string) => {
+    setCartItems(prev => {
+      const next = prev.filter(i => i.product.id !== id);
+      if (expandedItemId === id) setExpandedItemId(next.length > 0 ? next[0].product.id : null);
       return next;
     });
   };
 
-  const handleRemoveEmail = (email: string) => {
-    setManualEmails(manualEmails.filter((e) => e !== email));
+  // PJ
+  const handleAddAttachment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const remaining = MAX_ATTACHMENTS - attachments.length;
+    setAttachments(prev => [...prev, ...files.slice(0, remaining)]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // Email manuel
   const handleAddEmail = () => {
-    if (newEmail && newEmail.includes('@') && !manualEmails.includes(newEmail)) {
-      setManualEmails([...manualEmails, newEmail]);
+    const trimmed = newEmail.trim();
+    if (trimmed && trimmed.includes('@') && !manualEmails.includes(trimmed)) {
+      setManualEmails([...manualEmails, trimmed]);
       setNewEmail('');
     }
   };
 
-  const handleSelectAllSuppliers = () => {
-    if (selectedSuppliers.length === suppliers.length) {
-      setSelectedSuppliers([]);
-    } else {
-      setSelectedSuppliers(suppliers.map((s) => String(s.id)));
-    }
+  // Relances
+  const addRelance = (type: 'x_jours_avant' | '1_jour_avant') => {
+    if (type === '1_jour_avant' && relances.some(r => r.type === '1_jour_avant')) return;
+    setRelances([...relances, { id: `${Date.now()}`, type, nb_jours: type === 'x_jours_avant' ? 2 : undefined }]);
   };
+  const updateRelanceJours = (id: string, nb: number) =>
+    setRelances(relances.map(r => r.id === id ? { ...r, nb_jours: nb } : r));
+  const removeRelance = (id: string) => setRelances(relances.filter(r => r.id !== id));
 
-  useEffect(() => {
-    const fetchDataAsync = async () => {
-      if (!societeId) return;
+  // Validation
+  // by_supplier : seule la bibliothèque compte (pas d'email manuel)
+  // by_product  : fournisseurs OU emails manuels
+  const hasRecipient = mode === 'by_supplier'
+    ? !!selectedLibraryId
+    : selectedFournisseurIds.length > 0 || manualEmails.length > 0;
 
-      try {
-        // Charger les fournisseurs
-        const supRes = await fetch(`${API_BASE_URL}/demandes-prix/fournisseurs?societe_id=${societeId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          
-        });
-        const supData = await supRes.json();
-        
-        if (supData && Array.isArray(supData.data)) {
-          const mapped = supData.data.map((r: any) => ({ id: String(r.id), name: r.name, image: r.image }));
-          setSuppliers(mapped);
-        }
-
-        // Charger les produits
-        const libQuery = selectedSupplier ? `&library_id=${selectedSupplier}` : '';
-        const prodRes = await fetch(`${API_BASE_URL}/demandes-prix/produits?societe_id=${societeId}${libQuery}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          
-        });
-        const prodData = await prodRes.json();
-        
-        if (prodData && Array.isArray(prodData.data)) {
-          setProducts(prodData.data);
-
-          const fams = Array.from(new Set(prodData.data.map((p: any) => p.famille_name || ''))) as string[];
-          setFamilies(fams.filter((f) => f));
-        }
-      } catch (err: any) {
-        console.error('Erreur lors du chargement des fournisseurs/produits:', err.message || err);
-      }
-    };
-
-    fetchDataAsync();
-  }, [societeId, selectedSupplier]);
-
-  const handleSubmit = async () => {
-    if (!mode || societeId === undefined || membreId === undefined) return;
-
-    if (!isFormValid) {
-      alert(submitDisabledReason || 'Formulaire invalide, vérifiez les champs');
-      return;
-    }
-
-    const composedReference = cartItems.map((i) => (i.reference || i.product.reference || '').toString().trim()).filter(Boolean).join(' | ');
-
-    const payload: any = {
-      reference: composedReference || reference || '',
-      type_demande: mode === 'by_supplier' ? 'par_fournisseur' : 'par_produit',
-      note_generale: generalNote || undefined,
-      urgence: urgency || 'normal',
-      adresse_livraison_type: deliveryType === 'headquarters' ? 'siege' : 'nouvelle',
-      adresse_livraison: deliveryType === 'new' ? newAddress || undefined : undefined,
-      societe_id: societeId,
-      membre_id: membreId,
-      lignes: cartItems.map((item, index) => ({
-        product_id: Number(item.product.id),
-        quantite: item.quantity,
-        note_ligne: `${(item.reference || item.product.reference || '').toString().trim()}${item.note ? ' — ' + item.note : ''}` || undefined,
-        ordre: index
-      })),
-      destinataires: [] as any[],
-    };
-
-    if (mode === 'by_supplier') {
-      if (selectedSupplier) payload.destinataires.push({ library_id: Number(selectedSupplier) });
-    } else {
-      payload.destinataires.push(...selectedSuppliers.map((id) => ({ library_id: Number(id) })));
-    }
-
-    payload.destinataires.push(...manualEmails.map((email) => ({ email_manuel: email })));
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/demandes-prix`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        
-        body: JSON.stringify(payload),
-      });
-
-      if (res.status >= 200 && res.status < 300) {
-        alert('Demande de prix créée et envoyée avec succès');
-        setCartItems([]);
-        setReference('');
-        setGeneralNote('');
-        setUrgency('normal');
-        setDeliveryType('headquarters');
-        setNewAddress('');
-        setSelectedSuppliers([]);
-        setManualEmails([]);
-        setIsRightPanelOpen(false);
-      } else {
-        const errorData = await res.json();
-        alert(errorData?.message || 'Erreur lors de l\'envoi de la demande');
-      }
-    } catch (err: any) {
-      console.error('Erreur création demande:', err);
-      alert(err?.message || 'Erreur lors de l\'envoi de la demande, réessayer.');
-    }
-  };
-
-  const itemsHaveValidQuantity = cartItems.length > 0 && cartItems.every((i) => typeof i.quantity === 'number' && i.quantity > 0);
-  const itemsHaveValidReference = cartItems.length > 0 && cartItems.every((i) => ((i.reference || i.product.reference) || '').toString().trim() !== '');
-
-  const hasRecipientForMode = (() => {
-    if (mode === 'by_supplier') {
-      return !!selectedSupplier || manualEmails.length > 0;
-    }
-    if (mode === 'by_product') {
-      return selectedSuppliers.length > 0 || manualEmails.length > 0;
-    }
-    return false;
-  })();
-
-  const isFormValid = cartItems.length > 0 && itemsHaveValidQuantity && itemsHaveValidReference && societeId !== undefined && membreId !== undefined && hasRecipientForMode;
+  const isFormValid = cartItems.length > 0
+    && cartItems.every(i => i.quantity > 0)
+    && reference.trim() !== ''
+    && !!mode && !!societeId && !!membreId && hasRecipient;
 
   let submitDisabledReason = '';
-  if (cartItems.length === 0) {
-    submitDisabledReason = 'Ajoutez au moins un produit à la demande';
-  } else if (!itemsHaveValidQuantity) {
-    submitDisabledReason = 'Vérifiez les quantités des produits (>= 1)';
-  } else if (!itemsHaveValidReference) {
-    submitDisabledReason = 'Référence produit requise pour chaque ligne';
-  } else if (!hasRecipientForMode) {
-    submitDisabledReason = mode === 'by_supplier' ? 'Veuillez sélectionner un fournisseur ou ajouter un email destinataire' : 'Veuillez sélectionner au moins un fournisseur ou ajouter un email destinataire';
-  } else if (societeId === undefined || membreId === undefined) {
-    submitDisabledReason = 'Paramètres d\'environnement manquants (societe/membre)';
-  }
+  if (!mode) submitDisabledReason = 'Sélectionnez un mode';
+  else if (cartItems.length === 0) submitDisabledReason = 'Ajoutez au moins un produit';
+  else if (!cartItems.every(i => i.quantity > 0)) submitDisabledReason = 'Vérifiez les quantités';
+  else if (reference.trim() === '') submitDisabledReason = 'La référence de la demande est requise';
+  else if (!hasRecipient) submitDisabledReason = mode === 'by_supplier'
+    ? 'Sélectionnez une bibliothèque ou ajoutez un email'
+    : 'Sélectionnez un fournisseur ou ajoutez un email';
+
+  // Envoi
+  const handleSubmit = async () => {
+    if (!isFormValid || !societeId || !membreId || submitting) return;
+    setSubmitting(true);
+
+    const destinataires: any[] = [];
+    if (mode === 'by_supplier' && selectedLibraryId) {
+      destinataires.push({ library_id: Number(selectedLibraryId) });
+    }
+    if (mode === 'by_product') {
+      destinataires.push(...selectedFournisseurIds.map(id => ({ fournisseur_id: Number(id) })));
+      // ✅ Email manuel UNIQUEMENT en mode par_produit
+      destinataires.push(...manualEmails.map(email => ({ email_manuel: email })));
+    }
+
+    const payload: any = {
+      reference: reference.trim(),
+      type_demande: mode === 'by_supplier' ? 'par_fournisseur' : 'par_produit',
+      societe_id: societeId,
+      membre_id: membreId,
+      urgence: urgency,
+      note_generale: generalNote || undefined,
+      adresse_livraison_type: deliveryType,
+      adresse_livraison: deliveryType === 'nouvelle' ? newAddress || undefined : undefined,
+      sauvegarder_adresse: deliveryType === 'nouvelle' ? saveAddress : undefined,
+      date_limite_retour: dateLimite || undefined,
+      relances: relances.length > 0 ? relances.map(r => ({ type: r.type, nb_jours: r.nb_jours })) : undefined,
+      lignes: cartItems.map((item, index) => ({
+        product_source: item.product.supplierId === 'catalogue' ? 'catalogue' : 'library',
+        product_id: Number(item.product.id),
+        product_nom: item.product.name,
+        product_description: item.product.description,
+        product_unite: item.product.unit,
+        product_image: item.product.imageUrl,
+        quantite: item.quantity,
+        note_ligne: item.note || undefined,
+        ordre: index
+      })),
+      destinataires
+    };
+
+    try {
+      let res: Response;
+      if (attachments.length > 0) {
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(payload));
+        attachments.forEach(file => formData.append('pieces_jointes', file));
+        res = await fetch(`${API_BASE_URL}/demandes-prix`, { method: 'POST', body: formData });
+      } else {
+        res = await fetch(`${API_BASE_URL}/demandes-prix`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        alert(`✅ Demande "${data.data?.reference || reference}" envoyée avec succès !`);
+        setCartItems([]); setReference(''); setGeneralNote(''); setUrgency('normal');
+        setDeliveryType('siege'); setNewAddress(''); setSaveAddress(false);
+        setSelectedFournisseurIds([]); setManualEmails([]);
+        setIsRightPanelOpen(false); setSelectedLibraryId('');
+        setSelectedCategoryIds([]); setDateLimite(''); setRelances([]);
+        setAttachments([]);
+        fetch(`${API_BASE_URL}/demandes-prix?societe_id=${societeId}`)
+          .then(r => r.json()).then(d => { if (d?.data) setHistory(d.data); });
+      } else {
+        const err = await res.json();
+        alert(err?.message || err?.error || 'Erreur lors de l\'envoi');
+      }
+    } catch (err: any) {
+      alert(err?.message || 'Erreur réseau');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleModeChange = (newMode: RequestMode) => {
+    setMode(newMode); setCartItems([]); setProductSearchTerm('');
+    setSelectedLibraryId(''); setSelectedCategoryIds([]);
+    setSelectedFournisseurIds([]); setManualEmails([]);
+  };
+
+  const handleUpdateStatutDestinataire = async (destId: number, demandeId: number, statut: string) => {
+    try {
+      await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/destinataires/${destId}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ societe_id: societeId, statut })
+      });
+      const res = await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}?societe_id=${societeId}`);
+      const data = await res.json();
+      if (data?.data) setSelectedHistoryRequest(data.data);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleArchiver = async (demandeId: number) => {
+    try {
+      await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/archiver`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ societe_id: societeId })
+      });
+      setSelectedHistoryRequest(null);
+      fetch(`${API_BASE_URL}/demandes-prix?societe_id=${societeId}`)
+        .then(r => r.json()).then(d => { if (d?.data) setHistory(d.data); });
+    } catch (err) { console.error(err); }
+  };
+
+  // ── Bloc réutilisable : email manuel + PJ (commun aux deux modes) ──────────
+  const renderEmailManuel = () => (
+    <div className="price-request-form-group">
+      <label className="price-request-form-label">Ajouter un destinataire supplémentaire</label>
+      <div className="price-request-email-input">
+        <input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)}
+          className="price-request-form-input" placeholder="email@example.com"
+          onKeyDown={e => e.key === 'Enter' && handleAddEmail()} />
+        <button onClick={handleAddEmail} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>Ajouter</button>
+      </div>
+      {manualEmails.length > 0 && (
+        <div className="price-request-file-list" style={{ marginTop: 6 }}>
+          {manualEmails.map(email => (
+            <div key={email} className="price-request-file-item">
+              <span>{email}</span>
+              <button onClick={() => setManualEmails(manualEmails.filter(e => e !== email))}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc3545' }}>
+                <X size={13} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPiecesJointes = () => (
+    <div className="price-request-form-group">
+      <label className="price-request-form-label">
+        Pièces jointes
+        <span style={{ color: '#aaa', fontWeight: 400, marginLeft: 6, fontSize: 10 }}>
+          ({attachments.length}/{MAX_ATTACHMENTS})
+        </span>
+      </label>
+      {attachments.length > 0 && (
+        <div className="price-request-file-list" style={{ marginBottom: 6 }}>
+          {attachments.map((file, index) => (
+            <div key={index} className="price-request-file-item">
+              <Paperclip size={11} color="#888" />
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 11 }}>
+                {file.name}
+              </span>
+              <span style={{ color: '#bbb', fontSize: 10 }}>{(file.size / 1024).toFixed(0)}ko</span>
+              <button onClick={() => setAttachments(prev => prev.filter((_, i) => i !== index))}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc3545', padding: 0 }}>
+                <X size={11} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      {attachments.length < MAX_ATTACHMENTS && (
+        <>
+          <input ref={fileInputRef} type="file" multiple
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+            onChange={handleAddAttachment} style={{ display: 'none' }} id="pj-input" />
+          <label htmlFor="pj-input" className="price-request-pj-btn">
+            <Paperclip size={12} /> Ajouter une pièce jointe
+          </label>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <div className="price-request-container">
       <header className="price-request-header">
-         <div className="price-request-logo">
-          {/* <div className="logo">
-            <img src={solutravo} alt="Solutravo" className="logo-icon" />
-          </div> */}
-          <span></span>
-        </div> 
+        <span></span>
         <div className="price-request-tabs">
-          <button
-            className={`price-request-tab ${showHistory ? 'active' : ''}`}
-            onClick={() => setShowHistory(!showHistory)}
-          >
-            Historique
-          </button>
+          <button className={`price-request-tab ${showHistory ? 'active' : ''}`}
+            onClick={() => setShowHistory(!showHistory)}>Historique</button>
         </div>
       </header>
 
       {showHistory ? (
         <div className="price-request-panel" style={{ flex: 1 }}>
           <div className="price-request-panel-header">
-            <h3 className="price-request-panel-title">Historique des demandes</h3>
+            <h3 className="price-request-panel-title" style={{ marginBottom: 10 }}>Historique des demandes</h3>
+            <div className="price-request-history-filters">
+              <input type="text" placeholder="Rechercher par référence..."
+                className="price-request-search" style={{ marginBottom: 0, flex: 1 }}
+                value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
+              <select className="price-request-form-select" style={{ width: 'auto', minWidth: 140 }}
+                value={historyStatutFilter} onChange={e => setHistoryStatutFilter(e.target.value as any)}>
+                <option value="all">Tous les statuts</option>
+                <option value="envoyee">Envoyée</option>
+                <option value="archivee">Archivée</option>
+              </select>
+            </div>
           </div>
           <div className="price-request-panel-content">
-            {history.map((request) => (
-              <div 
-                key={request.id} 
-                className="price-request-history-item"
-                onClick={async () => {
-                  setLoadingHistoryDetail(true);
-                  try {
-                    const res = await fetch(`${API_BASE_URL}/demandes-prix/${request.id}?societe_id=${societeId}`, {
-                      method: 'GET',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                      },
-                      
-                    });
-                    const data = await res.json();
-                    if (data?.data) setSelectedHistoryRequest(data.data);
-                  } catch (e) {
-                    setSelectedHistoryRequest(null);
-                  } finally {
-                    setLoadingHistoryDetail(false);
-                  }
-                }}
-              >
+            {filteredHistory.length === 0 && (
+              <div style={{ textAlign: 'center', padding: 40, color: '#aaa', fontSize: 13 }}>Aucune demande trouvée</div>
+            )}
+            {filteredHistory.map(req => (
+              <div key={req.id} className="price-request-history-item" onClick={async () => {
+                setLoadingHistoryDetail(true);
+                try {
+                  const res = await fetch(`${API_BASE_URL}/demandes-prix/${req.id}?societe_id=${societeId}`);
+                  const data = await res.json();
+                  if (data?.data) setSelectedHistoryRequest(data.data);
+                } catch { setSelectedHistoryRequest(null); }
+                finally { setLoadingHistoryDetail(false); }
+              }}>
                 <div className="price-request-history-header">
-                  <span className="price-request-history-reference">{request.reference}</span>
-                  <span className="price-request-history-date">
-                    {(() => {
-                      const dateObj = new Date(request.date_creation);
-                      if (isNaN(dateObj.getTime())) return 'Date invalide';
-                      return `${dateObj.toLocaleDateString('fr-FR')} à ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-                    })()}
+                  <span className="price-request-history-reference">{req.reference}</span>
+                  <span className="price-request-history-date">{new Date(req.date_creation).toLocaleDateString('fr-FR')}</span>
+                </div>
+                <p className="price-request-history-info">{req.nb_lignes ?? 0} produit(s) · {req.nb_destinataires ?? 0} destinataire(s)</p>
+                <div style={{ display: 'flex', gap: 5, marginTop: 5 }}>
+                  <span className={`price-request-badge ${req.urgence === 'tres_urgent' ? 'very-urgent' : req.urgence === 'urgent' ? 'urgent' : 'normal'}`}>
+                    {req.urgence === 'tres_urgent' ? 'Très urgent' : req.urgence === 'urgent' ? 'Urgent' : 'Normal'}
+                  </span>
+                  <span className={`price-request-badge ${req.statut === 'archivee' ? 'archived' : 'sent'}`}>
+                    {req.statut === 'archivee' ? 'Archivée' : 'Envoyée'}
                   </span>
                 </div>
-                
-                <p className="price-request-history-info">
-                  {request.nb_lignes || (request.lignes ? request.lignes.length : 0)} produit(s) - {request.nb_destinataires || (request.destinataires ? request.destinataires.length : 0)} fournisseur(s)
-                </p>
-                
-                <p className="price-request-history-info">
-                  Livraison: {request.adresse_livraison || (request.adresse_livraison_type === 'siege' ? 'Siège social' : 'Nouvelle adresse')}
-                </p>
-                
-                <span
-                  className={`price-request-badge ${
-                    request.urgence === 'urgent' ? 'urgent' : 
-                    request.urgence === 'tres_urgent' ? 'very-urgent' : 
-                    'normal'
-                  }`}
-                >
-                  {request.urgence === 'urgent' ? 'Urgent' : 
-                   request.urgence === 'tres_urgent' ? 'Très urgent' : 
-                   'Normal'}
-                </span>
               </div>
             ))}
           </div>
         </div>
       ) : (
         <main className="price-request-main">
+
+          {/* ── GAUCHE ── */}
           <aside className="price-request-panel price-request-panel-left">
             <div className="price-request-left-header">
               <div className="price-request-mode-tabs">
-                <button
-                  className={`price-request-mode-tab ${mode === 'by_supplier' ? 'active' : ''}`}
-                  onClick={() => {
-                    setMode('by_supplier');
-                    setSelectedSupplier('');
-                    setSelectedFamilies([]);
-                    setCartItems([]);
-                    setProductSearchTerm('');
-                    setFamilySearchTerm('');
-                  }}
-                >
-                  Par fournisseur
-                </button>
-                <button
-                  className={`price-request-mode-tab ${mode === 'by_product' ? 'active' : ''}`}
-                  onClick={() => {
-                    setMode('by_product');
-                    setSelectedProducts([]);
-                    setCartItems([]);
-                    setProductSearchTerm('');
-                    setFamilySearchTerm('');
-                  }}
-                >
-                  Par produit(s)
-                </button>
+                <button className={`price-request-mode-tab ${mode === 'by_supplier' ? 'active' : ''}`}
+                  onClick={() => handleModeChange('by_supplier')}>Par fournisseur</button>
+                <button className={`price-request-mode-tab ${mode === 'by_product' ? 'active' : ''}`}
+                  onClick={() => handleModeChange('by_product')}>Par produit(s)</button>
               </div>
             </div>
 
-            <div className="price-request-panel-header">
-              <h3 className="price-request-panel-title">
-                {mode === 'by_supplier' ? 'Fournisseur' : mode === 'by_product' ? '' : ''}
-              </h3>
-              {mode === 'by_supplier' && (
-                <input
-                  type="text"
-                  placeholder={'Rechercher un fournisseur...'}
-                  className="price-request-search"
-                  value={supplierSearchTerm}
-                  onChange={(e) => setSupplierSearchTerm(e.target.value)}
-                />
-              )}
-            </div>
             <div className="price-request-panel-content">
-              {mode === null ? (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#6c757d', fontSize: '12px' }}>
+              {mode === null && (
+                <div style={{ textAlign: 'center', padding: 20, color: '#aaa', fontSize: 12 }}>
                   Sélectionnez un mode ci-dessus
                 </div>
-              ) : mode === 'by_supplier' ? (
+              )}
+
+              {mode === 'by_supplier' && (
                 <>
-                  <div className="price-request-section-title">Liste</div>
+                  <div className="price-request-section-title">Bibliothèques</div>
+                  <input type="text" placeholder="Rechercher..." className="price-request-search"
+                    value={librarySearchTerm} onChange={e => setLibrarySearchTerm(e.target.value)} />
                   <div className="price-request-checkbox-group">
-                    {suppliers
-                      .filter((s) => !supplierSearchTerm || s.name.toLowerCase().includes(supplierSearchTerm.toLowerCase()))
-                      .map((supplier) => (
-                        <div key={supplier.id} className="price-request-checkbox-item">
-                          <input
-                            type="checkbox"
-                            id={`supplier-${supplier.id}`}
-                            checked={selectedSupplier === String(supplier.id)}
-                            onChange={() =>
-                              setSelectedSupplier(selectedSupplier === String(supplier.id) ? '' : String(supplier.id))
-                            }
-                          />
-                          <label htmlFor={`supplier-${supplier.id}`}>{supplier.name}</label>
+                    {libraries
+                      .filter(l => !librarySearchTerm || (l.name || '').toLowerCase().includes(librarySearchTerm.toLowerCase()))
+                      .map(lib => (
+                        <div key={lib.id} className="price-request-checkbox-item">
+                          <input type="radio" id={`lib-${lib.id}`} name="library"
+                            checked={selectedLibraryId === String(lib.id)}
+                            onChange={() => setSelectedLibraryId(String(lib.id))} />
+                          <label htmlFor={`lib-${lib.id}`}>{lib.name || `Bibliothèque ${lib.id}`}</label>
                         </div>
                       ))}
+                    {libraries.length === 0 && <div style={{ fontSize: 11, color: '#bbb' }}>Chargement...</div>}
                   </div>
 
-                  {selectedSupplier && (
+                  {selectedLibraryId && (
                     <>
-                      <div className="price-request-section-title">Les Familles de produits</div>
-                      <input
-                        type="text"
-                        placeholder="Rechercher une famille de produit"
-                        className="price-request-search"
-                        value={familySearchTerm}
-                        onChange={(e) => setFamilySearchTerm(e.target.value)}
-                      />
-                      <div className="price-request-checkbox-group">
-                        {Array.from(
-                          new Set(
-                            products
-                              .filter((p) => String(p.library_id) === String(selectedSupplier))
-                              .map((p) => p.famille_name || '')
-                          )
-                        )
-                          .filter((f) => f)
-                          .filter((family) => !familySearchTerm || family.toLowerCase().includes(familySearchTerm.toLowerCase()))
-                          .map((family) => (
-                            <div key={family} className="price-request-checkbox-item">
-                              <input
-                                type="checkbox"
-                                id={`family-${family}`}
-                                checked={selectedFamilies.includes(family)}
-                                onChange={() => {
-                                  if (selectedFamilies.includes(family)) {
-                                    setSelectedFamilies(selectedFamilies.filter((id) => id !== family));
-                                  } else {
-                                    setSelectedFamilies([...selectedFamilies, family]);
-                                  }
-                                }}
-                              />
-                              <label htmlFor={`family-${family}`}>{family}</label>
-                            </div>
-                          ))}
-                      </div>
+                      <div className="price-request-section-title" style={{ marginTop: 10 }}>Familles de produits</div>
+                      <input type="text" placeholder="Filtrer les familles..." className="price-request-search"
+                        value={categorySearchTerm} onChange={e => setCategorySearchTerm(e.target.value)} />
+                      {loadingCategories ? (
+                        <div style={{ fontSize: 11, color: '#bbb' }}>Chargement...</div>
+                      ) : categories.length === 0 ? (
+                        <div style={{ fontSize: 11, color: '#bbb' }}>Aucune famille trouvée</div>
+                      ) : (
+                        <div className="price-request-checkbox-group">
+                          {categories
+                            .filter(c => !categorySearchTerm || (c.name || '').toLowerCase().includes(categorySearchTerm.toLowerCase()))
+                            .map(cat => {
+                              const id = String(cat.id);
+                              return (
+                                <div key={cat.id} className="price-request-checkbox-item">
+                                  <input type="checkbox" id={`cat-${cat.id}`}
+                                    checked={selectedCategoryIds.includes(id)}
+                                    onChange={() => setSelectedCategoryIds(prev =>
+                                      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+                                    )} />
+                                  <label htmlFor={`cat-${cat.id}`}>
+                                    {cat.name || `Famille ${cat.id}`}
+                                    {cat.nb_produits !== undefined &&
+                                      <span style={{ color: '#bbb', marginLeft: 4, fontStyle: 'italic' }}>({cat.nb_produits})</span>}
+                                  </label>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
                     </>
                   )}
                 </>
-              ) : (
-                <>
-                  <div className="price-request-section-title">Groupes</div>
-                  <input
-                    type="text"
-                    placeholder="Rechercher une famille de produit"
-                    className="price-request-search"
-                    value={familySearchTerm}
-                    onChange={(e) => setFamilySearchTerm(e.target.value)}
-                  />
-                  <div className="price-request-checkbox-group">
-                    {families
-                      .filter((f) => !familySearchTerm || f.toLowerCase().includes(familySearchTerm.toLowerCase()))
-                      .map((family) => (
-                        <div key={family} className="price-request-checkbox-item">
-                          <input
-                            type="checkbox"
-                            id={`family-prod-${family}`}
-                            checked={selectedFamilies.includes(family)}
-                            onChange={() => {
-                              if (selectedFamilies.includes(family)) {
-                                setSelectedFamilies(selectedFamilies.filter((id) => id !== family));
-                              } else {
-                                setSelectedFamilies([...selectedFamilies, family]);
-                              }
-                            }}
-                          />
-                          <label htmlFor={`family-prod-${family}`}>{family}</label>
-                        </div>
-                      ))}
-                  </div>
-                </>
+              )}
+
+              {mode === 'by_product' && (
+                <div style={{ padding: '10px 0', color: '#888', fontSize: 12, lineHeight: 1.6 }}>
+                  Parcourez le catalogue et la bibliothèque Solutravo.<br />
+                  Sélectionnez vos fournisseurs destinataires à droite.
+                </div>
               )}
             </div>
           </aside>
 
+          {/* ── CENTRE ── */}
           <section className="price-request-panel price-request-panel-center">
             <div className="price-request-center-header">
-              <input
-                type="text"
-                placeholder="Rechercher un produit..."
+              <input type="text" placeholder="Rechercher un produit..."
                 className="price-request-search"
-                value={productSearchTerm}
-                onChange={(e) => setProductSearchTerm(e.target.value)}
-              />
+                value={productSearchTerm} onChange={e => setProductSearchTerm(e.target.value)} />
             </div>
             <div className="price-request-center-content">
               {mode === null ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6c757d', fontSize: '16px', flexDirection: 'column', gap: '16px' }}>
-                  <p>Choisissez un mode pour commencer</p>
-                  <p style={{ fontSize: '14px', marginTop: '8px' }}>Cliquez sur "Par fournisseur" ou "Par produit(s)" en haut à gauche</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#aaa', gap: 10 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600 }}>Choisissez un mode pour commencer</p>
                 </div>
+              ) : mode === 'by_supplier' && !selectedLibraryId ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#aaa' }}>
+                  <p style={{ fontSize: 12 }}>← Sélectionnez une bibliothèque à gauche</p>
+                </div>
+              ) : (loadingLibraryProducts && mode === 'by_supplier') ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#bbb', fontSize: 13 }}>Chargement...</div>
               ) : (
                 <div className="price-request-products-grid">
-                  {filteredProducts.map((product) => {
-                    const mappedProduct: Product = {
-                      id: String(product.id),
-                      name: product.name,
-                      reference: product.supplier_reference || '',
-                      familyId: product.famille_name || '',
-                      supplierId: String(product.library_id || ''),
-                      description: product.description || '',
-                      unit: product.unit || '',
-                      imageUrl: product.image || ''
-                    };
-
-                    return (
-                      <ProductCard
-                        key={product.id}
-                        product={mappedProduct}
-                        onAdd={handleAddToCart}
-                        onViewDetails={setSelectedProductDetail}
-                      />
-                    );
-                  })}
-
+                  {filteredProducts.map(product => (
+                    <ProductCard
+                      key={`${product.source || product.library_id || 'cat'}-${product.id}`}
+                      product={toProduct(product)}
+                      onAdd={() => handleAddToCart(product)}
+                      onViewDetails={setSelectedProductDetail}
+                    />
+                  ))}
                   {filteredProducts.length === 0 && (
-                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#6c757d', fontSize: '14px' }}>
-                      {mode === 'by_supplier' && !selectedSupplier
-                        ? 'Produits Solutravo et fournisseurs disponibles ci-dessous'
-                        : 'Aucun produit trouvé'}
+                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 40, color: '#aaa', fontSize: 13 }}>
+                      Aucun produit trouvé
                     </div>
                   )}
                 </div>
@@ -1481,6 +588,7 @@ export const PriceRequest = () => {
             </div>
           </section>
 
+          {/* ── DROITE ── */}
           <aside className={`price-request-panel price-request-panel-right ${isRightPanelOpen ? 'open' : ''}`}>
             <div className="price-request-panel-header">
               <h3 className="price-request-panel-title">Produit(s) sélectionné(s) ({cartItems.length})</h3>
@@ -1491,117 +599,156 @@ export const PriceRequest = () => {
                 <div className="price-request-cart-empty">Aucun produit sélectionné</div>
               ) : (
                 <div className="price-request-cart-items-list">
-                  {cartItems.map((item) => (
-                    <CartItem
-                      key={item.product.id}
-                      item={item}
-                      totalItems={cartItems.length}
+                  {cartItems.map(item => (
+                    <CartItem key={item.product.id} item={item} totalItems={cartItems.length}
                       isExpanded={expandedItemId === item.product.id}
                       onToggle={() => setExpandedItemId(expandedItemId === item.product.id ? null : item.product.id)}
-                      onUpdateQuantity={handleUpdateQuantity}
-                      onUpdateNote={handleUpdateNote}
-                      onUpdateReference={handleUpdateReference}
-                      onRemove={handleRemoveFromCart}
-                    />
+                      onUpdateQuantity={handleUpdateQuantity} onUpdateNote={handleUpdateNote}
+                      onRemove={handleRemoveFromCart} />
                   ))}
                 </div>
               )}
             </div>
 
             <div className="price-request-right-fixed">
+
+              {/* Référence */}
+              <div className="price-request-form-group">
+                <label className="price-request-form-label">Référence demande de prix *</label>
+                <input type="text" value={reference} onChange={e => setReference(e.target.value)}
+                  className="price-request-form-input" placeholder="Ex: Suite visite chantier Bordeaux..." />
+              </div>
+
+              {/* Date limite */}
+              <div className="price-request-form-group">
+                <label className="price-request-form-label">Date limite de retour</label>
+                <input type="date" value={dateLimite} onChange={e => setDateLimite(e.target.value)}
+                  className="price-request-form-input" min={new Date().toISOString().split('T')[0]} />
+              </div>
+
+              {/* Relances */}
+              {dateLimite && (
+                <div className="price-request-form-group">
+                  <label className="price-request-form-label">Relances automatiques</label>
+                  <div className="price-request-relances">
+                    {relances.map(r => (
+                      <div key={r.id} className="price-request-relance-item">
+                        <div className="price-request-relance-row">
+                          {r.type === 'x_jours_avant' && (
+                            <input type="number" min="1" value={r.nb_jours ?? 2}
+                              onChange={e => updateRelanceJours(r.id, Math.max(1, parseInt(e.target.value) || 1))}
+                              className="price-request-relance-input" />
+                          )}
+                          <span className="price-request-relance-label">
+                            {r.type === 'x_jours_avant' ? 'jour(s) avant la date limite' : '1 jour avant la date limite'}
+                          </span>
+                          <button onClick={() => removeRelance(r.id)} className="price-request-relance-remove">
+                            <X size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="price-request-relance-add-btns">
+                      <button className="price-request-relance-add-btn" onClick={() => addRelance('x_jours_avant')}>+ X jours avant</button>
+                      {!relances.some(r => r.type === '1_jour_avant') && (
+                        <button className="price-request-relance-add-btn" onClick={() => addRelance('1_jour_avant')}>+ 1 jour avant</button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Urgence */}
               <div className="price-request-form-group">
                 <label className="price-request-form-label">Urgence</label>
                 <div className="price-request-urgency-options">
-                  <label className={`price-request-urgency-option ${urgency === 'normal' ? ' active' : ''}`}>
-                    <input type="radio" name="urgence" checked={urgency === 'normal'} onChange={() => setUrgency('normal')} />
-                    <span>Normal</span>
-                  </label>
-                  <label className={`price-request-urgency-option ${urgency === 'urgent' ? ' active' : ''}`}>
-                    <input type="radio" name="urgence" checked={urgency === 'urgent'} onChange={() => setUrgency('urgent')} />
-                    <span>Urgent</span>
-                  </label>
-                  <label className={`price-request-urgency-option ${urgency === 'tres_urgent' ? ' active' : ''}`}>
-                    <input type="radio" name="urgence" checked={urgency === 'tres_urgent'} onChange={() => setUrgency('tres_urgent')} />
-                    <span>Très urgent</span>
-                  </label>
+                  {(['normal', 'urgent', 'tres_urgent'] as const).map(u => (
+                    <label key={u} className={`price-request-urgency-option ${urgency === u ? 'active' : ''}`}>
+                      <input type="radio" name="urgence" checked={urgency === u} onChange={() => setUrgency(u)} />
+                      <span>{u === 'normal' ? 'Normal' : u === 'urgent' ? 'Urgent' : 'Très urgent'}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
+              {/* Note */}
               <div className="price-request-form-group">
                 <label className="price-request-form-label">Détails généraux</label>
-                <textarea value={generalNote} onChange={(e) => setGeneralNote(e.target.value)} className="price-request-form-textarea" placeholder="Informations générales pour les fournisseurs..." />
+                <textarea value={generalNote} onChange={e => setGeneralNote(e.target.value)}
+                  className="price-request-form-textarea"
+                  placeholder="Informations générales pour les fournisseurs..." />
               </div>
 
+              {/* ✅ PJ — commun aux deux modes */}
+              {renderPiecesJointes()}
+
+              {/* Adresse livraison */}
               <div className="price-request-form-group">
                 <label className="price-request-form-label">Adresse de livraison</label>
                 <div className="price-request-delivery-options">
-                  <div className="price-request-delivery-option">
-                    <input type="radio" id="delivery-hq" name="delivery" checked={deliveryType === 'headquarters'} onChange={() => setDeliveryType('headquarters')} />
-                    <label htmlFor="delivery-hq">A mon siège</label>
-                  </div>
-                  <div className="price-request-delivery-option">
-                    <input type="radio" id="delivery-new" name="delivery" checked={deliveryType === 'new'} onChange={() => setDeliveryType('new')} />
-                    <label htmlFor="delivery-new">Nouvelle adresse</label>
-                  </div>
+                  {[
+                    { value: 'siege', label: 'À mon siège', id: 'd-siege' },
+                    { value: 'retrait', label: 'Retrait en point de vente', id: 'd-retrait' },
+                    { value: 'nouvelle', label: 'Nouvelle adresse', id: 'd-nouvelle' },
+                  ].map(opt => (
+                    <div key={opt.value} className="price-request-delivery-option">
+                      <input type="radio" id={opt.id} name="delivery"
+                        checked={deliveryType === opt.value}
+                        onChange={() => setDeliveryType(opt.value as DeliveryType)} />
+                      <label htmlFor={opt.id}>{opt.label}</label>
+                    </div>
+                  ))}
                 </div>
-                {deliveryType === 'new' && (
+                {deliveryType === 'nouvelle' && (
                   <div className="price-request-new-address">
-                    <textarea value={newAddress} onChange={(e) => setNewAddress(e.target.value)} className="price-request-form-textarea" placeholder="Adresse complète de livraison..." />
+                    <textarea value={newAddress} onChange={e => setNewAddress(e.target.value)}
+                      className="price-request-form-textarea" placeholder="Adresse complète de livraison..." />
                     <div className="price-request-save-address">
-                      <input type="checkbox" id="save-address" checked={saveAddress} onChange={(e) => setSaveAddress(e.target.checked)} />
-                      <label htmlFor="save-address">Enregistrer cette adresse</label>
+                      <input type="checkbox" id="save-addr" checked={saveAddress} onChange={e => setSaveAddress(e.target.checked)} />
+                      <label htmlFor="save-addr">Enregistrer cette adresse</label>
                     </div>
                   </div>
                 )}
-
-                {mode === 'by_product' && (
-                  <>
-                    <div className="price-request-form-group">
-                      <label className="price-request-form-label">Mes fournisseurs de matériaux</label>
-                      <SupplierSelect suppliers={suppliers} selectedIds={selectedSuppliers} onSelectionChange={setSelectedSuppliers} onSelectAll={handleSelectAllSuppliers} />
-                    </div>
-
-                    <div className="price-request-form-group">
-                      <label className="price-request-form-label">Envoyer par mail</label>
-                      <p style={{ fontSize: '12px', color: '#6c757d', margin: '0 0 8px 0' }}>Ajoutez le mail de votre contact</p>
-                      <div className="price-request-email-input">
-                        <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className="price-request-form-input" placeholder="email@example.com" onKeyPress={(e) => e.key === 'Enter' && handleAddEmail()} />
-                        <button onClick={handleAddEmail} className="btn-primary" style={{ whiteSpace: 'nowrap' }}>Ajouter</button>
-                      </div>
-                      {manualEmails.length > 0 && (
-                        <div className="price-request-file-list">
-                          {manualEmails.map((email) => (
-                            <div key={email} className="price-request-file-item">
-                              <span>{email}</span>
-                              <button onClick={() => handleRemoveEmail(email)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc3545' }}>
-                                <X size={16} />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <button
-                  className={`price-request-submit-button ${isFormValid ? 'ready' : ''}`}
-                  disabled={!isFormValid}
-                  title={submitDisabledReason}
-                  onClick={handleSubmit}
-                >
-                  Envoyer ma demande de prix
-                </button>
               </div>
+
+              {/* Fournisseurs — UNIQUEMENT mode par_produit */}
+              {mode === 'by_product' && (
+                <div className="price-request-form-group">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+                    <label className="price-request-form-label" style={{ margin: 0 }}>Mes fournisseurs</label>
+                    <span className="price-request-info-tooltip"
+                      title="Seuls vos fournisseurs avec un email renseigné peuvent recevoir vos demandes. Renseignez l'email dans votre onglet Fournisseurs.">
+                      <Info size={13} color="#aaa" style={{ cursor: 'help' }} />
+                    </span>
+                  </div>
+                  <SupplierSelect
+                    suppliers={fournisseurs}
+                    selectedIds={selectedFournisseurIds}
+                    onSelectionChange={setSelectedFournisseurIds}
+                    onSelectAll={() => {
+                      if (selectedFournisseurIds.length === fournisseurs.length) setSelectedFournisseurIds([]);
+                      else setSelectedFournisseurIds(fournisseurs.map(f => f.id));
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* ✅ Email manuel — UNIQUEMENT mode par_produit */}
+              {mode === 'by_product' && renderEmailManuel()}
+
+              <button
+                className={`price-request-submit-button ${isFormValid ? 'ready' : ''}`}
+                disabled={!isFormValid || submitting}
+                title={submitDisabledReason}
+                onClick={handleSubmit}>
+                {submitting ? 'Envoi en cours...' : 'Envoyer ma demande de prix'}
+              </button>
             </div>
           </aside>
         </main>
       )}
 
-      <button
-        className="price-request-mobile-toggle"
-        onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
-      >
+      <button className="price-request-mobile-toggle" onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}>
         <ShoppingCart size={24} />
         {cartItems.length > 0 && <span className="badge">{cartItems.length}</span>}
       </button>
@@ -1612,174 +759,118 @@ export const PriceRequest = () => {
 
       {loadingHistoryDetail && (
         <div className="price-request-modal-overlay">
-          <div className="price-request-modal">
-            <div style={{padding: 32, textAlign: 'center'}}>Chargement du détail...</div>
-          </div>
+          <div className="price-request-modal"><div style={{ padding: 32, textAlign: 'center' }}>Chargement...</div></div>
         </div>
       )}
 
       {selectedHistoryRequest && !loadingHistoryDetail && (
         <div className="price-request-modal-overlay" onClick={() => setSelectedHistoryRequest(null)}>
-          <div className="price-request-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="price-request-modal" onClick={e => e.stopPropagation()}>
             <div className="price-request-modal-header">
               <h3 className="price-request-modal-title">Détail de la demande</h3>
-              <button 
-                className="price-request-modal-close" 
-                onClick={() => setSelectedHistoryRequest(null)}
-              >
-                <X size={24} />
-              </button>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {selectedHistoryRequest.statut === 'envoyee' && selectedHistoryRequest.membre_id === membreId && (
+                  <button className="price-request-archive-btn" onClick={() => handleArchiver(selectedHistoryRequest.id)}>Archiver</button>
+                )}
+                <button className="price-request-modal-close" onClick={() => setSelectedHistoryRequest(null)}><X size={22} /></button>
+              </div>
             </div>
-            
             <div className="price-request-modal-content">
-              {/* RÉFÉRENCE */}
               <div className="price-request-modal-info">
                 <div className="price-request-modal-label">Référence</div>
                 <p className="price-request-modal-value">{selectedHistoryRequest.reference}</p>
               </div>
-
-              {/* DATE */}
               <div className="price-request-modal-info">
                 <div className="price-request-modal-label">Date</div>
+                <p className="price-request-modal-value">{new Date(selectedHistoryRequest.date_creation).toLocaleDateString('fr-FR')}</p>
+              </div>
+              <div className="price-request-modal-divider" />
+              <div style={{ display: 'flex', gap: 12 }}>
+                <div className="price-request-modal-info" style={{ flex: 1 }}>
+                  <div className="price-request-modal-label">Statut</div>
+                  <span className={`price-request-modal-status-badge ${selectedHistoryRequest.statut}`}>
+                    {selectedHistoryRequest.statut === 'archivee' ? 'Archivée' : 'Envoyée'}
+                  </span>
+                </div>
+                <div className="price-request-modal-info" style={{ flex: 1 }}>
+                  <div className="price-request-modal-label">Urgence</div>
+                  <span className={`price-request-modal-urgency-badge ${selectedHistoryRequest.urgence === 'tres_urgent' ? 'tres-urgent' : selectedHistoryRequest.urgence}`}>
+                    {selectedHistoryRequest.urgence === 'tres_urgent' ? 'Très urgent' : selectedHistoryRequest.urgence === 'urgent' ? 'Urgent' : 'Normal'}
+                  </span>
+                </div>
+              </div>
+              <div className="price-request-modal-divider" />
+              <div className="price-request-modal-info">
+                <div className="price-request-modal-label">Livraison</div>
                 <p className="price-request-modal-value">
-                  {(() => {
-                    const dateObj = new Date(selectedHistoryRequest.date_creation);
-                    return `${dateObj.toLocaleDateString('fr-FR')} à ${dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-                  })()}
+                  {selectedHistoryRequest.adresse_livraison_type === 'siege' ? 'Siège social' :
+                   selectedHistoryRequest.adresse_livraison_type === 'retrait' ? 'Retrait en point de vente' :
+                   selectedHistoryRequest.adresse_livraison || 'Adresse non spécifiée'}
                 </p>
               </div>
-
-              <div className="price-request-modal-divider"></div>
-
-              {/* STATUT */}
-              <div className="price-request-modal-info">
-                <div className="price-request-modal-label">Statut</div>
-                <span className={`price-request-modal-status-badge ${selectedHistoryRequest.statut}`}>
-                  {selectedHistoryRequest.statut}
-                </span>
-              </div>
-
-              {/* URGENCE */}
-              <div className="price-request-modal-info">
-                <div className="price-request-modal-label">Urgence</div>
-                <span className={`price-request-modal-urgency-badge ${
-                  selectedHistoryRequest.urgence === 'urgent' ? 'urgent' : 
-                  selectedHistoryRequest.urgence === 'tres_urgent' ? 'tres-urgent' : 
-                  'normal'
-                }`}>
-                  {selectedHistoryRequest.urgence === 'urgent' ? 'Urgent' : 
-                   selectedHistoryRequest.urgence === 'tres_urgent' ? 'Très urgent' : 
-                   'Normal'}
-                </span>
-              </div>
-
-              <div className="price-request-modal-divider"></div>
-
-              {/* ADRESSE DE LIVRAISON */}
-              <div className="price-request-modal-info">
-                <div className="price-request-modal-label">Adresse de livraison</div>
-                <p className="price-request-modal-value">
-                  {selectedHistoryRequest.adresse_livraison || 
-                   (selectedHistoryRequest.adresse_livraison_type === 'siege' ? 'Siège social' : 'Non spécifiée')}
-                </p>
-              </div>
-
-              <div className="price-request-modal-divider"></div>
-
-              {/* PRODUITS */}
-              {selectedHistoryRequest.lignes && selectedHistoryRequest.lignes.length > 0 && (
+              {selectedHistoryRequest.note_generale && (
                 <div className="price-request-modal-info">
-                  <div className="price-request-modal-label">
-                    Produits ({selectedHistoryRequest.lignes.length})
-                  </div>
-                  <div className="price-request-modal-products">
-                    {selectedHistoryRequest.lignes.map((ligne) => (
-                      <div key={ligne.id} className="price-request-modal-product-item">
-                        {/* Nom du produit */}
-                        <div className="price-request-modal-product-info">
-                          <h4 className="price-request-modal-product-name">
-                            {ligne.product_name}
-                          </h4>
-                          <span className="price-request-modal-product-reference">
-                            Réf: {ligne.supplier_reference || 'N/A'}
-                          </span>
-                        </div>
-
-                        {/* Détails produit */}
-                        <div className="price-request-modal-product-details">
-                          <div className="price-request-modal-product-detail">
-                            <span className="price-request-modal-product-detail-label">Quantité</span>
-                            <span className="price-request-modal-product-detail-value">
-                              {ligne.quantite} {ligne.unit || ''}
-                            </span>
-                          </div>
-                          
-                          {ligne.public_price && (
-                            <div className="price-request-modal-product-detail">
-                              <span className="price-request-modal-product-detail-label">Prix unitaire</span>
-                              <span className="price-request-modal-product-detail-value">
-                                {Number(ligne.public_price).toFixed(2)} €
-                              </span>
-                            </div>
-                          )}
-                          
-                          {ligne.public_price && (
-                            <div className="price-request-modal-product-detail">
-                              <span className="price-request-modal-product-detail-label">Total</span>
-                              <span className="price-request-modal-product-detail-value">
-                                {(Number(ligne.public_price) * ligne.quantite).toFixed(2)} €
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Note produit */}
-                        {ligne.note_ligne && (
-                          <div className="price-request-modal-product-note">
-                            <strong>Note :</strong> {ligne.note_ligne}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <div className="price-request-modal-label">Note</div>
+                  <p className="price-request-modal-value">{selectedHistoryRequest.note_generale}</p>
                 </div>
               )}
-
-              <div className="price-request-modal-divider"></div>
-
-              {/* FOURNISSEURS */}
+              <div className="price-request-modal-divider" />
               {selectedHistoryRequest.destinataires && selectedHistoryRequest.destinataires.length > 0 && (
                 <div className="price-request-modal-info">
-                  <div className="price-request-modal-label">
-                    Fournisseurs ({selectedHistoryRequest.destinataires.length})
-                  </div>
+                  <div className="price-request-modal-label">Destinataires ({selectedHistoryRequest.destinataires.length})</div>
                   <div className="price-request-modal-suppliers">
-                    {selectedHistoryRequest.destinataires.map((dest) => (
+                    {selectedHistoryRequest.destinataires.map(dest => (
                       <div key={dest.id} className="price-request-modal-supplier-item">
                         <span className="price-request-modal-supplier-name">
-                          {dest.library_name || dest.nom_manuel || 'Fournisseur'}
+                          {(dest as any).library_name || (dest as any).fournisseur_nom || dest.nom_manuel || dest.email_manuel || 'Destinataire'}
                         </span>
-                        {(dest.library_email || dest.email_manuel) && (
-                          <span className="price-request-modal-supplier-email">
-                            {dest.library_email || dest.email_manuel}
-                          </span>
+                        {selectedHistoryRequest.membre_id === membreId ? (
+                          <select className="price-request-dest-statut-select"
+                            value={(dest as any).statut || 'envoyee'}
+                            onChange={e => handleUpdateStatutDestinataire(dest.id, selectedHistoryRequest.id, e.target.value)}>
+                            <option value="envoyee">Envoyée</option>
+                            <option value="traitee">Traitée</option>
+                            <option value="acceptee">Acceptée</option>
+                            <option value="trop_cher">Trop cher</option>
+                            <option value="aucun_retour">Aucun retour</option>
+                          </select>
+                        ) : (
+                          <span className="price-request-dest-statut-badge">{(dest as any).statut || 'envoyée'}</span>
                         )}
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
-              {/* NOTE GÉNÉRALE */}
-              {selectedHistoryRequest.note_generale && (
-                <>
-                  <div className="price-request-modal-divider"></div>
-                  <div className="price-request-modal-info">
-                    <div className="price-request-modal-label">Note générale</div>
-                    <p className="price-request-modal-value">{selectedHistoryRequest.note_generale}</p>
+              <div className="price-request-modal-divider" />
+              {selectedHistoryRequest.lignes && selectedHistoryRequest.lignes.length > 0 && (
+                <div className="price-request-modal-info">
+                  <div className="price-request-modal-label">Produits ({selectedHistoryRequest.lignes.length})</div>
+                  <div className="price-request-modal-products">
+                    {selectedHistoryRequest.lignes.map(ligne => (
+                      <div key={ligne.id} className="price-request-modal-product-item">
+                        <div className="price-request-modal-product-info">
+                          <h4 className="price-request-modal-product-name">{ligne.product_name || (ligne as any).product_nom}</h4>
+                          {ligne.supplier_reference && (
+                            <span className="price-request-modal-product-reference">Réf: {ligne.supplier_reference}</span>
+                          )}
+                        </div>
+                        <div className="price-request-modal-product-detail">
+                          <span className="price-request-modal-product-detail-label">Qté</span>
+                          <span className="price-request-modal-product-detail-value">{ligne.quantite} {ligne.unit || ''}</span>
+                        </div>
+                        {ligne.note_ligne && (
+                          <div className="price-request-modal-product-note"><strong>Note :</strong> {ligne.note_ligne}</div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </>
+                </div>
               )}
+              <a href={`${API_BASE_URL}/demandes-prix/${selectedHistoryRequest.id}/pdf?societe_id=${societeId}`}
+                target="_blank" rel="noopener noreferrer" className="price-request-view-pdf-btn">
+                Voir la demande envoyée (PDF)
+              </a>
             </div>
           </div>
         </div>

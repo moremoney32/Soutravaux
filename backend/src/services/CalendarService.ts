@@ -168,63 +168,6 @@ export async function createEvent(data: CreateEventInput): Promise<number> {
   }
 }
 
-
-
-
-/* ============================================================
-   UPDATE EVENT
-============================================================ */
-// export async function updateEvent(
-//   eventId:number,
-//   data:Partial<CreateEventInput>,
-//   societeId:number
-// ):Promise<void>{
-
-//   const conn = await pool.getConnection();
-
-//   try{
-//     console.log("🔥 UPDATE EVENT", { eventId, data, societeId });
-
-//     await conn.beginTransaction();
-
-//     const updates:string[]=[];
-//     const params:any[]=[];
-
-//     if(data.title){updates.push('title=?');params.push(data.title);}
-//     if(data.description!==undefined){updates.push('description=?');params.push(data.description);}
-//     if(data.event_date){updates.push('event_date=?');params.push(data.event_date);}
-//     if(data.start_time){updates.push('start_time=?');params.push(data.start_time);}
-//     if(data.end_time){updates.push('end_time=?');params.push(data.end_time);}
-//     if(data.location!==undefined){updates.push('location=?');params.push(data.location);}
-//     if(data.scope){updates.push('scope=?');params.push(data.scope);}
-
-//     if(updates.length>0){
-//       params.push(eventId);
-//       await conn.query(`UPDATE calendar_events SET ${updates.join(',')} WHERE id=?`,params);
-//     }
-
-//     if(data.event_date || data.start_time){
-//       const [rows] = await conn.query<RowDataPacket[]>(
-//         `SELECT event_date,start_time,societe_id FROM calendar_events WHERE id=?`,
-//         [eventId]
-//       );
-
-//       if(rows.length){
-//         const ev=rows[0];
-//         await supprimerNotificationsPendantes(conn,eventId);
-//         await planifierNotificationsPourEvenement(conn,eventId,ev.event_date,ev.start_time,ev.societe_id);
-//       }
-//     }
-
-//     await conn.commit();
-
-//   }catch(e){
-//     await conn.rollback();
-//     throw e;
-//   }finally{
-//     conn.release();
-//   }
-// }
 /* ============================================================
    UPDATE EVENT — VERSION EMAIL ONLY (COLLABORATEURS)
 ============================================================ */

@@ -30,38 +30,6 @@ const allowedOrigins = [
 ];
 
 
-// const corsOptions: CorsOptions = {
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true); // autorisé
-//     } else {
-//       callback(new Error("CORS non autorisé"));
-//     }
-//   },
-//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//   credentials: true,
-//   allowedHeaders: [
-//     "Origin",
-//     "X-Requested-With",
-//     "Content-Type",
-//     "Accept",
-//     "Authorization",
-//     "Custom-Header"
-//   ],
-// };
-
-// const getBackendBaseUrl = () => {
-//   if (process.env.NODE_ENV === 'production') {
-//     return 'https://solutravo.zeta-app.fr';
-//   } else {
-//     return 'https://staging.solutravo.zeta-app.fr';
-//   }
-// };
-
-
-// Middlewares
-//  app.use(cors(corsOptions));
-
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -77,12 +45,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 //app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
 // Exposer les PDFs générés pour téléchargement (ex: /pdfs/nom.pdf)
 app.use('/pdfs', express.static(path.join(process.cwd(), 'storage', 'pdfs')));
+app.use('/pieces-jointes', express.static(path.join(process.cwd(), 'storage', 'pieces_jointes')));
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({
@@ -117,11 +87,7 @@ app.get("/api/config", (_req: Request, res: Response) => {
 // Routes API
 app.use("/api", routes);
 
-//swagger
-  // setupSwagger(app);
-// Middleware global erreurs
 app.use(errorHandler);
-
 
 
 export default app;

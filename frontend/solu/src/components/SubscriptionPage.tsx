@@ -15,7 +15,7 @@ import PricingFooter from './PricingFooter';
 const baseUrlTest =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "https://solutravo.zeta-app.fr/api";
+    : "https://staging.solutravo.zeta-app.fr/api";
 
 // FONCTIONS HELPERS
 const getIconComponent = (iconName?: string) => {
@@ -302,7 +302,8 @@ const SubscriptionPage: React.FC = () => {
   // window.history.replaceState({}, '', cleanUrl);
   if (!membre_id || !societe_id) {
       console.log("IDs manquants, redirection vers le dashboard");
-      window.location.href = "https://app.solutravo-app.fr/dashboard";
+      //window.location.href = "https://app.solutravo-app.fr/dashboard";
+       window.location.href = "https://staging.solutravo-compta.fr/dashboard";
       return;
     }
     fetchData();
