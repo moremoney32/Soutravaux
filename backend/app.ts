@@ -31,19 +31,35 @@ const allowedOrigins = [
 
 
 
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin)) {
+//       return callback(null, true);
+//     }
+//     return callback(new Error('CORS policy: Origin not allowed'));
+//   },
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true,
+//   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+// }));
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     return callback(new Error('CORS policy: Origin not allowed'));
   },
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],  // ✅ Ajouter OPTIONS + array
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  preflightContinue: false,    // ✅ Laisser cors gérer le preflight
+  optionsSuccessStatus: 204    // ✅ Statut standard pour OPTIONS
 }));
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
