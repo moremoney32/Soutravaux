@@ -20,7 +20,8 @@ import {
 type RequestMode = 'by_supplier' | 'by_product' | null;
 type DeliveryType = 'siege' | 'retrait' | 'nouvelle';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+// const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 const MAX_ATTACHMENTS = 5;
 
 interface Relance {
