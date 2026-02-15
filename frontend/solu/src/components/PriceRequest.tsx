@@ -290,7 +290,7 @@ export const PriceRequest = () => {
       setSubmitting(false);
     }
   };
-
+//trmfmfmfm
   const handleModeChange = (newMode: RequestMode) => {
     setMode(newMode); setCartItems([]); setProductSearchTerm('');
     setSelectedLibraryId(''); setSelectedCategoryIds([]);
