@@ -1,5 +1,164 @@
 
 
+// // import PDFDocument from 'pdfkit';
+// // import fs from 'fs';
+// // import path from 'path';
+// // import axios from 'axios';
+// // import { DemandePrixPDFData } from '../types/demandesPrix';
+
+// // const BASE_URL = process.env.PDF_BASE_URL || 'https://staging.solutravo.zeta-app.fr'
+// // const LOGO_BASE_URL = process.env.LOGO_BASE_URL || 'https://staging.solutravo-compta.fr/public';
+
+// // export async function generateDemandePrixPDF(
+// //   data: DemandePrixPDFData
+// // ): Promise<string> {
+// //   return new Promise(async (resolve, reject) => {
+// //     try {
+// //       const pdfDir = path.join(__dirname, '../../storage/pdfs');
+// //       if (!fs.existsSync(pdfDir)) {
+// //         fs.mkdirSync(pdfDir, { recursive: true });
+// //       }
+
+// //       const sanitize = (name: string) =>
+// //         (name || '')
+// //           .normalize('NFKD')
+// //           .replace(/[<>:"/\\|?*\x00-\x1F]/g, '-')
+// //           .replace(/\s+/g, '-')
+// //           .replace(/-+/g, '-')
+// //           .trim()
+// //           .slice(0, 100);
+
+// //       const safeRef = sanitize(data.demande.reference || 'reference');
+// //       const filename = `demande-prix-${safeRef}-${Date.now()}.pdf`;
+// //       const filepath = path.join(pdfDir, filename);
+
+// //       const doc = new PDFDocument({ 
+// //         margin: 40,
+// //         size: 'A4'
+// //       });
+// //       const stream = fs.createWriteStream(filepath);
+// //       doc.pipe(stream);
+
+// //       const ORANGE = '#E77131';
+// //       const GRAY = '#666666';
+// //       const BLACK = '#333333';
+// //       const RED = '#DC2626';
+
+// //       // ─── LOGO ENTREPRISE CLIENTE (DISTANT - CENTRÉ) ──────
+// //       let logoLoaded = false;
+      
+// //       if (data.societe.logo) {
+// //         try {
+// //           const logoUrl = `${LOGO_BASE_URL}/${data.societe.logo}`;
+// //           console.log(`📷 Tentative de chargement du logo: ${logoUrl}`);
+          
+// //           const response = await axios.get(logoUrl, {
+// //             responseType: 'arraybuffer',
+// //             timeout: 5000,
+// //             validateStatus: (status) => status === 200
+// //           });
+
+// //           if (response.data) {
+// //             const tempLogoPath = path.join(pdfDir, `temp-logo-${Date.now()}.png`);
+// //             fs.writeFileSync(tempLogoPath, response.data);
+
+// //             const logoWidth =40;
+// //             const logoX = (doc.page.width - logoWidth) / 2;
+// //             doc.image(tempLogoPath, logoX, doc.y, { width: logoWidth, align: 'center' });
+// //             doc.moveDown(0.8);
+
+// //             fs.unlinkSync(tempLogoPath);
+// //             logoLoaded = true;
+// //             console.log(`✅ Logo chargé avec succès`);
+// //           }
+// //         } catch (err: any) {
+// //           console.warn(`⚠️ Impossible de charger le logo:`, err.message);
+// //         }
+// //       }
+
+// //       // ✅ PLACEHOLDER SI PAS DE LOGO
+// //       if (!logoLoaded) {
+// //         console.log('📦 Utilisation du placeholder logo');
+// //         const logoWidth =40;
+// //         const logoHeight =40;
+// //         const logoX = (doc.page.width - logoWidth) / 2;
+// //         const logoY = doc.y;
+
+// //         // Rectangle avec initiales de la société
+// //         doc.roundedRect(logoX, logoY, logoWidth, logoHeight, 6)
+// //           .fillAndStroke('#F0F0F0', '#CCCCCC');
+
+// //         // Initiales de la société
+// //         const initiales = data.societe.name
+// //           .split(' ')
+// //           .map(word => word[0])
+// //           .join('')
+// //           .toUpperCase()
+// //           .slice(0, 2);
+
+// //         doc.fontSize(24)
+// //           .fillColor(ORANGE)
+// //           .text(initiales, logoX, logoY + 18, {
+// //             width: logoWidth,
+// //             align: 'center'
+// //           });
+
+// //         doc.moveDown(2.5);
+// //       }
+// // //logos
+// //       // ─── EN-TETE ─────────────────────────────────────────
+// //       // ✅ Centre de la page (calculé une fois)
+// //       const pageCenter = doc.page.width / 2;
+      
+// //       // ✅ TITRE CENTRÉ MANUELLEMENT
+// //       doc.fontSize(22).fillColor(ORANGE);
+// //       const titreText = 'DEMANDE DE PRIX';
+// //       const titreWidth = doc.widthOfString(titreText);
+// //       doc.text(titreText, pageCenter - titreWidth / 2, doc.y);
+// //       doc.moveDown(1);
+      
+// //       // ✅ BLOC CENTRÉ MANUELLEMENT
+// //       // Référence
+// //       doc.fontSize(11).fillColor(GRAY);
+// //       const refText = `Reference : ${data.demande.reference}`;
+// //       const refWidth = doc.widthOfString(refText);
+// //       doc.text(refText, pageCenter - refWidth / 2, doc.y);
+      
+// //       // Date
+// //       const dateText = `Date : ${new Date(data.demande.date_creation).toLocaleDateString('fr-FR')}`;
+// //       const dateWidth = doc.widthOfString(dateText);
+// //       doc.text(dateText, pageCenter - dateWidth / 2, doc.y);
+
+// //       // Date limite
+// //       if (data.demande.date_limite_retour) {
+// //         doc.fillColor(RED);
+// //         const limiteText = `Date limite de retour : ${new Date(data.demande.date_limite_retour).toLocaleDateString('fr-FR')}`;
+// //         const limiteWidth = doc.widthOfString(limiteText);
+// //         doc.text(limiteText, pageCenter - limiteWidth / 2, doc.y);
+// //       }
+
+// //       doc.moveDown(1);
+
+// //       // ─── URGENCE (CENTRÉE MANUELLEMENT) ───────────────────
+// //       if (data.demande.urgence && data.demande.urgence !== 'normal') {
+// //         const urgenceText = data.demande.urgence === 'tres_urgent'
+// //           ? '!! TRES URGENT !!'
+// //           : '! URGENT !';
+// //         const urgenceColor = data.demande.urgence === 'tres_urgent' ? RED : '#F59E0B';
+// //         doc.fontSize(13).fillColor(urgenceColor);
+// //         const urgenceWidth = doc.widthOfString(urgenceText);
+// //         doc.text(urgenceText, pageCenter - urgenceWidth / 2, doc.y);
+// //         doc.moveDown(1.2);
+// //       }
+
+// //       doc.fillColor(BLACK);
+
+// //       // ─── EMETTEUR (ALIGNÉ À GAUCHE X=40) ─────────────────
+// //       doc.fontSize(13).fillColor(ORANGE).text('Emetteur', 40, doc.y, { underline: true });
+
+
+
+
 // import PDFDocument from 'pdfkit';
 // import fs from 'fs';
 // import path from 'path';
@@ -62,10 +221,15 @@
 //             const tempLogoPath = path.join(pdfDir, `temp-logo-${Date.now()}.png`);
 //             fs.writeFileSync(tempLogoPath, response.data);
 
-//             const logoWidth =40;
+//             // ✅ Logo 60px large x 30px haut
+//             const logoWidth = 60;
+//             const logoHeight = 30;
 //             const logoX = (doc.page.width - logoWidth) / 2;
-//             doc.image(tempLogoPath, logoX, doc.y, { width: logoWidth, align: 'center' });
-//             doc.moveDown(0.8);
+//             doc.image(tempLogoPath, logoX, doc.y, { 
+//               width: logoWidth,
+//               height: logoHeight
+//             });
+//             doc.moveDown(0.5);  // ✅ Espacement réduit après le logo
 
 //             fs.unlinkSync(tempLogoPath);
 //             logoLoaded = true;
@@ -79,8 +243,8 @@
 //       // ✅ PLACEHOLDER SI PAS DE LOGO
 //       if (!logoLoaded) {
 //         console.log('📦 Utilisation du placeholder logo');
-//         const logoWidth =40;
-//         const logoHeight =40;
+//         const logoWidth = 60;
+//         const logoHeight = 60;
 //         const logoX = (doc.page.width - logoWidth) / 2;
 //         const logoY = doc.y;
 
@@ -103,9 +267,9 @@
 //             align: 'center'
 //           });
 
-//         doc.moveDown(2.5);
+//         doc.moveDown(1.5);
 //       }
-// //logos
+
 //       // ─── EN-TETE ─────────────────────────────────────────
 //       // ✅ Centre de la page (calculé une fois)
 //       const pageCenter = doc.page.width / 2;
@@ -385,11 +549,15 @@ export async function generateDemandePrixPDF(
             const logoWidth = 60;
             const logoHeight = 30;
             const logoX = (doc.page.width - logoWidth) / 2;
-            doc.image(tempLogoPath, logoX, doc.y, { 
+            const logoY = doc.y;  // Position actuelle
+            
+            doc.image(tempLogoPath, logoX, logoY, { 
               width: logoWidth,
               height: logoHeight
             });
-            doc.moveDown(0.5);  // ✅ Espacement réduit après le logo
+            
+            // ✅ IMPORTANT: Déplacer manuellement le curseur APRÈS l'image
+            doc.y = logoY + logoHeight + 15;  // Logo + petit espace
 
             fs.unlinkSync(tempLogoPath);
             logoLoaded = true;
@@ -427,7 +595,8 @@ export async function generateDemandePrixPDF(
             align: 'center'
           });
 
-        doc.moveDown(1.5);
+        // ✅ IMPORTANT: Déplacer manuellement le curseur APRÈS le placeholder
+        doc.y = logoY + logoHeight + 15;
       }
 
       // ─── EN-TETE ─────────────────────────────────────────
