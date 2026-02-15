@@ -105,7 +105,7 @@ export async function generateDemandePrixPDF(
 
         doc.moveDown(2.5);
       }
-
+//logos
       // ─── EN-TETE ─────────────────────────────────────────
       // ✅ Centre de la page (calculé une fois)
       const pageCenter = doc.page.width / 2;
