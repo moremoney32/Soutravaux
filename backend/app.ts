@@ -255,13 +255,14 @@ app.get("/api/config", (_req: Request, res: Response) => {
 app.use("/api", routes);
 
 // ✅ FORCE les headers CORS même après les routes
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction): void => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
   
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
+    res.sendStatus(204);
+    return; // ✅ Return explicite après sendStatus
   }
   next();
 });
