@@ -62,7 +62,7 @@ export async function generateDemandePrixPDF(
             const tempLogoPath = path.join(pdfDir, `temp-logo-${Date.now()}.png`);
             fs.writeFileSync(tempLogoPath, response.data);
 
-            const logoWidth = 60;
+            const logoWidth =40;
             const logoX = (doc.page.width - logoWidth) / 2;
             doc.image(tempLogoPath, logoX, doc.y, { width: logoWidth, align: 'center' });
             doc.moveDown(0.8);
@@ -79,8 +79,8 @@ export async function generateDemandePrixPDF(
       // ✅ PLACEHOLDER SI PAS DE LOGO
       if (!logoLoaded) {
         console.log('📦 Utilisation du placeholder logo');
-        const logoWidth = 60;
-        const logoHeight = 60;
+        const logoWidth =40;
+        const logoHeight =40;
         const logoX = (doc.page.width - logoWidth) / 2;
         const logoY = doc.y;
 
@@ -103,7 +103,7 @@ export async function generateDemandePrixPDF(
             align: 'center'
           });
 
-        doc.moveDown(1.5);
+        doc.moveDown(2.5);
       }
 
       // ─── EN-TETE ─────────────────────────────────────────
