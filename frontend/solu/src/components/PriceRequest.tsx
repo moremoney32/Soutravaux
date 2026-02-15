@@ -300,7 +300,7 @@ export const PriceRequest = () => {
   const handleUpdateStatutDestinataire = async (destId: number, demandeId: number, statut: string) => {
     try {
       await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/destinataires/${destId}`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ societe_id: societeId, statut })
       });
       const res = await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}?societe_id=${societeId}`);
@@ -312,7 +312,7 @@ export const PriceRequest = () => {
   const handleArchiver = async (demandeId: number) => {
     try {
       await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/archiver`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ societe_id: societeId })
       });
       setSelectedHistoryRequest(null);

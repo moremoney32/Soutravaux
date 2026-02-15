@@ -320,7 +320,9 @@ router.get('/demandes-prix/:id/pdf', downloadPDFController);
 
 // Mise à jour statuts
 router.patch('/demandes-prix/:id/destinataires/:destId', updateStatutDestinataireController);
+router.post('/demandes-prix/:id/destinataires/:destId/statut', updateStatutDestinataireController);
 router.patch('/demandes-prix/:id/archiver', archiverDemandeController);
+router.post('/demandes-prix/:id/archiver', archiverDemandeController);
 
 
 
