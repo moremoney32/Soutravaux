@@ -1,7 +1,11 @@
+/* ═══════════════════════════════════════════════════════════
+   CORRECTIONS CSS COMPLÈTES
+   ═══════════════════════════════════════════════════════════ */
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-/* stylelint-disable-next-line property-no-vendor-prefix */
+
 /* ============================================
-   BASE
+   BASE + NOUVEAU HEADER
    ============================================ */
 
 .price-request-container {
@@ -15,7 +19,7 @@
 
 .price-request-header {
   background-color: #FFFFFF;
-  padding: 16px 24px;
+  padding: 20px 24px;
   box-shadow: 0px 8px 13px -3px rgba(0, 0, 0, .07);
   display: flex;
   align-items: center;
@@ -23,16 +27,75 @@
   flex-shrink: 0;
 }
 
-.price-request-tabs { display: flex; gap: 8px; }
+/* ✅ NOUVEAU : Titre + sous-titre */
+.price-request-header-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.price-request-main-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #505050;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.price-request-subtitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  max-width: 900px;
+}
+
+.price-request-subtitle-icon {
+  flex-shrink: 0;
+  color: #E77131;
+  margin-top: 2px;
+}
+
+.price-request-subtitle strong {
+  color: #E77131;
+  font-weight: 600;
+}
+
+.price-request-tabs { display: flex; gap: 8px; flex-shrink: 0; }
 
 .price-request-tab {
   background-color: #FFFFFF; color: #505050;
   font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 13px;
   padding: 10px 16px; border-radius: 8px; border: 1px solid #E0E0E0;
-  cursor: pointer; transition: all 0.2s ease;
+  cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
 }
 .price-request-tab:hover { border-color: #E77131; }
 .price-request-tab.active { background-color: #E77131; color: #FFFFFF; border-color: #E77131; }
+
+/* ✅ Bouton retour historique */
+.price-request-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  border-radius: 6px;
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Montserrat', sans-serif;
+}
+.price-request-back-btn:hover {
+  background: #E77131;
+  color: white;
+  border-color: #E77131;
+}
 
 /* ============================================
    LAYOUT 3 COLONNES
@@ -113,6 +176,7 @@
   text-transform: uppercase; letter-spacing: 0.5px;
 }
 
+/* ✅ CHECKBOX sans outline au focus */
 .price-request-checkbox-group { margin-bottom: 14px; }
 .price-request-checkbox-item { display: flex; align-items: center; padding: 5px 0; cursor: pointer; }
 .price-request-checkbox-item input[type="checkbox"],
@@ -120,12 +184,16 @@
   margin-right: 8px; width: 14px; height: 14px;
   cursor: pointer; accent-color: #E77131; flex-shrink: 0;
 }
+.price-request-checkbox-item input[type="checkbox"]:focus,
+.price-request-checkbox-item input[type="radio"]:focus {
+  outline: none; /* ✅ Enlever l'outline au clic */
+}
 .price-request-checkbox-item label {
   font-size: 11px; color: #505050; cursor: pointer; user-select: none; line-height: 1.4;
 }
 
 /* ============================================
-   COLONNE CENTRE - Grille compacte
+   COLONNE CENTRE - Produits avec HAUTEUR FIXE
    ============================================ */
 
 .price-request-center-header {
@@ -147,26 +215,30 @@
   align-content: start;
 }
 
+/* ✅ ProductCard avec HAUTEUR FIXE pour aligner les images */
 .price-request-product-card {
   background-color: #FFFFFF; border: 1px solid #EBEBEB; border-radius: 8px;
-  padding: 9px; display: flex; flex-direction: column; gap: 5px;
+  padding: 9px; display: flex; flex-direction: column; gap: 6px;
   cursor: default; transition: all 0.18s ease;
-  box-shadow: 0 1px 4px rgba(0,0,0,.04); height: 164px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04); 
+  height: 170px;/* ✅ Hauteur fixe pour aligner les images */
+  overflow: hidden;
 }
 .price-request-product-card:hover {
   box-shadow: 0 4px 14px rgba(231,113,49,0.14); border-color: #E77131;
 }
 
 .price-request-product-header {
-  display: flex; justify-content: space-between; align-items: flex-start; gap: 2px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 4px;
+  min-height: 32px; /* ✅ Hauteur min pour le nom */
 }
 
+/* ✅ Nom du produit : hauteur fixe 2 lignes */
 .price-request-product-name {
   font-size: 11px; font-weight: 600; color: #3E3E3E; margin: 0; line-height: 1.3;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  flex: 1;
 }
-
-.price-request-product-reference { font-size: 9px; color: #bbb; margin: 0; }
 
 .price-request-icon-button {
   background: none; border: none; cursor: pointer; padding: 1px; color: #ccc;
@@ -174,8 +246,10 @@
 }
 .price-request-icon-button:hover { color: #E77131; }
 
+/* ✅ Image produit : hauteur fixe */
 .price-request-product-image {
-  width: 100%; height: 70px; background-color: #F5F5F5;
+  width: 100%; height: 80px; /* ✅ Hauteur fixe pour aligner */
+  background-color: #F5F5F5;
   border-radius: 6px; display: flex; align-items: center; justify-content: center;
   overflow: hidden; flex-shrink: 0; border: 1px solid #F0F0F0;
 }
@@ -183,8 +257,9 @@
   width: 100%; height: 100%; object-fit: cover; transition: transform 0.18s ease;
 }
 .price-request-product-card:hover .price-request-product-image img { transform: scale(1.04); }
-.price-request-product-image svg { width: 26px; height: 26px; color: #ddd; }
 
+/* ✅ Plus de ref ni description affichés */
+.price-request-product-reference { display: none; }
 .price-request-product-description { display: none; }
 
 .price-request-add-button {
@@ -198,7 +273,7 @@
 .price-request-add-button:hover { background-color: #f6b800; transform: scale(1.1); }
 
 /* ============================================
-   COLONNE DROITE - Panier + Formulaire
+   COLONNE DROITE - Labels corrigés
    ============================================ */
 
 .price-request-right-scrollable {
@@ -209,7 +284,6 @@
 .price-request-right-scrollable::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 2px; }
 
 .price-request-cart-empty { text-align: center; padding: 28px 16px; color: #bbb; font-size: 12px; }
-
 .price-request-cart-items-list { display: flex; flex-direction: column; gap: 5px; }
 
 .price-request-cart-item {
@@ -260,7 +334,7 @@
 .price-request-quantity-label { font-size: 11px; color: #666; font-weight: 500; min-width: 58px; }
 .price-request-quantity-input {
   width: 56px; padding: 4px 5px; border: 1px solid #D5D5D5; border-radius: 6px;
-  font-size: 12px; text-align: center; font-family: 'Montserrat', sans-serif;
+  font-size: 13px; /* ✅ Police augmentée */ text-align: center; font-family: 'Montserrat', sans-serif;
 }
 .price-request-quantity-input:focus { outline: none; border-color: #E77131; }
 
@@ -274,7 +348,6 @@
 }
 .price-request-note-input:focus { outline: none; border-color: #E77131; }
 
-/* Zone fixe formulaire */
 .price-request-right-fixed {
   border-top: 1px solid #E8E8E8; padding: 11px 13px;
   max-height: 60%; overflow-y: auto; overflow-x: hidden; flex-shrink: 0;
@@ -291,8 +364,10 @@
 }
 
 .price-request-form-input {
-  width: 100%; padding: 7px 9px; border: 1px solid #D5D5D5; border-radius: 7px;
-  font-family: 'Montserrat', sans-serif; font-size: 11px; box-sizing: border-box;
+  width: 100%; padding: 8px 10px; /* ✅ Padding augmenté */
+  border: 1px solid #D5D5D5; border-radius: 7px;
+  font-family: 'Montserrat', sans-serif; font-size: 13px; /* ✅ Police augmentée */
+  box-sizing: border-box;
 }
 .price-request-form-input:focus {
   outline: none; border-color: #E77131; box-shadow: 0 0 0 2px rgba(231,113,49,0.1);
@@ -314,6 +389,9 @@
 }
 .price-request-form-select:focus { outline: none; border-color: #E77131; }
 
+/* ✅ Labels corrigés */
+.price-request-delivery-label { font-size: 10px; font-weight: 700; color: #888; margin-bottom: 6px; display: block; text-transform: uppercase; }
+
 .price-request-urgency-options { display: flex; gap: 5px; }
 .price-request-urgency-option {
   flex: 1; padding: 5px 2px; border: 1px solid #E5E5E5; border-radius: 6px;
@@ -329,6 +407,7 @@
 .price-request-delivery-option input[type="radio"] {
   width: 14px; height: 14px; cursor: pointer; accent-color: #E77131;
 }
+.price-request-delivery-option input[type="radio"]:focus { outline: none; } /* ✅ Pas d'outline */
 .price-request-delivery-option label { font-size: 11px; color: #505050; cursor: pointer; }
 
 .price-request-email-input { display: flex; gap: 6px; margin-top: 5px; }
@@ -341,36 +420,34 @@
   margin-bottom: 4px; font-size: 11px; color: #555;
 }
 
-/* ============================================
-   RELANCES
-   ============================================ */
+/* ✅ Bouton PJ avec tooltip */
+.price-request-pj-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 10px; background: #FFF8F5; border: 1px dashed #E77131;
+  border-radius: 6px; color: #E77131; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; font-family: 'Montserrat', sans-serif;
+}
+.price-request-pj-btn:hover { background: rgba(231,113,49,0.1); }
 
 .price-request-relances { display: flex; flex-direction: column; gap: 5px; }
-
 .price-request-relance-item {
   background: #FFF8F5; border: 1px solid #FDDCCC;
   border-radius: 6px; padding: 6px 9px;
 }
-
 .price-request-relance-row { display: flex; align-items: center; gap: 6px; }
-
 .price-request-relance-input {
   width: 48px; padding: 3px 5px; border: 1px solid #D5D5D5;
   border-radius: 5px; font-size: 12px; text-align: center;
   font-family: 'Montserrat', sans-serif; flex-shrink: 0;
 }
 .price-request-relance-input:focus { outline: none; border-color: #E77131; }
-
 .price-request-relance-label { font-size: 11px; color: #555; flex: 1; }
-
 .price-request-relance-remove {
   background: none; border: none; cursor: pointer; padding: 1px; color: #ccc;
   display: flex; align-items: center; flex-shrink: 0;
 }
 .price-request-relance-remove:hover { color: #dc3545; }
-
 .price-request-relance-add-btns { display: flex; gap: 5px; margin-top: 3px; }
-
 .price-request-relance-add-btn {
   flex: 1; padding: 4px 7px; border: 1px dashed #E77131;
   border-radius: 5px; background: transparent; color: #E77131;
@@ -379,7 +456,6 @@
 }
 .price-request-relance-add-btn:hover { background: rgba(231,113,49,0.06); }
 
-/* Submit */
 .price-request-submit-button {
   width: 100%; display: flex; align-items: center; justify-content: center;
   background-color: #E0E0E0; color: #aaa;
@@ -396,7 +472,6 @@
    ============================================ */
 
 .price-request-history-filters { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
-
 .price-request-history-item {
   border: 1px solid #E8E8E8; border-radius: 8px; padding: 12px 14px;
   margin-bottom: 9px; background-color: #FFFFFF; cursor: pointer; transition: all 0.18s ease;
@@ -426,7 +501,7 @@
    ============================================ */
 
 .price-request-modal-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  position: fixed; top: -20px; left: 0; right: 0; bottom: 0;
   background-color: rgba(0,0,0,0.42);
   display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
@@ -443,7 +518,7 @@
   display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
 }
 
-.price-request-modal-title { font-size: 14px; font-weight: 700; color: #3E3E3E; margin: 0; }
+.price-request-modal-title { font-size: 14px; font-weight: 600; color: #3E3E3E; margin: 0; }
 
 .price-request-modal-close {
   background: none; border: none; cursor: pointer;
@@ -454,6 +529,16 @@
 .price-request-modal-content {
   display: flex; flex-direction: column; gap: 12px;
   max-height: calc(92vh - 68px); overflow-y: auto; padding: 16px 18px;
+}
+
+.price-request-modal-image {
+  width: 100%; max-height: 300px; overflow: hidden;
+  border-radius: 8px; background: #f5f5f5;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.price-request-modal-image img {
+  width: 100%; height: 100%; object-fit: contain;
 }
 
 .price-request-modal-info { display: flex; flex-direction: column; gap: 4px; }
@@ -469,7 +554,7 @@
   background: #F8F8F8; padding: 9px 11px; border-radius: 7px; border-left: 3px solid #E77131;
 }
 .price-request-modal-product-info { margin-bottom: 5px; }
-.price-request-modal-product-name { font-size: 13px; font-weight: 600; color: #333; margin: 0 0 2px 0; }
+.price-request-modal-product-name { font-size: 13px; font-weight: 500; color: #333; margin: 0 0 2px 0; }
 .price-request-modal-product-reference {
   font-size: 10px; color: #999; background: white;
   padding: 1px 5px; border-radius: 3px; display: inline-block;
@@ -492,10 +577,6 @@
   display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
 }
 .price-request-modal-supplier-name { font-size: 12px; font-weight: 600; color: #333; }
-.price-request-modal-supplier-email {
-  font-size: 11px; color: #888; display: flex; align-items: center; gap: 4px;
-}
-.price-request-modal-supplier-email::before { content: "✉"; color: #E77131; }
 
 .price-request-dest-statut-select {
   padding: 4px 7px; border: 1px solid #D5D5D5; border-radius: 5px;
@@ -575,6 +656,7 @@
   background-color: #F8F9FA; flex-shrink: 0;
 }
 .supplier-select-all input { cursor: pointer; accent-color: #E77131; }
+.supplier-select-all input:focus { outline: none; }
 .supplier-select-all label { flex: 1; font-size: 11px; font-weight: 600; color: #505050; cursor: pointer; margin: 0; }
 
 .supplier-select-options { flex: 1; overflow-y: auto; overflow-x: hidden; }
@@ -584,6 +666,7 @@
 }
 .supplier-select-option:hover { background-color: #FFF8F5; }
 .supplier-select-option input { cursor: pointer; accent-color: #E77131; flex-shrink: 0; }
+.supplier-select-option input:focus { outline: none; }
 .supplier-select-option label { flex: 1; cursor: pointer; margin: 0; }
 .supplier-select-option-name { font-size: 11px; font-weight: 500; color: #505050; }
 .supplier-select-empty { padding: 14px; text-align: center; color: #bbb; font-size: 11px; }
@@ -605,49 +688,12 @@
 .supplier-select-options::-webkit-scrollbar-thumb { background: #D0D0D0; border-radius: 2px; }
 
 /* ============================================
-   MOBILE
+   POPUP SUCCESS - descendue à 44px
    ============================================ */
-
-.price-request-mobile-toggle { display: none; }
-
-@media (max-width: 1024px) {
-  .price-request-panel-right {
-    position: fixed; right: 0; top: 0; height: 100vh; z-index: 100;
-    transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -4px 0 20px rgba(0,0,0,0.1);
-  }
-  .price-request-panel-right.open { transform: translateX(0); }
-  .price-request-mobile-toggle {
-    display: flex; position: fixed; bottom: 20px; right: 20px;
-    width: 54px; height: 54px; border-radius: 50%;
-    background-color: #E77131; color: #FFFFFF; border: none;
-    cursor: pointer; align-items: center; justify-content: center;
-    box-shadow: 0 4px 16px rgba(231,113,49,0.3); z-index: 99; transition: all 0.2s;
-  }
-  .price-request-mobile-toggle:hover { background-color: #f6b800; transform: scale(1.05); }
-  .price-request-mobile-toggle .badge {
-    position: absolute; top: 4px; right: 4px;
-    background-color: #dc3545; color: #FFFFFF; border-radius: 50%;
-    width: 19px; height: 19px; display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700;
-  }
-}
-
-@media (max-width: 768px) {
-  .price-request-main { flex-direction: column; }
-  .price-request-panel-left { width: 100%; border-right: none; border-bottom: 1px solid #E0E0E0; max-height: 200px; }
-  .price-request-products-grid { grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 8px; }
-}
-
-
-/* ═════════════════════════════════════════════════════════════
-   SUCCESS POPUP - TOP RIGHT avec slide-in
-   Remplace le CSS snackbar précédent
-   ═════════════════════════════════════════════════════════════ */
 
 .price-request-success-popup {
   position: fixed;
-  top: 24px;
+  top: 55px; /*Descendue de 24px à 55px*/
   right: 24px;
   z-index: 10000;
   background: white;
@@ -732,13 +778,172 @@
   }
 }
 
-/* Mobile responsive */
+/* ============================================
+   MOBILE - CORRECTIONS COMPLÈTES
+   ============================================ */
+
+.price-request-mobile-toggle { display: none; }
+
+@media (max-width: 1024px) {
+  .price-request-panel-right {
+    position: fixed; right: 0; top: 0; height: 100vh; z-index: 100;
+    transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
+  }
+  .price-request-panel-right.open { transform: translateX(0); }
+  
+  .price-request-mobile-toggle {
+    display: flex; position: fixed; bottom: 20px; right: 20px;
+    width: 54px; height: 54px; border-radius: 50%;
+    background-color: #E77131; color: #FFFFFF; border: none;
+    cursor: pointer; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(231,113,49,0.3); z-index: 99; transition: all 0.2s;
+  }
+  .price-request-mobile-toggle:hover { background-color: #f6b800; transform: scale(1.05); }
+  .price-request-mobile-toggle .badge {
+    position: absolute; top: 4px; right: 4px;
+    background-color: #dc3545; color: #FFFFFF; border-radius: 50%;
+    width: 19px; height: 19px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+}
+
 @media (max-width: 768px) {
+  /* ✅ Header mobile responsive */
+  .price-request-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .price-request-main-title {
+    font-size: 16px;
+  }
+  
+  .price-request-subtitle {
+    font-size: 11px;
+  }
+  
+  .price-request-tabs {
+    width: 100%;
+  }
+  
+  .price-request-tab {
+    flex: 1;
+    text-align: center;
+  }
+  
+  /* ✅ Layout mobile corrigé */
+  .price-request-main { flex-direction: column; height: 100%; }
+  .price-request-panel-left { 
+    width: 100%; 
+    border-right: none; 
+    border-bottom: 1px solid #E0E0E0; 
+    max-height: 35vh; 
+    min-height: 200px;
+    overflow-y: auto; /* ✅ Scroll propre */
+  }
+   .price-request-product-card {
+    height: 180px !important;
+  }
+  
+  .price-request-panel-center {
+    flex: 1;
+    border-right: none;
+    overflow-y: auto; /* ✅ Scroll propre */
+  }
+  
+  .price-request-products-grid { 
+    grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)) !important;
+    gap: 8px; 
+  }
+  
+  /* ✅ Modale mobile sans redimensionnement */
+  .price-request-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+  
+  .price-request-modal-content {
+    max-height: calc(85vh - 68px);
+  }
+  
+  /* ✅ Input focus sans resize */
+  .price-request-form-input:focus,
+  .price-request-form-textarea:focus,
+  .price-request-search:focus {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  /* ✅ Popup mobile */
   .price-request-success-popup {
     top: 16px;
     right: 16px;
     left: 16px;
     min-width: auto;
     max-width: none;
+  }
+  
+  /* ✅ Click sur overlay ferme la modale */
+  .price-request-modal-overlay {
+    cursor: pointer;
+  }
+  
+  .price-request-modal {
+    cursor: default;
+  }
+  
+  /* ✅ Right panel responsive */
+  .price-request-panel-right.open {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .price-request-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 6px;
+  }
+  
+  .price-request-product-card {
+    height: 150px;
+  }
+  
+  .price-request-product-image {
+    height: 65px;
+  }
+}
+
+
+.price-request-panel-close-mobile {
+  display: none; /* Caché par défaut sur desktop */
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.price-request-panel-close-mobile:hover {
+  color: #E77131;
+}
+
+/* Afficher le bouton UNIQUEMENT sur mobile */
+@media (max-width: 1024px) {
+  .price-request-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .price-request-panel-close-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
