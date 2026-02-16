@@ -92,7 +92,7 @@ export const PriceRequest = () => {
       .then(d => {
         if (d?.data) setFournisseurs(d.data.map((f: any) => ({ id: String(f.id), name: f.name })));
       }).catch(console.error);
-    // fetch(`${API_BASE_URL}/demandes-prix/catalogue`)
+    // fetch(`${API_BASE_URL}/demandes-prix/catalogue`)ee
      fetch(`${API_BASE_URL}/demandes-prix/catalogue?societe_id=${societeId}`)
       .then(r => r.json()).then(d => { if (d?.data) setCatalogueProducts(d.data); }).catch(console.error);
   }, [societeId, membreId]);
