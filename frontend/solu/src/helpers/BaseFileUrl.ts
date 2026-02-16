@@ -65,7 +65,7 @@
 export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
 
 // ✅ CORRIGÉ : Sans /public/ en double
-export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/uploads/catalogue/';
+export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/'
 
 /**
  * Construit l'URL complète d'une image produit
