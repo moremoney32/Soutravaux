@@ -2,35 +2,56 @@
 export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
 //  export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/';
 // export const BASE_PRODUCT_DOC_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductDocumentations/'
-  export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public//uploads/catalogue/image/'
+//export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public//uploads/catalogue/image/'
 
 /**
  * Construit l'URL complète d'une image produit
  */
-export const getProductImageUrl = (imagePath: string | undefined | null): string | null => {
+// export const getProductImageUrl = (imagePath: string | undefined | null): string | null => {
+//   if (!imagePath) return null;
+
+//   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+//     return imagePath;
+//   }
+
+//   let cleanPath = imagePath.trim();
+
+//   const prefixesToRemove = [
+//     'storage/ProductImages/',
+//     'ProductImages/',
+//     'public/ProductImages/',
+//     'public/storage/ProductImages/'
+//   ];
+
+//   prefixesToRemove.forEach(prefix => {
+//     if (cleanPath.startsWith(prefix)) {
+//       cleanPath = cleanPath.substring(prefix.length);
+//     }
+//   });
+
+//   return `${BASE_PRODUCT_IMAGE_URL}${cleanPath}`;
+// };
+
+export const BASE_PRODUCT_IMAGE_URL =
+  'https://staging.solutravo-compta.fr/public/uploads/catalogue/image/';
+
+export const getProductImageUrl = (imagePath?: string | null): string | null => {
   if (!imagePath) return null;
 
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
+  // déjà une url complète
+  if (imagePath.startsWith('http')) return imagePath;
+
+  const cleanPath = imagePath.trim();
+
+  // si le chemin contient déjà uploads → ne pas doubler
+  if (cleanPath.includes('uploads/catalogue/image')) {
+    return `https://staging.solutravo-compta.fr/public/${cleanPath}`;
   }
 
-  let cleanPath = imagePath.trim();
-
-  const prefixesToRemove = [
-    'storage/ProductImages/',
-    'ProductImages/',
-    'public/ProductImages/',
-    'public/storage/ProductImages/'
-  ];
-
-  prefixesToRemove.forEach(prefix => {
-    if (cleanPath.startsWith(prefix)) {
-      cleanPath = cleanPath.substring(prefix.length);
-    }
-  });
-
+  // sinon c’est juste le nom du fichier
   return `${BASE_PRODUCT_IMAGE_URL}${cleanPath}`;
 };
+
 
 /**
  * Construit l'URL complète d'une image de bibliothèque
