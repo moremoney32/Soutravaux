@@ -86,12 +86,14 @@ export const PriceRequest = () => {
       .then(r => r.json()).then(d => { if (d?.data) setHistory(d.data); }).catch(console.error);
     fetch(`${API_BASE_URL}/demandes-prix/bibliotheques?societe_id=${societeId}`)
       .then(r => r.json()).then(d => { if (d?.data) setLibraries(d.data); }).catch(console.error);
-    fetch(`${API_BASE_URL}/demandes-prix/fournisseurs`)
+    // fetch(`${API_BASE_URL}/demandes-prix/fournisseurs`)
+     fetch(`${API_BASE_URL}/demandes-prix/fournisseurs?societe_id=${societeId}`)
       .then(r => r.json())
       .then(d => {
         if (d?.data) setFournisseurs(d.data.map((f: any) => ({ id: String(f.id), name: f.name })));
       }).catch(console.error);
-    fetch(`${API_BASE_URL}/demandes-prix/catalogue`)
+    // fetch(`${API_BASE_URL}/demandes-prix/catalogue`)
+     fetch(`${API_BASE_URL}/demandes-prix/catalogue?societe_id=${societeId}`)
       .then(r => r.json()).then(d => { if (d?.data) setCatalogueProducts(d.data); }).catch(console.error);
   }, [societeId, membreId]);
 
@@ -298,11 +300,6 @@ export const PriceRequest = () => {
   };
 
   const handleUpdateStatutDestinataire = async (destId: number, demandeId: number, statut: string) => {
-    // try {
-    //   await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/destinataires/${destId}`, {
-    //     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ societe_id: societeId, statut })
-    //   });
 
     try {
     await fetch(`${API_BASE_URL}/demandes-prix/${demandeId}/destinataires/${destId}/statut`, {
@@ -403,7 +400,7 @@ export const PriceRequest = () => {
           <AlertCircle size={14} className="price-request-subtitle-icon" />
           <span>
             Grâce à Solutravo, interrogez vos fournisseurs simultanément en 30 secondes. 
-            Choisissez de faire votre demande de prix, par fournisseur spécifique, ou par produit(s) en sélectionnant plusieurs fournisseurs de votre réseau.
+            Choisissez de faire votre demande de prix, par fournisseur spécifique, ou par produit(s) en sélectionnant plusieurs fournisseurs de votre réseau.<br/>
             <strong> IMPORTANT :</strong> Vos fournisseurs reçoivent la demande individuellement, si vous interrogez plusieurs partenaires, ils n'en sont pas informés.
           </span>
         </div>

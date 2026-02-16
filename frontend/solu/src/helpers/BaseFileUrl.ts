@@ -1,8 +1,8 @@
 // ✅ URLs DE BASE POUR LES IMAGES ET DOCUMENTS
 export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
- export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/';
-export const BASE_PRODUCT_DOC_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductDocumentations/';
-// export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/assets/img/';
+//  export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/';
+// export const BASE_PRODUCT_DOC_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductDocumentations/'
+  export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public//uploads/catalogue/image/'
 
 /**
  * Construit l'URL complète d'une image produit

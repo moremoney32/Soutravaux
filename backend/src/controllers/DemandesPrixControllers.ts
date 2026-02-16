@@ -269,13 +269,35 @@ export const getProduitsBibliothequeController = async (req: Request, res: Respo
 };
 
 // ─── GET /api/demandes-prix/catalogue ──────────────────────
+// export const getCatalogueController = async (
+//   req: Request, res: Response, next: NextFunction
+// ): Promise<void> => {
+//   try {
+//     const { search } = req.query;
+//     // ✅ Plus de filtre societe_id — catalogue global + Solutravo
+//     const produits = await getProduitsCatalogue(search as string | undefined);
+//     res.status(200).json({ success: true, data: produits });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const getCatalogueController = async (
   req: Request, res: Response, next: NextFunction
 ): Promise<void> => {
   try {
-    const { search } = req.query;
-    // ✅ Plus de filtre societe_id — catalogue global + Solutravo
-    const produits = await getProduitsCatalogue(search as string | undefined);
+    const { search, societe_id } = req.query;
+    
+    if (!societe_id) {
+      res.status(400).json({ success: false, message: 'societe_id requis' });
+      return;
+    }
+    
+    const produits = await getProduitsCatalogue(
+      Number(societe_id),
+      search as string | undefined
+    );
+    
     res.status(200).json({ success: true, data: produits });
   } catch (err) {
     next(err);
@@ -283,12 +305,30 @@ export const getCatalogueController = async (
 };
 // ─── GET /api/demandes-prix/fournisseurs ───────────────────
 // ✅ Retourne nom_societe AS name + has_email
+// export const getFournisseursController = async (
+//   _req: Request, res: Response, next: NextFunction
+// ): Promise<void> => {
+//   try {
+//     // ✅ Plus de societe_id requis — tous les fournisseurs avec email
+//     const fournisseurs = await getFournisseursAvecEmail();
+//     res.status(200).json({ success: true, data: fournisseurs });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const getFournisseursController = async (
-  _req: Request, res: Response, next: NextFunction
+  req: Request, res: Response, next: NextFunction
 ): Promise<void> => {
   try {
-    // ✅ Plus de societe_id requis — tous les fournisseurs avec email
-    const fournisseurs = await getFournisseursAvecEmail();
+    const { societe_id } = req.query;
+    
+    if (!societe_id) {
+      res.status(400).json({ success: false, message: 'societe_id requis' });
+      return;
+    }
+    
+    const fournisseurs = await getFournisseursAvecEmail(Number(societe_id));
     res.status(200).json({ success: true, data: fournisseurs });
   } catch (err) {
     next(err);

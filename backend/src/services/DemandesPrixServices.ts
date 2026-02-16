@@ -497,22 +497,90 @@ export async function getProduitsBibliotheque(
 }
 
 
-export async function getProduitsCatalogue(search?: string): Promise<any[]> {
+// export async function getProduitsCatalogue(search?: string): Promise<any[]> {
+//   const conn = await pool.getConnection();
+//   try {
+//     let searchCatalogue = '';
+//     let searchSolutravo = '';
+//     const paramsCatalogue: any[] = [];
+//     const paramsSolutravo: any[] = [];
+
+//     if (search) {
+//       searchCatalogue = 'WHERE (c.nom LIKE ? OR c.description LIKE ?)';
+//       paramsCatalogue.push(`%${search}%`, `%${search}%`);
+//       searchSolutravo = 'AND (p.name LIKE ? OR p.description LIKE ?)';
+//       paramsSolutravo.push(`%${search}%`, `%${search}%`);
+//     }
+
+//     // ── 1. Produits du catalogue global (table catalogue, SANS filtre societe) ──
+//     const [catalogueRows] = await conn.query<RowDataPacket[]>(
+//       `SELECT
+//         c.id,
+//         c.nom         AS name,
+//         c.nom         AS product_nom,
+//         c.description,
+//         c.unite       AS unit,
+//         c.marque,
+//         c.type,
+//         c.image,
+//         c.societe_id,
+//         'catalogue'   AS source,
+//         NULL          AS famille_name,
+//         NULL          AS supplier_reference,
+//         NULL          AS library_id
+//        FROM catalogue c
+//        ${searchCatalogue}
+//        ORDER BY c.nom ASC`,
+//       paramsCatalogue
+//     );
+
+//     // ── 2. Produits Solutravo (library_id = 18) ─────────────
+//     const [solutravoRows] = await conn.query<RowDataPacket[]>(
+//       `SELECT
+//         p.id,
+//         p.name,
+//         p.name        AS product_nom,
+//         p.description,
+//         p.unit,
+//         NULL          AS marque,
+//         'produit'     AS type,
+//         p.image,
+//         NULL          AS societe_id,
+//         'library'     AS source,
+//         lc.name       AS famille_name,
+//         p.supplier_reference,
+//         lc.library_id AS library_id
+//        FROM products p
+//        JOIN library_categories lc ON p.category_id = lc.id
+//        WHERE lc.library_id = 18
+//        ${searchSolutravo}
+//        ORDER BY lc.name, p.name ASC`,
+//       paramsSolutravo
+//     );
+
+//     // ── Combiner : catalogue d'abord, puis Solutravo ─────────
+//     return [...catalogueRows, ...solutravoRows];
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+export async function getProduitsCatalogue(societeId: number, search?: string): Promise<any[]> {
   const conn = await pool.getConnection();
   try {
-    let searchCatalogue = '';
-    let searchSolutravo = '';
-    const paramsCatalogue: any[] = [];
+    let searchCatalogue = 'WHERE c.societe_id = ?';
+    let searchSolutravo = 'AND (1=1)';
+    const paramsCatalogue: any[] = [societeId];
     const paramsSolutravo: any[] = [];
 
     if (search) {
-      searchCatalogue = 'WHERE (c.nom LIKE ? OR c.description LIKE ?)';
+      searchCatalogue += ' AND (c.nom LIKE ? OR c.description LIKE ?)';
       paramsCatalogue.push(`%${search}%`, `%${search}%`);
       searchSolutravo = 'AND (p.name LIKE ? OR p.description LIKE ?)';
       paramsSolutravo.push(`%${search}%`, `%${search}%`);
     }
 
-    // ── 1. Produits du catalogue global (table catalogue, SANS filtre societe) ──
+    // ── 1. Produits du catalogue de LA société ──
     const [catalogueRows] = await conn.query<RowDataPacket[]>(
       `SELECT
         c.id,
@@ -558,14 +626,41 @@ export async function getProduitsCatalogue(search?: string): Promise<any[]> {
       paramsSolutravo
     );
 
-    // ── Combiner : catalogue d'abord, puis Solutravo ─────────
+    // ── Combiner : catalogue société + Solutravo ─────────
     return [...catalogueRows, ...solutravoRows];
   } finally {
     conn.release();
   }
 }
 
-export async function getFournisseursAvecEmail(): Promise<any[]> {
+// export async function getFournisseursAvecEmail(): Promise<any[]> {
+//   const conn = await pool.getConnection();
+//   try {
+//     const [rows] = await conn.query<RowDataPacket[]>(
+//       `SELECT
+//         f.id,
+//         f.nom_societe AS name,
+//         f.nom,
+//         f.prenom,
+//         f.email,
+//         f.telephone,
+//         f.ville,
+//         f.pays,
+//         f.societe_id,
+//         1 AS has_email
+//        FROM fournisseurs f
+//        WHERE f.email IS NOT NULL
+//          AND f.email != ''
+//        ORDER BY f.nom_societe ASC`
+//     );
+//     return rows;
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+
+export async function getFournisseursAvecEmail(societeId: number): Promise<any[]> {
   const conn = await pool.getConnection();
   try {
     const [rows] = await conn.query<RowDataPacket[]>(
@@ -581,9 +676,11 @@ export async function getFournisseursAvecEmail(): Promise<any[]> {
         f.societe_id,
         1 AS has_email
        FROM fournisseurs f
-       WHERE f.email IS NOT NULL
+       WHERE f.societe_id = ?
+         AND f.email IS NOT NULL
          AND f.email != ''
-       ORDER BY f.nom_societe ASC`
+       ORDER BY f.nom_societe ASC`,
+      [societeId]
     );
     return rows;
   } finally {
