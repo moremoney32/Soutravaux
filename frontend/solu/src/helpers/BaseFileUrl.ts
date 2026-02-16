@@ -65,7 +65,7 @@
 export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
 
 // ✅ CORRIGÉ : Sans /public/ en double
-export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/uploads/catalogue/image/';
+export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/uploads/catalogue/';
 
 /**
  * Construit l'URL complète d'une image produit
@@ -84,8 +84,8 @@ export const getProductImageUrl = (imagePath: string | undefined | null): string
     'ProductImages/',
     'public/ProductImages/',
     'public/storage/ProductImages/',
-    'uploads/catalogue/image/',  // ✅ Ajouter ce préfixe
-    'public/uploads/catalogue/image/'  // ✅ Ajouter ce préfixe
+    'uploads/catalogue/',  // ✅ Ajouter ce préfixe
+    'public/uploads/catalogue/'  // ✅ Ajouter ce préfixe
   ];
 
   prefixesToRemove.forEach(prefix => {
