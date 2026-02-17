@@ -235,7 +235,7 @@
 
 /* ✅ Nom du produit : hauteur fixe 2 lignes */
 .price-request-product-name {
-  font-size: 11px; font-weight: 600; color: #3E3E3E; margin: 0; line-height: 1.3;
+  font-size: 12px; font-weight: 600; color: #3E3E3E; margin: 0; line-height: 1.3;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   flex: 1;
 }
@@ -910,6 +910,9 @@
     width:20px !important; height: 20px !important; padding-left: 20px !important;
     padding-right: 20px !important;
   }
+  .price-request-product-name {
+  font-size: 13px !important; 
+}
 }
 
 @media (max-width: 480px) {
