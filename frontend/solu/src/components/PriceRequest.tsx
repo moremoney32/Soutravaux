@@ -410,8 +410,8 @@ export const PriceRequest = () => {
           <AlertCircle size={14} className="price-request-subtitle-icon" />
           <span>
             Grâce à Solutravo, interrogez vos fournisseurs simultanément en 30 secondes. 
-            Choisissez de faire votre demande de prix, par fournisseur spécifique, ou par produit(s) en sélectionnant plusieurs fournisseurs de votre réseau.<br/>
-            <strong> IMPORTANT :</strong> Vos fournisseurs reçoivent la demande individuellement, si vous interrogez plusieurs partenaires, ils n'en sont pas informés.
+            Choisissez de faire votre demande de prix, par fournisseur spécifique, ou par produit(s) en sélectionnant plusieurs fournisseurs de votre réseau.<div style={{ marginTop: 6}}>
+            <strong> IMPORTANT :</strong> Vos fournisseurs reçoivent la demande individuellement, si vous interrogez plusieurs partenaires, ils n'en sont pas informés.</div>
           </span>
         </div>
       </div>
