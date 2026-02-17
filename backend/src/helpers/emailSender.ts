@@ -413,8 +413,7 @@ export async function sendNotificationVincent(params: {
     `;
     
     const payload = {
-      // receiver: 'vincent@solutravo.fr',
-        receiver: 'tflkmc1990@gmail.com',
+     receiver: 'vincent@solutravo.fr',
       sender: DEFAULT_SENDER,
       subject,
       message: htmlMessage
@@ -507,16 +506,6 @@ function construireEmailHTML(params: SendDemandePrixEmailParams): string {
             : `Nous vous prions de bien vouloir nous transmettre votre <strong>meilleur devis</strong> pour les produits listés en pièce jointe.`
           }
         </p>
-
-        ${params.note_generale
-          ? `<div style="background:white;padding:15px;border-left:4px solid ${urgenceColor};border-radius:5px;margin-bottom:25px;">
-               <p style="margin:0;font-size:14px;color:#666;">
-                 <strong style="color:#333;">📝 Note :</strong><br/>
-                 ${params.note_generale.replace(/\n/g, '<br/>')}
-               </p>
-             </div>`
-          : ''
-        }
 
         <div style="text-align:center;margin:30px 0;">
           <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}" 
