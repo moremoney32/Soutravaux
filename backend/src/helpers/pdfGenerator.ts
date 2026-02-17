@@ -660,7 +660,7 @@ export async function generateDemandePrixPDF(
       doc.moveDown(1.2);
 
       // ─── LIVRAISON (ALIGNÉE À GAUCHE X=40) ───────────────
-      doc.fontSize(13).fillColor(ORANGE).text('Livraison', 40, doc.y, { underline: true });
+      doc.fontSize(13).fillColor(ORANGE).text('Livraison souhaitée', 40, doc.y, { underline: true });
       doc.moveDown(0.4);
       doc.fontSize(10).fillColor(BLACK);
 

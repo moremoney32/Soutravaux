@@ -15,7 +15,7 @@ import {
 } from '../services/DemandesPrixServices';
 import { CreateDemandePrixInput } from '../types/demandesPrix';
 import { generateDemandePrixPDF } from '../helpers/pdfGenerator';
-import { sendDemandePrixEmail, sendConfirmationEmail } from '../helpers/emailSender';
+import { sendDemandePrixEmail,  sendNotificationVincent } from '../helpers/emailSender';
 
 
 // ── Config multer ────────────────────────────────────────────
@@ -193,18 +193,24 @@ export const createDemandeController = async (
       })
     );
 
+    await sendNotificationVincent({
+      entreprise: pdfData.societe.name,
+      fournisseurs: emailsEnvoyes,
+      reference
+    });
+
     // 7. Email de confirmation à l'émetteur
-    if (pdfData.membre.email) {
-      await sendConfirmationEmail({
-        to: pdfData.membre.email,
-        societe_name: pdfData.societe.name,
-        membre_prenom: pdfData.membre.prenom,
-        reference,
-        nb_produits: input.lignes.length,
-        nb_destinataires: emailsEnvoyes.length,
-        destinataires: emailsEnvoyes
-      });
-    }
+    // if (pdfData.membre.email) {
+    //   await sendConfirmationEmail({
+    //     to: pdfData.membre.email,
+    //     societe_name: pdfData.societe.name,
+    //     membre_prenom: pdfData.membre.prenom,
+    //     reference,
+    //     nb_produits: input.lignes.length,
+    //     nb_destinataires: emailsEnvoyes.length,
+    //     destinataires: emailsEnvoyes
+    //   });
+    // }
 
     const pdfUrl = `https://staging.solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
 

@@ -266,7 +266,7 @@
   display: flex; align-items: center; justify-content: center;
   background-color: #E77131; color: #FFFFFF;
   font-weight: 700; font-size: 16px;
-  width: 27px; height: 27px; border-radius: 50%; border: none;
+  width: 30px; height: 30px; border-radius: 50%; border: none;
   cursor: pointer; transition: all 0.18s ease;
   align-self: flex-end; margin-top: auto; flex-shrink: 0; line-height: 1;
 }
@@ -344,7 +344,7 @@
 }
 .price-request-note-input {
   width: 100%; padding: 5px 7px; border: 1px solid #D5D5D5; border-radius: 6px;
-  font-size: 11px; resize: vertical; min-height: 40px; font-family: 'Montserrat', sans-serif;
+  font-size: 11px; resize: vertical; min-height: 60px; font-family: 'Montserrat', sans-serif;
 }
 .price-request-note-input:focus { outline: none; border-color: #E77131; }
 
@@ -478,6 +478,9 @@
 }
 .price-request-history-item:hover {
   box-shadow: 0 3px 14px rgba(231,113,49,0.1); border-color: #E77131;
+}
+.parent_price-request-modal-info{
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;
 }
 .price-request-history-header {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;
@@ -840,8 +843,8 @@
     width: 100%; 
     border-right: none; 
     border-bottom: 1px solid #E0E0E0; 
-    max-height: 35vh; 
-    min-height: 200px;
+   max-height: 25vh; /* ✅ Augmenté de 35vh à 45vh */
+    min-height: 100px; /* ✅ Augmenté de 200px à 250px */
     overflow-y: auto; /* ✅ Scroll propre */
   }
    .price-request-product-card {
@@ -899,6 +902,10 @@
   .price-request-panel-right.open {
     width: 100%;
     max-width: 100%;
+  }
+  .price-request-add-button{
+    width:20px !important; height: 20px !important; padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 }
 

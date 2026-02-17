@@ -70,7 +70,7 @@ export const PriceRequest = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<PriceRequests[]>([]);
   const [historySearch, setHistorySearch] = useState('');
-  const [historyStatutFilter, setHistoryStatutFilter] = useState<'all' | 'envoyee' | 'archivee'>('all');
+  const [historyStatutFilter, setHistoryStatutFilter] = useState<'envoyee' | 'all' | 'archivee'>('envoyee');
   const [selectedHistoryRequest, setSelectedHistoryRequest] = useState<PriceRequests | null>(null);
   const [loadingHistoryDetail, setLoadingHistoryDetail] = useState(false);
   const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
@@ -156,6 +156,16 @@ export const PriceRequest = () => {
     }
     setIsRightPanelOpen(true);
   };
+
+  const handleLibraryChange = (newLibraryId: string) => {
+  if (cartItems.length > 0) {
+    if (!confirm('Changer de bibliothèque va vider votre panier. Continuer ?')) {
+      return;
+    }
+    setCartItems([]); // Vider le panier
+  }
+  setSelectedLibraryId(newLibraryId);
+};
 
   const handleUpdateQuantity = (id: string, qty: number) =>
     setCartItems(cartItems.map(i => i.product.id === id ? { ...i, quantity: qty } : i));
@@ -501,7 +511,9 @@ export const PriceRequest = () => {
                         <div key={lib.id} className="price-request-checkbox-item">
                           <input type="radio" id={`lib-${lib.id}`} name="library"
                             checked={selectedLibraryId === String(lib.id)}
-                            onChange={() => setSelectedLibraryId(String(lib.id))} />
+                            // onChange={() => setSelectedLibraryId(String(lib.id))} 
+                             onChange={() => handleLibraryChange(String(lib.id))}
+                            />
                           <label htmlFor={`lib-${lib.id}`}>{lib.name || `Bibliothèque ${lib.id}`}</label>
                         </div>
                       ))}
@@ -807,6 +819,7 @@ export const PriceRequest = () => {
               </div>
             </div>
             <div className="price-request-modal-content">
+            <div className='parent_price-request-modal-info'>
               <div className="price-request-modal-info">
                 <div className="price-request-modal-label">Référence</div>
                 <p className="price-request-modal-value">{selectedHistoryRequest.reference}</p>
@@ -815,6 +828,7 @@ export const PriceRequest = () => {
                 <div className="price-request-modal-label">Date</div>
                 <p className="price-request-modal-value">{new Date(selectedHistoryRequest.date_creation).toLocaleDateString('fr-FR')}</p>
               </div>
+            </div>
               <div className="price-request-modal-divider" />
               <div style={{ display: 'flex', gap: 12 }}>
                 <div className="price-request-modal-info" style={{ flex: 1 }}>
@@ -831,7 +845,8 @@ export const PriceRequest = () => {
                 </div>
               </div>
               <div className="price-request-modal-divider" />
-              <div className="price-request-modal-info">
+              <div className='parent_price-request-modal-info'>
+                <div className="price-request-modal-info">
                 <div className="price-request-modal-label">Livraison</div>
                 <p className="price-request-modal-value">
                   {selectedHistoryRequest.adresse_livraison_type === 'siege' ? 'Siège social' :
@@ -845,6 +860,8 @@ export const PriceRequest = () => {
                   <p className="price-request-modal-value">{selectedHistoryRequest.note_generale}</p>
                 </div>
               )}
+              </div>
+              
               <div className="price-request-modal-divider" />
               {selectedHistoryRequest.destinataires && selectedHistoryRequest.destinataires.length > 0 && (
                 <div className="price-request-modal-info">
