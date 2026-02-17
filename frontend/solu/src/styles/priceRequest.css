@@ -186,7 +186,7 @@
 }
 .price-request-checkbox-item input[type="checkbox"]:focus,
 .price-request-checkbox-item input[type="radio"]:focus {
-  outline: none; /* ✅ Enlever l'outline au clic */
+  outline: none !important; /* ✅ Enlever l'outline au clic */
 }
 .price-request-checkbox-item label {
   font-size: 11px; color: #505050; cursor: pointer; user-select: none; line-height: 1.4;
