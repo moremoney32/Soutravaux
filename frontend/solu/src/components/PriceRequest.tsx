@@ -402,7 +402,7 @@ export const PriceRequest = () => {
     <div className="price-request-container">
 
       <header className="price-request-header">
-    {/* ✅ Titre + sous-titre UNIQUEMENT si pas en mode historique */}
+    {/* Titre + sous-titre UNIQUEMENT si pas en mode historique */}
     {!showHistory && (
       <div className="price-request-header-content">
         <h1 className="price-request-main-title">Fini les demandes de prix par mail !</h1>
