@@ -402,7 +402,7 @@ export async function getDemandeForPDF(demandeId: number): Promise<DemandePrixPD
 }
 
 // ============================================
-// 5. Bibliothèques — Solutravo (id!=18) toujours + abonnements validés
+// 5. Bibliothèques — Solutravo (id!=18) toujours + abonnements validés id  2 c est ppour la prod
 // ============================================
 export async function getBibliotheques(societeId: number): Promise<any[]> {
   const conn = await pool.getConnection();
@@ -427,7 +427,7 @@ export async function getBibliotheques(societeId: number): Promise<any[]> {
          AND sl.societe_id = ?
          AND sl.status = 'validated'
        -- ✅ Exclure Solutravo (réservé au mode par_produit)
-       WHERE l.id != 18
+       WHERE l.id != 2
        GROUP BY l.id, l.name, l.image, m.email, m.prenom, m.nom
        ORDER BY l.name ASC`,
       [societeId]
@@ -602,7 +602,7 @@ export async function getProduitsCatalogue(societeId: number, search?: string): 
       paramsCatalogue
     );
 
-    // ── 2. Produits Solutravo (library_id = 18) ─────────────
+    // ── 2. Produits Solutravo (library_id = 18) ─────────────id = 2 c est pour la prod
     const [solutravoRows] = await conn.query<RowDataPacket[]>(
       `SELECT
         p.id,
@@ -620,7 +620,7 @@ export async function getProduitsCatalogue(societeId: number, search?: string): 
         lc.library_id AS library_id
        FROM products p
        JOIN library_categories lc ON p.category_id = lc.id
-       WHERE lc.library_id = 18
+       WHERE lc.library_id = 2
        ${searchSolutravo}
        ORDER BY lc.name, p.name ASC`,
       paramsSolutravo
