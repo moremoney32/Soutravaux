@@ -427,7 +427,7 @@ export async function getBibliotheques(societeId: number): Promise<any[]> {
          AND sl.societe_id = ?
          AND sl.status = 'validated'
        -- ✅ Exclure Solutravo (réservé au mode par_produit)
-       WHERE l.id != 2
+       WHERE l.id != 18
        GROUP BY l.id, l.name, l.image, m.email, m.prenom, m.nom
        ORDER BY l.name ASC`,
       [societeId]
@@ -620,7 +620,7 @@ export async function getProduitsCatalogue(societeId: number, search?: string): 
         lc.library_id AS library_id
        FROM products p
        JOIN library_categories lc ON p.category_id = lc.id
-       WHERE lc.library_id = 2
+       WHERE lc.library_id = 18
        ${searchSolutravo}
        ORDER BY lc.name, p.name ASC`,
       paramsSolutravo
