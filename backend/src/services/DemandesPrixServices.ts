@@ -129,11 +129,11 @@ export async function createDemande(input: CreateDemandePrixInput): Promise<{ id
 
     // Référence unique
     let referenceToUse = (input.reference || '').toString().trim() || `DP-${Date.now()}`;
-    const [existingRows] = await conn.query<RowDataPacket[]>(
-      `SELECT COUNT(*) as cnt FROM demandes_prix WHERE reference = ?`,
-      [referenceToUse]
-    );
-    if ((existingRows[0] as any).cnt > 0) referenceToUse = `${referenceToUse}-${Date.now()}`;
+    // const [existingRows] = await conn.query<RowDataPacket[]>(
+    //   `SELECT COUNT(*) as cnt FROM demandes_prix WHERE reference = ?`,
+    //   [referenceToUse]
+    // );
+    // if ((existingRows[0] as any).cnt > 0) referenceToUse = `${referenceToUse}-${Date.now()}`;
 
     // Valider ENUM
     const validAdresseTypes = ['siege', 'retrait', 'nouvelle'];
