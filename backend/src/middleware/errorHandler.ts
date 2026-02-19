@@ -17,22 +17,6 @@ export function errorHandler(
     return;
   }
 
-  // Erreurs MySQL connues → message lisible
-  // if (err.code === 'ER_DUP_ENTRY') {
-  //   res.status(409).json({
-  //     success: false,
-  //     message: 'Cette référence existe déjà. Veuillez en choisir une autre.'
-  //   });
-  //   return;
-  // }
-
-  // if (err.code === 'ER_NO_REFERENCED_ROW_2') {
-  //   res.status(422).json({
-  //     success: false,
-  //     message: 'Un élément sélectionné n\'existe plus dans la base de données. Veuillez actualiser la page.'
-  //   });
-  //   return;
-  // }
   if (err.code === 'ER_DUP_ENTRY') {
   console.error('❌ Duplicate entry:', err.sqlMessage); // Log pour debug
   
