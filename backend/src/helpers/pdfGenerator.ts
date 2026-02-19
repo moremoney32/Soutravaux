@@ -6,8 +6,8 @@ import path from 'path';
 import axios from 'axios';
 import { DemandePrixPDFData } from '../types/demandesPrix';
 
-const BASE_URL = process.env.PDF_BASE_URL || 'https://staging.solutravo.zeta-app.fr'
-const LOGO_BASE_URL = process.env.LOGO_BASE_URL || 'https://staging.solutravo-compta.fr/public';
+const BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr'
+const LOGO_BASE_URL = process.env.LOGO_BASE_URL || 'https://app.solutravo-app.fr/public';
 
 export async function generateDemandePrixPDF(
   data: DemandePrixPDFData

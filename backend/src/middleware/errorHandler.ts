@@ -27,7 +27,7 @@ export function errorHandler(
   res.status(409).json({
     success: false,
     message: `Entrée dupliquée détectée (${keyName}). Veuillez vérifier vos données.`,
-    debug: err.sqlMessage // ⚠️ À retirer en prod
+    // debug: err.sqlMessage // ⚠️ À retirer en prod
   });
   return;
 }
