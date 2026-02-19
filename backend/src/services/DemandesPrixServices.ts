@@ -271,57 +271,6 @@ export async function createDemande(input: CreateDemandePrixInput): Promise<{ id
   }
 }
 
-// ============================================
-// 4. PDF
-// ============================================
-// export async function getDemandeForPDF(demandeId: number): Promise<DemandePrixPDFData> {
-//   const conn = await pool.getConnection();
-//   try {
-//     const [rows] = await conn.query<RowDataPacket[]>(
-//       `SELECT dp.*, s.nomsociete as societe_name, s.adresse as societe_adresse,
-//         s.email as societe_email, s.telephone as societe_telephone,
-//         s.logo as societe_logo,
-//         m.prenom as membre_prenom, m.nom as membre_nom, m.email as membre_email
-//        FROM demandes_prix dp
-//        JOIN societes s ON dp.societe_id = s.id
-//        JOIN membres m ON dp.membre_id = m.id
-//        WHERE dp.id = ?`,
-//       [demandeId]
-//     );
-//     if (rows.length === 0) throw new Error('Demande introuvable');
-//     const firstRow = rows[0];
-
-//     const [lignesRows] = await conn.query<RowDataPacket[]>(
-//       `SELECT * FROM demandes_prix_lignes WHERE demande_prix_id = ? ORDER BY ordre ASC`,
-//       [demandeId]
-//     );
-//     const [pjRows] = await conn.query<RowDataPacket[]>(
-//       `SELECT * FROM demandes_prix_pieces_jointes WHERE demande_prix_id = ?`,
-//       [demandeId]
-//     );
-
-//     return {
-//       demande: {
-//         id: firstRow.id, reference: firstRow.reference,
-//         type_demande: firstRow.type_demande, note_generale: firstRow.note_generale,
-//         urgence: firstRow.urgence, adresse_livraison_type: firstRow.adresse_livraison_type,
-//         adresse_livraison: firstRow.adresse_livraison, date_limite_retour: firstRow.date_limite_retour,
-//         date_creation: firstRow.date_creation, societe_id: firstRow.societe_id,
-//         membre_id: firstRow.membre_id, statut: firstRow.statut
-//       },
-//       lignes: lignesRows.map(row => ({
-//         quantite: row.quantite, note_ligne: row.note_ligne,
-//         product_nom: row.product_nom, product_description: row.product_description,
-//         product_unite: row.product_unite, product_marque: row.product_marque
-//       })),
-//       societe: { name: firstRow.societe_name, adresse: firstRow.societe_adresse, email: firstRow.societe_email, telephone: firstRow.societe_telephone,logo: firstRow.societe_logo || null },
-//       membre: { prenom: firstRow.membre_prenom, nom: firstRow.membre_nom, email: firstRow.membre_email },
-//       pieces_jointes: pjRows as any[]
-//     };
-//   } finally {
-//     conn.release();
-//   }
-// }
 
 export async function getDemandeForPDF(demandeId: number): Promise<DemandePrixPDFData> {
   const conn = await pool.getConnection();
@@ -497,74 +446,6 @@ export async function getProduitsBibliotheque(
 }
 
 
-// export async function getProduitsCatalogue(search?: string): Promise<any[]> {
-//   const conn = await pool.getConnection();
-//   try {
-//     let searchCatalogue = '';
-//     let searchSolutravo = '';
-//     const paramsCatalogue: any[] = [];
-//     const paramsSolutravo: any[] = [];
-
-//     if (search) {
-//       searchCatalogue = 'WHERE (c.nom LIKE ? OR c.description LIKE ?)';
-//       paramsCatalogue.push(`%${search}%`, `%${search}%`);
-//       searchSolutravo = 'AND (p.name LIKE ? OR p.description LIKE ?)';
-//       paramsSolutravo.push(`%${search}%`, `%${search}%`);
-//     }
-
-//     // ── 1. Produits du catalogue global (table catalogue, SANS filtre societe) ──
-//     const [catalogueRows] = await conn.query<RowDataPacket[]>(
-//       `SELECT
-//         c.id,
-//         c.nom         AS name,
-//         c.nom         AS product_nom,
-//         c.description,
-//         c.unite       AS unit,
-//         c.marque,
-//         c.type,
-//         c.image,
-//         c.societe_id,
-//         'catalogue'   AS source,
-//         NULL          AS famille_name,
-//         NULL          AS supplier_reference,
-//         NULL          AS library_id
-//        FROM catalogue c
-//        ${searchCatalogue}
-//        ORDER BY c.nom ASC`,
-//       paramsCatalogue
-//     );
-
-//     // ── 2. Produits Solutravo (library_id = 18) ─────────────
-//     const [solutravoRows] = await conn.query<RowDataPacket[]>(
-//       `SELECT
-//         p.id,
-//         p.name,
-//         p.name        AS product_nom,
-//         p.description,
-//         p.unit,
-//         NULL          AS marque,
-//         'produit'     AS type,
-//         p.image,
-//         NULL          AS societe_id,
-//         'library'     AS source,
-//         lc.name       AS famille_name,
-//         p.supplier_reference,
-//         lc.library_id AS library_id
-//        FROM products p
-//        JOIN library_categories lc ON p.category_id = lc.id
-//        WHERE lc.library_id = 18
-//        ${searchSolutravo}
-//        ORDER BY lc.name, p.name ASC`,
-//       paramsSolutravo
-//     );
-
-//     // ── Combiner : catalogue d'abord, puis Solutravo ─────────
-//     return [...catalogueRows, ...solutravoRows];
-//   } finally {
-//     conn.release();
-//   }
-// }
-
 export async function getProduitsCatalogue(societeId: number, search?: string): Promise<any[]> {
   const conn = await pool.getConnection();
   try {
@@ -633,31 +514,7 @@ export async function getProduitsCatalogue(societeId: number, search?: string): 
   }
 }
 
-// export async function getFournisseursAvecEmail(): Promise<any[]> {
-//   const conn = await pool.getConnection();
-//   try {
-//     const [rows] = await conn.query<RowDataPacket[]>(
-//       `SELECT
-//         f.id,
-//         f.nom_societe AS name,
-//         f.nom,
-//         f.prenom,
-//         f.email,
-//         f.telephone,
-//         f.ville,
-//         f.pays,
-//         f.societe_id,
-//         1 AS has_email
-//        FROM fournisseurs f
-//        WHERE f.email IS NOT NULL
-//          AND f.email != ''
-//        ORDER BY f.nom_societe ASC`
-//     );
-//     return rows;
-//   } finally {
-//     conn.release();
-//   }
-// }
+
 
 
 export async function getFournisseursAvecEmail(societeId: number): Promise<any[]> {

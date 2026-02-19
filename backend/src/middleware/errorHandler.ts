@@ -1,20 +1,4 @@
-// import { Request, Response, NextFunction } from "express";
 
-// export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
-//   console.error("❌ Global Error Handler:", err.message);
-
-//   res.status(err.statusCode || 500).json({
-//     success: false,
-//     error: err.message || "Erreur serveur",
-//   });
-// }
-
-// ============================================================
-// FICHIER 2 : src/middleware/errorHandler.ts
-// Créer ce fichier s'il n'existe pas
-// Puis l'enregistrer dans app.ts APRÈS toutes les routes :
-//   app.use(errorHandler);
-// ============================================================
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -34,21 +18,35 @@ export function errorHandler(
   }
 
   // Erreurs MySQL connues → message lisible
-  if (err.code === 'ER_DUP_ENTRY') {
-    res.status(409).json({
-      success: false,
-      message: 'Cette référence existe déjà. Veuillez en choisir une autre.'
-    });
-    return;
-  }
+  // if (err.code === 'ER_DUP_ENTRY') {
+  //   res.status(409).json({
+  //     success: false,
+  //     message: 'Cette référence existe déjà. Veuillez en choisir une autre.'
+  //   });
+  //   return;
+  // }
 
-  if (err.code === 'ER_NO_REFERENCED_ROW_2') {
-    res.status(422).json({
-      success: false,
-      message: 'Un élément sélectionné n\'existe plus dans la base de données. Veuillez actualiser la page.'
-    });
-    return;
-  }
+  // if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+  //   res.status(422).json({
+  //     success: false,
+  //     message: 'Un élément sélectionné n\'existe plus dans la base de données. Veuillez actualiser la page.'
+  //   });
+  //   return;
+  // }
+  if (err.code === 'ER_DUP_ENTRY') {
+  console.error('❌ Duplicate entry:', err.sqlMessage); // Log pour debug
+  
+  // Extraire le nom de la colonne depuis l'erreur SQL
+  const match = err.sqlMessage?.match(/for key '(.+?)'/);
+  const keyName = match ? match[1] : 'inconnue';
+  
+  res.status(409).json({
+    success: false,
+    message: `Entrée dupliquée détectée (${keyName}). Veuillez vérifier vos données.`,
+    debug: err.sqlMessage // ⚠️ À retirer en prod
+  });
+  return;
+}
 
   if (err.code === 'ER_DATA_TOO_LONG') {
     res.status(422).json({
