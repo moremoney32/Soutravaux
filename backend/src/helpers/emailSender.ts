@@ -3,15 +3,13 @@
 
 import axios from 'axios';
 import fs from 'fs';
-// import path from 'path';
+import path from 'path';
 
 const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
-// const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
+const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
 
 interface SendDemandePrixEmailParams {
-  demandeId: number;
-  societeId: number;
   to: string;
   recipientName: string;
   reference: string;
@@ -26,7 +24,6 @@ interface SendDemandePrixEmailParams {
 
 //FONCTION 1 : Email au fournisseur
 export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): Promise<boolean> {
-  
   try {
     if (!fs.existsSync(params.pdfPath)) throw new Error(`Fichier PDF introuvable: ${params.pdfPath}`);
     const pdfBuffer = fs.readFileSync(params.pdfPath);
@@ -215,7 +212,7 @@ function construireEmailHTML(params: SendDemandePrixEmailParams): string {
         </p>
 
         <div style="text-align:center;margin:30px 0;">
-          <a href="https://solutravo.zeta-app.fr/api/demandes-prix/${params.demandeId}/view?societe_id=${params.societeId}"> 
+          <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}" 
              target="_blank"
              rel="noopener noreferrer"
              style="display:inline-block;background:linear-gradient(135deg,#E77131 0%,#d45d1f 100%);color:white;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(231,113,49,0.3);">

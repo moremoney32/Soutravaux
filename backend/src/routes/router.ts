@@ -29,7 +29,7 @@ import sseRoutes from './sse.routes';
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
 import { createCategoryController,  createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
 import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
-import { archiverDemandeController, createDemandeController, downloadPDFController, getBibliothequesController, getCatalogueController, getCategoriesControllerPrice, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsBibliothequeController, updateStatutDestinataireController, uploadPJ, viewDemandePageController } from "../controllers/DemandesPrixControllers";
+import { archiverDemandeController, createDemandeController, downloadPDFController, getBibliothequesController, getCatalogueController, getCategoriesControllerPrice, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsBibliothequeController, updateStatutDestinataireController, uploadPJ } from "../controllers/DemandesPrixControllers";
 
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
@@ -281,7 +281,7 @@ router.get('/demandes-prix/catalogue', getCatalogueController);
 router.get('/demandes-prix/fournisseurs', getFournisseursController);
 
 // Détail demande (après les routes fixes !)
-router.get('/demandes-prix/:id/view', viewDemandePageController);
+
 router.get('/demandes-prix/:id', getDemandeByIdController);
 router.get('/demandes-prix/:id/pdf', downloadPDFController);
 

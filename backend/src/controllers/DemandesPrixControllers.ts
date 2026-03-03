@@ -179,8 +179,6 @@ export const createDemandeController = async (
       destinatairesRows.map(async (dest) => {
         const nom = dest.nom_affiche || 'Fournisseur';
         await sendDemandePrixEmail({
-          demandeId,
-  societeId: input.societe_id,
           to: dest.email_envoye_a,
           recipientName: nom,
           reference,
@@ -214,8 +212,7 @@ export const createDemandeController = async (
     //   });
     // }
 
-    // const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
-    const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/view?societe_id=${input.societe_id}`;
+    const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
 
     res.status(201).json({
       success: true,
@@ -385,55 +382,3 @@ export const downloadPDFController = async (req: Request, res: Response, next: N
 
 
 
-// ─── GET /api/demandes-prix/:id/view ───────────────────────
-export const viewDemandePageController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const { societe_id } = req.query;
-
-    if (!societe_id) {
-      res.status(400).json({ success: false, message: 'societe_id requis' });
-      return;
-    }
-
-    // 1. Récupérer la demande
-    const demande = await getDemandeById(Number(id), Number(societe_id));
-    if (!demande) {
-      res.status(404).json({ success: false, message: 'Demande introuvable' });
-      return;
-    }
-
-    // 2. Récupérer les données complètes pour le PDF
-    const pdfData = await getDemandeForPDF(Number(id));
-
-    // 3. Lire le template HTML
-    const templatePath = path.join(__dirname, '../views/demandePrixPage.html');
-    let html = fs.readFileSync(templatePath, 'utf-8');
-
-    // 4. Remplacer les variables
-    const pdfUrl = `/api/demandes-prix/${id}/pdf?societe_id=${societe_id}`;
-    const pdfDownloadUrl = pdfUrl; // Même URL avec header download
-
-    html = html
-      .replace(/{{numero}}/g, demande.id.toString())
-      .replace(/{{date}}/g, new Date(demande.date_creation).toLocaleString('fr-FR'))
-      .replace(/{{reference}}/g, demande.reference)
-      .replace(/{{societe_nom}}/g, pdfData.societe.name)
-      .replace(/{{contact_nom}}/g, `${pdfData.membre.prenom} ${pdfData.membre.nom}`)
-      .replace(/{{email}}/g, pdfData.membre.email)
-      .replace(/{{telephone}}/g, pdfData.societe.telephone  || 'N/A')
-      .replace(/{{pdfUrl}}/g, pdfUrl)
-      .replace(/{{pdfDownloadUrl}}/g, pdfDownloadUrl);
-
-    // 5. Envoyer le HTML
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(html);
-
-  } catch (err) {
-    next(err);
-  }
-};
