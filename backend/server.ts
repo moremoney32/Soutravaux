@@ -1,7 +1,6 @@
 import app from "./app";
-
-dotenv.config({ path: "./.env" });
 import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 import { cleanupSseService, initSseService } from "./src/services/SseServices";
 import { demarrerCronNotifications } from "./src/services/notificationCron";
 import  "./src/services/RelanceCron";
