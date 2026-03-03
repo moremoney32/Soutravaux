@@ -3,13 +3,15 @@
 
 import axios from 'axios';
 import fs from 'fs';
-import path from 'path';
+// import path from 'path';
 
 const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
-const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
+// const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
 
 interface SendDemandePrixEmailParams {
+  demandeId: number;
+  societeId: number;
   to: string;
   recipientName: string;
   reference: string;
@@ -22,8 +24,9 @@ interface SendDemandePrixEmailParams {
   isRelance?: boolean;
 }
 
-// ✅ FONCTION 1 : Email au fournisseur
+//FONCTION 1 : Email au fournisseur
 export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): Promise<boolean> {
+  
   try {
     if (!fs.existsSync(params.pdfPath)) throw new Error(`Fichier PDF introuvable: ${params.pdfPath}`);
     const pdfBuffer = fs.readFileSync(params.pdfPath);
@@ -53,18 +56,18 @@ export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): 
     });
     
     if (response.status === 200 || response.status === 201 || response.data?.success) {
-      console.log(`✅ Email envoyé à ${params.to}`);
+      console.log(`Email envoyé à ${params.to}`);
       return true;
     }
-    console.error(`❌ Échec envoi: ${response.status}`);
+    console.error(` Échec envoi: ${response.status}`);
     return false;
   } catch (error: any) {
-    console.error(`❌ Erreur envoi email:`, error.message);
+    console.error(` Erreur envoi email:`, error.message);
     return false;
   }
 }
 
-// ✅ FONCTION 2 : Notification à Vincent
+//FONCTION 2 : Notification à Vincent
 export async function sendNotificationVincent(params: {
   entreprise: string;
   fournisseurs: string[];
@@ -130,17 +133,17 @@ export async function sendNotificationVincent(params: {
     });
     
     if (response.status === 200 || response.status === 201 || response.data?.success) {
-      console.log(`✅ Notification Vincent envoyée`);
+      console.log(`Notification Vincent envoyée`);
       return true;
     }
     return false;
   } catch (error: any) {
-    console.error(`❌ Erreur notification Vincent:`, error.message);
+    console.error(` Erreur notification Vincent:`, error.message);
     return false;
   }
 }
 
-// ✅ SUJET EMAIL FOURNISSEUR
+//SUJET EMAIL FOURNISSEUR
 function construireSubject(urgence: string | undefined, reference: string, societe: string): string {
   const urgencePrefix = urgence === 'tres_urgent' 
     ? '🔴 TRÈS URGENT - ' 
@@ -151,16 +154,16 @@ function construireSubject(urgence: string | undefined, reference: string, socie
   return `${urgencePrefix}Demande de prix : ${societe} - ${reference}`;
 }
 
-// ✅ SUJET EMAIL RELANCE
+//SUJET EMAIL RELANCE
 function construireSubjectRelance(_u: string | undefined, ref: string, soc: string): string {
   return `🔔 RELANCE - Demande de prix ${ref} - ${soc}`;
 }
 
-// ✅ HTML EMAIL FOURNISSEUR
+//HTML EMAIL FOURNISSEUR
 function construireEmailHTML(params: SendDemandePrixEmailParams): string {
   const urgenceColor = params.urgence === 'tres_urgent' ? '#DC2626' : params.urgence === 'urgent' ? '#F59E0B' : '#E77131';
   
-  // ✅ URGENCE AVANT LE BONJOUR
+  //URGENCE AVANT LE BONJOUR
   const urgenceBadge = params.urgence === 'tres_urgent'
     ? `<div style="background:#FEE2E2;border-left:4px solid #DC2626;padding:12px 15px;margin-bottom:20px;border-radius:4px;">
          <p style="margin:0;color:#DC2626;font-weight:bold;">🔴 TRÈS URGENT - Merci de traiter cette demande en priorité</p>
@@ -212,7 +215,7 @@ function construireEmailHTML(params: SendDemandePrixEmailParams): string {
         </p>
 
         <div style="text-align:center;margin:30px 0;">
-          <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}" 
+          <a href="https://solutravo.zeta-app.fr/api/demandes-prix/${params.demandeId}/view?societe_id=${params.societeId}"> 
              target="_blank"
              rel="noopener noreferrer"
              style="display:inline-block;background:linear-gradient(135deg,#E77131 0%,#d45d1f 100%);color:white;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(231,113,49,0.3);">

@@ -36,8 +36,6 @@ const pool = mysql.createPool({
     'DATETIME'
   ],
   
-  // ❌ NE PAS METTRE timezone (pour être universel)
-  // timezone: '+01:00'  // ← ENLEVER CETTE LIGNE
 });
 
 pool.getConnection()
