@@ -439,7 +439,8 @@ export const viewDemandePageController = async (
 
     // 3. Lire le template HTML
     // const templatePath = path.join(__dirname, '../views/demandePrixPage.html');;
-    const templatePath = path.join(__dirname, '../views/demandePrixPage.html');
+    // const templatePath = path.join(__dirname, '../views/demandePrixPage.html');
+    const templatePath = path.join(process.cwd(), 'backend/src/views/demandePrixPage.html');
     let html = fs.readFileSync(templatePath, 'utf-8');
 
     // 4. Remplacer les variables
