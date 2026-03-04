@@ -370,17 +370,44 @@ export const archiverDemandeController = async (req: Request, res: Response, nex
 };
 
 // ─── GET /api/demandes-prix/:id/pdf ────────────────────────
-export const downloadPDFController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+// export const downloadPDFController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//   try {
+//     const { id } = req.params;
+//     const { societe_id } = req.query;
+//     if (!societe_id) { res.status(400).json({ success: false, message: 'societe_id requis' }); return; }
+//     const demande = await getDemandeById(Number(id), Number(societe_id));
+//     if (!demande) { res.status(404).json({ success: false, message: 'Demande introuvable' }); return; }
+//     const pdfData = await getDemandeForPDF(Number(id));
+//     const pdfPath = await generateDemandePrixPDF(pdfData);
+//     res.download(pdfPath, `demande-prix-${demande.reference}.pdf`, (err) => { if (err) next(err); });
+//   } catch (err) { next(err); }
+// };
+
+export const downloadPDFController = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { societe_id } = req.query;
-    if (!societe_id) { res.status(400).json({ success: false, message: 'societe_id requis' }); return; }
+
+    if (!societe_id) {
+      res.status(400).json({ success: false, message: 'societe_id requis' });
+      return;
+    }
+
     const demande = await getDemandeById(Number(id), Number(societe_id));
-    if (!demande) { res.status(404).json({ success: false, message: 'Demande introuvable' }); return; }
+    if (!demande) {
+      res.status(404).json({ success: false, message: 'Demande introuvable' });
+      return;
+    }
+
     const pdfData = await getDemandeForPDF(Number(id));
     const pdfPath = await generateDemandePrixPDF(pdfData);
-    res.download(pdfPath, `demande-prix-${demande.reference}.pdf`, (err) => { if (err) next(err); });
-  } catch (err) { next(err); }
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.sendFile(pdfPath);
+
+  } catch (err) {
+    next(err);
+  }
 };
 
 
