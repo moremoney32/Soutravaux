@@ -20,6 +20,9 @@ interface SendDemandePrixEmailParams {
   note_generale?: string;
   date_limite_retour?: string;
   isRelance?: boolean;
+
+   demandeId: number;      // ID de la demande
+  societeId: number;
 }
 
 //FONCTION 1 : Email au fournisseur
@@ -221,7 +224,7 @@ function construireEmailHTML(params: SendDemandePrixEmailParams): string {
         </p>
 
         <div style="text-align:center;margin:30px 0;">
-          <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}" 
+          <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}"  
              target="_blank"
              rel="noopener noreferrer"
              style="display:inline-block;background:linear-gradient(135deg,#E77131 0%,#d45d1f 100%);color:white;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(231,113,49,0.3);">
