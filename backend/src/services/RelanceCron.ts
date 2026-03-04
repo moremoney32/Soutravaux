@@ -55,7 +55,9 @@ export async function traiterRelances(): Promise<void> {
             },
             urgence: relance.urgence,
             date_limite_retour: pdfData.demande.date_limite_retour,
-            isRelance: true   // ← indique que c'est une relance → template différent
+            isRelance: true ,  // ← indique que c'est une relance → template différent
+            demandeId: relance.demande_prix_id,
+            societeId: relance.societe_id
           });
 
           if (ok) nbEnvoyes++;
