@@ -1,5 +1,5 @@
 // controllers/CollaboratorsController.ts
-// Contrôleur pour gérer les collaborateurs
+// Contrôleur pour gérer les collaborateurs....
 
 import { Request, Response, NextFunction } from 'express';
 import {
