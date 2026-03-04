@@ -10,6 +10,9 @@ const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
 const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
 
 interface SendDemandePrixEmailParams {
+  
+   demandeId: number;      // ID de la demande
+  societeId: number;
   to: string;
   recipientName: string;
   reference: string;
@@ -20,9 +23,6 @@ interface SendDemandePrixEmailParams {
   note_generale?: string;
   date_limite_retour?: string;
   isRelance?: boolean;
-
-   demandeId: number;      // ID de la demande
-  societeId: number;
 }
 
 //FONCTION 1 : Email au fournisseur
