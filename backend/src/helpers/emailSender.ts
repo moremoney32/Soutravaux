@@ -3,7 +3,7 @@
 
 import axios from 'axios';
 import fs from 'fs';
-import path from 'path';
+// import path from 'path';
 
 const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
@@ -224,12 +224,12 @@ function construireEmailHTML(params: SendDemandePrixEmailParams): string {
         </p>
 
         <div style="text-align:center;margin:30px 0;">
-          <a href="${PDF_BASE_URL}/pdfs/${path.basename(params.pdfPath)}"  
-             target="_blank"
-             rel="noopener noreferrer"
-             style="display:inline-block;background:linear-gradient(135deg,#E77131 0%,#d45d1f 100%);color:white;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(231,113,49,0.3);">
-            📄 Voir la demande de prix (PDF)
-          </a>
+          <a href="${PDF_BASE_URL}/api/demandes-prix/${params.demandeId}/view?societe_id=${params.societeId}" 
+   target="_blank"
+   rel="noopener noreferrer"
+   style="display:inline-block;background:linear-gradient(135deg,#E77131 0%,#d45d1f 100%);color:white;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;box-shadow:0 4px 12px rgba(231,113,49,0.3);">
+  📄 Voir la demande de prix
+</a>
         </div>
 
         <div style="background:white;padding:20px;border-radius:5px;margin-bottom:25px;">
