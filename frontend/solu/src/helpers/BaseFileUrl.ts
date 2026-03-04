@@ -84,8 +84,8 @@ export const getProductImageUrl = (imagePath: string | undefined | null): string
     'ProductImages/',
     'public/ProductImages/',
     'public/storage/ProductImages/',
-    'uploads/catalogue/',  // ✅ Ajouter ce préfixe
-    'public/uploads/catalogue/'  // ✅ Ajouter ce préfixe
+    'uploads/catalogue/',  //  Ajouter ce préfixe
+    'public/uploads/catalogue/'  //  Ajouter ce préfixe
   ];
 
   prefixesToRemove.forEach(prefix => {
