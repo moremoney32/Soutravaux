@@ -58,10 +58,18 @@ export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): 
     }
     console.error(` Échec envoi: ${response.status}`);
     return false;
-  } catch (error: any) {
-    console.error(` Erreur envoi email:`, error.message);
-    return false;
-  }
+  } 
+  // catch (error: any) {
+  //   console.error(` Erreur envoi email:`, error.message);
+  //   return false;
+  // }
+
+  catch (error: any) {
+  console.error("STATUS:", error.response?.status);
+  console.error("DATA:", error.response?.data);
+  console.error("MESSAGE:", error.message);
+  return false
+}
 }
 
 //FONCTION 2 : Notification à Vincent
