@@ -38,7 +38,8 @@ export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): 
     
     const payload = {
       receiver: params.to, 
-      sender: params.societe.email , 
+      // sender: params.societe.email , 
+       sender: DEFAULT_SENDER , 
       subject, 
       message: htmlMessage,
       attachment_base64: pdfBase64, 
