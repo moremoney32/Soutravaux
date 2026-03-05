@@ -31,7 +31,7 @@ const mockCalendars: Calendar[] = [
 
 const GoogleCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [viewType, setViewType] = useState<ViewType>('day');
+  const [viewType, setViewType] = useState<ViewType>('week');
   const [calendars, setCalendars] = useState<Calendar[]>(mockCalendars);
   const [allEvents, setAllEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
