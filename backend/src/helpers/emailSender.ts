@@ -7,11 +7,12 @@ import fs from 'fs';
 
 const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
 const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
-const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
+// const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://solutravo.zeta-app.fr';
+const PDF_BASE_URL = process.env.PDF_BASE_URL || 'https://staging.solutravo.zeta-app.fr';
 
 interface SendDemandePrixEmailParams {
   
-   demandeId: number;      // ID de la demande
+  demandeId: number;      // ID de la demande
   societeId: number;
   to: string;
   recipientName: string;
@@ -41,8 +42,8 @@ export async function sendDemandePrixEmail(params: SendDemandePrixEmailParams): 
     
     const payload = {
       receiver: params.to, 
-      // sender: params.societe.email , 
-      sender: DEFAULT_SENDER , 
+      sender: params.societe.email , 
+      // sender: DEFAULT_SENDER , 
       subject, 
       message: htmlMessage,
       attachment_base64: pdfBase64, 

@@ -213,10 +213,11 @@ export const createDemandeController = async (
     //     nb_destinataires: emailsEnvoyes.length,
     //     destinataires: emailsEnvoyes
     //   });
-    // }
+    // }https://staging.solutravo-compta.fr/
 
     // const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
-    const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
+    // const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
+    const pdfUrl = `https://staging.solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
 
     res.status(201).json({
       success: true,
