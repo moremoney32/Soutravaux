@@ -512,6 +512,35 @@ export async function getProduitsCatalogue(societeId: number, search?: string): 
 
 
 
+// export async function getFournisseursAvecEmail(societeId: number): Promise<any[]> {
+//   const conn = await pool.getConnection();
+//   try {
+//     const [rows] = await conn.query<RowDataPacket[]>(
+//       `SELECT
+//         f.id,
+//         f.nom_societe AS name,
+//         f.nom,
+//         f.prenom,
+//         f.email,
+//         f.telephone,
+//         f.ville,
+//         f.pays,
+//         f.societe_id,
+//         1 AS has_email
+//        FROM fournisseurs f
+//        WHERE f.societe_id = ?
+//          AND f.email IS NOT NULL
+//          AND f.email != ''
+//        ORDER BY f.nom_societe ASC`,
+//       [societeId]
+//     );
+//     return rows;
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+
 export async function getFournisseursAvecEmail(societeId: number): Promise<any[]> {
   const conn = await pool.getConnection();
   try {
@@ -531,6 +560,7 @@ export async function getFournisseursAvecEmail(societeId: number): Promise<any[]
        WHERE f.societe_id = ?
          AND f.email IS NOT NULL
          AND f.email != ''
+         AND f.is_material_supplier = true    -- ✅ NOUVEAU FILTRE
        ORDER BY f.nom_societe ASC`,
       [societeId]
     );

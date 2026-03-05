@@ -203,20 +203,6 @@ export const createDemandeController = async (
     });
 
     // 7. Email de confirmation à l'émetteur
-    // if (pdfData.membre.email) {
-    //   await sendConfirmationEmail({
-    //     to: pdfData.membre.email,
-    //     societe_name: pdfData.societe.name,
-    //     membre_prenom: pdfData.membre.prenom,
-    //     reference,
-    //     nb_produits: input.lignes.length,
-    //     nb_destinataires: emailsEnvoyes.length,
-    //     destinataires: emailsEnvoyes
-    //   });
-    // }https://staging.solutravo-compta.fr/
-
-    // const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
-    // const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
     const pdfUrl = `https://staging.solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
 
     res.status(201).json({
