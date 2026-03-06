@@ -649,3 +649,235 @@
   }
 }
 [2026-03-06T02:32:52.437Z] 🧹 SSE Service nettoyé
+[2026-03-06T02:36:43.675Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T02:36:43.675Z]  SSE Service initialisé
+[2026-03-06T02:36:43.693Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T02:36:43.693Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T02:36:43.694Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T02:36:43.798Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T02:37:00.019Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:37:00.090Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:37:00.091Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:37:00.105Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:37:00.106Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:37:05.921Z] Erreur API INSEE: {
+  "header": {
+    "statut": 404,
+    "message": "Aucun élément trouvé pour q=siret:8710*"
+  }
+}
+[2026-03-06T02:38:00.033Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:38:00.035Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:38:00.036Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:38:00.041Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:38:00.042Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:39:00.019Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:39:00.021Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:39:00.022Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:39:00.023Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:39:00.024Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:39:41.695Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T02:39:41.696Z]  SSE Service initialisé
+[2026-03-06T02:39:41.705Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T02:39:41.706Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T02:39:41.706Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T02:39:41.742Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T02:40:00.018Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:40:00.031Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:40:00.032Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:40:00.036Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:40:00.037Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:41:00.024Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:41:00.026Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:41:00.027Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:41:00.029Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:41:00.029Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:42:00.011Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:42:00.014Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:42:00.015Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:42:00.017Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:42:00.017Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:43:00.016Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:43:00.019Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:43:00.019Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:43:00.022Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:43:00.022Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:44:00.020Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:44:00.023Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:44:00.024Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:44:00.027Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:44:00.027Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:45:00.023Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:45:00.026Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:45:00.027Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:45:00.029Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:45:00.029Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:46:02.776Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T02:46:02.777Z]  SSE Service initialisé
+[2026-03-06T02:46:02.790Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T02:46:02.791Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T02:46:02.791Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T02:46:02.828Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T02:46:30.018Z] Erreur API INSEE: {
+  "header": {
+    "statut": 404,
+    "message": "Aucun élément trouvé pour q=siret:8710*"
+  }
+}
+[2026-03-06T02:47:00.023Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:47:00.040Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:47:00.041Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:47:00.046Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:47:00.047Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:48:00.022Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:48:00.025Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:48:00.026Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:48:00.029Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:48:00.029Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:48:09.184Z] Erreur API INSEE: {
+  "header": {
+    "statut": 404,
+    "message": "Aucun élément trouvé pour q=siret:8710*"
+  }
+}
+[2026-03-06T02:48:45.432Z] 🧹 SSE Service nettoyé
+[2026-03-06T02:48:58.264Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T02:48:58.265Z]  SSE Service initialisé
+[2026-03-06T02:48:58.275Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T02:48:58.276Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T02:48:58.276Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T02:48:58.309Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T02:49:00.026Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:49:00.037Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:49:00.038Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:49:00.041Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:49:00.042Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:50:00.018Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:50:00.021Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:50:00.021Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:50:00.023Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:50:00.024Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:51:00.015Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:51:00.018Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:51:00.018Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:51:00.021Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:51:00.021Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:52:00.029Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:52:00.032Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:52:00.032Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:52:00.034Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:52:00.034Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:53:00.025Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:53:00.028Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:53:00.028Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:53:00.031Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:53:00.031Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:54:00.031Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:54:00.035Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:54:00.035Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:54:00.037Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:54:00.038Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:55:00.029Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:55:00.034Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:55:00.035Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:55:00.040Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:55:00.040Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:56:00.059Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:56:00.061Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:56:00.062Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:56:00.064Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:56:00.064Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:57:00.024Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:57:00.046Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:57:00.046Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:57:00.048Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:57:00.049Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:58:00.026Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:58:00.039Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:58:00.040Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:58:00.042Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:58:00.043Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T02:59:00.019Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T02:59:00.025Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T02:59:00.025Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T02:59:00.027Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T02:59:00.027Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:00:00.029Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:00:00.031Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:00:00.032Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:00:00.033Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:00:00.034Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:01:00.025Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:01:00.028Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:01:00.028Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:01:00.032Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:01:00.032Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:02:00.031Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:02:00.036Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:02:00.037Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:02:00.039Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:02:00.039Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:03:00.029Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:03:00.032Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:03:00.033Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:03:00.034Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:03:00.034Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:03:16.591Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T03:03:16.597Z]  SSE Service initialisé
+[2026-03-06T03:03:16.611Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T03:03:16.611Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T03:03:16.612Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T03:03:16.757Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T03:03:23.107Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:03:30.015Z] ✅ 20 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:03:32.973Z] ✅ 20 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:04:00.021Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:04:00.037Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:04:00.038Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:04:00.042Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:04:00.042Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:04:47.459Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T03:04:47.461Z]  SSE Service initialisé
+[2026-03-06T03:04:47.470Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T03:04:47.470Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T03:04:47.471Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T03:04:47.500Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T03:05:00.029Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:05:00.042Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:05:00.043Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:05:00.046Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:05:00.046Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:06:00.031Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:06:00.035Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:06:00.036Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:06:00.038Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:06:00.039Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:06:28.094Z] 🕐 CRON relances planifié — exécution quotidienne à 8h00 (Paris)
+[2026-03-06T03:06:28.095Z]  SSE Service initialisé
+[2026-03-06T03:06:28.105Z] ✅ Cron job de notifications démarré (toutes les 3 minutes)
+[2026-03-06T03:06:28.106Z] ✅ Cron job de cleanup démarré (chaque jour à 2h)
+[2026-03-06T03:06:28.107Z] Serveur démarré sur http://localhost:3000
+[2026-03-06T03:06:28.134Z] ✅ Connexion MySQL établie avec succès
+[2026-03-06T03:06:37.807Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:06:52.345Z] ✅ 20 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:06:59.808Z] ❌ Erreur API INSEE: read ECONNRESET
+[2026-03-06T03:07:00.031Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:07:00.042Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:07:00.044Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:07:00.047Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:07:00.048Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:07:14.032Z] ✅ 20 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:07:14.753Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:07:22.175Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:07:37.335Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:07:38.695Z] ✅ 1 entreprise(s) trouvée(s) (nettoyées)
+[2026-03-06T03:08:00.021Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:08:00.024Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:08:00.024Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:08:00.026Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:08:00.027Z] ✅ [InvitationReminderService] Vérification des rappels terminée
+[2026-03-06T03:09:00.018Z] 🔄 [CRON] Vérification des notifications à envoyer...
+[2026-03-06T03:09:00.021Z] ✅ [CRON] Aucune notification à envoyer
+[2026-03-06T03:09:00.021Z] 📬 [InvitationReminderService] Démarrage vérification des rappels...
+[2026-03-06T03:09:00.023Z] 📬 [InvitationReminderService] 0 invitations à vérifier
+[2026-03-06T03:09:00.023Z] ✅ [InvitationReminderService] Vérification des rappels terminée

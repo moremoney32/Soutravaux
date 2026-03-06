@@ -131,6 +131,7 @@
 
 
 // src/services/inseeService.ts
+// src/services/inseeService.ts
 import axios from 'axios';
 import { InseeResult } from '../types/scraper';
 import { retryAsync } from './parralel';
@@ -138,12 +139,24 @@ import { retryAsync } from './parralel';
 // Cache en mémoire
 const inseeCache = new Map<string, InseeResult>();
 
-// ✅ FONCTION UTILITAIRE : Nettoyer les valeurs "ND" → ""
+// ✅ FONCTION UTILITAIRE : Nettoyer les valeurs "ND" et "[ND]" → ""
 function cleanInseeValue(value: string | undefined | null): string {
-  if (!value || value.trim() === '' || value.toUpperCase() === 'ND') {
-    return ''; // ← Retourne chaîne vide au lieu de "ND"
+  if (!value || value.trim() === '') {
+    return '';
   }
-  return value.trim();
+  
+  const trimmed = value.trim();
+  const upper = trimmed.toUpperCase();
+  
+  // ✅ Détecter "ND", "[ND]", "[ND] [ND]", etc.
+  if (upper === 'ND' || 
+      upper === '[ND]' || 
+      upper.includes('[ND]') ||
+      /^\[ND\](\s*\[ND\])*$/.test(trimmed)) {
+    return '';
+  }
+  
+  return trimmed;
 }
 
 // RÉCUPÉRER SIRET + ADRESSE VIA API INSEE
@@ -192,15 +205,15 @@ export async function getSiretFromInsee(nomSociete: string): Promise<InseeResult
     const uniteLegale = etablissement.uniteLegale;
     const adresseEtab = etablissement.adresseEtablissement;
 
-    // ✅ Initialiser avec chaînes vides au lieu de undefined
+    // ✅ Initialiser avec chaînes vides
     const inseeResult: InseeResult = {
       siret: cleanInseeValue(etablissement.siret),
       siren: cleanInseeValue(etablissement.siren),
       etat_administratif: cleanInseeValue(etablissement.etatAdministratifEtablissement),
-      adresse_etablissement: '', // ← Toujours présent
-      code_postal_etablissement: '', // ← Toujours présent
-      ville_etablissement: '', // ← Toujours présent
-      nom_gerant: '' // ← Toujours présent
+      adresse_etablissement: '',
+      code_postal_etablissement: '',
+      ville_etablissement: '',
+      nom_gerant: ''
     };
 
     // EXTRACTION ADRESSE COMPLÈTE INSEE
@@ -211,25 +224,25 @@ export async function getSiretFromInsee(nomSociete: string): Promise<InseeResult
       const libelleVoie = cleanInseeValue(adresseEtab.libelleVoieEtablissement);
       const complementAdresse = cleanInseeValue(adresseEtab.complementAdresseEtablissement);
       
-      // Construire l'adresse complète (sans les "ND")
+      // Construire l'adresse complète (sans les "[ND]")
       const adresseParts = [
         numeroVoie,
         typeVoie,
         libelleVoie,
         complementAdresse
-      ].filter(part => part).join(' ');
+      ].filter(part => part !== '').join(' ');
 
       // ✅ Assigner l'adresse (vide si aucune donnée valide)
       inseeResult.adresse_etablissement = adresseParts.trim();
 
-      // ✅ Code postal (nettoyer "ND" → "")
+      // ✅ Code postal (nettoyer "[ND]" → "")
       inseeResult.code_postal_etablissement = cleanInseeValue(adresseEtab.codePostalEtablissement);
 
-      // ✅ Ville (nettoyer "ND" → "")
+      // ✅ Ville (nettoyer "[ND]" → "")
       inseeResult.ville_etablissement = cleanInseeValue(adresseEtab.libelleCommuneEtablissement);
     }
 
-    // ✅ Nom du gérant (nettoyer "ND" → "")
+    // ✅ Nom du gérant (nettoyer "[ND]" → "")
     if (uniteLegale?.categorieEntreprise === 'PME' ||
         uniteLegale?.categorieEntreprise === 'ETI') {
       const nomGerant = cleanInseeValue(
@@ -238,7 +251,11 @@ export async function getSiretFromInsee(nomSociete: string): Promise<InseeResult
       inseeResult.nom_gerant = nomGerant;
     }
 
-    console.log(`✅ SIRET + Adresse trouvés: ${inseeResult.siret} - ${inseeResult.adresse_etablissement || '(adresse vide)'}`);
+    console.log(`✅ SIRET trouvé: ${inseeResult.siret}`);
+    console.log(`   Adresse: ${inseeResult.adresse_etablissement || '(vide)'}`);
+    console.log(`   Code postal: ${inseeResult.code_postal_etablissement || '(vide)'}`);
+    console.log(`   Ville: ${inseeResult.ville_etablissement || '(vide)'}`);
+    
     return inseeResult;
   }, 3, 1000);
 
