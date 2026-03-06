@@ -27,7 +27,7 @@ export async function fetchData<T = any>(
         Accept: "application/json",
         ...headers,
       } as Record<string, string>,
-      credentials: "include", // cookies JWT inclus
+      // credentials: "include", // cookies JWT inclus
     };
 
     // Ajouter Authorization si token
