@@ -78,6 +78,11 @@ export interface CalendarEvent {
     attendee_societe_ids?: number[];      // ✅ ANCIEN: Inviter des societes (artisans)
     attendee_member_ids?: number[];       // ✅ ANCIEN: Inviter des collaborateurs par ID
     attendee_emails?: string[];           // ✅ NOUVEAU: Inviter par email directement
+
+    reminders?: Array<{
+    value: string;      // "0", "5", "10", "15", "30", "60", "1440", etc.
+    method: 'email' | 'notification';
+  }>;
   }
   
   export interface CreateCategoryInput {

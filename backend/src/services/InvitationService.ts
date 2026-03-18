@@ -4,7 +4,8 @@
 import pool from '../config/db';
 import { RowDataPacket } from 'mysql2';
 import { envoyerEmailNotificationInvitation } from './emailNotificationServices';
-import { planifierNotificationsInvites } from './invitationNotificationScheduler';
+import {  planifierNotificationsInvitesPersonnalisees } from './invitationNotificationScheduler';
+// import { planifierNotificationsInvites } from './invitationNotificationScheduler';
 
 export interface EventInvitation {
   id: number;
@@ -17,22 +18,64 @@ export interface EventInvitation {
   invited_at: string;
   responded_at: string | null;
 }
+interface Reminder {
+  value: string;
+  method: 'email' | 'notification';
+}
+// export async function inviteCollaboratorsToEvent(
+//   conn:any,
+//   eventId:number,
+//   email:string,
+//   creatorSocieteId:number,
+//   eventDate:string,
+//   startTime:string
+// ): Promise<void> {
+
+//   console.log("📨 invitation collaborateur:", email);
+
+//   // 1. enregistrer invitation
+//   await conn.query(`
+//     INSERT INTO event_invitations (event_id,email,status)
+//     VALUES (?,?, 'sent')
+//   `,[eventId,email]);
+
+//   // 2. email immédiat
+//   await envoyerEmailInvitation(
+//     eventId,
+//     email,
+//     "Collaborateur",
+//     creatorSocieteId
+//   );
+
+//   // 3. planifier rappels invités (NOUVELLE TABLE)
+//   await planifierNotificationsInvites(
+//     conn,
+//     eventId,
+//     email,
+//     eventDate,
+//     startTime
+//   );
+
+//   console.log("✅ invitation + rappels invités OK :", email);
+// }
+
 export async function inviteCollaboratorsToEvent(
-  conn:any,
-  eventId:number,
-  email:string,
-  creatorSocieteId:number,
-  eventDate:string,
-  startTime:string
+  conn: any,
+  eventId: number,
+  email: string,
+  creatorSocieteId: number,
+  eventDate: string,
+  startTime: string,
+  reminders?: Reminder[]  // ✅ AJOUTÉ (optionnel)
 ): Promise<void> {
 
   console.log("📨 invitation collaborateur:", email);
 
   // 1. enregistrer invitation
   await conn.query(`
-    INSERT INTO event_invitations (event_id,email,status)
-    VALUES (?,?, 'sent')
-  `,[eventId,email]);
+    INSERT INTO event_invitations (event_id, email, status)
+    VALUES (?, ?, 'sent')
+  `, [eventId, email]);
 
   // 2. email immédiat
   await envoyerEmailInvitation(
@@ -42,18 +85,34 @@ export async function inviteCollaboratorsToEvent(
     creatorSocieteId
   );
 
-  // 3. planifier rappels invités (NOUVELLE TABLE)
-  await planifierNotificationsInvites(
-    conn,
-    eventId,
-    email,
-    eventDate,
-    startTime
-  );
+  // 3. ✅ MODIFIÉ : Choisir entre personnalisé ou automatique
+  if (reminders && reminders.length > 0) {
+    // Rappels personnalisés
+    await planifierNotificationsInvitesPersonnalisees(
+      conn,
+      eventId,
+      email,
+      eventDate,
+      startTime,
+      reminders
+    );
+    console.log("✅ Rappels personnalisés invité :", email);
+  } else {
+    // Pas de rappels (ou rappels automatiques si tu veux)
+    console.log("ℹ️ Pas de rappels pour l'invité :", email);
+    
+    // OU si tu veux des rappels par défaut :
+    // await planifierNotificationsInvites(
+    //   conn,
+    //   eventId,
+    //   email,
+    //   eventDate,
+    //   startTime
+    // );
+  }
 
   console.log("✅ invitation + rappels invités OK :", email);
 }
-
 
 
 

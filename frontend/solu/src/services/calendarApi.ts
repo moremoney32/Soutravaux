@@ -1,7 +1,9 @@
 
 
-const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+// services/calendarApi.ts - VERSION AVEC MEMBRE_ID
+
 //const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface EventCategory {
   id: number;
@@ -35,10 +37,15 @@ export interface CalendarEventAPI {
   societe_name?: string;
   attendees?: any[];
   category?: EventCategory;
+  reminders?: Array<{
+    value: string;
+    method: 'email' | 'notification';
+  }>;
 }
 
 export interface CreateEventInput {
   societe_id: number;
+  membre_id: number;  // ✅ AJOUTÉ
   title: string;
   description?: string;
   event_date: string;
@@ -50,17 +57,24 @@ export interface CreateEventInput {
   scope: 'personal' | 'collaborative';
   event_category_id?: number;
   custom_category_label?: string;
-  attendee_societe_ids?: number[];
+  attendee_emails?: string[];
   invite_method?: 'email' | 'sms' | 'push' | 'contact';
+ reminders?: Array<{
+    value: string;  // Minutes avant
+    method: 'email' | 'notification';
+  }>;
 }
 
+// ✅ MODIFIÉ : Ajouter membre_id
 export async function fetchEvents(
   societeId: number,
+  membreId: number,  // ✅ AJOUTÉ
   startDate: string,
   endDate: string
 ): Promise<CalendarEventAPI[]> {
   const params = new URLSearchParams({
     societe_id: String(societeId),
+    membre_id: String(membreId),  // ✅ AJOUTÉ
     start_date: startDate,
     end_date: endDate
   });
@@ -75,9 +89,6 @@ export async function fetchEvents(
   return result.data;
 }
 
-/**
- * Récupérer les catégories d'événements (prédéfinies + personnalisées)
- */
 export async function fetchCategories(societeId: number): Promise<EventCategory[]> {
   const params = new URLSearchParams({
     societe_id: String(societeId)
@@ -93,9 +104,6 @@ export async function fetchCategories(societeId: number): Promise<EventCategory[
   return result.data;
 }
 
-/**
- * Créer une catégorie personnalisée
- */
 export async function createCategory(
   societeId: number,
   label: string,
@@ -126,6 +134,7 @@ export async function createCategory(
   return result.data;
 }
 
+// ✅ MODIFIÉ : Ajouter membre_id
 export async function createCalendarEvent(data: CreateEventInput): Promise<number> {
   console.log('📤 Création événement API:', data);
   
@@ -146,9 +155,11 @@ export async function createCalendarEvent(data: CreateEventInput): Promise<numbe
   return result.data.id;
 }
 
+// ✅ MODIFIÉ : Ajouter membre_id
 export async function updateCalendarEvent(
   eventId: number,
   societeId: number,
+  membreId: number,  // ✅ AJOUTÉ
   data: Partial<CreateEventInput>
 ): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}`, {
@@ -156,7 +167,11 @@ export async function updateCalendarEvent(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ...data, societe_id: societeId })
+    body: JSON.stringify({ 
+      ...data, 
+      societe_id: societeId,
+      membre_id: membreId  // ✅ AJOUTÉ
+    })
   });
 
   const result = await response.json();
@@ -166,13 +181,21 @@ export async function updateCalendarEvent(
   }
 }
 
-export async function deleteCalendarEvent(eventId: number, societeId: number): Promise<void> {
+// ✅ MODIFIÉ : Ajouter membre_id
+export async function deleteCalendarEvent(
+  eventId: number, 
+  societeId: number,
+  membreId: number  // ✅ AJOUTÉ
+): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ societe_id: societeId })
+    body: JSON.stringify({ 
+      societe_id: societeId,
+      membre_id: membreId  // ✅ AJOUTÉ
+    })
   });
 
   const result = await response.json();
@@ -182,64 +205,6 @@ export async function deleteCalendarEvent(eventId: number, societeId: number): P
   }
 }
 
-export async function inviteArtisans(
-  eventId: number,
-  societeIds: number[],
-  inviteMethod: 'email' | 'sms' | 'push' | 'contact'
-): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/invite`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      societe_ids: societeIds,
-      invite_method: inviteMethod
-    })
-  });
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || 'Erreur envoi invitations');
-  }
-}
-
-/**
- * Inviter les collaborateurs sélectionnés à un événement
- * @param eventId - ID de l'événement
- * @param memberIds - Liste des IDs des membres (collaborateurs)
- * @returns
- */
-export async function inviteCollaborators(
-  eventId: number,
-  memberIds: number[]
-): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/invite`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      member_ids: memberIds,
-      invite_method: 'email'
-    })
-  });
-
-  const result = await response.json();
-  console.log('📨 Invitation collaborateurs réponse API:', result);
-
-  if (!result.success) {
-    throw new Error(result.message || 'Erreur envoi invitations aux collaborateurs');
-  }
-}
-
-/**
- * ✅ NOUVEAU: Inviter les collaborateurs par EMAIL directement
- * @param eventId - ID de l'événement
- * @param emails - Liste des EMAILS des collaborateurs
- * @returns
- */
 export async function inviteCollaboratorsByEmail(
   eventId: number,
   emails: string[]
@@ -263,29 +228,6 @@ export async function inviteCollaboratorsByEmail(
   }
 }
 
-export async function respondToInvitation(
-  eventId: number,
-  societeId: number,
-  status: 'accepted' | 'declined'
-): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/respond`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      societe_id: societeId,
-      status
-    })
-  });
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || 'Erreur réponse invitation');
-  }
-}
-
 function parseTimeString(timeStr: string): { hour: number; minute: number } {
   const cleanTime = timeStr.split('.')[0];
   const parts = cleanTime.split(':');
@@ -298,76 +240,67 @@ function parseTimeString(timeStr: string): { hour: number; minute: number } {
 
 
 export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
-    try {
-      // ✅ EXTRAIRE UNIQUEMENT LA PARTIE DATE (sans timezone)
-      const dateStr = apiEvent.event_date.includes('T') 
-        ? apiEvent.event_date.split('T')[0]  // "2026-01-08"
-        : apiEvent.event_date;
-      
-      const [year, month, day] = dateStr.split('-').map(Number);
-      
-      const startTimeParsed = parseTimeString(apiEvent.start_time);
-      const endTimeParsed = parseTimeString(apiEvent.end_time);
-  
-      // ✅ CRÉER EN HEURE LOCALE (pas UTC)
-      const startDate = new Date(year, month - 1, day, startTimeParsed.hour, startTimeParsed.minute);
-      const endDate = new Date(year, month - 1, day, endTimeParsed.hour, endTimeParsed.minute);
-  
-      console.log('🔍 DEBUG Conversion API→Frontend:', {
-        id: apiEvent.id,
-        title: apiEvent.title,
-        event_type: apiEvent.event_type,
-        api_date_brute: apiEvent.event_date,
-        date_extraite: dateStr,
-        year, month, day,
-        date_js_créée: startDate,
-        jour_attendu: startDate.toLocaleDateString('fr-FR', { 
-          weekday: 'long', 
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        })
-      });
-  
-      return {
-        id: String(apiEvent.id),
-        title: apiEvent.title,
-        description: apiEvent.description,
-        location: apiEvent.location,
-        startTime: startDate,
-        endTime: endDate,
-        color: apiEvent.color,
-        calendar: 'personal',
-        attendees: apiEvent.attendees?.map(a => a.societe_name) || [],
-        status: apiEvent.status,
-        event_type: apiEvent.event_type || 'task',
-        isPast: endDate < new Date()
-      };
-    } catch (error) {
-      console.error('❌ Erreur conversion événement:', apiEvent, error);
-      return {
-        id: String(apiEvent.id),
-        title: apiEvent.title + ' (ERREUR DATE)',
-        description: apiEvent.description,
-        startTime: new Date(),
-        endTime: new Date(),
-        color: '#999999',
-        calendar: 'personal',
-        attendees: [],
-        status: apiEvent.status,
-        event_type: 'task',
-        isPast: false
-      };
-    }
-  }
+  try {
+    const dateStr = apiEvent.event_date.includes('T')
+      ? apiEvent.event_date.split('T')[0]
+      : apiEvent.event_date;
 
-/**
- * ✅ Convertir Frontend → API avec scope et catégories
- */
+    const [year, month, day] = dateStr.split('-').map(Number);
+
+    const startTimeParsed = parseTimeString(apiEvent.start_time);
+    const endTimeParsed   = parseTimeString(apiEvent.end_time);
+
+    const startDate = new Date(year, month - 1, day, startTimeParsed.hour, startTimeParsed.minute);
+    const endDate   = new Date(year, month - 1, day, endTimeParsed.hour, endTimeParsed.minute);
+
+    return {
+      id:          String(apiEvent.id),
+      title:       apiEvent.title,
+      description: apiEvent.description,
+      location:    apiEvent.location,
+      startTime:   startDate,
+      endTime:     endDate,
+      color:       apiEvent.color,
+      calendar:    'personal',
+      status:      apiEvent.status,
+      event_type:  apiEvent.event_type || 'task',
+      isPast:      endDate < new Date(),
+
+      // ✅ CHAMPS MANQUANTS — ajoutés
+      scope:                 (apiEvent as any).scope || 'personal',
+      event_category_id:     (apiEvent as any).event_category_id || undefined,
+      custom_category_label: (apiEvent as any).custom_category_label || undefined,
+      attendees:             apiEvent.attendees?.map((a: any) => a.email || a.societe_name) || [],
+
+      // ✅ RAPPELS — le champ clé qui manquait
+      reminders: (apiEvent as any).reminders || [],
+      created_by_membre_id: (apiEvent as any).created_by_membre_id,  // ✅ AJOUTÉ
+    };
+
+  } catch (error) {
+    console.error('❌ Erreur conversion événement:', apiEvent, error);
+    return {
+      id:        String(apiEvent.id),
+      title:     apiEvent.title + ' (ERREUR DATE)',
+      startTime: new Date(),
+      endTime:   new Date(),
+      color:     '#999999',
+      calendar:  'personal',
+      attendees: [],
+      status:    apiEvent.status,
+      event_type: 'task',
+      isPast:    false,
+      scope:     'personal',
+      reminders: []
+    };
+  }
+}
+
+// ✅ MODIFIÉ : Ajouter creatorId (membre_id)
 export function convertFrontendEventToAPI(
   event: any,
   societeId: number,
-   creatorId: number
+  creatorId: number  // ✅ membreId du créateur
 ): CreateEventInput {
   const year = event.startTime.getFullYear();
   const month = String(event.startTime.getMonth() + 1).padStart(2, '0');
@@ -381,19 +314,10 @@ export function convertFrontendEventToAPI(
   const endHour = String(event.endTime.getHours()).padStart(2, '0');
   const endMin = String(event.endTime.getMinutes()).padStart(2, '0');
   const endTime = `${endHour}:${endMin}`;
-  console.log(creatorId)
-
-  console.log('📤 Conversion Frontend→API:', {
-    title: event.title,
-    scope: event.scope,
-    event_category_id: event.event_category_id,
-    custom_category_label: event.custom_category_label,
-    event_date: eventDate,
-    start_time: startTime,
-  });
 
   const payload: CreateEventInput = {
     societe_id: societeId,
+    membre_id: creatorId,  // ✅ AJOUTÉ
     title: event.title,
     description: event.description,
     location: event.location,
@@ -404,13 +328,12 @@ export function convertFrontendEventToAPI(
     status: event.status || 'pending',
     scope: event.scope || 'personal',
     event_category_id: event.event_category_id || undefined,
-    custom_category_label: event.custom_category_label || undefined
+    custom_category_label: event.custom_category_label || undefined,
+    reminders: event.reminders
   };
 
-  // Si collaboratif, ajouter les emails des invités
   if (event.scope === 'collaborative' && event.attendees && event.attendees.length > 0) {
-    // ✅ NOUVEAU: Envoyer les EMAILS directement au lieu des IDs
-    (payload as any).attendee_emails = event.attendees;  // Les emails des collaborateurs sélectionnés
+    (payload as any).attendee_emails = event.attendees;
     payload.invite_method = event.invite_method || 'email';
   }
 
@@ -418,7 +341,7 @@ export function convertFrontendEventToAPI(
 }
 
 /**
- * Récupérer les collaborateurs d'une société
+ * ✅ NOUVEAU : Récupérer collaborateurs
  */
 export async function fetchCollaborators(societeId: number): Promise<any[]> {
   const response = await fetch(`${API_BASE_URL}/collaborators/${societeId}`);

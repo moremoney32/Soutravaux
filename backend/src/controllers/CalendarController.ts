@@ -1,5 +1,5 @@
-// controllers/calendarController.ts - VERSION CORRIGÉE
 
+// controllers/calendarController.ts - VERSION AVEC AUTORISATION
 import { Request, Response, NextFunction } from 'express';
 import {
   getEvents,
@@ -12,10 +12,11 @@ import {
   getAvailableSocietes
 } from '../services/CalendarService';
 import { createCategory, getCategories } from '../services/CategoryService';
+import { verifyAccess } from '../services/AuthorizationService';
 
 /**
  * GET /api/calendar/events
- * Récupérer les événements d'une société
+ * ✅ AVEC AUTORISATION
  */
 export const getEventsController = async (
   req: Request,
@@ -23,25 +24,44 @@ export const getEventsController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { societe_id, start_date, end_date } = req.query;
+    const { societe_id, membre_id, start_date, end_date } = req.query;
 
-    if (!societe_id || !start_date || !end_date) {
+    if (!societe_id || !membre_id || !start_date || !end_date) {
       res.status(400).json({
         success: false,
-        message: "societe_id, start_date et end_date sont requis"
+        message: "societe_id, membre_id, start_date et end_date sont requis"
       });
       return;
     }
 
+    const societeId = Number(societe_id);
+    const membreId = Number(membre_id);
+
+    // ✅ VÉRIFIER AUTORISATION
+    const auth = await verifyAccess(societeId, membreId);
+
+    if (!auth.authorized) {
+      res.status(403).json({
+        success: false,
+        message: "Accès refusé",
+        reason: auth.reason
+      });
+      return;
+    }
+
+    // ✅ RÉCUPÉRER ÉVÉNEMENTS SELON RÔLE
     const events = await getEvents(
-      Number(societe_id),
+      societeId,
+      membreId,
+      auth.role!,
       String(start_date),
       String(end_date)
     );
 
     res.status(200).json({
       success: true,
-      data: events
+      data: events,
+      role: auth.role
     });
   } catch (err) {
     next(err);
@@ -50,7 +70,7 @@ export const getEventsController = async (
 
 /**
  * POST /api/calendar/events
- * Créer un nouvel événement
+ * ✅ AVEC AUTORISATION
  */
 export const createEventController = async (
   req: Request,
@@ -61,15 +81,30 @@ export const createEventController = async (
     const eventData = req.body;
     console.log("🔥 DATA REÇUE BACK CREATE =", eventData);
 
-    if (!eventData.societe_id || !eventData.title || !eventData.event_date || !eventData.start_time || !eventData.end_time) {
+    if (!eventData.societe_id || !eventData.membre_id || !eventData.title || !eventData.event_date || !eventData.start_time || !eventData.end_time) {
       res.status(400).json({
         success: false,
-        message: "Données manquantes (societe_id, title, event_date, start_time, end_time requis)"
+        message: "Données manquantes (societe_id, membre_id, title, event_date, start_time, end_time requis)"
       });
       return;
     }
 
-    // Validate / normalize `scope`
+    const societeId = Number(eventData.societe_id);
+    const membreId = Number(eventData.membre_id);
+
+    // ✅ VÉRIFIER AUTORISATION
+    const auth = await verifyAccess(societeId, membreId);
+
+    if (!auth.authorized) {
+      res.status(403).json({
+        success: false,
+        message: "Accès refusé",
+        reason: auth.reason
+      });
+      return;
+    }
+
+    // Valider scope
     if (!eventData.scope) {
       eventData.scope = 'personal';
     } else if (!['personal', 'collaborative'].includes(eventData.scope)) {
@@ -77,13 +112,13 @@ export const createEventController = async (
       return;
     }
 
-    // Validate invite_method if provided
+    // Valider invite_method
     if (eventData.invite_method && !['email', 'sms', 'push', 'contact'].includes(eventData.invite_method)) {
-      res.status(400).json({ success: false, message: 'invite_method invalide (email|sms|push|contact)' });
+      res.status(400).json({ success: false, message: 'invite_method invalide' });
       return;
     }
 
-    // Coerce numeric ids if provided as strings
+    // Coerce category_id
     if (eventData.event_category_id) {
       eventData.event_category_id = Number(eventData.event_category_id);
       if (Number.isNaN(eventData.event_category_id)) {
@@ -92,12 +127,13 @@ export const createEventController = async (
       }
     }
 
-    const eventId = await createEvent(eventData);
+    // ✅ CRÉER ÉVÉNEMENT avec membreId
+    const eventId = await createEvent(eventData, membreId);
 
     res.status(201).json({
       success: true,
       data: { id: eventId },
-      message: "Événement zoooo"
+      message: "Événement créé avec succès"
     });
   } catch (err) {
     next(err);
@@ -106,7 +142,7 @@ export const createEventController = async (
 
 /**
  * PUT /api/calendar/events/:eventId
- * Modifier un événement
+ * ✅ AVEC AUTORISATION
  */
 export const updateEventController = async (
   req: Request,
@@ -115,17 +151,33 @@ export const updateEventController = async (
 ): Promise<void> => {
   try {
     const { eventId } = req.params;
-    const { societe_id, ...updateData } = req.body;
+    const { societe_id, membre_id, ...updateData } = req.body;
 
-    if (!societe_id) {
+    if (!societe_id || !membre_id) {
       res.status(400).json({
         success: false,
-        message: "societe_id requis"
+        message: "societe_id et membre_id requis"
       });
       return;
     }
 
-    await updateEvent(Number(eventId), updateData, Number(societe_id));
+    const societeId = Number(societe_id);
+    const membreId = Number(membre_id);
+
+    // ✅ VÉRIFIER AUTORISATION
+    const auth = await verifyAccess(societeId, membreId);
+
+    if (!auth.authorized) {
+      res.status(403).json({
+        success: false,
+        message: "Accès refusé",
+        reason: auth.reason
+      });
+      return;
+    }
+
+    // ✅ MODIFIER ÉVÉNEMENT avec membreId
+    await updateEvent(Number(eventId), updateData, societeId, membreId);
 
     res.status(200).json({
       success: true,
@@ -138,7 +190,7 @@ export const updateEventController = async (
 
 /**
  * DELETE /api/calendar/events/:eventId
- * Supprimer un événement
+ * ✅ AVEC AUTORISATION
  */
 export const deleteEventController = async (
   req: Request,
@@ -147,17 +199,33 @@ export const deleteEventController = async (
 ): Promise<void> => {
   try {
     const { eventId } = req.params;
-    const { societe_id } = req.body;
+    const { societe_id, membre_id } = req.body;
 
-    if (!societe_id) {
+    if (!societe_id || !membre_id) {
       res.status(400).json({
         success: false,
-        message: "societe_id requis"
+        message: "societe_id et membre_id requis"
       });
       return;
     }
 
-    await deleteEvent(Number(eventId), Number(societe_id));
+    const societeId = Number(societe_id);
+    const membreId = Number(membre_id);
+
+    // ✅ VÉRIFIER AUTORISATION
+    const auth = await verifyAccess(societeId, membreId);
+
+    if (!auth.authorized) {
+      res.status(403).json({
+        success: false,
+        message: "Accès refusé",
+        reason: auth.reason
+      });
+      return;
+    }
+
+    // ✅ SUPPRIMER ÉVÉNEMENT
+    await deleteEvent(Number(eventId), societeId, membreId);
 
     res.status(200).json({
       success: true,
@@ -170,7 +238,7 @@ export const deleteEventController = async (
 
 /**
  * GET /api/calendar/events/:eventId/attendees
- * Récupérer les participants (sociétés) d'un événement
+ * (Inchangé)
  */
 export const getAttendeesController = async (
   req: Request,
@@ -193,7 +261,7 @@ export const getAttendeesController = async (
 
 /**
  * POST /api/calendar/events/:eventId/invite
- * Inviter des sociétés à un événement
+ * (Inchangé)
  */
 export const inviteAttendeesController = async (
   req: Request,
@@ -233,7 +301,7 @@ export const inviteAttendeesController = async (
 
 /**
  * POST /api/calendar/events/:eventId/respond
- * Répondre à une invitation (accepter/refuser)
+ * (Inchangé)
  */
 export const respondToInviteController = async (
   req: Request,
@@ -265,7 +333,7 @@ export const respondToInviteController = async (
 
 /**
  * GET /api/calendar/societes
- * Récupérer la liste des sociétés disponibles (pour invitation)
+ * (Inchangé)
  */
 export const getSocietesController = async (
   req: Request,
@@ -288,7 +356,10 @@ export const getSocietesController = async (
   }
 };
 
-
+/**
+ * GET /api/calendar/categories
+ * (Inchangé)
+ */
 export const getCategoriesController = async (
     req: Request,
     res: Response,
@@ -315,12 +386,12 @@ export const getCategoriesController = async (
       next(err);
     }
   };
-  
-  /**
-   * POST /api/calendar/categories
-   * Créer catégorie personnalisée
-   */
-  export const createCategoryController = async (
+
+/**
+ * POST /api/calendar/categories
+ * (Inchangé)
+ */
+export const createCategoryController = async (
     req: Request,
     res: Response,
     next: NextFunction

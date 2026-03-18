@@ -5,6 +5,8 @@
 import React, { useState, useEffect } from 'react';
 import type { CalendarEvent, EventScope, EventCategory } from '../types/calendar';
 import InviteAttendeesModal from './InvitesAttentesModal';
+import LocationAutocomplete from './LocationAutocomplete';
+import TimeRangePicker from './TimeRangePicker';
 
 
 interface CalendarEventModalProps {
@@ -20,6 +22,12 @@ interface CalendarEventModalProps {
   categories?: EventCategory[];
   onFetchCategories?: () => Promise<void>;
   onCreateCategory?: (label: string, icon?: string, color?: string, requires_location?: boolean) => Promise<EventCategory>;
+  currentMembreId?: number;
+}
+
+interface Reminder {
+  value: string;  // Minutes avant (0, 5, 10, 15, 30, 60, 1440, etc.)
+  method: 'email' | 'notification';
 }
 
 const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
@@ -31,7 +39,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   onInvite,
   isNewEvent = false,
   categories = [],
-  onCreateCategory
+  onCreateCategory,
+  currentMembreId
 }) => {
   // ═══════════════════════════════════════════════
   // ÉTATS
@@ -43,7 +52,12 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [endTime, setEndTime] = useState('');
   const [color, setColor] = useState('#E77131');
   const [isEditing, setIsEditing] = useState(isNewEvent);
-  
+
+  const [reminders, setReminders] = useState<Reminder[]>([
+    // { value: '1440', method: 'email' },  // 1 jour avant par défaut
+    { value: '60', method: 'email' }     // 1h avant par défaut
+  ]);
+
   // ✅ MODIFIÉ : Remplacer eventType par eventCategoryId et customCategoryLabel
   const [scope, setScope] = useState<EventScope>('personal');
   const [eventCategoryId, setEventCategoryId] = useState<number | undefined>(undefined);
@@ -51,7 +65,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [selectedAttendees, setSelectedAttendees] = useState<string[]>([]);  // ✅ Emails des collaborateurs
   const [inviteMethod, setInviteMethod] = useState<'email' | 'sms' | 'push' | 'contact'>('email');
   console.log('Selected Attendees:', inviteMethod);
-  
+
   // Modals
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreateCategoryInput, setShowCreateCategoryInput] = useState(false);
@@ -73,6 +87,10 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     { label: 'Vert', value: '#66BB6A' }
   ];
 
+  const isOwner = !event?.created_by_membre_id ||
+    event?.created_by_membre_id === currentMembreId;
+
+  
 
   const isPastEvent = event ? event.endTime < new Date() : false;
   const eventStatus = event?.status || 'pending';
@@ -84,9 +102,32 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     completed: { label: 'Terminé', color: '#78909C', icon: '✔' }
   };
 
+
+  // Handler ajouter rappel
+  const handleAddReminder = () => {
+    if (reminders.length < 5) {  // Max 5 rappels
+      setReminders([...reminders, { value: '60', method: 'email' }]);
+    } else {
+      alert('Maximum 5 rappels');
+    }
+  };
+
+  // Handler supprimer rappel
+  const handleRemoveReminder = (index: number) => {
+    setReminders(reminders.filter((_, i) => i !== index));
+  };
+
+  // Handler modifier rappel
+  const handleReminderChange = (index: number, field: 'value' | 'method', value: string) => {
+    const updated = [...reminders];
+    updated[index][field] = value as any;
+    setReminders(updated);
+  };
+
   // ═══════════════════════════════════════════════
   // EFFET : Initialisation des valeurs
   // ═══════════════════════════════════════════════
+
   useEffect(() => {
     if (event && isOpen) {
       setTitle(event.title);
@@ -106,8 +147,14 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       }));
       setColor(event.color);
       setIsEditing(false);
+
+      if (event.reminders && event.reminders.length > 0) {
+        setReminders(event.reminders);
+      } else {
+        setReminders([{ value: '60', method: 'email' }]);
+      }
+
     } else if (isNewEvent && isOpen) {
-      // Reset pour nouvel événement
       setTitle('');
       setDescription('');
       setLocation('');
@@ -115,11 +162,26 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setEventCategoryId(undefined);
       setCustomCategoryLabel('');
       setSelectedAttendees([]);
-      setStartTime('09:00');
-      setEndTime('10:00');
       setColor('#E77131');
       setInviteMethod('email');
       setIsEditing(true);
+      setReminders([{ value: '60', method: 'email' }]);
+
+      // ✅ Heure actuelle arrondie au prochain quart d'heure
+      const now = new Date();
+      const totalMinutes = now.getHours() * 60 + now.getMinutes();
+      const roundedStart = Math.ceil(totalMinutes / 15) * 15;
+
+      const safeStart = roundedStart >= 24 * 60 ? 23 * 60 : roundedStart;
+      const safeEnd = safeStart + 60 >= 24 * 60 ? 23 * 60 + 45 : safeStart + 60;
+
+      const startH = Math.floor(safeStart / 60);
+      const startM = safeStart % 60;
+      const endH = Math.floor(safeEnd / 60);
+      const endM = safeEnd % 60;
+
+      setStartTime(`${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`);
+      setEndTime(`${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`);
     }
   }, [event, isOpen, isNewEvent]);
 
@@ -136,14 +198,6 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
 
     // Validation lieu (si requis par la catégorie)
-    // const selectedCategory = eventCategoryId 
-    //   ? categories.find(c => c.id === eventCategoryId)
-    //   : null;
-    
-    // if (selectedCategory?.requires_location && !location.trim()) {
-    //   alert('Le lieu est requis pour cette catégorie');
-    //   return;
-    // }
 
     // Construction dates
     const [startHour, startMin] = startTime.split(':').map(Number);
@@ -175,7 +229,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       scope,
       event_category_id: eventCategoryId,
       custom_category_label: customCategoryLabel || undefined,
-      attendees: scope === 'collaborative' ? selectedAttendees : []
+      attendees: scope === 'collaborative' ? selectedAttendees : [],
+      reminders
     };
 
     console.log('📤 Saving event:', updatedEvent);
@@ -192,7 +247,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
   const handleInviteComplete = async (emails: string[]): Promise<void> => {
     setSelectedAttendees(emails);  // ✅ Sauvegarder les emails
-    
+
     // Si événement existe et onInvite fourni
     if (event && event.id && onInvite) {
       try {
@@ -202,8 +257,28 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
         alert('Impossible d\'inviter les participants');
       }
     }
-    
+
     setShowInviteModal(false);
+  };
+
+  // CalendarEventModal.tsx - AJOUTER CETTE FONCTION HELPER
+
+  // Fonction pour formatter les labels des rappels
+  const formatReminderLabel = (value: string): string => {
+    const minutes = Number(value);
+
+    if (minutes === 0) return 'À l\'heure de l\'événement';
+    if (minutes === 5) return '5 minutes avant';
+    if (minutes === 10) return '10 minutes avant';
+    if (minutes === 15) return '15 minutes avant';
+    if (minutes === 30) return '30 minutes avant';
+    if (minutes === 60) return '1 heure avant';
+    if (minutes === 120) return '2 heures avant';
+    if (minutes === 1440) return '1 jour avant';
+    if (minutes === 2880) return '2 jours avant';
+    if (minutes === 10080) return '1 semaine avant';
+
+    return `${minutes} minutes avant`;
   };
 
   const handleCreateCategory = async (): Promise<void> => {
@@ -234,25 +309,10 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
-  // const handleComplete = (): void => {
-  //   if (event && confirm('Marquer cet événement comme terminé ?')) {
-  //     onComplete?.(event.id);
-  //     onClose();
-  //   }
-  // };
-
-  // const handleCancelEvent = (): void => {
-  //   if (event && confirm('Annuler cet événement ?')) {
-  //     onCancel?.(event.id);
-  //     onClose();
-  //   }
-  // };
-
-
   // ═══════════════════════════════════════════════
   // HELPERS
   // ═══════════════════════════════════════════════
-  const selectedCategory = eventCategoryId 
+  const selectedCategory = eventCategoryId
     ? categories.find(c => c.id === eventCategoryId)
     : null;
 
@@ -264,7 +324,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   return (
     <>
       <div className="calendar-modal-overlay" onClick={onClose}>
-        <div 
+        <div
           className="calendar-modal-content"
           onClick={(e) => e.stopPropagation()}
         >
@@ -283,7 +343,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 e.preventDefault();
                 handleSave();
               }}>
-                
+
                 {/* ════════════════════════════════════ */}
                 {/* 1️⃣ PORTÉE (Personnel / Collaboratif) */}
                 {/* ════════════════════════════════════ */}
@@ -291,9 +351,9 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   <label className="calendar-form-label">
                     Portée de l'événement *
                   </label>
-                  
+
                   <div className="scope-selector">
-                    <label 
+                    <label
                       className={`scope-option ${scope === 'personal' ? 'active' : ''}`}
                       style={{
                         borderColor: scope === 'personal' ? '#42A5F5' : '#ddd',
@@ -316,7 +376,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                       </div>
                     </label>
 
-                    <label 
+                    <label
                       className={`scope-option ${scope === 'collaborative' ? 'active' : ''}`}
                       style={{
                         borderColor: scope === 'collaborative' ? '#4CAF50' : '#ddd',
@@ -348,7 +408,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   <label className="calendar-form-label">
                     Catégorie d'événement
                   </label>
-                  
+
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                     <select
                       className="calendar-form-select"
@@ -371,7 +431,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                         </option>
                       ))}
                     </select>
-                    
+
                     <button
                       type="button"
                       onClick={() => setShowCreateCategoryInput(!showCreateCategoryInput)}
@@ -440,38 +500,6 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                           ))}
                         </div>
                       </div>
-
-                      {/* <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Couleur</label>
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                          {['#E77131', '#FF6B35', '#F4A460', '#EF5350', '#42A5F5', '#66BB6A'].map((c) => (
-                            <button
-                              key={c}
-                              type="button"
-                              onClick={() => setNewCategoryColor(c)}
-                              style={{
-                                width: '32px',
-                                height: '32px',
-                                backgroundColor: c,
-                                border: newCategoryColor === c ? '3px solid black' : '1px solid #ddd',
-                                borderRadius: '4px',
-                                cursor: 'pointer'
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div> */}
-
-                      {/* <div className="calendar-form-group" style={{ marginBottom: '12px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={newCategoryRequiresLocation}
-                            onChange={(e) => setNewCategoryRequiresLocation(e.target.checked)}
-                          />
-                          <span style={{ fontSize: '14px' }}>Cette catégorie requiert un lieu</span>
-                        </label>
-                      </div> */}
 
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button
@@ -578,48 +606,102 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 {/* ════════════════════════════════════ */}
                 {/* LIEU                                  */}
                 {/* ════════════════════════════════════ */}
+
                 <div className="calendar-form-group">
                   <label className="calendar-form-label">
-                    📍 Lieu 
+                    📍 Lieu {selectedCategory?.requires_location && '*'}
                   </label>
-                  <input
-                    type="text"
-                    className="calendar-form-input"
+                  <LocationAutocomplete
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={setLocation}
                     placeholder="Ex: 12 rue de la Paix, Paris"
                     required={selectedCategory?.requires_location}
                   />
+                  {selectedCategory?.requires_location && (
+                    <div style={{
+                      fontSize: '11px',
+                      color: '#999',
+                      marginTop: '4px'
+                    }}>
+                      Cette catégorie nécessite un lieu
+                    </div>
+                  )}
                 </div>
 
                 {/* ════════════════════════════════════ */}
                 {/* HEURES DÉBUT/FIN                      */}
                 {/* ════════════════════════════════════ */}
-                <div className="calendar-form-row">
-                  <div className="calendar-form-group">
-                    <label className="calendar-form-label">Début</label>
-                    <input
-                      type="time"
-                      className="calendar-form-input"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                    />
+
+                <TimeRangePicker
+                  startTime={startTime}
+                  endTime={endTime}
+                  onStartTimeChange={setStartTime}
+                  onEndTimeChange={setEndTime}
+                  defaultDuration={60}  // 1 heure par défaut
+                />
+
+                {/* ════════════════════════════════════════ */}
+                {/* ✅ NOUVEAU : RAPPELS PERSONNALISABLES    */}
+                {/* ════════════════════════════════════════ */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">
+                    🔔 Rappels
+                  </label>
+
+                  <div className="reminders-list">
+                    {reminders.map((reminder, index) => (
+                      <div key={index} className="reminder-item">
+                        <select
+                          value={reminder.value}
+                          onChange={(e) => handleReminderChange(index, 'value', e.target.value)}
+                          className="reminder-select"
+                        >
+                          {/* <option value="0">À l'heure</option> */}
+                          <option value="5">5 minutes avant</option>
+                          <option value="10">10 minutes avant</option>
+                          <option value="15">15 minutes avant</option>
+                          <option value="30">30 minutes avant</option>
+                          <option value="60">1 heure avant</option>
+                          <option value="120">2 heures avant</option>
+                          <option value="1440">1 jour avant</option>
+                          <option value="2880">2 jours avant</option>
+                          <option value="10080">1 semaine avant</option>
+                        </select>
+
+                        <select
+                          value={reminder.method}
+                          onChange={(e) => handleReminderChange(index, 'method', e.target.value)}
+                          className="reminder-select"
+                        >
+                          <option value="email">📧 Email</option>
+                          <option value="notification">🔔 Notification</option>
+                        </select>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveReminder(index)}
+                          className="reminder-remove-btn"
+                          title="Supprimer ce rappel"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                  <div className="calendar-form-group">
-                    <label className="calendar-form-label">Fin</label>
-                    <input
-                      type="time"
-                      className="calendar-form-input"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                    />
-                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddReminder}
+                    className="calendar-btn-add-reminder"
+                  >
+                    + Ajouter un rappel
+                  </button>
                 </div>
 
                 {/* ════════════════════════════════════ */}
                 {/* COULEUR                               */}
                 {/* ════════════════════════════════════ */}
-                 <div className="calendar-form-group">
+                <div className="calendar-form-group">
                   <label className="calendar-form-label">Couleur</label>
                   <div className="calendar-color-picker">
                     {colorOptions.map((option) => (
@@ -632,7 +714,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                       />
                     ))}
                   </div>
-                </div> 
+                </div>
               </form>
             ) : (
               // ════════════════════════════════════
@@ -664,10 +746,25 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                 </div>
               </div>
             )}
+
+            {reminders && reminders.length > 0 && (
+              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
+                <p style={{ fontWeight: 600, marginBottom: '8px' }}>
+                  <strong>🔔</strong> Rappels configurés :
+                </p>
+                <div style={{ paddingLeft: '24px' }}>
+                  {reminders.map((reminder, idx) => (
+                    <p key={idx} style={{ margin: '4px 0', fontSize: '14px', color: '#666' }}>
+                      • {formatReminderLabel(reminder.value)} ({reminder.method === 'email' ? '📧 Email' : '🔔 Notification'})
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* FOOTER */}
-          <div className="calendar-modal-footer">
+          {/* <div className="calendar-modal-footer">
             {isEditing ? (
               <>
                 <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
@@ -684,16 +781,31 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                         👥 Gérer invités
                       </button>
                     )}
-                    {/* {eventStatus === 'pending' && (
-                      <>
-                         <button className="calendar-btn-success" onClick={handleComplete}>
-                          ✓ Terminer
-                        </button> 
-                        <button className="calendar-btn-warning" onClick={handleCancelEvent}>
-                          ✗ Annuler
-                        </button>
-                      </>
-                    )} */}
+                    <button className="calendar-btn-primary" onClick={() => setIsEditing(true)}>Modifier</button>
+                  </>
+                )}
+              </>
+            )}
+          </div> */}
+
+          {/* FOOTER */}
+          <div className="calendar-modal-footer">
+            {isEditing ? (
+              <>
+                <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
+                <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
+              </>
+            ) : (
+              <>
+                <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>
+                {!isPastEvent && isOwner && (  // ✅ seulement si propriétaire
+                  <>
+                    <button className="calendar-btn-danger" onClick={handleDelete}>Supprimer</button>
+                    {scope === 'collaborative' && (
+                      <button className="calendar-btn-invite" onClick={() => setShowInviteModal(true)}>
+                        👥 Gérer invités
+                      </button>
+                    )}
                     <button className="calendar-btn-primary" onClick={() => setIsEditing(true)}>Modifier</button>
                   </>
                 )}
@@ -936,6 +1048,75 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
               box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
             }
 
+              {/* Dans le <style> du CalendarEventModal */}
+
+.reminders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reminder-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.reminder-select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+}
+
+.reminder-select:focus {
+  outline: none;
+  border-color: #E77131;
+  box-shadow: 0 0 0 3px rgba(231, 113, 49, 0.1);
+}
+
+.reminder-remove-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.reminder-remove-btn:hover {
+  background: #ffebee;
+  color: #ef5350;
+}
+
+.calendar-btn-add-reminder {
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #ddd;
+  background: white;
+  border-radius: 6px;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-btn-add-reminder:hover {
+  border-color: #E77131;
+  color: #E77131;
+  background: #FFF3E0;
+}
+
             @media (max-width: 768px) {
             
  
@@ -954,13 +1135,13 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
       {/* Modal Invitations */}
       {showInviteModal && (
-  <InviteAttendeesModal
-    isOpen={showInviteModal}
-    onClose={() => setShowInviteModal(false)}
-    onInvite={handleInviteComplete}  // ✅ (emails: string[]) => Promise<void>
-    initialSelectedEmails={selectedAttendees}  // ✅ Emails sélectionnés
-  />
-)}
+        <InviteAttendeesModal
+          isOpen={showInviteModal}
+          onClose={() => setShowInviteModal(false)}
+          onInvite={handleInviteComplete}  // ✅ (emails: string[]) => Promise<void>
+          initialSelectedEmails={selectedAttendees}  // ✅ Emails sélectionnés
+        />
+      )}
     </>
   );
 };

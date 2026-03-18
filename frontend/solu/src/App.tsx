@@ -1,6 +1,6 @@
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
- import Register from "../features/auth/register/Register";
+//  import Register from "../features/auth/register/Register";
 // import Home from "../features/auth/register/Home";
 import "./app.css";
 import SubscriptionPage from "./components/SubscriptionPage";
@@ -24,7 +24,7 @@ function App() {
         {/* <Route path="/" element={<Home />} /> */}
 
         {/* Inscription multi-étapes */}
-         <Route path="/" element={<Register />} />    
+         {/* <Route path="/" element={<Register />} />     */}
         <Route path="/subscription" element={<SubscriptionPage />} />
         <Route path="/catalogue" element={<BibliothequesDashboard />} />
         <Route path="/feature" element={<PlanFeatureManager />} />
@@ -34,7 +34,8 @@ function App() {
         <Route path="/create-liste" element={<CreateListePage />} />
         <Route path="/campagne/:membreId/achat-sms" element={<AchatSMSPage />} />
         <Route path="/scraping" element={<ScrapingPage />} />
-        <Route path="/calendar/:societeId" element={<GoogleCalendar />} />
+        {/* <Route path="/calendar/:societeId" element={<GoogleCalendar />} /> */}
+        <Route path="/calendar/:societeId/:membreId" element={<GoogleCalendar />} />
         <Route path="/priceRequest/:societeId/:membreId" element={<PriceRequest />} />
       </Routes>
     </BrowserRouter>

@@ -15,17 +15,6 @@ export interface EventCategory {
 }
 
 
-// export interface CalendarEvent {
-//   id: string;
-//   title: string;
-//   description?: string;
-//   startTime: Date;
-//   endTime: Date;
-//   color: string;
-//   calendar: string;
-//   attendees?: string[];
-// }
-
 // Interface principale événement
 export interface CalendarEvent {
   id: string;
@@ -42,6 +31,12 @@ export interface CalendarEvent {
   custom_category_label?: string;       // Label personnalisé si pas de catégorie_id
   category?: EventCategory;              // Objet catégorie complet (si chargé)
   attendees?: string[];                 // Emails des collaborateurs invités (si collaborative)
+  created_by_membre_id?: number;
+
+  reminders?: Array<{
+    value: string;  // Minutes avant
+    method: 'email' | 'notification';
+  }>;
 }
 
 export interface Calendar {

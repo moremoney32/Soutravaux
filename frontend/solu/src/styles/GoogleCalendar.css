@@ -325,6 +325,10 @@
   width: 100%;
 }
 
+
+
+
+
 .calendar-time-column {
   width: 60px;
   background: white;
@@ -812,9 +816,12 @@
   transition: var(--transition-fast);
   pointer-events: auto;
   box-shadow: var(--shadow-light);
+  border-left: 2px solid rgba(255,255,255,0.3);
 }
 
 .calendar-event:hover {
+    z-index: 10;
+     transform: translateY(-1px);
   box-shadow: var(--shadow-medium);
 }
 
@@ -831,6 +838,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .calendar-event-description {

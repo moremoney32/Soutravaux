@@ -1,5 +1,8 @@
-import React, { useMemo } from 'react';
+
+
+import React, { useMemo, useEffect, useRef } from 'react';
 import type { CalendarEvent } from '../types/calendar';
+import { calculateEventLayouts } from '../helpers/eventLayoutHelper';
 
 interface CalendarWeekViewProps {
   currentDate: Date;
@@ -9,15 +12,6 @@ interface CalendarWeekViewProps {
   onTimeSlotClick?: (date: Date, hour: number) => void;
 }
 
-interface EventPosition {
-  top: string;
-  height: string;
-}
-
-/**
- * Vue hebdomadaire du calendrier
- * Affiche les événements positionnés selon leur horaire
- */
 const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
   currentDate,
   events,
@@ -25,17 +19,18 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
   onEventClick,
   onTimeSlotClick
 }) => {
-  // Calcule le début de la semaine (lundi)
+  // ✅ AJOUTÉ : Ref pour le container scrollable
+  const gridRef = useRef<HTMLDivElement>(null);
+  
   const getWeekStart = (date: Date): Date => {
     const d = new Date(date);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajuste pour lundi
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(d.setDate(diff));
   };
 
   const weekStart = useMemo(() => getWeekStart(currentDate), [currentDate]);
   
-  // Génère les 7 jours de la semaine
   const weekDays: Date[] = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
       const date = new Date(weekStart);
@@ -44,17 +39,44 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     });
   }, [weekStart]);
 
-  // 24 heures de 0 à 23
   const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
-
   const dayNames = ['LUN.', 'MAR.', 'MER.', 'JEU.', 'VEN.', 'SAM.', 'DIM.'];
   const today = useMemo(() => new Date(), []);
 
-  /**
-   * Calcule le positionnement CSS d'un événement
-   * en fonction de son horaire (top et height)
-   */
-  const getEventStyle = (event: CalendarEvent): EventPosition => {
+  // ✅ NOUVEAU : Vérifier si aujourd'hui est dans la semaine affichée
+  const isTodayInWeek = useMemo(() => {
+    return weekDays.some(day => 
+      day.getDate() === today.getDate() &&
+      day.getMonth() === today.getMonth() &&
+      day.getFullYear() === today.getFullYear()
+    );
+  }, [weekDays, today]);
+
+  // ✅ NOUVEAU : Auto-scroll à l'heure actuelle
+  useEffect(() => {
+    if (!gridRef.current || !isTodayInWeek) return;
+    
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Commencer 2h avant l'heure actuelle
+    const targetHour = Math.max(0, currentHour - 2);
+    const hourHeight = gridRef.current.scrollHeight / 24;
+    const scrollPosition = targetHour * hourHeight;
+    
+    setTimeout(() => {
+      gridRef.current?.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+      });
+    }, 100);
+    
+  }, [currentDate, isTodayInWeek]);
+
+  const getEventStyle = (
+    event: CalendarEvent,
+    layout?: { left: number; width: number }
+  ) => {
     const startHour = event.startTime.getHours();
     const startMin = event.startTime.getMinutes();
     const endHour = event.endTime.getHours();
@@ -66,13 +88,12 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
 
     return {
       top: `${topPercent}%`,
-      height: `${Math.max(heightPercent, 3)}%` // Minimum 3% pour visibilité
+      height: `${Math.max(heightPercent, 3)}%`,
+      left: layout ? `${layout.left}%` : '0%',
+      width: layout ? `${layout.width}%` : '100%'
     };
   };
 
-  /**
-   * Vérifie si une date est aujourd'hui
-   */
   const isToday = (date: Date): boolean => {
     return (
       date.getDate() === today.getDate() &&
@@ -81,9 +102,6 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     );
   };
 
-  /**
-   * Filtre les événements pour un jour donné
-   */
   const getEventsForDay = (date: Date): CalendarEvent[] => {
     return events.filter(
       (event) =>
@@ -94,9 +112,6 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     );
   };
 
-  /**
-   * Format l'heure en HH:MM
-   */
   const formatTime = (date: Date): string => {
     return `${String(date.getHours()).padStart(2, '0')}:${String(
       date.getMinutes()
@@ -133,8 +148,8 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         ))}
       </div>
 
-      {/* Grille horaire avec événements */}
-      <div className="calendar-week-grid">
+      {/* ✅ MODIFIÉ : Ajouter ref au container scrollable */}
+      <div className="calendar-week-grid" ref={gridRef}>
         {/* Colonne des heures */}
         <div className="calendar-time-column">
           {hours.map((hour) => (
@@ -149,10 +164,10 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         {/* Colonnes des jours avec événements */}
         {weekDays.map((date, dayIdx) => {
           const dayEvents = getEventsForDay(date);
+          const layouts = calculateEventLayouts(dayEvents);
           
           return (
             <div key={`day-${dayIdx}`} className="calendar-day-column">
-              {/* Créneaux horaires */}
               {hours.map((hour) => (
                 <div
                   key={`slot-${dayIdx}-${hour}`}
@@ -162,26 +177,25 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                 ></div>
               ))}
 
-              {/* Conteneur des événements */}
               <div className="calendar-events-container">
-                {dayEvents.map((event) => (
+                {layouts.map((layout) => (
                   <div
-                    key={event.id}
+                    key={layout.event.id}
                     className="calendar-event"
                     style={{
-                      ...getEventStyle(event),
-                      backgroundColor: event.color
+                      ...getEventStyle(layout.event, layout),
+                      backgroundColor: layout.event.color
                     }}
-                    onClick={() => onEventClick?.(event)}
-                    title={`${event.title} - ${formatTime(event.startTime)} à ${formatTime(event.endTime)}`}
+                    onClick={() => onEventClick?.(layout.event)}
+                    title={`${layout.event.title} - ${formatTime(layout.event.startTime)} à ${formatTime(layout.event.endTime)}`}
                   >
                     <div className="calendar-event-time">
-                      {formatTime(event.startTime)}
+                      {formatTime(layout.event.startTime)}
                     </div>
-                    <div className="calendar-event-title">{event.title}</div>
-                    {event.description && (
+                    <div className="calendar-event-title">{layout.event.title}</div>
+                    {layout.event.description && (
                       <div className="calendar-event-description">
-                        {event.description}
+                        {layout.event.description}
                       </div>
                     )}
                   </div>
