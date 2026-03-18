@@ -199,7 +199,7 @@ const loadEvents = useCallback(async () => {
         const endDate = weekEnd.toISOString().split('T')[0];
 
         const response = await fetch(
-          `http://localhost:3000/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
+          `https://staging.solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
         );
         const result = await response.json();
 
