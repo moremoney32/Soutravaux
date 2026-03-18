@@ -6,8 +6,8 @@
 //export const BASE_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/image';
 
 // ✅ CORRIGÉ : Sans /public/ en double https://app.solutravo-app.fr/
-//  export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/'
- export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/'
+export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/'
+ //export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/'
 //export const BASE_PRODUCT_IMAGE_URL = 'https://app.solutravo-app.fr/public/uploads/catalogue/'
 
 /**
