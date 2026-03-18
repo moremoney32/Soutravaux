@@ -7,7 +7,7 @@
 // const API_BASE =
 //   window.location.hostname === "localhost"
 //     ? "http://localhost:3000/api"       // → version locale
-//     : "https://solutravo.zeta-app.fr/api"; 
+//     : "https://staging.solutravo.zeta-app.fr/api"; 
 
 // async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 //   const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -114,7 +114,7 @@ import type { Plan, Feature, FeatureWithStatus } from '../types';
 const API_BASE =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "https://solutravo.zeta-app.fr/api";
+    : "https://staging.solutravo.zeta-app.fr/api";
 
 // Fonction générique pour les requêtes JSON
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
