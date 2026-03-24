@@ -353,3 +353,52 @@ export async function fetchCollaborators(societeId: number): Promise<any[]> {
 
   return result.data || [];
 }
+
+
+/**
+ * ✅ Rechercher des sociétés Solutravo
+ */
+export async function searchSocietes(
+  query: string,
+  excludeSocieteId: number
+): Promise<any[]> {
+  const params = new URLSearchParams({
+    q: query,
+    exclude_id: String(excludeSocieteId)
+  });
+
+  const response = await fetch(`${API_BASE_URL}/calendar/societes/search?${params}`);
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur recherche sociétés');
+  }
+
+  return result.data || [];
+}
+
+/**
+ * ✅ Inviter une société à un événement
+ */
+export async function inviterSocieteAPI(
+  eventId: number,
+  societeInvitanteId: number,
+  societeInviteeId: number,
+  membreId: number
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/invite-societe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      societe_invitante_id: societeInvitanteId,
+      societe_invitee_id: societeInviteeId,
+      membre_id: membreId
+    })
+  });
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur invitation société');
+  }
+}
