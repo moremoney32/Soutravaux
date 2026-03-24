@@ -27,7 +27,7 @@ import { getActivitesController, getDepartementsController, getPreSocietesContro
 import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
-import { createCategoryController,  createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, respondToInviteController, updateEventController } from "../controllers/CalendarController";
+import { createCategoryController,  createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, inviterSocieteController, respondToInviteController, searchSocietesController, updateEventController } from "../controllers/CalendarController";
 import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
 import { archiverDemandeController, createDemandeController, downloadPDFController, getBibliothequesController, getCatalogueController, getCategoriesControllerPrice, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsBibliothequeController, updateStatutDestinataireController, uploadPJ, viewDemandePageController } from "../controllers/DemandesPrixControllers";
 
@@ -205,6 +205,12 @@ router.post('/upload', handleImageUpload, (req: Request, res: Response) => {
  * ROUTES CALENDRIER
  */
 
+//inviter les societes sur l agenda
+
+// ✅ CORRIGÉ — ajouter /calendar/
+router.get('/calendar/societes/search', searchSocietesController);
+router.post('/calendar/events/:eventId/invite-societe', inviterSocieteController);
+
 // GET /api/calendar/events - Récupérer événements
 router.get('/calendar/events', getEventsController);/*fff***/
 
@@ -291,6 +297,9 @@ router.patch('/demandes-prix/:id/destinataires/:destId', updateStatutDestinatair
 router.post('/demandes-prix/:id/destinataires/:destId/statut', updateStatutDestinataireController);
 router.patch('/demandes-prix/:id/archiver', archiverDemandeController);
 router.post('/demandes-prix/:id/archiver', archiverDemandeController);
+
+
+
 
 
 

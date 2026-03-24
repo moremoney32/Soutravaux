@@ -9,7 +9,9 @@ import {
   getEventAttendees,
   inviteAttendees,
   respondToInvite,
-  getAvailableSocietes
+  getAvailableSocietes,
+  inviterSociete,
+  searchSocietes
 } from '../services/CalendarService';
 import { createCategory, getCategories } from '../services/CategoryService';
 import { verifyAccess } from '../services/AuthorizationService';
@@ -431,3 +433,79 @@ export const createCategoryController = async (
       next(err);
     }
   };
+
+
+  export const searchSocietesController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { q, exclude_id } = req.query;
+
+    if (!exclude_id) {
+      res.status(400).json({
+        success: false,
+        message: "exclude_id requis"
+      });
+      return;
+    }
+
+    const societes = await searchSocietes(
+      String(q || ''),
+      Number(exclude_id)
+    );
+
+    res.status(200).json({
+      success: true,
+      data: societes
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /api/calendar/events/:eventId/invite-societe
+ */
+export const inviterSocieteController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { eventId } = req.params;
+    const { societe_invitante_id, societe_invitee_id, membre_id } = req.body;
+
+    if (!societe_invitante_id || !societe_invitee_id || !membre_id) {
+      res.status(400).json({
+        success: false,
+        message: "societe_invitante_id, societe_invitee_id et membre_id requis"
+      });
+      return;
+    }
+
+    await inviterSociete(
+      Number(eventId),
+      Number(societe_invitante_id),
+      Number(societe_invitee_id),
+      Number(membre_id)
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Société invitée avec succès"
+    });
+
+  } catch (err: any) {
+    if (err.message === "Cette société a déjà été invitée") {
+      res.status(409).json({ success: false, message: err.message });
+      return;
+    }
+    if (err.message === "Seul l'admin peut inviter une société") {
+      res.status(403).json({ success: false, message: err.message });
+      return;
+    }
+    next(err);
+  }
+};

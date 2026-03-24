@@ -6,7 +6,12 @@ import { RowDataPacket } from 'mysql2';
 import { planifierNotificationsPersonnalisees, planifierNotificationsPourMembre, supprimerNotificationsPendantesMembre } from '../helpers/notificationMemberScheduler';
 import { envoyerEmailInvitationImmediate } from './InvitationService';
 import { planifierNotificationsInvites, planifierNotificationsInvitesPersonnalisees } from './invitationNotificationScheduler';
+import { verifyAccess } from './AuthorizationService';
+import axios from 'axios';
 
+
+const EMAIL_API_URL = 'https://auth.solutravo-app.fr/send-email.php';
+const DEFAULT_SENDER = 'noreply@solutravo-compta.fr';
 
 export async function getEvents(
   societeId: number,
@@ -19,14 +24,7 @@ export async function getEvents(
   const conn = await pool.getConnection();
 
   try {
-    
-    let query = '';
-    let params: any[] = [];
-    
-    // ✅ ADMIN ET COLLABORATEUR : Même logique !
-    // Par défaut, on voit SEULEMENT ses propres événements + invitations
-    
-    query = `
+    const query = `
       SELECT DISTINCT
         ce.*,
         s.nomsociete as societe_name,
@@ -37,40 +35,51 @@ export async function getEvents(
       LEFT JOIN societes s ON ce.societe_id = s.id
       LEFT JOIN membres m ON ce.created_by_membre_id = m.id
       WHERE ce.event_date BETWEEN ? AND ?
-      AND ce.societe_id = ?
       AND (
-        ce.created_by_membre_id = ?
+        -- ✅ Ses propres événements
+        (ce.societe_id = ? AND ce.created_by_membre_id = ?)
+
+        -- ✅ Invité par email (collaborateur)
         OR EXISTS (
           SELECT 1 FROM event_invitations ei
           WHERE ei.event_id = ce.id
-          AND ei.email COLLATE utf8mb4_general_ci = (SELECT email FROM membres WHERE id = ?)
+          AND ei.email COLLATE utf8mb4_general_ci = (
+            SELECT email FROM membres WHERE id = ?
+          )
+        )
+
+        -- ✅ Sa société est invitée
+        OR EXISTS (
+          SELECT 1 FROM event_societe_invitations esi
+          WHERE esi.event_id = ce.id
+          AND esi.societe_invitee_id = ?
         )
       )
       ORDER BY ce.event_date, ce.start_time
     `;
-    
-    params = [startDate, endDate, societeId, membreId, membreId];
-    
-    console.log(`📅 Chargement événements pour ${role} membre ${membreId} (par défaut: événements personnels uniquement)`);
-    
+
+    const params = [startDate, endDate, societeId, membreId, membreId, societeId];
+
+    console.log(`📅 Chargement événements pour ${role} membre ${membreId}`);
+
     const [rows] = await conn.query<RowDataPacket[]>(query, params);
     const events = rows as CalendarEvent[];
 
-    // Charger attendees pour chaque event
-    for(const ev of events){
+    // Charger attendees + reminders pour chaque event
+    for (const ev of events) {
       ev.attendees = await getEventAttendees(ev.id);
 
-       const [reminderRows] = await conn.query<RowDataPacket[]>(`
-    SELECT minutes_before as value, method
-    FROM event_reminders
-    WHERE event_id = ?
-    ORDER BY minutes_before DESC
-  `, [ev.id]);
+      const [reminderRows] = await conn.query<RowDataPacket[]>(`
+        SELECT minutes_before as value, method
+        FROM event_reminders
+        WHERE event_id = ?
+        ORDER BY minutes_before DESC
+      `, [ev.id]);
 
-  (ev as any).reminders = (reminderRows as any[]).map((r: any) => ({
-    value: String(r.value),
-    method: r.method
-  }));
+      (ev as any).reminders = (reminderRows as any[]).map((r: any) => ({
+        value: String(r.value),
+        method: r.method
+      }));
     }
 
     console.log(`✅ ${events.length} événements récupérés`);
@@ -80,7 +89,6 @@ export async function getEvents(
     conn.release();
   }
 }
-
 /* ============================================================
    CREATE EVENT - ✅ AVEC MEMBRE_ID
 ============================================================ */
@@ -90,6 +98,165 @@ export async function getEvents(
 /* ============================================================
    CREATE EVENT - ✅ AVEC RAPPELS PERSONNALISÉS
 ============================================================ */
+// export async function createEvent(
+//   data: CreateEventInput,
+//   membreId: number
+// ): Promise<number> {
+
+//   const conn = await pool.getConnection();
+
+//   try {
+
+//     console.log("🔥 CREATE EVENT DATA =", data);
+//     console.log("👤 Créé par membre ID =", membreId);
+
+//     await conn.beginTransaction();
+
+//     const eventDate = data.event_date.includes('T')
+//       ? data.event_date.split('T')[0]
+//       : data.event_date;
+
+//     // ==============================
+//     // 1️⃣ INSERT EVENT avec created_by_membre_id
+//     // ==============================
+//     const [result] = await conn.query<any>(`
+//       INSERT INTO calendar_events 
+//       (societe_id, created_by_membre_id, title, description, event_date, start_time, end_time, location, color, status, event_type, scope, event_category_id, custom_category_label)
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
+//     `, [
+//       data.societe_id,
+//       membreId,
+//       data.title,
+//       data.description || null,
+//       eventDate,
+//       data.start_time,
+//       data.end_time,
+//       data.location || null,
+//       data.color || '#E77131',
+//       data.event_type || 'task',
+//       data.scope || 'personal',
+//       data.event_category_id || null,
+//       data.custom_category_label || null
+//     ]);
+
+//     const eventId = result.insertId;
+
+//     // ==============================
+//     // 2️⃣ RAPPELS PERSONNALISÉS (au lieu de automatiques)
+//     // ==============================
+    
+//     // ✅ OPTION A : Seulement si l'utilisateur a choisi des rappels
+//     if (data.reminders && data.reminders.length > 0) {
+//       console.log("🔔 Enregistrement rappels personnalisés:", data.reminders);
+      
+//       for (const reminder of data.reminders) {
+//         await conn.query(`
+//           INSERT INTO event_reminders (event_id, minutes_before, method)
+//           VALUES (?, ?, ?)
+//         `, [eventId, Number(reminder.value), reminder.method]);
+//       }
+      
+//       // Planifier les notifications selon les rappels choisis
+//       await planifierNotificationsPersonnalisees(
+//         conn,
+//         eventId,
+//         eventDate,
+//         data.start_time,
+//         membreId,
+//         data.reminders
+//       );
+      
+//     } else {
+//       // ✅ OPTION B : Pas de rappels (ou rappels par défaut optionnels)
+//       console.log("ℹ️ Aucun rappel configuré pour cet événement");
+      
+//       // Si tu veux quand même des rappels par défaut, décommente :
+//       await planifierNotificationsPersonnalisees(
+//     conn,
+//     eventId,
+//     eventDate,
+//     data.start_time,
+//     membreId,
+//     [{ value: '0', method: 'email' }]  // ← 0 min = à l'heure exacte
+//   );
+//     }
+
+//     // ==============================
+//     // 3️⃣ ENREGISTRER LES INVITÉS (emails)
+//     // ==============================
+//     let emails: string[] = [];
+
+//     if ((data.scope || '').toLowerCase() === 'collaborative') {
+
+//       console.log("🚀 MODE COLLABORATIF");
+
+//       emails = (data as any).attendee_emails || [];
+
+//       console.log("📧 emails reçus =", emails);
+
+//       for (const email of emails) {
+
+//         await conn.query(`
+//           INSERT INTO event_invitations (event_id, email, status)
+//           VALUES (?, ?, 'sent')
+//         `, [eventId, email]);
+
+//         // ✅ Les invités ont aussi des rappels personnalisés
+//         if (data.reminders && data.reminders.length > 0) {
+//           await planifierNotificationsInvitesPersonnalisees(
+//             conn,
+//             eventId,
+//             email,
+//             eventDate,
+//             data.start_time,
+//             data.reminders
+//           );
+//         } else {
+//           // Pas de rappels pour les invités non plus
+//           console.log("ℹ️ Pas de rappels pour l'invité:", email);
+//         }
+//       }
+//     }
+
+//     // ==============================
+//     // 4️⃣ COMMIT SQL
+//     // ==============================
+//     await conn.commit();
+
+//     console.log("✅ EVENT CRÉÉ =", eventId);
+
+//     // ==============================
+//     // 5️⃣ EMAIL IMMÉDIAT INVITATIONS
+//     // ==============================
+//     if (emails.length) {
+
+//       console.log("📨 Envoi emails immédiats invitations...");
+
+//       for (const email of emails) {
+//         await envoyerEmailInvitationImmediate(
+//           eventId,
+//           email,
+//           data.societe_id
+//         );
+//       }
+//     }
+
+//     return eventId;
+
+//   } catch (error: any) {
+
+//     await conn.rollback();
+//     console.error("❌ CREATE EVENT ERROR =", error);
+//     throw new Error(error.message);
+
+//   } finally {
+//     conn.release();
+//   }
+// }
+
+
+
+
 export async function createEvent(
   data: CreateEventInput,
   membreId: number
@@ -109,7 +276,7 @@ export async function createEvent(
       : data.event_date;
 
     // ==============================
-    // 1️⃣ INSERT EVENT avec created_by_membre_id
+    // 1️⃣ INSERT EVENT
     // ==============================
     const [result] = await conn.query<any>(`
       INSERT INTO calendar_events 
@@ -134,57 +301,40 @@ export async function createEvent(
     const eventId = result.insertId;
 
     // ==============================
-    // 2️⃣ RAPPELS PERSONNALISÉS (au lieu de automatiques)
+    // 2️⃣ RAPPELS PERSONNALISÉS
     // ==============================
-    
-    // ✅ OPTION A : Seulement si l'utilisateur a choisi des rappels
     if (data.reminders && data.reminders.length > 0) {
       console.log("🔔 Enregistrement rappels personnalisés:", data.reminders);
-      
+
       for (const reminder of data.reminders) {
         await conn.query(`
           INSERT INTO event_reminders (event_id, minutes_before, method)
           VALUES (?, ?, ?)
         `, [eventId, Number(reminder.value), reminder.method]);
       }
-      
-      // Planifier les notifications selon les rappels choisis
+
+      // ✅ Rappels personnalisés + at_time automatique garanti
       await planifierNotificationsPersonnalisees(
-        conn,
-        eventId,
-        eventDate,
-        data.start_time,
-        membreId,
-        data.reminders
+        conn, eventId, eventDate, data.start_time, membreId, data.reminders
       );
-      
+
     } else {
-      // ✅ OPTION B : Pas de rappels (ou rappels par défaut optionnels)
-      console.log("ℹ️ Aucun rappel configuré pour cet événement");
-      
-      // Si tu veux quand même des rappels par défaut, décommente :
-      /*
-      await planifierNotificationsPourMembre(
-        conn,
-        eventId,
-        eventDate,
-        data.start_time,
-        membreId
+      // ✅ Aucun rappel choisi → at_time automatique seulement
+      console.log("🔔 Aucun rappel choisi → at_time automatique planifié");
+      await planifierNotificationsPersonnalisees(
+        conn, eventId, eventDate, data.start_time, membreId, []
       );
-      */
     }
 
     // ==============================
-    // 3️⃣ ENREGISTRER LES INVITÉS (emails)
+    // 3️⃣ ENREGISTRER LES INVITÉS
     // ==============================
     let emails: string[] = [];
 
     if ((data.scope || '').toLowerCase() === 'collaborative') {
 
       console.log("🚀 MODE COLLABORATIF");
-
       emails = (data as any).attendee_emails || [];
-
       console.log("📧 emails reçus =", emails);
 
       for (const email of emails) {
@@ -194,19 +344,17 @@ export async function createEvent(
           VALUES (?, ?, 'sent')
         `, [eventId, email]);
 
-        // ✅ Les invités ont aussi des rappels personnalisés
         if (data.reminders && data.reminders.length > 0) {
+          // ✅ Rappels personnalisés + at_time automatique pour invité
           await planifierNotificationsInvitesPersonnalisees(
-            conn,
-            eventId,
-            email,
-            eventDate,
-            data.start_time,
-            data.reminders
+            conn, eventId, email, eventDate, data.start_time, data.reminders
           );
         } else {
-          // Pas de rappels pour les invités non plus
-          console.log("ℹ️ Pas de rappels pour l'invité:", email);
+          // ✅ Aucun rappel → at_time automatique pour invité aussi
+          console.log("🔔 at_time auto pour invité:", email);
+          await planifierNotificationsInvitesPersonnalisees(
+            conn, eventId, email, eventDate, data.start_time, []
+          );
         }
       }
     }
@@ -215,16 +363,13 @@ export async function createEvent(
     // 4️⃣ COMMIT SQL
     // ==============================
     await conn.commit();
-
     console.log("✅ EVENT CRÉÉ =", eventId);
 
     // ==============================
     // 5️⃣ EMAIL IMMÉDIAT INVITATIONS
     // ==============================
     if (emails.length) {
-
       console.log("📨 Envoi emails immédiats invitations...");
-
       for (const email of emails) {
         await envoyerEmailInvitationImmediate(
           eventId,
@@ -237,11 +382,9 @@ export async function createEvent(
     return eventId;
 
   } catch (error: any) {
-
     await conn.rollback();
     console.error("❌ CREATE EVENT ERROR =", error);
     throw new Error(error.message);
-
   } finally {
     conn.release();
   }
@@ -519,4 +662,212 @@ export async function getAvailableSocietes(excludeSocieteId?: number) {
     ORDER BY nomsociete
   `);
   return rows;
+}
+
+
+
+/* ============================================================
+   SEARCH SOCIETES
+============================================================ */
+export async function searchSocietes(
+  query: string,
+  excludeSocieteId: number
+): Promise<any[]> {
+  const conn = await pool.getConnection();
+  try {
+    const searchTerm = `%${query}%`;
+    const [rows] = await conn.query<RowDataPacket[]>(`
+      SELECT 
+        id,
+        nomsociete,
+        email,
+        ville,
+        logo,
+        nom_responsable,
+        prenom_responsable
+      FROM societes
+      WHERE id != ?
+      AND (
+        nomsociete LIKE ?
+        OR email LIKE ?
+        OR ville LIKE ?
+      )
+      ORDER BY nomsociete ASC
+      LIMIT 20
+    `, [excludeSocieteId, searchTerm, searchTerm, searchTerm]);
+
+    return rows;
+  } finally {
+    conn.release();
+  }
+}
+
+/* ============================================================
+   INVITER UNE SOCIÉTÉ
+============================================================ */
+
+
+export async function inviterSociete(
+  eventId: number,
+  societeInvitanteId: number,
+  societeInviteeId: number,
+  membreId: number
+): Promise<void> {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // ✅ Vérifier que c'est un admin
+    const auth = await verifyAccess(societeInvitanteId, membreId);
+    if (auth.role !== 'admin') {
+      throw new Error("Seul l'admin peut inviter une société");
+    }
+
+    // ✅ Vérifier que l'event appartient bien à la société invitante
+    const [eventRows]: any = await conn.query(`
+      SELECT id, title, event_date, start_time, location, description
+      FROM calendar_events
+      WHERE id = ? AND societe_id = ?
+    `, [eventId, societeInvitanteId]);
+
+    if (!eventRows.length) {
+      throw new Error("Événement introuvable ou accès refusé");
+    }
+
+    const event = eventRows[0];
+
+    // ✅ Vérifier que la société invitée existe
+    const [societeRows]: any = await conn.query(`
+      SELECT id, nomsociete, email, nom_responsable, prenom_responsable
+      FROM societes WHERE id = ?
+    `, [societeInviteeId]);
+
+    if (!societeRows.length) {
+      throw new Error("Société invitée introuvable");
+    }
+
+    const societeInvitee = societeRows[0];
+
+    // ✅ Récupérer nom société invitante
+    const [societeInvitanteRows]: any = await conn.query(`
+      SELECT nomsociete FROM societes WHERE id = ?
+    `, [societeInvitanteId]);
+    const nomInvitante = societeInvitanteRows[0]?.nomsociete || 'Une société';
+
+    // ✅ Vérifier si invitation déjà envoyée
+    const [existingRows]: any = await conn.query(`
+      SELECT id FROM event_societe_invitations
+      WHERE event_id = ? AND societe_invitee_id = ?
+    `, [eventId, societeInviteeId]);
+
+    if (existingRows.length) {
+      throw new Error("Cette société a déjà été invitée");
+    }
+
+    // ✅ Créer l'invitation
+    await conn.query(`
+      INSERT INTO event_societe_invitations
+        (event_id, societe_invitante_id, societe_invitee_id, status)
+      VALUES (?, ?, ?, 'pending')
+    `, [eventId, societeInvitanteId, societeInviteeId]);
+
+    // ✅ Planifier les mêmes rappels que l'organisateur
+    const [reminderRows]: any = await conn.query(`
+      SELECT minutes_before as value, method
+      FROM event_reminders
+      WHERE event_id = ?
+    `, [eventId]);
+
+    if (reminderRows.length > 0) {
+      await planifierNotificationsInvitesPersonnalisees(
+        conn,
+        eventId,
+        societeInvitee.email,
+        event.event_date,
+        event.start_time,
+        reminderRows
+      );
+      console.log(`✅ Rappels planifiés pour société invitée ${societeInvitee.email}`);
+    } else {
+      console.log(`ℹ️ Pas de rappels configurés pour cet événement`);
+    }
+
+    // ✅ Email immédiat d'invitation
+    const prenom = societeInvitee.prenom_responsable || societeInvitee.nom_responsable?.split(' ')[0] || 'Responsable';
+    const dateFormatee = formaterDateSociete(event.event_date);
+    const heureFormatee = event.start_time.substring(0, 5);
+
+    const subject = `📅 ${nomInvitante} vous invite à un événement : ${event.title}`;
+    const message = `
+      <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;max-width:600px;margin:0 auto;">
+        <div style="background:linear-gradient(135deg,#E77131 0%,#F59E6C 100%);padding:20px;border-radius:10px 10px 0 0;">
+          <h2 style="color:white;margin:0;">📅 Invitation à un événement</h2>
+        </div>
+        <div style="background:#f9f9f9;padding:30px;border-radius:0 0 10px 10px;">
+          <p style="font-size:16px;margin-bottom:20px;">Bonjour <strong>${prenom}</strong>,</p>
+          <p style="font-size:15px;margin-bottom:25px;">
+            La société <strong style="color:#E77131;">${nomInvitante}</strong> vous invite à participer à l'événement suivant :
+          </p>
+          <div style="background:white;padding:20px;border-left:4px solid #E77131;border-radius:5px;margin-bottom:25px;">
+            <p style="font-size:18px;font-weight:bold;color:#E77131;margin:0 0 15px 0;">
+              ${event.title}
+            </p>
+            <p style="margin:8px 0;font-size:14px;">
+              <strong>📅 Date :</strong> ${dateFormatee}
+            </p>
+            <p style="margin:8px 0;font-size:14px;">
+              <strong>⏰ Heure :</strong> ${heureFormatee}
+            </p>
+            ${event.location ? `
+            <p style="margin:8px 0;font-size:14px;">
+              <strong>📍 Lieu :</strong> ${event.location}
+            </p>` : ''}
+            ${event.description ? `
+            <p style="margin:15px 0 0 0;font-size:14px;color:#666;">
+              <strong>📝 Description :</strong><br/>${event.description}
+            </p>` : ''}
+          </div>
+          <div style="background:#FFF3E0;padding:15px;border-radius:5px;margin-bottom:20px;">
+            <p style="margin:0;font-size:14px;color:#E65100;">
+              💡 Cet événement est maintenant visible sur votre agenda Solutravo.
+            </p>
+          </div>
+          <p style="font-size:14px;color:#666;margin-top:30px;padding-top:20px;border-top:1px solid #ddd;">
+            Cet email a été envoyé automatiquement par <strong style="color:#E77131;">Solutravo</strong>.
+          </p>
+        </div>
+      </div>
+    `;
+
+    await axios.post(EMAIL_API_URL, {
+      sender: DEFAULT_SENDER,
+      receiver: societeInvitee.email,
+      subject,
+      message
+    });
+
+    console.log(`📧 Email invitation envoyé à ${societeInvitee.email}`);
+
+    await conn.commit();
+    console.log(`✅ Société ${societeInviteeId} invitée à l'événement ${eventId}`);
+
+  } catch (error: any) {
+    await conn.rollback();
+    console.error('❌ Erreur invitation société:', error);
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
+/* ============================================================
+   HELPER : Formater date pour société
+============================================================ */
+function formaterDateSociete(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-');
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  return `${jours[date.getDay()]} ${date.getDate()} ${mois[date.getMonth()]} ${date.getFullYear()}`;
 }
