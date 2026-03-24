@@ -1,5 +1,5 @@
 
-// controllers/calendarController.ts - VERSION AVEC AUTORISATION
+// controllers/calendarController.ts -- VERSION AVEC AUTORISATION
 import { Request, Response, NextFunction } from 'express';
 import {
   getEvents,
