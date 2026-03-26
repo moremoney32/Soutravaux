@@ -37,7 +37,9 @@ export interface CalendarEvent {
     value: string;  // Minutes avant
     method: 'email' | 'notification';
   }>;
-  invited_societe_ids?: number[]; 
+  invited_societe_ids?: number[];
+  invited_societes?: Array<{ id: number; nomsociete: string }>;
+  invited_externe_emails?: string[];
 }
 
 export interface Calendar {

@@ -6,6 +6,7 @@
 import pool from '../config/db';
 import { RowDataPacket } from 'mysql2';
 import { envoyerEmailNotificationInvitation } from './emailNotificationServices';
+import { envoyerEmailRappelExterne } from './CalendarService';
 
 interface EventInvitation extends RowDataPacket {
   id: number;
@@ -121,6 +122,45 @@ export async function sendEventReminders(): Promise<void> {
     }
 
     console.log('✅ [InvitationReminderService] Vérification des rappels terminée');
+
+    // ─── Rappels pour les invités externes ───
+    const [externesRows] = await conn.query<RowDataPacket[]>(`
+      SELECT eei.id, eei.email, eei.reminded_at,
+             ce.title as event_title, ce.event_date, ce.start_time, ce.location,
+             s.nomsociete
+      FROM event_externe_invitations eei
+      JOIN calendar_events ce ON ce.id = eei.event_id
+      JOIN societes s ON s.id = ce.societe_id
+      WHERE eei.status = 'sent'
+        AND eei.reminded_at IS NULL
+        AND ce.event_date >= CURDATE()
+        AND ce.event_date <= DATE_ADD(CURDATE(), INTERVAL 2 DAY)
+    `);
+
+    for (const ext of externesRows as any[]) {
+      try {
+        const eventDateTime = new Date(`${ext.event_date}T${ext.start_time}`);
+        const now = new Date();
+        const minutesUntil = (eventDateTime.getTime() - now.getTime()) / (1000 * 60);
+
+        if (minutesUntil <= 5 && minutesUntil > 0) {
+          await envoyerEmailRappelExterne(
+            ext.email,
+            ext.event_title,
+            ext.nomsociete,
+            ext.start_time.substring(0, 5),
+            ext.location || null
+          );
+          await conn.query(
+            `UPDATE event_externe_invitations SET reminded_at = NOW() WHERE id = ?`,
+            [ext.id]
+          );
+          console.log(`📧 [External] Rappel au moment de l'événement envoyé à ${ext.email}`);
+        }
+      } catch (e: any) {
+        console.error(`❌ [External] Erreur rappel pour ${ext.email}:`, e.message);
+      }
+    }
 
   } catch (error: any) {
     console.error('[InvitationReminderService] Erreur générale:', error.message);

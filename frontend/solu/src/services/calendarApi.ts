@@ -2,8 +2,8 @@
 
 // services/calendarApi.ts - VERSION AVEC MEMBRE_ID
 
-const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
-//const API_BASE_URL = 'http://localhost:3000/api';
+//const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface EventCategory {
   id: number;
@@ -270,11 +270,16 @@ export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
       scope:                 (apiEvent as any).scope || 'personal',
       event_category_id:     (apiEvent as any).event_category_id || undefined,
       custom_category_label: (apiEvent as any).custom_category_label || undefined,
-      attendees:             apiEvent.attendees?.map((a: any) => a.email || a.societe_name) || [],
+      attendees: [
+        ...(apiEvent.attendees?.map((a: any) => a.email || a.societe_name) || []),
+        ...((apiEvent as any).invited_member_emails || [])
+      ],
 
       // ✅ RAPPELS — le champ clé qui manquait
       reminders: (apiEvent as any).reminders || [],
-      created_by_membre_id: (apiEvent as any).created_by_membre_id,  // ✅ AJOUTÉ
+      created_by_membre_id: (apiEvent as any).created_by_membre_id,
+      invited_societes: (apiEvent as any).invited_societes || [],
+      invited_externe_emails: (apiEvent as any).invited_externe_emails || [],
     };
 
   } catch (error) {
@@ -337,6 +342,10 @@ export function convertFrontendEventToAPI(
     payload.invite_method = event.invite_method || 'email';
   }
 
+  if (event.invited_externe_emails && event.invited_externe_emails.length > 0) {
+    (payload as any).invited_externe_emails = event.invited_externe_emails;
+  }
+
   return payload;
 }
 
@@ -375,6 +384,32 @@ export async function searchSocietes(
   }
 
   return result.data || [];
+}
+
+/**
+ * ✅ Inviter une société externe (hors Solutravo) par email
+ */
+export async function inviterSocieteExterneAPI(
+  eventId: number,
+  societeInvitanteId: number,
+  membreId: number,
+  emailExterne: string
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/calendar/events/${eventId}/invite-externe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      societe_invitante_id: societeInvitanteId,
+      membre_id: membreId,
+      email_externe: emailExterne
+    })
+  });
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur invitation externe');
+  }
 }
 
 /**

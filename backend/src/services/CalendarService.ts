@@ -80,6 +80,27 @@ export async function getEvents(
         value: String(r.value),
         method: r.method
       }));
+
+      // Charger sociétés Solutravo invitées
+      const [invitedSocietesRows] = await conn.query<RowDataPacket[]>(`
+        SELECT esi.societe_invitee_id as id, s.nomsociete
+        FROM event_societe_invitations esi
+        JOIN societes s ON s.id = esi.societe_invitee_id
+        WHERE esi.event_id = ?
+      `, [ev.id]);
+      (ev as any).invited_societes = invitedSocietesRows;
+
+      // Charger emails externes invités
+      const [externeRows] = await conn.query<RowDataPacket[]>(`
+        SELECT email FROM event_externe_invitations WHERE event_id = ?
+      `, [ev.id]);
+      (ev as any).invited_externe_emails = externeRows.map((r: any) => r.email);
+
+      // Charger emails collaborateurs individuels invités
+      const [memberInviteRows] = await conn.query<RowDataPacket[]>(`
+        SELECT email FROM event_invitations WHERE event_id = ?
+      `, [ev.id]);
+      (ev as any).invited_member_emails = memberInviteRows.map((r: any) => r.email);
     }
 
     console.log(`✅ ${events.length} événements récupérés`);
@@ -376,6 +397,46 @@ export async function createEvent(
           email,
           data.societe_id
         );
+      }
+    }
+
+    // ==============================
+    // 6️⃣ INVITATIONS EXTERNES (hors Solutravo)
+    // ==============================
+    const externeEmails: string[] = (data as any).invited_externe_emails || [];
+    if (externeEmails.length > 0) {
+      console.log(`📧 Envoi invitations externes: ${externeEmails.join(', ')}`);
+
+      // Récupérer les infos de l'event et de la société
+      const connExt = await pool.getConnection();
+      try {
+        const [evRows]: any = await connExt.query(`
+          SELECT ce.title, ce.event_date, ce.start_time, ce.location, ce.description,
+                 s.nomsociete
+          FROM calendar_events ce
+          JOIN societes s ON s.id = ce.societe_id
+          WHERE ce.id = ?
+        `, [eventId]);
+
+        if (evRows.length > 0) {
+          const ev = evRows[0];
+          const nomInvitante = ev.nomsociete;
+          const dateFormatee = formaterDateSocieteExport(ev.event_date);
+          const heureFormatee = ev.start_time.substring(0, 5);
+
+          for (const email of externeEmails) {
+            // Stocker en base
+            await connExt.query(`
+              INSERT IGNORE INTO event_externe_invitations (event_id, email, status)
+              VALUES (?, ?, 'sent')
+            `, [eventId, email]);
+
+            // Envoyer l'email de bienvenue
+            await envoyerEmailExterne(email, ev.title, nomInvitante, dateFormatee, heureFormatee, ev.location, ev.description);
+          }
+        }
+      } finally {
+        connExt.release();
       }
     }
 
@@ -861,13 +922,247 @@ export async function inviterSociete(
 }
 
 /* ============================================================
-   HELPER : Formater date pour société
+   INVITER UNE SOCIÉTÉ EXTERNE (hors Solutravo, par email)
+============================================================ */
+export async function inviterSocieteExterne(
+  eventId: number,
+  societeInvitanteId: number,
+  membreId: number,
+  emailExterne: string
+): Promise<void> {
+  const conn = await pool.getConnection();
+  try {
+    // Vérifier que c'est un admin
+    const auth = await verifyAccess(societeInvitanteId, membreId);
+    if (auth.role !== 'admin') {
+      throw new Error("Seul l'admin peut inviter une société");
+    }
+
+    // Récupérer l'événement
+    const [eventRows]: any = await conn.query(`
+      SELECT id, title, event_date, start_time, location, description
+      FROM calendar_events
+      WHERE id = ? AND societe_id = ?
+    `, [eventId, societeInvitanteId]);
+
+    if (!eventRows.length) {
+      throw new Error("Événement introuvable ou accès refusé");
+    }
+
+    const event = eventRows[0];
+
+    // Récupérer le nom de la société invitante
+    const [societeRows]: any = await conn.query(`
+      SELECT nomsociete FROM societes WHERE id = ?
+    `, [societeInvitanteId]);
+    const nomInvitante = societeRows[0]?.nomsociete || 'Une société';
+
+    const dateFormatee = formaterDateSociete(event.event_date);
+    const heureFormatee = event.start_time.substring(0, 5);
+
+    // Stocker en base (évite les doublons)
+    await conn.query(`
+      INSERT IGNORE INTO event_externe_invitations (event_id, email, status)
+      VALUES (?, ?, 'sent')
+    `, [eventId, emailExterne]);
+
+    // Utiliser le template email accueillant (même design que lors de la création)
+    await envoyerEmailExterne(
+      emailExterne,
+      event.title,
+      nomInvitante,
+      dateFormatee,
+      heureFormatee,
+      event.location || null,
+      event.description || null
+    );
+
+    console.log(`📧 Email invitation externe envoyé à ${emailExterne}`);
+
+  } catch (error: any) {
+    console.error('❌ Erreur invitation externe:', error);
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
+/* ============================================================
+   HELPER : Formater date
 ============================================================ */
 function formaterDateSociete(dateStr: string): string {
+  return formaterDateSocieteExport(dateStr);
+}
+
+function formaterDateSocieteExport(dateStr: string): string {
   const [year, month, day] = dateStr.split('-');
   const date = new Date(Number(year), Number(month) - 1, Number(day));
   const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
     'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
   return `${jours[date.getDay()]} ${date.getDate()} ${mois[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+/* ============================================================
+   HELPER : Email d'invitation externe (design accueillant)
+============================================================ */
+export async function envoyerEmailExterne(
+  emailDest: string,
+  eventTitle: string,
+  nomInvitante: string,
+  dateFormatee: string,
+  heureFormatee: string,
+  location: string | null,
+  description: string | null
+): Promise<void> {
+  const subject = `📩 ${nomInvitante} vous invite à un événement — Découvrez Solutravo`;
+  const message = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;color:#333;line-height:1.7;max-width:620px;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#E77131 0%,#FF9A5C 100%);padding:36px 28px;text-align:center;">
+        <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50%;padding:14px;margin-bottom:14px;">
+          <span style="font-size:32px;">📩</span>
+        </div>
+        <h1 style="color:white;margin:0;font-size:24px;font-weight:700;letter-spacing:0.3px;">Vous avez une invitation !</h1>
+        <p style="font-size:15px;margin:0 0 26px;color:#555;line-height:1.8;">
+  La société <strong style="color:#E77131;">${nomInvitante}</strong> souhaite que vous découvriez les différents services de Solutravo.
+  C'est une belle opportunité d'échange et de collaboration dans votre secteur.
+</p>
+      </div>
+
+      <!-- Body -->
+      <div style="background:#ffffff;padding:36px 32px;">
+
+        <p style="font-size:16px;margin:0 0 10px;color:#222;font-weight:600;">Bonjour,</p>
+
+        <p style="font-size:15px;margin:0 0 26px;color:#555;line-height:1.8;">
+          La société <strong style="color:#E77131;">${nomInvitante}</strong> souhaite que vous decouvriez les differents services de solutravo.
+          C'est une belle opportunité d'échange et de collaboration dans votre secteur.
+        </p>
+
+        <!-- Carte événement -->
+        <div style="background:linear-gradient(135deg,#fffaf6 0%,#fff9f4 100%);border:1.5px solid #FFCC99;border-radius:12px;padding:24px;margin-bottom:30px;">
+          <p style="font-size:19px;font-weight:700;color:#E77131;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid #FFE0C0;">
+            ${eventTitle}
+          </p>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:7px 0;font-size:14px;color:#999;width:100px;vertical-align:top;">📅 Date</td>
+              <td style="padding:7px 0;font-size:14px;color:#333;font-weight:600;">${dateFormatee}</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0;font-size:14px;color:#999;vertical-align:top;">⏰ Heure</td>
+              <td style="padding:7px 0;font-size:14px;color:#333;font-weight:600;">${heureFormatee}</td>
+            </tr>
+            ${location ? `
+            <tr>
+              <td style="padding:7px 0;font-size:14px;color:#999;vertical-align:top;">📍 Lieu</td>
+              <td style="padding:7px 0;font-size:14px;color:#333;">${location}</td>
+            </tr>` : ''}
+            ${description ? `
+            <tr>
+              <td style="padding:7px 0;font-size:14px;color:#999;vertical-align:top;padding-top:12px;">📝 Note</td>
+              <td style="padding:7px 0;font-size:14px;color:#555;font-style:italic;padding-top:12px;">${description}</td>
+            </tr>` : ''}
+          </table>
+        </div>
+
+        <!-- Section Solutravo -->
+        <div style="background:#f9f9f9;border-radius:10px;padding:22px;margin-bottom:28px;">
+          <p style="font-size:15px;font-weight:700;color:#333;margin:0 0 10px;">
+            Pas encore sur Solutravo ?
+          </p>
+          <p style="font-size:14px;color:#666;margin:0 0 6px;line-height:1.8;">
+            Solutravo est la plateforme qui connecte les professionnels du bâtiment — artisans, fournisseurs, donneurs d'ordre — pour mieux collaborer, gérer leurs agendas et développer leur activité.
+          </p>
+          <p style="font-size:14px;color:#666;margin:0;line-height:1.8;">
+            En rejoignant, vous pourrez confirmer votre présence à cet événement, gérer vos rendez-vous et découvrir de nouveaux partenaires.
+          </p>
+        </div>
+
+        <!-- CTA -->
+        <div style="text-align:center;margin:30px 0;">
+          <a href="https://staging.solutravo-compta.fr"
+            style="display:inline-block;background:linear-gradient(135deg,#E77131,#F59E6C);color:white;text-decoration:none;padding:16px 42px;border-radius:50px;font-size:16px;font-weight:700;letter-spacing:0.4px;box-shadow:0 6px 18px rgba(231,113,49,0.35);">
+            ✨ Rejoindre Solutravo — C'est gratuit
+          </a>
+          <p style="font-size:12px;color:#aaa;margin:12px 0 0;">
+            Inscription en moins de 2 minutes · Aucune carte requise
+          </p>
+        </div>
+
+        <!-- Footer message -->
+        <div style="border-top:1px solid #f0f0f0;padding-top:20px;margin-top:24px;text-align:center;">
+          <p style="font-size:12px;color:#bbb;margin:0;">
+            Vous recevez cet email car <strong style="color:#E77131;">${nomInvitante}</strong> a souhaité vous inviter via <strong style="color:#E77131;">Solutravo</strong>.<br/>
+            Si vous ne souhaitez pas être contacté(e), ignorez simplement ce message.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  await axios.post(EMAIL_API_URL, {
+    sender: DEFAULT_SENDER,
+    receiver: emailDest,
+    subject,
+    message
+  });
+
+  console.log(`📧 Email invitation externe (accueillant) envoyé à ${emailDest}`);
+}
+
+/* ============================================================
+   HELPER : Email rappel au moment de l'événement (externe)
+============================================================ */
+export async function envoyerEmailRappelExterne(
+  emailDest: string,
+  eventTitle: string,
+  nomInvitante: string,
+  heureFormatee: string,
+  location: string | null
+): Promise<void> {
+  const subject = `⏰ Rappel — "${eventTitle}" a lieu aujourd'hui avec ${nomInvitante}`;
+  const message = `
+    <div style="font-family:'Segoe UI',Arial,sans-serif;color:#333;line-height:1.7;max-width:620px;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <div style="background:linear-gradient(135deg,#E77131 0%,#FF9A5C 100%);padding:30px 24px;text-align:center;">
+        <span style="font-size:36px;">⏰</span>
+        <h1 style="color:white;margin:10px 0 0;font-size:22px;font-weight:700;">C'est aujourd'hui !</h1>
+        <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:14px;">Votre événement est imminent</p>
+      </div>
+      <div style="background:#fff;padding:32px 28px;">
+        <p style="font-size:15px;color:#444;margin:0 0 20px;">Bonjour,</p>
+        <p style="font-size:15px;color:#444;margin:0 0 24px;line-height:1.8;">
+          Petit rappel de la part de <strong style="color:#E77131;">${nomInvitante}</strong> —
+          l'événement <strong style="color:#333;">${eventTitle}</strong> auquel vous avez été invité(e) se déroule <strong>aujourd'hui à ${heureFormatee}</strong>${location ? `<br/>📍 <em>${location}</em>` : ''}.
+        </p>
+
+        <div style="background:#FFF8F3;border-left:4px solid #E77131;border-radius:0 8px 8px 0;padding:16px 18px;margin-bottom:28px;">
+          <p style="margin:0;font-size:14px;color:#E65100;line-height:1.7;">
+            Vous n'êtes pas encore sur <strong>Solutravo</strong> ? Rejoignez-nous dès maintenant pour confirmer votre présence, gérer vos événements professionnels et tisser de nouveaux liens dans votre secteur.
+          </p>
+        </div>
+
+        <div style="text-align:center;margin:24px 0;">
+          <a href="https://staging.solutravo-compta.fr"
+            style="display:inline-block;background:linear-gradient(135deg,#E77131,#F59E6C);color:white;text-decoration:none;padding:15px 38px;border-radius:50px;font-size:15px;font-weight:700;box-shadow:0 6px 16px rgba(231,113,49,0.35);">
+            ✨ Rejoindre Solutravo — C'est gratuit
+          </a>
+        </div>
+
+        <p style="font-size:12px;color:#bbb;text-align:center;margin-top:24px;border-top:1px solid #f0f0f0;padding-top:16px;">
+          Email automatique via <strong style="color:#E77131;">Solutravo</strong> · Demandé par ${nomInvitante}.
+        </p>
+      </div>
+    </div>
+  `;
+
+  await axios.post(EMAIL_API_URL, {
+    sender: DEFAULT_SENDER,
+    receiver: emailDest,
+    subject,
+    message
+  });
 }

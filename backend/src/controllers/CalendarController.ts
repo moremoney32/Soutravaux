@@ -11,7 +11,8 @@ import {
   respondToInvite,
   getAvailableSocietes,
   inviterSociete,
-  searchSocietes
+  searchSocietes,
+  inviterSocieteExterne
 } from '../services/CalendarService';
 import { createCategory, getCategories } from '../services/CategoryService';
 import { verifyAccess } from '../services/AuthorizationService';
@@ -502,6 +503,47 @@ export const inviterSocieteController = async (
       res.status(409).json({ success: false, message: err.message });
       return;
     }
+    if (err.message === "Seul l'admin peut inviter une société") {
+      res.status(403).json({ success: false, message: err.message });
+      return;
+    }
+    next(err);
+  }
+};
+
+/**
+ * POST /api/calendar/events/:eventId/invite-externe
+ */
+export const inviterSocieteExterneController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { eventId } = req.params;
+    const { societe_invitante_id, membre_id, email_externe } = req.body;
+
+    if (!societe_invitante_id || !membre_id || !email_externe) {
+      res.status(400).json({
+        success: false,
+        message: "societe_invitante_id, membre_id et email_externe requis"
+      });
+      return;
+    }
+
+    await inviterSocieteExterne(
+      Number(eventId),
+      Number(societe_invitante_id),
+      Number(membre_id),
+      email_externe
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Invitation externe envoyée avec succès"
+    });
+
+  } catch (err: any) {
     if (err.message === "Seul l'admin peut inviter une société") {
       res.status(403).json({ success: false, message: err.message });
       return;

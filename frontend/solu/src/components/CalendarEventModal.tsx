@@ -5,7 +5,7 @@ import type { CalendarEvent, EventScope, EventCategory } from '../types/calendar
 import InviteAttendeesModal from './InvitesAttentesModal';
 import LocationAutocomplete from './LocationAutocomplete';
 import TimeRangePicker from './TimeRangePicker';
-import { searchSocietes, inviterSocieteAPI } from '../services/calendarApi';
+import { searchSocietes, inviterSocieteAPI, inviterSocieteExterneAPI } from '../services/calendarApi';
 
 interface CalendarEventModalProps {
   event: CalendarEvent | null;
@@ -22,6 +22,7 @@ interface CalendarEventModalProps {
   onCreateCategory?: (label: string, icon?: string, color?: string, requires_location?: boolean) => Promise<EventCategory>;
   currentMembreId?: number;
   currentSocieteId?: number;
+  userRole?: 'admin' | 'collaborator' | null;
 }
 
 interface Reminder {
@@ -50,7 +51,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   categories = [],
   onCreateCategory,
   currentMembreId,
-  currentSocieteId
+  currentSocieteId,
+  userRole = null
 }) => {
   // ═══════════════════════════════════════════════
   // ÉTATS
@@ -89,6 +91,12 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // États invitation externe
+  const [showExternePopup, setShowExternePopup] = useState(false);
+  const [externeEmail, setExterneEmail] = useState('');
+  const [isSendingExterne, setIsSendingExterne] = useState(false);
+  const [externeEmailsList, setExterneEmailsList] = useState<string[]>([]); // pour mode création
+
   const colorOptions = [
     { label: 'Orange', value: '#E77131' },
     { label: 'Orange clair', value: '#FF6B35' },
@@ -101,12 +109,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const isOwner = !event?.created_by_membre_id ||
     event?.created_by_membre_id === currentMembreId;
 
-    console.log('🔍 DEBUG isOwner:', {
-  event_id: event?.id,
-  created_by_membre_id: event?.created_by_membre_id,
-  currentMembreId,
-  isOwner
-});
+   console.log(showSocieteSearch)
+   console.log(showExternePopup)
 
   const isPastEvent = event ? event.endTime < new Date() : false;
   const eventStatus = event?.status || 'pending';
@@ -144,35 +148,35 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   // ═══════════════════════════════════════════════
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setShowSearchResults(true);
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (value.length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+    setShowSearchResults(true);
     searchTimeout.current = setTimeout(async () => {
       if (!currentSocieteId) return;
       setIsSearching(true);
       try {
         const results = await searchSocietes(value, currentSocieteId);
-        const filtered = results.filter(
-          s => !selectedSocietes.some(sel => sel.id === s.id)
-        );
-        setSearchResults(filtered);
+        setSearchResults(results.filter(s => !selectedSocietes.some(sel => sel.id === s.id)));
       } catch (error) {
         console.error('Erreur recherche:', error);
       } finally {
         setIsSearching(false);
       }
-    }, 300);
+    }, 350);
   };
 
   const handleSearchFocus = async () => {
+    if (searchQuery.length < 2) return;
     setShowSearchResults(true);
     if (searchResults.length === 0 && currentSocieteId) {
       setIsSearching(true);
       try {
-        const results = await searchSocietes('', currentSocieteId);
-        const filtered = results.filter(
-          s => !selectedSocietes.some(sel => sel.id === s.id)
-        );
-        setSearchResults(filtered);
+        const results = await searchSocietes(searchQuery, currentSocieteId);
+        setSearchResults(results.filter(s => !selectedSocietes.some(sel => sel.id === s.id)));
       } catch (error) {
         console.error('Erreur chargement sociétés:', error);
       } finally {
@@ -208,6 +212,28 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
+  const handleInviterExterne = async (): Promise<void> => {
+    if (!externeEmail.trim() || !event?.id || !currentSocieteId || !currentMembreId) return;
+    setIsSendingExterne(true);
+    try {
+      await inviterSocieteExterneAPI(Number(event.id), currentSocieteId, currentMembreId, externeEmail.trim());
+      alert(`✅ Invitation envoyée à ${externeEmail.trim()}`);
+      setExterneEmail('');
+      setShowExternePopup(false);
+    } catch (error: any) {
+      alert(`❌ ${error.message}`);
+    } finally {
+      setIsSendingExterne(false);
+    }
+  };
+
+  // Mode création : ajoute l'email à la liste locale (envoi après création de l'event)
+  const handleAddExterneEmail = (): void => {
+    if (!externeEmail.trim()) return;
+    setExterneEmailsList(prev => [...prev, externeEmail.trim()]);
+    setExterneEmail('');
+  };
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -237,6 +263,9 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setSelectedSocietes([]);
       setSearchQuery('');
       setShowSocieteSearch(false);
+      setShowExternePopup(false);
+      setExterneEmail('');
+      setExterneEmailsList((event as any).invited_externe_emails || []);
 
       if (event.reminders && event.reminders.length > 0) {
         setReminders(event.reminders);
@@ -260,6 +289,9 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setSelectedSocietes([]);
       setSearchQuery('');
       setShowSocieteSearch(false);
+      setShowExternePopup(false);
+      setExterneEmail('');
+      setExterneEmailsList([]);
 
       const now = new Date();
       const totalMinutes = now.getHours() * 60 + now.getMinutes();
@@ -302,7 +334,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       custom_category_label: customCategoryLabel || undefined,
       attendees: scope === 'collaborative' ? selectedAttendees : [],
       reminders,
-      invited_societe_ids: selectedSocietes.map(s => s.id) as any
+      invited_societe_ids: selectedSocietes.map(s => s.id) as any,
+      ...(externeEmailsList.length > 0 ? { invited_externe_emails: externeEmailsList } as any : {})
     };
 
     onSave?.(updatedEvent);
@@ -365,107 +398,57 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const currentStatus = statusDisplay[eventStatus as keyof typeof statusDisplay] || statusDisplay.pending;
 
   // ═══════════════════════════════════════════════
-  // COMPOSANT RECHERCHE SOCIÉTÉ (réutilisé)
+  // JSX INLINE : Bloc recherche Solutravo
+  // (inline pour éviter le saut de curseur)
   // ═══════════════════════════════════════════════
-  const SocieteSearchSection = ({ showInviteButton = false }: { showInviteButton?: boolean }) => (
+  const renderSocieteSearch = (showInviteButton: boolean) => (
     <div ref={searchRef} style={{ position: 'relative' }}>
-
-      {/* Sociétés sélectionnées (mode création) */}
+      {/* Tags sociétés sélectionnées (création) */}
       {!showInviteButton && selectedSocietes.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
           {selectedSocietes.map(s => (
-            <div key={s.id} style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              background: '#FFF3E0', border: '1px solid #E77131',
-              borderRadius: '20px', padding: '4px 10px',
-              fontSize: '12px', color: '#E77131'
-            }}>
+            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#FFF3E0', border: '1px solid #E77131', borderRadius: '20px', padding: '3px 10px', fontSize: '12px', color: '#E77131' }}>
               🏢 {s.nomsociete}
-              <button type="button" onClick={() => handleRemoveSociete(s.id)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E77131', fontSize: '14px', padding: '0' }}>
-                ✕
-              </button>
+              <button type="button" onClick={() => handleRemoveSociete(s.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#E77131', fontSize: '13px', padding: 0 }}>✕</button>
             </div>
           ))}
         </div>
       )}
-
-      {/* Input recherche */}
       <input
         type="text"
         value={searchQuery}
-        onChange={(e) => handleSearchChange(e.target.value)}
+        onChange={e => handleSearchChange(e.target.value)}
         onFocus={handleSearchFocus}
-        placeholder="🔍 Rechercher une société..."
-        style={{
-          width: '100%', padding: '10px 12px',
-          border: '1px solid #ddd', borderRadius: '8px',
-          fontSize: '13px', boxSizing: 'border-box', outline: 'none'
-        }}
+        placeholder="Rechercher une societe..."
+        style={{ width: '100%', padding: '9px 11px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', outline: 'none' }}
       />
-
-      {/* Dropdown résultats */}
       {showSearchResults && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
-          background: 'white', borderRadius: '8px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-          border: '1px solid #eee', zIndex: 1000,
-          maxHeight: '220px', overflowY: 'auto'
-        }}>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, background: 'white', borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', border: '1px solid #eee', zIndex: 1000, maxHeight: '200px', overflowY: 'auto' }}>
           {isSearching ? (
-            <div style={{ padding: '16px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
-              🔍 Recherche...
-            </div>
+            <div style={{ padding: '14px', textAlign: 'center', color: '#999', fontSize: '13px' }}>🔍 Recherche...</div>
           ) : searchResults.length === 0 ? (
-            <div style={{ padding: '16px', textAlign: 'center', color: '#999', fontSize: '13px' }}>
-              Aucune société trouvée
-            </div>
+            <div style={{ padding: '14px', textAlign: 'center', color: '#999', fontSize: '13px' }}>Aucune société trouvée</div>
           ) : (
             searchResults.map(societe => (
-              <div
-                key={societe.id}
+              <div key={societe.id}
                 onClick={!showInviteButton ? () => handleSelectSociete(societe) : undefined}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  padding: '10px 14px', cursor: showInviteButton ? 'default' : 'pointer',
-                  borderBottom: '1px solid #f5f5f5', transition: 'background 0.15s'
-                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', cursor: showInviteButton ? 'default' : 'pointer', borderBottom: '1px solid #f5f5f5', transition: 'background 0.15s' }}
                 onMouseEnter={e => { if (!showInviteButton) e.currentTarget.style.background = '#f9f9f9'; }}
-                onMouseLeave={e => { if (!showInviteButton) e.currentTarget.style.background = 'white'; }}
-              >
-                <div style={{
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  background: '#E77131', color: 'white',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '14px', fontWeight: 700, flexShrink: 0
-                }}>
+                onMouseLeave={e => { if (!showInviteButton) e.currentTarget.style.background = 'white'; }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#E77131', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, flexShrink: 0 }}>
                   {societe.nomsociete.charAt(0).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: '13px', color: '#333' }}>{societe.nomsociete}</div>
-                  <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>
-                    {societe.ville && `📍 ${societe.ville}`}
-                    {societe.ville && societe.email && ' · '}
-                    {societe.email}
-                  </div>
+                  {societe.ville && <div style={{ fontSize: '11px', color: '#999' }}>📍 {societe.ville}</div>}
                 </div>
                 {showInviteButton ? (
-                  <button
-                    type="button"
-                    onClick={() => handleInviterSociete(societe)}
-                    disabled={invitingSocieteId === societe.id}
-                    style={{
-                      padding: '6px 12px', borderRadius: '6px', fontSize: '12px',
-                      border: 'none', cursor: 'pointer', fontWeight: 600,
-                      background: invitingSocieteId === societe.id ? '#ccc' : '#E77131',
-                      color: 'white'
-                    }}
-                  >
+                  <button type="button" onClick={() => handleInviterSociete(societe)} disabled={invitingSocieteId === societe.id}
+                    style={{ padding: '5px 11px', borderRadius: '6px', fontSize: '12px', border: 'none', cursor: 'pointer', fontWeight: 600, background: invitingSocieteId === societe.id ? '#ccc' : '#E77131', color: 'white' }}>
                     {invitingSocieteId === societe.id ? '...' : '+ Inviter'}
                   </button>
                 ) : (
-                  <span style={{ fontSize: '11px', color: '#E77131', fontWeight: 600 }}>+ Sélectionner</span>
+                  <span style={{ fontSize: '11px', color: '#E77131', fontWeight: 600, whiteSpace: 'nowrap' }}>+ Choisir</span>
                 )}
               </div>
             ))
@@ -596,11 +579,68 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   </div>
                 )}
 
-                {/* ── ✅ INVITER SOCIÉTÉ (mode création) ─── */}
+                {/* ── INVITER SOCIÉTÉ — 2 blocs côte à côte ─── */}
                 {scope === 'collaborative' && (
                   <div className="calendar-form-group">
-                    <label className="calendar-form-label">🏢 Inviter une société Solutravo</label>
-                    <SocieteSearchSection showInviteButton={false} />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'start' }}>
+
+                      {/* ── BLOC GAUCHE : Solutravo ── */}
+                      <div style={{ background: userRole === 'collaborator' ? '#f5f5f5' : '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '12px', opacity: userRole === 'collaborator' ? 0.6 : 1, pointerEvents: userRole === 'collaborator' ? 'none' : 'auto', position: 'relative' }}>
+                        <label className="calendar-form-label" style={{ margin: '0 0 8px 0', display: 'block' }}>
+                          🏢 Inviter une société Solutravo
+                          {userRole === 'collaborator' && <span style={{ marginLeft: '6px', fontSize: '10px', background: '#f0f0f0', color: '#999', borderRadius: '4px', padding: '1px 5px' }}>Admin uniquement</span>}
+                        </label>
+
+                        {/* Déjà invitées (édition) */}
+                        {!isNewEvent && event?.invited_societes && event.invited_societes.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+                            {event.invited_societes.map(s => (
+                              <span key={s.id} style={{ background: '#FFF3E0', color: '#E65100', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #FFCC80' }}>
+                                🏢 {s.nomsociete}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Search inline (pas de composant → pas de saut de curseur) */}
+                        {renderSocieteSearch(!!event?.id)}
+                      </div>
+
+                      {/* ── BLOC DROIT : Externe ── */}
+                      <div style={{ background: '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '12px' }}>
+                        <label className="calendar-form-label" style={{ margin: '0 0 8px 0', display: 'block' }}>📧 Inviter une société externe</label>
+
+                        {!event?.id && (
+                          <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', background: '#fff8e1', padding: '5px 8px', borderRadius: '4px' }}>
+                            ℹ️ L'invitation sera envoyée après la création
+                          </div>
+                        )}
+
+                        {/* Emails collectés */}
+                        {externeEmailsList.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+                            {externeEmailsList.map((em, i) => (
+                              <span key={i} style={{ background: '#E8F5E9', color: '#2E7D32', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #A5D6A7', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                {em}
+                                <button type="button" onClick={() => setExterneEmailsList(prev => prev.filter((_, j) => j !== i))}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2E7D32', fontSize: '11px', padding: 0, lineHeight: 1 }}>✕</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <input type="email" value={externeEmail} onChange={e => setExterneEmail(e.target.value)}
+                          placeholder="contact@entreprise.fr"
+                          style={{ width: '100%', padding: '9px 11px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', outline: 'none', boxSizing: 'border-box', marginBottom: '6px' }} />
+                        <button type="button"
+                          onClick={event?.id ? handleInviterExterne : handleAddExterneEmail}
+                          disabled={isSendingExterne || !externeEmail.trim()}
+                          style={{ width: '100%', padding: '8px', background: isSendingExterne ? '#ccc' : '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 600 }}>
+                          {isSendingExterne ? '...' : (event?.id ? '📨 Envoyer l\'invitation' : '+ Ajouter')}
+                        </button>
+                      </div>
+
+                    </div>
                   </div>
                 )}
 
@@ -693,65 +733,85 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   )}
                 </div>
 
-                <div className="calendar-event-info">
-                  <p><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-                  <p><strong>🕐</strong> {startTime} - {endTime}</p>
-                  {location && <p><strong>📍</strong> {location}</p>}
-                  {description && <p><strong>📝</strong> {description}</p>}
-                  {selectedAttendees.length > 0 && (
-                    <p><strong>👥</strong> {selectedAttendees.length} participant(s) invité(s)</p>
+                <div className="calendar-event-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+
+                  {/* Date + heure — même ligne */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px' }}><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                    <span style={{ color: '#ddd' }}>·</span>
+                    <span style={{ fontSize: '14px' }}><strong>🕐</strong> {startTime} – {endTime}</span>
+                  </div>
+
+                  {/* Titre */}
+                  <div style={{ fontSize: '14px' }}><strong>📌 Titre :</strong> {title}</div>
+
+                  {/* Catégorie */}
+                  {selectedCategory && (
+                    <div style={{ fontSize: '14px' }}><strong>🏷️ Catégorie :</strong> {selectedCategory.icon} {selectedCategory.label}</div>
                   )}
+
+                  {/* Description */}
+                  {description && (
+                    <div style={{ fontSize: '14px' }}><strong>📝 Description :</strong> {description}</div>
+                  )}
+
+                  {/* Lieu */}
+                  {location && (
+                    <div style={{ fontSize: '14px' }}><strong>📍 Lieu :</strong> {location}</div>
+                  )}
+
+                  {/* Rappels */}
+                  {reminders.length > 0 && (
+                    <div style={{ fontSize: '14px' }}><strong>🔔 Rappels :</strong> {reminders.map(r => formatReminderLabel(r.value)).join(' · ')}</div>
+                  )}
+
+                  {/* Collaborateurs invités */}
+                  {selectedAttendees.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '5px' }}>👥 Collaborateurs invités ({selectedAttendees.length})</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {selectedAttendees.map((email, i) => (
+                          <span key={i} style={{ background: '#E8F5E9', color: '#2E7D32', borderRadius: '14px', padding: '3px 10px', fontSize: '12px', border: '1px solid #A5D6A7' }}>
+                            {email}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sociétés Solutravo invitées */}
+                  {(event as any)?.invited_societes?.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '5px' }}>🏢 Sociétés Solutravo invitées ({(event as any).invited_societes.length})</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {(event as any).invited_societes.map((s: any) => (
+                          <span key={s.id} style={{ background: '#FFF3E0', color: '#E65100', borderRadius: '14px', padding: '3px 10px', fontSize: '12px', border: '1px solid #FFCC80' }}>
+                            🏢 {s.nomsociete}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sociétés externes invitées */}
+                  {(event as any)?.invited_externe_emails?.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '5px' }}>📧 Sociétés externes invitées ({(event as any).invited_externe_emails.length})</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                        {(event as any).invited_externe_emails.map((email: string, i: number) => (
+                          <span key={i} style={{ background: '#E3F2FD', color: '#1565C0', borderRadius: '14px', padding: '3px 10px', fontSize: '12px', border: '1px solid #90CAF9' }}>
+                            📧 {email}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                 </div>
 
-                {/* ✅ INVITER SOCIÉTÉ — mode lecture, bouton discret */}
-               {/* ✅ Seulement en mode ÉDITION — plus en mode lecture */}
-{scope === 'collaborative' && isOwner && isEditing && (
-  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-    {!showSocieteSearch ? (
-      <button
-        type="button"
-        onClick={() => setShowSocieteSearch(true)}
-        style={{
-          background: 'none', border: '1px dashed #E77131',
-          borderRadius: '8px', padding: '8px 14px',
-          color: '#E77131', cursor: 'pointer',
-          fontSize: '13px', width: '100%'
-        }}
-      >
-        🏢 + Inviter une société Solutravo
-      </button>
-    ) : (
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <span style={{ fontWeight: 600, fontSize: '13px' }}>🏢 Inviter une société</span>
-          <button type="button" onClick={() => { setShowSocieteSearch(false); setSearchQuery(''); setShowSearchResults(false); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: '18px' }}>
-            ×
-          </button>
-        </div>
-        <SocieteSearchSection showInviteButton={true} />
-      </div>
-    )}
-  </div>
-)}
               </div>
             )}
 
-            {/* ── RAPPELS CONFIGURÉS ─────────────────────── */}
-            {reminders && reminders.length > 0 && (
-              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-                <p style={{ fontWeight: 600, marginBottom: '8px' }}>
-                  <strong>🔔</strong> Rappels configurés :
-                </p>
-                <div style={{ paddingLeft: '24px' }}>
-                  {reminders.map((reminder, idx) => (
-                    <p key={idx} style={{ margin: '4px 0', fontSize: '14px', color: '#666' }}>
-                      • {formatReminderLabel(reminder.value)} ({reminder.method === 'email' ? '📧 Email' : '🔔 Notification'})
-                    </p>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* FOOTER */}
@@ -781,7 +841,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
           {/* STYLES */}
           <style>{`
-            .scope-selector { display: grid; gap: 12px; }
+            .scope-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
             .scope-option { display: block; padding: 14px; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
             .scope-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
             .scope-option input[type="radio"] { display: none; }

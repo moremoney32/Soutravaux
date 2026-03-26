@@ -29,13 +29,15 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT),
   connectionLimit: 10,
-  
+  connectTimeout: 10000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+
   // ✅ SOLUTION UNIVERSELLE : Dates comme strings
   dateStrings: [
     'DATE',
     'DATETIME'
   ],
-  
 });
 
 pool.getConnection()

@@ -762,18 +762,20 @@ const GoogleCalendar: React.FC = () => {
       const startDate = weekStart.toISOString().split('T')[0];
       const endDate = weekEnd.toISOString().split('T')[0];
 
-      let targetMembreId = membreId;
-
       if (userRole === 'admin' && selectedCollaboratorIds.length > 0) {
-        targetMembreId = selectedCollaboratorIds[0];
-        console.log(`📅 Chargement agenda du collaborateur ${targetMembreId}`);
+        console.log(`📅 Chargement agendas de ${selectedCollaboratorIds.length} collaborateur(s)`);
+        const results = await Promise.all(
+          selectedCollaboratorIds.map(id => fetchEvents(societeId, id, startDate, endDate))
+        );
+        // Fusionner + dédupliquer par id
+        const merged = results.flat();
+        const unique = Array.from(new Map(merged.map(e => [e.id, e])).values());
+        setAllEvents(unique.map(convertAPIEventToFrontend));
       } else {
         console.log(`📅 Chargement agenda personnel (membre ${membreId})`);
+        const apiEvents = await fetchEvents(societeId, membreId, startDate, endDate);
+        setAllEvents(apiEvents.map(convertAPIEventToFrontend));
       }
-
-      const apiEvents = await fetchEvents(societeId, targetMembreId, startDate, endDate);
-      const frontendEvents = apiEvents.map(convertAPIEventToFrontend);
-      setAllEvents(frontendEvents);
 
     } catch (error) {
       console.error('Erreur chargement événements:', error);
@@ -818,7 +820,7 @@ const GoogleCalendar: React.FC = () => {
         const endDate = weekEnd.toISOString().split('T')[0];
 
         const response = await fetch(
-          `https://staging.solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
+          `http://localhost:3000/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
         );
         const result = await response.json();
 
@@ -839,10 +841,11 @@ const GoogleCalendar: React.FC = () => {
   }, [loadEvents, loadCategories]);
 
   const handleToggleCollaborator = useCallback((collaboratorId: number) => {
-    setSelectedCollaboratorIds(prev => {
-      if (prev.includes(collaboratorId)) return [];
-      return [collaboratorId];
-    });
+    setSelectedCollaboratorIds(prev =>
+      prev.includes(collaboratorId)
+        ? prev.filter(id => id !== collaboratorId)
+        : [...prev, collaboratorId]
+    );
   }, []);
 
   const handleCreateCategory = useCallback(async (
@@ -1032,7 +1035,10 @@ const GoogleCalendar: React.FC = () => {
                 borderRadius: '6px', fontSize: '13px', fontWeight: 500,
                 color: '#2E7D32', marginRight: '12px'
               }}>
-                👁️ Vue : {collaborators.find(c => c.membre_id === selectedCollaboratorIds[0])?.prenom || 'Collaborateur'}
+                👁️ Vue : {selectedCollaboratorIds
+                    .map(id => collaborators.find(c => c.membre_id === id)?.prenom)
+                    .filter(Boolean)
+                    .join(' / ') || 'Collaborateur'}
               </div>
             )}
 
@@ -1277,7 +1283,8 @@ const GoogleCalendar: React.FC = () => {
         onFetchCategories={loadCategories}
         onCreateCategory={handleCreateCategory}
         currentMembreId={membreId}
-         currentSocieteId={societeId}
+        currentSocieteId={societeId}
+        userRole={userRole}
       />
 
       {showInviteModal && selectedEventId && (

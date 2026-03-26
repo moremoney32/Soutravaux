@@ -1040,10 +1040,12 @@
   background: white;
   border-radius: var(--radius-large);
   box-shadow: var(--shadow-heavy);
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
-  overflow: auto;
+  max-width: 660px;
+  width: 92%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   animation: slideIn 0.3s ease;
 }
 
@@ -1105,6 +1107,8 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 /* Formulaire d'événement */
@@ -1231,9 +1235,11 @@
 .calendar-modal-footer {
   display: flex;
   gap: 8px;
-  padding: 16px 20px;
+  padding: 14px 20px;
   border-top: 1px solid var(--color-border);
   background: var(--color-light-gray);
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .calendar-modal-footer-spacer {
@@ -1418,16 +1424,12 @@
 /* === Responsive Modal === */
 @media (max-width: 768px) {
   .calendar-modal-content {
-    width: 95%;
-    max-height: 90vh;
+    width: 98%;
+    max-height: 92vh;
   }
 
   .calendar-form-row {
     grid-template-columns: 1fr;
-  }
-
-  .calendar-modal-footer {
-    flex-wrap: wrap;
   }
   /* .calendar-color-option {
   width: 25px !important;

@@ -458,20 +458,11 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
             className="calendar-list-item collaborator-item"
             title={`${collab.prenom} ${collab.nom} - ${collab.email}`}
           >
-            {/* ✅ CHANGÉ : checkbox → radio pour un seul choix */}
-            <input
-              type="radio"
-              name="collaborator-view" 
+              <input
+              type="checkbox"
               checked={selectedCollaboratorIds.includes(collab.membre_id)}
               onChange={() => onToggleCollaborator?.(collab.membre_id)}
               className="calendar-checkbox"
-
-              style={{
-      outline: 'none',
-      boxShadow: 'none',
-      border: 'none'
-    }}
-    onFocus={(e) => e.currentTarget.style.outline = 'none'}
             />
             <span className="collaborator-avatar">
               {collab.prenom.charAt(0)}{collab.nom.charAt(0)}
@@ -486,7 +477,10 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
 
     {selectedCollaboratorIds.length > 0 && (
       <div className="collaborators-selection-info">
-        ✓ Vue : {collaborators.find(c => c.membre_id === selectedCollaboratorIds[0])?.prenom || 'Collaborateur'}
+        👁️ Vue : {selectedCollaboratorIds
+          .map(id => collaborators.find(c => c.membre_id === id)?.prenom)
+          .filter(Boolean)
+          .join(' / ')}
       </div>
     )}
   </div>
