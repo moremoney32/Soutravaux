@@ -65,10 +65,11 @@ const ImageWithLoader = ({
   src, 
   alt, 
   className = '', 
-  fallbackIcon = 'fa-image' 
+  // fallbackIcon = 'fa-image' 
 }: ImageWithLoaderProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  console.log(error)
 
   // ✅ FONCTION POUR NORMALISER L'URL
   const getNormalizedUrl = (url: string | null | undefined): string | null => {
