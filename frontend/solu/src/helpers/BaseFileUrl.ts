@@ -5,10 +5,7 @@
  export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
 //export const BASE_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/image';
 
-// ✅ CORRIGÉ : Sans /public/ en double https://app.solutravo-app.fr/
-//export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/'
- export const BASE_PRODUCT_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/'
-//export const BASE_PRODUCT_IMAGE_URL = 'https://app.solutravo-app.fr/public/uploads/catalogue/'
+export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/image/';
 
 /**
  * Construit l'URL complète d'une image produit
@@ -22,20 +19,24 @@ export const getProductImageUrl = (imagePath: string | undefined | null): string
 
   let cleanPath = imagePath.trim();
 
+  // Retire tous les préfixes connus pour ne garder que le nom de fichier
   const prefixesToRemove = [
+    'public/uploads/catalogue/image/',
+    'uploads/catalogue/image/',
+    'public/uploads/catalogue/',
+    'uploads/catalogue/',
     'storage/ProductImages/',
-    'ProductImages/',
-    'public/ProductImages/',
     'public/storage/ProductImages/',
-    'uploads/catalogue/',  //  Ajouter ce préfixe
-    'public/uploads/catalogue/'  //  Ajouter ce préfixese
+    'public/ProductImages/',
+    'ProductImages/',
   ];
 
-  prefixesToRemove.forEach(prefix => {
+  for (const prefix of prefixesToRemove) {
     if (cleanPath.startsWith(prefix)) {
       cleanPath = cleanPath.substring(prefix.length);
+      break;
     }
-  });
+  }
 
   return `${BASE_PRODUCT_IMAGE_URL}${cleanPath}`;
 };
