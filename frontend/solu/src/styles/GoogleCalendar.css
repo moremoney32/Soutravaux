@@ -1020,10 +1020,12 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 8px;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -1042,7 +1044,7 @@
   box-shadow: var(--shadow-heavy);
   max-width: 660px;
   width: 92%;
-  max-height: 88vh;
+  max-height: calc(100vh - 16px);
   display: flex;
   flex-direction: column;
   overflow: hidden;

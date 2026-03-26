@@ -185,8 +185,11 @@
   cursor: pointer; accent-color: #E77131; flex-shrink: 0;
 }
 .price-request-checkbox-item input[type="checkbox"]:focus,
-.price-request-checkbox-item input[type="radio"]:focus {
-  outline: none !important; /* ✅ Enlever l'outline au clic */
+.price-request-checkbox-item input[type="radio"]:focus,
+.price-request-checkbox-item input[type="checkbox"]:focus-visible,
+.price-request-checkbox-item input[type="radio"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 .price-request-checkbox-item label {
   font-size: 11px; color: #505050; cursor: pointer; user-select: none; line-height: 1.4;
@@ -504,14 +507,15 @@
    ============================================ */
 
 .price-request-modal-overlay {
-  position: fixed; top: -20px; left: 0; right: 0; bottom: 0;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0,0,0,0.42);
-  display: flex; align-items: center; justify-content: center; z-index: 1000;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 8px; overflow-y: auto; z-index: 1000;
 }
 
 .price-request-modal {
   background-color: #FFFFFF; border-radius: 12px;
-  max-width: 600px; width: 92%; max-height: 92vh;
+  max-width: 600px; width: 92%; max-height: calc(100vh - 16px);
   overflow: hidden; display: flex; flex-direction: column;
   box-shadow: 0 16px 50px rgba(0,0,0,0.15);
 }
