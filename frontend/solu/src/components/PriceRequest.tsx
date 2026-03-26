@@ -10,7 +10,7 @@ import '../styles/priceRequest.css';
 import { ProductCard } from './ProductCard';
 import { ProductDetailModal } from './ProductDetailsPrice';
 import { SupplierSelect } from './SupplierSelect';
-import { getProductImageUrl } from '../helpers/BaseFileUrl';
+import { getProductImageUrl, getLibraryImageUrl } from '../helpers/BaseFileUrl';
 import {
   type PriceRequestItem,
   type Product,
@@ -115,7 +115,7 @@ export const PriceRequest = () => {
       .finally(() => setLoadingLibraryProducts(false));
   }, [selectedLibraryId, selectedCategoryIds]);
 
-  const toProduct = (p: any): Product => ({
+  const toProduct = (p: any, isLibrary = false): Product => ({
     id: String(p.id),
     name: p.name || p.nom || '',
     reference: p.supplier_reference || p.reference || '',
@@ -123,7 +123,9 @@ export const PriceRequest = () => {
     supplierId: String(p.source || p.library_id || ''),
     description: p.description || '',
     unit: p.unit || p.unite || '',
-    imageUrl: getProductImageUrl(p.image || p.image_path || null) || ''
+    imageUrl: isLibrary
+      ? getLibraryImageUrl(p.image || p.image_path || null) || ''
+      : getProductImageUrl(p.image || p.image_path || null) || ''
   });
 
   const rawProducts = mode === 'by_supplier' ? libraryProducts : catalogueProducts;
@@ -142,7 +144,7 @@ export const PriceRequest = () => {
   });
 
   const handleAddToCart = (product: any) => {
-    const mapped = toProduct(product);
+    const mapped = toProduct(product, mode === 'by_supplier');
     const existing = cartItems.find(i => i.product.id === mapped.id);
     if (existing) {
       setCartItems(cartItems.map(i => i.product.id === mapped.id ? { ...i, quantity: i.quantity + 1 } : i));
@@ -589,7 +591,7 @@ export const PriceRequest = () => {
                   {filteredProducts.map(product => (
                     <ProductCard
                       key={`${product.source || product.library_id || 'cat'}-${product.id}`}
-                      product={toProduct(product)}
+                      product={toProduct(product, mode === 'by_supplier')}
                       onAdd={() => handleAddToCart(product)}
                       onViewDetails={setSelectedProductDetail}
                     />
