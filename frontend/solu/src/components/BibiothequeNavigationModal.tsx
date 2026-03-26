@@ -269,18 +269,24 @@ const BibliothequeNavigationModal: React.FC<BibliothequeNavigationModalProps> = 
         }
     };
 
-    const renderProductImage = (produit: Produit) => (
-        <img
-            src={produit.image}
-            alt={produit.name}
-            onClick={() => handleProduitSelect(produit)}
-            style={{ cursor: 'pointer' }}
-            onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = 'https://images.pexels.com/photos/162539/architecture-building-construction-work-162539.jpeg';
-            }}
-        />
-    );
+    const renderProductImage = (produit: Produit) => {
+        const filename = produit.image?.split('/').pop();
+        const imageUrl = filename
+            ? `https://staging.solutravo-compta.fr/public/uploads/catalogue/image/${filename}`
+            : null;
+        return (
+            <img
+                src={imageUrl || ''}
+                alt={produit.name}
+                onClick={() => handleProduitSelect(produit)}
+                style={{ cursor: 'pointer' }}
+                onError={(e) => {
+                    console.error('❌ Produit image cassée:', imageUrl);
+                    (e.target as HTMLImageElement).style.display = 'none';
+                }}
+            />
+        );
+    };
 
     const handleFamilleSelect = (famille: LibraryCategory) => {
         setSelectedFamille(famille);

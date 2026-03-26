@@ -81,11 +81,9 @@ const BibliothequesList: React.FC<BibliothequeListProps> = ({
 
     const renderLibraryImage = (bibliotheque: Bibliotheque) => {
         if (bibliotheque.image) {
-            // Construire l'URL complète
-            const baseUrl = "https://laravel-api.solutravo-compta.fr/storage/LibraryImages";
-            const imageUrl = bibliotheque.image.startsWith('http')
-                ? bibliotheque.image
-                : `${baseUrl}/${bibliotheque.image}`;
+            // Extraire uniquement le nom de fichier et construire avec le bon domaine
+            const filename = bibliotheque.image.split('/').pop();
+            const imageUrl = `https://laravel-api.solutravo-compta.fr/storage/ProductImages/${filename}`;
 
             return (
                 <img
