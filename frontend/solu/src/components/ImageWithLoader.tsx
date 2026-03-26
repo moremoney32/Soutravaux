@@ -96,11 +96,11 @@ const ImageWithLoader = ({
 
   const normalizedSrc = getNormalizedUrl(src);
 
-  if (!normalizedSrc || error) {
+  // DEBUG : pas de fallback — on affiche l'URL cassée pour diagnostiquer
+  if (!normalizedSrc) {
     return (
-      <div className={`image-placeholder ${className}`}>
-        <i className={`fa-solid ${fallbackIcon}`}></i>
-        <span>Aucune image</span>
+      <div className={`image-placeholder ${className}`} style={{ fontSize: 11, color: '#999', padding: 4 }}>
+        ⚠️ src vide (raw: {String(src)})
       </div>
     );
   }
@@ -118,11 +118,11 @@ const ImageWithLoader = ({
         alt={alt}
         className={`image-content ${loading ? 'loading' : 'loaded'}`}
         onLoad={() => {
-          console.log('✅ Image chargée:', normalizedSrc);
+          console.log('✅ BIBLIO image OK:', normalizedSrc);
           setLoading(false);
         }}
         onError={() => {
-          console.error('❌ Erreur chargement image:', normalizedSrc);
+          console.error('❌ BIBLIO image cassée:', normalizedSrc);
           setLoading(false);
           setError(true);
         }}

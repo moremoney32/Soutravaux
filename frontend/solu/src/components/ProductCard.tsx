@@ -2,11 +2,9 @@
 
 
 
-import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import type { Product } from '../data/mockDataPrice';
 import { getProductImageUrl } from '../helpers/BaseFileUrl';
-import placeholderImage from '../assets/images/placeholder.png';
 
 interface ProductCardProps {
   product: Product;
@@ -15,11 +13,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product, onAdd, onViewDetails }: ProductCardProps) => {
-  const [imageError, setImageError] = useState(false);
   const imageUrl = getProductImageUrl(product.imageUrl);
-  
-  // ✅ Utiliser l'image du serveur si disponible, sinon placeholder local
-  const displayImage = (imageUrl && !imageError) ? imageUrl : placeholderImage;
 
   return (
     <div className="price-request-product-card">
@@ -35,18 +29,18 @@ export const ProductCard = ({ product, onAdd, onViewDetails }: ProductCardProps)
         </button>
       </div>
 
-      {/* ✅ Image produit : hauteur fixe 80px */}
+      {/* DEBUG : affiche l'image brute sans fallback pour diagnostiquer */}
       <div className="price-request-product-image">
-        <img 
-          src={displayImage}
-          alt={product.name}
-          onError={() => {
-            if (imageUrl) {
-              console.error(`❌ Image serveur non trouvée: ${imageUrl}`);
-              setImageError(true);
-            }
-          }}
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            onError={() => console.error(`❌ PRODUIT image cassée: ${imageUrl}`)}
+            onLoad={() => console.log(`✅ PRODUIT image OK: ${imageUrl}`)}
+          />
+        ) : (
+          <span style={{ fontSize: 11, color: '#999' }}>⚠️ Pas d'image ({product.imageUrl})</span>
+        )}
       </div>
 
       {/* ✅ PAS de ref, PAS de description affichée */}
