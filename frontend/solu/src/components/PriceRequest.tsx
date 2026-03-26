@@ -38,7 +38,7 @@ export const PriceRequest = () => {
   const societeId = societeIdParam ? Number(societeIdParam) : undefined;
   const membreId = membreIdParam ? Number(membreIdParam) : undefined;
 
-  const [mode, setMode] = useState<RequestMode>(null);
+  const [mode, setMode] = useState<RequestMode>('by_product');
   const [libraries, setLibraries] = useState<any[]>([]);
   const [selectedLibraryId, setSelectedLibraryId] = useState<string>('');
   const [categories, setCategories] = useState<any[]>([]);
