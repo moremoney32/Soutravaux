@@ -2,8 +2,7 @@
 
 
 // ✅ URLs DE BASE POUR LES IMAGES ET DOCUMENTS
- export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/LibraryImages/';
-//export const BASE_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/image';
+export const BASE_IMAGE_URL = 'https://laravel-api.solutravo-compta.fr/storage/ProductImages/';
 
 export const BASE_PRODUCT_IMAGE_URL = 'https://staging.solutravo-compta.fr/public/uploads/catalogue/image/';
 
@@ -29,6 +28,7 @@ export const getProductImageUrl = (imagePath: string | undefined | null): string
     'public/storage/ProductImages/',
     'public/ProductImages/',
     'ProductImages/',
+    'image/',
   ];
 
   for (const prefix of prefixesToRemove) {
@@ -54,10 +54,14 @@ export const getLibraryImageUrl = (imagePath: string | undefined | null): string
   let cleanPath = imagePath.trim();
 
   const prefixesToRemove = [
+    'storage/ProductImages/',
+    'public/storage/ProductImages/',
+    'public/ProductImages/',
+    'ProductImages/',
     'storage/LibraryImages/',
     'LibraryImages/',
     'public/LibraryImages/',
-    'public/storage/LibraryImages/'
+    'public/storage/LibraryImages/',
   ];
 
   prefixesToRemove.forEach(prefix => {
