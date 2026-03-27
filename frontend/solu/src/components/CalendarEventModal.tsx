@@ -91,6 +91,9 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Étapes formulaire (multi-step pour iframe)
+  const [step, setStep] = useState(1);
+
   // États invitation externe
   const [showExternePopup, setShowExternePopup] = useState(false);
   const [externeEmail, setExterneEmail] = useState('');
@@ -249,6 +252,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   // ═══════════════════════════════════════════════
   useEffect(() => {
     if (event && isOpen) {
+      setStep(1);
       setTitle(event.title);
       setDescription(event.description || '');
       setLocation(event.location || '');
@@ -275,6 +279,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       }
 
     } else if (isNewEvent && isOpen) {
+      setStep(1);
       setTitle('');
       setDescription('');
       setLocation('');
@@ -477,7 +482,10 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
           {/* BODY */}
           <div className="calendar-modal-body">
             {isEditing ? (
-              <form className="calendar-event-form" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+              <form className="calendar-event-form" onSubmit={(e) => { e.preventDefault(); }}>
+
+                {/* ══ ÉTAPE 1 : Portée / Catégorie / Titre / Description ══ */}
+                {step === 1 && <>
 
                 {/* ── PORTÉE ─────────────────────────────── */}
                 <div className="calendar-form-group">
@@ -566,6 +574,25 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   )}
                 </div>
 
+                {/* ── TITRE ──────────────────────────────── */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">Titre *</label>
+                  <input type="text" className="calendar-form-input" value={title}
+                    onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Réunion client" required />
+                </div>
+
+                {/* ── DESCRIPTION ────────────────────────── */}
+                <div className="calendar-form-group">
+                  <label className="calendar-form-label">Description</label>
+                  <textarea className="calendar-form-textarea" value={description}
+                    onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Détails de l'événement..." />
+                </div>
+
+                </> /* fin étape 1 */ }
+
+                {/* ══ ÉTAPE 2 : Lieu / Heures / Invitations / Rappels / Couleur ══ */}
+                {step === 2 && <>
+
                 {/* ── INVITER COLLABORATEURS ─────────────── */}
                 {scope === 'collaborative' && (
                   <div className="calendar-form-group invite-participants-group">
@@ -587,7 +614,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                       {/* ── BLOC GAUCHE : Solutravo ── */}
                       <div style={{ background: userRole === 'collaborator' ? '#f5f5f5' : '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '12px', opacity: userRole === 'collaborator' ? 0.6 : 1, pointerEvents: userRole === 'collaborator' ? 'none' : 'auto', position: 'relative' }}>
                         <label className="calendar-form-label" style={{ margin: '0 0 8px 0', display: 'block' }}>
-                          🏢 Inviter une société Solutravo
+                          🏢 Inviter une société (qui utilise Solutravo)
                           {userRole === 'collaborator' && <span style={{ marginLeft: '6px', fontSize: '10px', background: '#f0f0f0', color: '#999', borderRadius: '4px', padding: '1px 5px' }}>Admin uniquement</span>}
                         </label>
 
@@ -643,20 +670,6 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     </div>
                   </div>
                 )}
-
-                {/* ── TITRE ──────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Titre *</label>
-                  <input type="text" className="calendar-form-input" value={title}
-                    onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Réunion client" required />
-                </div>
-
-                {/* ── DESCRIPTION ────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Description</label>
-                  <textarea className="calendar-form-textarea" value={description}
-                    onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Détails de l'événement..." />
-                </div>
 
                 {/* ── LIEU ───────────────────────────────── */}
                 <div className="calendar-form-group">
@@ -716,6 +729,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     ))}
                   </div>
                 </div>
+
+                </> /* fin étape 2 */ }
               </form>
 
             ) : (
@@ -817,10 +832,20 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
           {/* FOOTER */}
           <div className="calendar-modal-footer">
             {isEditing ? (
-              <>
-                <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
-                <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
-              </>
+              step === 1 ? (
+                <>
+                  <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
+                  <button className="calendar-btn-primary" onClick={() => {
+                    if (!title.trim()) { alert('Le titre est requis'); return; }
+                    setStep(2);
+                  }}>Suivant →</button>
+                </>
+              ) : (
+                <>
+                  <button className="calendar-btn-secondary" onClick={() => setStep(1)}>← Précédent</button>
+                  <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
+                </>
+              )
             ) : (
               <>
                 <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>

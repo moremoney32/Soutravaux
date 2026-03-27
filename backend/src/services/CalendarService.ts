@@ -1015,20 +1015,16 @@ export async function envoyerEmailExterne(
   location: string | null,
   description: string | null
 ): Promise<void> {
-  const subject = `📩 ${nomInvitante} vous invite à un événement — Découvrez Solutravo`;
+  const subject = `${nomInvitante} vous invite à consulter son agenda`;
   const message = `
     <div style="font-family:'Segoe UI',Arial,sans-serif;color:#333;line-height:1.7;max-width:620px;margin:0 auto;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
       <!-- Header -->
       <div style="background:linear-gradient(135deg,#E77131 0%,#FF9A5C 100%);padding:36px 28px;text-align:center;">
         <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50%;padding:14px;margin-bottom:14px;">
-          <span style="font-size:32px;">📩</span>
+          <span style="font-size:32px;">📅</span>
         </div>
-        <h1 style="color:white;margin:0;font-size:24px;font-weight:700;letter-spacing:0.3px;">Vous avez une invitation !</h1>
-        <p style="font-size:15px;margin:0 0 26px;color:#555;line-height:1.8;">
-  La société <strong style="color:#E77131;">${nomInvitante}</strong> souhaite que vous découvriez les différents services de Solutravo.
-  C'est une belle opportunité d'échange et de collaboration dans votre secteur.
-</p>
+        <h1 style="color:white;margin:0;font-size:22px;font-weight:700;letter-spacing:0.3px;">${nomInvitante} vous invite à consulter son agenda</h1>
       </div>
 
       <!-- Body -->
@@ -1037,8 +1033,7 @@ export async function envoyerEmailExterne(
         <p style="font-size:16px;margin:0 0 10px;color:#222;font-weight:600;">Bonjour,</p>
 
         <p style="font-size:15px;margin:0 0 26px;color:#555;line-height:1.8;">
-          La société <strong style="color:#E77131;">${nomInvitante}</strong> souhaite que vous decouvriez les differents services de solutravo.
-          C'est une belle opportunité d'échange et de collaboration dans votre secteur.
+          L'entreprise <strong style="color:#E77131;">${nomInvitante}</strong> vous a ajouté à un évènement sur son agenda Solutravo et vous autorise à le consulter.
         </p>
 
         <!-- Carte événement -->
@@ -1068,27 +1063,24 @@ export async function envoyerEmailExterne(
           </table>
         </div>
 
-        <!-- Section Solutravo -->
-        <div style="background:#f9f9f9;border-radius:10px;padding:22px;margin-bottom:28px;">
-          <p style="font-size:15px;font-weight:700;color:#333;margin:0 0 10px;">
-            Pas encore sur Solutravo ?
-          </p>
-          <p style="font-size:14px;color:#666;margin:0 0 6px;line-height:1.8;">
-            Solutravo est la plateforme qui connecte les professionnels du bâtiment — artisans, fournisseurs, donneurs d'ordre — pour mieux collaborer, gérer leurs agendas et développer leur activité.
-          </p>
-          <p style="font-size:14px;color:#666;margin:0;line-height:1.8;">
-            En rejoignant, vous pourrez confirmer votre présence à cet événement, gérer vos rendez-vous et découvrir de nouveaux partenaires.
-          </p>
-        </div>
-
         <!-- CTA -->
         <div style="text-align:center;margin:30px 0;">
           <a href="https://staging.solutravo-compta.fr"
             style="display:inline-block;background:linear-gradient(135deg,#E77131,#F59E6C);color:white;text-decoration:none;padding:16px 42px;border-radius:50px;font-size:16px;font-weight:700;letter-spacing:0.4px;box-shadow:0 6px 18px rgba(231,113,49,0.35);">
-            ✨ Rejoindre Solutravo — C'est gratuit
+            Voir l'événement
           </a>
-          <p style="font-size:12px;color:#aaa;margin:12px 0 0;">
-            Inscription en moins de 2 minutes · Aucune carte requise
+        </div>
+
+        <!-- Footer gris Solutravo -->
+        <div style="background:#f5f5f5;border-radius:10px;padding:22px;margin-top:28px;">
+          <p style="font-size:14px;font-weight:700;color:#333;margin:0 0 10px;">
+            Pas encore sur Solutravo ?
+          </p>
+          <p style="font-size:13px;color:#666;margin:0 0 8px;line-height:1.8;">
+            Solutravo est la plateforme qui connecte les professionnels du bâtiment — artisans, fournisseurs, donneurs d'ordre — pour mieux collaborer, gérer leurs agendas et développer/piloter leur activité.
+          </p>
+          <p style="font-size:13px;color:#666;margin:0;line-height:1.8;">
+            En rejoignant Solutravo, vous pourrez confirmer votre présence à cet événement, gérer vos rendez-vous et découvrir de nouveaux partenaires.
           </p>
         </div>
 

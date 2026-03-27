@@ -1044,10 +1044,8 @@
   box-shadow: var(--shadow-heavy);
   max-width: 660px;
   width: 92%;
-  max-height: calc(100vh - 16px);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   animation: slideIn 0.3s ease;
 }
 
@@ -1109,8 +1107,6 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
-  flex: 1;
-  overflow-y: auto;
 }
 
 /* Formulaire d'événement */
