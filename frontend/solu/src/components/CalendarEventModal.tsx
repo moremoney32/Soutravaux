@@ -230,7 +230,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     }
   };
 
-  // Mode création : ajoute l'email à la liste locale (envoi après création de l'event)
+  // Mode création : ajoute l'email à la liste locale (envoi après création de l'event)ppoo
   const handleAddExterneEmail = (): void => {
     if (!externeEmail.trim()) return;
     setExterneEmailsList(prev => [...prev, externeEmail.trim()]);
