@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import type { CalendarEvent } from '../types/calendar';
 import '../styles/GoogleCalendar.css';
 import { calculateEventLayouts } from '../helpers/eventLayoutHelper';
-
+//** */
 interface CalendarDayViewProps {
   currentDate: Date;
   events: CalendarEvent[];
