@@ -1123,8 +1123,8 @@
 }
 
 .calendar-form-label {
-  font-weight: 440;
-  font-size: 12px;
+  font-weight: 400;
+  font-size: 10px;
   color: var(--color-gray-primary);
   text-transform: uppercase;
   font-family: var(--font-gotham);
