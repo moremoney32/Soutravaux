@@ -1044,8 +1044,10 @@
   box-shadow: var(--shadow-heavy);
   max-width: 660px;
   width: 92%;
+  max-height: 96vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   animation: slideIn 0.3s ease;
 }
 
@@ -1106,6 +1108,9 @@
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  background: white;
 }
 
 /* Formulaire d'événement */
