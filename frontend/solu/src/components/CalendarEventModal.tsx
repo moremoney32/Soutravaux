@@ -91,8 +91,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Étapes formulaire (multi-step pour iframe)
-  const [step, setStep] = useState(1);
+  // Onglets formulaire
+  const [activeTab, setActiveTab] = useState<'infos' | 'invites'>('infos');
 
   // États invitation externe
   const [showExternePopup, setShowExternePopup] = useState(false);
@@ -252,7 +252,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   // ═══════════════════════════════════════════════
   useEffect(() => {
     if (event && isOpen) {
-      setStep(1);
+      setActiveTab('infos');
       setTitle(event.title);
       setDescription(event.description || '');
       setLocation(event.location || '');
@@ -279,7 +279,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       }
 
     } else if (isNewEvent && isOpen) {
-      setStep(1);
+      setActiveTab('infos');
       setTitle('');
       setDescription('');
       setLocation('');
@@ -484,253 +484,223 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
             {isEditing ? (
               <form className="calendar-event-form" onSubmit={(e) => { e.preventDefault(); }}>
 
-                {/* ══ ÉTAPE 1 : Portée / Catégorie / Titre / Description ══ */}
-                {step === 1 && <>
-
-                {/* ── PORTÉE ─────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Portée de l'événement *</label>
-                  <div className="scope-selector">
-                    <label className={`scope-option ${scope === 'personal' ? 'active' : ''}`}
-                      style={{ borderColor: scope === 'personal' ? '#42A5F5' : '#ddd', background: scope === 'personal' ? '#E3F2FD' : 'white' }}>
-                      <input type="radio" name="scope" value="personal" checked={scope === 'personal'} onChange={() => setScope('personal')} />
-                      <div className="scope-content">
-                        <div className="scope-icon">🙋‍♂️</div>
-                        <div className="scope-text">
-                          <div className="scope-title">Moi uniquement</div>
-                          <div className="scope-desc">Événement personnel, pas d'invitation</div>
-                        </div>
-                      </div>
-                    </label>
-                    <label className={`scope-option ${scope === 'collaborative' ? 'active' : ''}`}
-                      style={{ borderColor: scope === 'collaborative' ? '#4CAF50' : '#ddd', background: scope === 'collaborative' ? '#E8F5E9' : 'white' }}>
-                      <input type="radio" name="scope" value="collaborative" checked={scope === 'collaborative'} onChange={() => setScope('collaborative')} />
-                      <div className="scope-content">
-                        <div className="scope-icon">👥</div>
-                        <div className="scope-text">
-                          <div className="scope-title">Avec d'autres</div>
-                          <div className="scope-desc">Inviter des collaborateurs/sociétés</div>
-                        </div>
-                      </div>
-                    </label>
-                  </div>
+                {/* ── ONGLETS ─────────────────────────────── */}
+                <div className="cm-tabs">
+                  <button type="button" className={`cm-tab ${activeTab === 'infos' ? 'cm-tab-active' : ''}`} onClick={() => setActiveTab('infos')}>
+                    📋 Informations
+                  </button>
+                  <button type="button" className={`cm-tab ${activeTab === 'invites' ? 'cm-tab-active' : ''}`} onClick={() => setActiveTab('invites')}>
+                    👥 Invités {(selectedAttendees.length > 0 || selectedSocietes.length > 0 || externeEmailsList.length > 0) && <span className="cm-tab-badge">{selectedAttendees.length + selectedSocietes.length + externeEmailsList.length}</span>}
+                  </button>
                 </div>
 
-                {/* ── CATÉGORIE ──────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Catégorie d'événement</label>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                    <select className="calendar-form-select" value={eventCategoryId || ''} onChange={(e) => {
-                      const value = e.target.value;
-                      if (value) { setEventCategoryId(Number(value)); setCustomCategoryLabel(''); }
-                      else setEventCategoryId(undefined);
-                    }} style={{ flex: 1 }}>
-                      <option value="">-- Sélectionner une catégorie --</option>
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.id}>{category.icon} {category.label}</option>
-                      ))}
-                    </select>
-                    <button type="button" onClick={() => setShowCreateCategoryInput(!showCreateCategoryInput)}
-                      style={{ padding: '8px 16px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>
-                      + Nouvelle catégorie
-                    </button>
-                  </div>
+                {/* ══ ONGLET 1 : INFORMATIONS ══ */}
+                {activeTab === 'infos' && (
+                  <div className="cm-tab-content">
 
-                  {showCreateCategoryInput && (
-                    <div style={{ padding: '12px', backgroundColor: '#f5f5f5', borderRadius: '4px', marginBottom: '12px', border: '1px solid #ddd' }}>
-                      <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Label *</label>
-                        <input type="text" value={newCategoryLabel} onChange={(e) => setNewCategoryLabel(e.target.value)} placeholder="Ex: Visite client"
-                          style={{ width: '100%', padding: '8px', marginTop: '4px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+                    {/* Portée compacte */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">Portée</span>
+                      <div className="cm-scope-pills">
+                        <button type="button"
+                          className={`cm-pill ${scope === 'personal' ? 'cm-pill-blue' : ''}`}
+                          onClick={() => setScope('personal')}>
+                          🙋 Moi seul
+                        </button>
+                        <button type="button"
+                          className={`cm-pill ${scope === 'collaborative' ? 'cm-pill-green' : ''}`}
+                          onClick={() => setScope('collaborative')}>
+                          👥 Avec d'autres
+                        </button>
                       </div>
-                      <div className="calendar-form-group" style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Icône</label>
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
+                    </div>
+
+                    {/* Catégorie */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">Catégorie</span>
+                      <div style={{ display: 'flex', gap: '6px', flex: 1 }}>
+                        <select className="calendar-form-select" value={eventCategoryId || ''} onChange={(e) => {
+                          const value = e.target.value;
+                          if (value) { setEventCategoryId(Number(value)); setCustomCategoryLabel(''); }
+                          else setEventCategoryId(undefined);
+                        }} style={{ flex: 1, padding: '7px 10px', fontSize: '13px' }}>
+                          <option value="">-- Catégorie --</option>
+                          {categories.map((category) => (
+                            <option key={category.id} value={category.id}>{category.icon} {category.label}</option>
+                          ))}
+                        </select>
+                        <button type="button" onClick={() => setShowCreateCategoryInput(!showCreateCategoryInput)}
+                          style={{ padding: '7px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                          + Nouvelle
+                        </button>
+                      </div>
+                    </div>
+
+                    {showCreateCategoryInput && (
+                      <div style={{ background: '#f5f5f5', borderRadius: '8px', padding: '10px', border: '1px solid #ddd', marginTop: '-4px' }}>
+                        <input type="text" value={newCategoryLabel} onChange={(e) => setNewCategoryLabel(e.target.value)} placeholder="Nom de la catégorie"
+                          style={{ width: '100%', padding: '7px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '13px', boxSizing: 'border-box', marginBottom: '8px' }} />
+                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
                           {['📌', '💼', '🏗️', '🔧', '🤝', '📦', '⚙️', '📋', '🎓', '✏️', '🎯', '🚀'].map((icon) => (
                             <button key={icon} type="button" onClick={() => setNewCategoryIcon(icon)}
-                              style={{ padding: '8px 10px', backgroundColor: newCategoryIcon === icon ? '#42A5F5' : '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', color: newCategoryIcon === icon ? 'white' : 'black' }}>
+                              style={{ padding: '5px 7px', backgroundColor: newCategoryIcon === icon ? '#42A5F5' : '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>
                               {icon}
                             </button>
                           ))}
                         </div>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button type="button" onClick={handleCreateCategory} style={{ flex: 1, padding: '7px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Créer</button>
+                          <button type="button" onClick={() => { setShowCreateCategoryInput(false); setNewCategoryLabel(''); }} style={{ flex: 1, padding: '7px', backgroundColor: '#999', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Annuler</button>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button type="button" onClick={handleCreateCategory}
-                          style={{ flex: 1, padding: '8px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>
-                          Créer
-                        </button>
-                        <button type="button" onClick={() => { setShowCreateCategoryInput(false); setNewCategoryLabel(''); }}
-                          style={{ flex: 1, padding: '8px', backgroundColor: '#999', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>
-                          Annuler
-                        </button>
+                    )}
+
+                    {/* Titre */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">Titre *</span>
+                      <input type="text" className="calendar-form-input cm-input" value={title}
+                        onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Réunion client" required />
+                    </div>
+
+                    {/* Description */}
+                    <div className="cm-field-row cm-field-row-top">
+                      <span className="cm-field-label">Note</span>
+                      <textarea className="calendar-form-textarea cm-input" value={description}
+                        onChange={(e) => setDescription(e.target.value)} rows={2} placeholder="Détails..." style={{ resize: 'none' }} />
+                    </div>
+
+                    {/* Lieu */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">📍 Lieu</span>
+                      <div style={{ flex: 1 }}>
+                        <LocationAutocomplete value={location} onChange={setLocation}
+                          placeholder="Ex: 12 rue de la Paix, Paris" required={selectedCategory?.requires_location} />
                       </div>
                     </div>
-                  )}
 
-                  {!eventCategoryId && customCategoryLabel && (
-                    <div style={{ padding: '8px', backgroundColor: '#f0f0f0', borderRadius: '4px', marginTop: '8px', fontSize: '12px' }}>
-                      📌 {customCategoryLabel}
+                    {/* Heures */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">🕐 Horaires</span>
+                      <div style={{ flex: 1 }}>
+                        <TimeRangePicker startTime={startTime} endTime={endTime}
+                          onStartTimeChange={setStartTime} onEndTimeChange={setEndTime} defaultDuration={60} />
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {/* ── TITRE ──────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Titre *</label>
-                  <input type="text" className="calendar-form-input" value={title}
-                    onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Réunion client" required />
-                </div>
+                    {/* Rappel compact */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">🔔 Rappel</span>
+                      <div style={{ display: 'flex', gap: '6px', flex: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                        {reminders.map((reminder, index) => (
+                          <div key={index} style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                            <select value={reminder.value} onChange={(e) => handleReminderChange(index, 'value', e.target.value)}
+                              style={{ padding: '5px 6px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '12px', background: 'white' }}>
+                              <option value="5">5 min</option>
+                              <option value="15">15 min</option>
+                              <option value="30">30 min</option>
+                              <option value="60">1h</option>
+                              <option value="120">2h</option>
+                              <option value="1440">1 jour</option>
+                              <option value="2880">2 jours</option>
+                              <option value="10080">1 semaine</option>
+                            </select>
+                            <button type="button" onClick={() => handleRemoveReminder(index)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#bbb', fontSize: '14px', padding: '0 2px' }}>✕</button>
+                          </div>
+                        ))}
+                        {reminders.length < 3 && (
+                          <button type="button" onClick={handleAddReminder}
+                            style={{ padding: '5px 8px', border: '1px dashed #ddd', background: 'white', borderRadius: '6px', color: '#999', fontSize: '11px', cursor: 'pointer' }}>
+                            + rappel
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                {/* ── DESCRIPTION ────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Description</label>
-                  <textarea className="calendar-form-textarea" value={description}
-                    onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Détails de l'événement..." />
-                </div>
+                    {/* Couleur compacte */}
+                    <div className="cm-field-row">
+                      <span className="cm-field-label">Couleur</span>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {colorOptions.map((option) => (
+                          <button key={option.value} type="button"
+                            onClick={() => setColor(option.value)}
+                            style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: option.value, border: color === option.value ? '3px solid #333' : '2px solid transparent', cursor: 'pointer', flexShrink: 0, boxShadow: color === option.value ? '0 0 0 2px white, 0 0 0 4px #333' : 'none' }} />
+                        ))}
+                      </div>
+                    </div>
 
-                </> /* fin étape 1 */ }
-
-                {/* ══ ÉTAPE 2 : Lieu / Heures / Invitations / Rappels / Couleur ══ */}
-                {step === 2 && <>
-
-                {/* ── INVITER COLLABORATEURS ─────────────── */}
-                {scope === 'collaborative' && (
-                  <div className="calendar-form-group invite-participants-group">
-                    <button type="button" className="calendar-btn-invite-full" onClick={() => setShowInviteModal(true)}>
-                      <span className="icon">👥</span>
-                      <span>Inviter des collaborateurs</span>
-                      {selectedAttendees.length > 0 && (
-                        <span className="badge-count">{selectedAttendees.length}</span>
-                      )}
-                    </button>
                   </div>
                 )}
 
-                {/* ── INVITER SOCIÉTÉ — 2 blocs côte à côte ─── */}
-                {scope === 'collaborative' && (
-                  <div className="calendar-form-group">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'start' }}>
-
-                      {/* ── BLOC GAUCHE : Solutravo ── */}
-                      <div style={{ background: userRole === 'collaborator' ? '#f5f5f5' : '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '12px', opacity: userRole === 'collaborator' ? 0.6 : 1, pointerEvents: userRole === 'collaborator' ? 'none' : 'auto', position: 'relative' }}>
-                        <label className="calendar-form-label" style={{ margin: '0 0 8px 0', display: 'block' }}>
-                          🏢 Inviter une société (qui utilise Solutravo)
-                          {userRole === 'collaborator' && <span style={{ marginLeft: '6px', fontSize: '10px', background: '#f0f0f0', color: '#999', borderRadius: '4px', padding: '1px 5px' }}>Admin uniquement</span>}
-                        </label>
-
-                        {/* Déjà invitées (édition) */}
-                        {!isNewEvent && event?.invited_societes && event.invited_societes.length > 0 && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
-                            {event.invited_societes.map(s => (
-                              <span key={s.id} style={{ background: '#FFF3E0', color: '#E65100', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #FFCC80' }}>
-                                🏢 {s.nomsociete}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Search inline (pas de composant → pas de saut de curseur) */}
-                        {renderSocieteSearch(!!event?.id)}
+                {/* ══ ONGLET 2 : INVITÉS ══ */}
+                {activeTab === 'invites' && (
+                  <div className="cm-tab-content">
+                    {scope !== 'collaborative' ? (
+                      <div style={{ textAlign: 'center', padding: '30px 20px', color: '#aaa' }}>
+                        <div style={{ fontSize: '32px', marginBottom: '10px' }}>🙋</div>
+                        <p style={{ fontSize: '13px', margin: 0 }}>Passez en mode <strong>"Avec d'autres"</strong> dans l'onglet Informations pour inviter des collaborateurs ou sociétés.</p>
                       </div>
-
-                      {/* ── BLOC DROIT : Externe ── */}
-                      <div style={{ background: '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '12px' }}>
-                        <label className="calendar-form-label" style={{ margin: '0 0 8px 0', display: 'block' }}>📧 Inviter une société externe</label>
-
-                        {!event?.id && (
-                          <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', background: '#fff8e1', padding: '5px 8px', borderRadius: '4px' }}>
-                            ℹ️ L'invitation sera envoyée après la création
-                          </div>
-                        )}
-
-                        {/* Emails collectés */}
-                        {externeEmailsList.length > 0 && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
-                            {externeEmailsList.map((em, i) => (
-                              <span key={i} style={{ background: '#E8F5E9', color: '#2E7D32', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #A5D6A7', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                {em}
-                                <button type="button" onClick={() => setExterneEmailsList(prev => prev.filter((_, j) => j !== i))}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2E7D32', fontSize: '11px', padding: 0, lineHeight: 1 }}>✕</button>
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <input type="email" value={externeEmail} onChange={e => setExterneEmail(e.target.value)}
-                          placeholder="contact@entreprise.fr"
-                          style={{ width: '100%', padding: '9px 11px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '13px', outline: 'none', boxSizing: 'border-box', marginBottom: '6px' }} />
-                        <button type="button"
-                          onClick={event?.id ? handleInviterExterne : handleAddExterneEmail}
-                          disabled={isSendingExterne || !externeEmail.trim()}
-                          style={{ width: '100%', padding: '8px', background: isSendingExterne ? '#ccc' : '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 600 }}>
-                          {isSendingExterne ? '...' : (event?.id ? '📨 Envoyer l\'invitation' : '+ Ajouter')}
+                    ) : (
+                      <>
+                        {/* Collaborateurs */}
+                        <button type="button" className="calendar-btn-invite-full" onClick={() => setShowInviteModal(true)} style={{ marginBottom: '10px' }}>
+                          <span className="icon">👥</span>
+                          <span>Collaborateurs</span>
+                          {selectedAttendees.length > 0 && <span className="badge-count">{selectedAttendees.length}</span>}
                         </button>
-                      </div>
 
-                    </div>
+                        {/* Société Solutravo */}
+                        <div style={{ background: userRole === 'collaborator' ? '#f5f5f5' : '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '10px', marginBottom: '10px', opacity: userRole === 'collaborator' ? 0.6 : 1, pointerEvents: userRole === 'collaborator' ? 'none' : 'auto' }}>
+                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#555', marginBottom: '6px' }}>
+                            🏢 Inviter une société (qui utilise Solutravo)
+                            {userRole === 'collaborator' && <span style={{ marginLeft: '6px', fontSize: '10px', background: '#f0f0f0', color: '#999', borderRadius: '4px', padding: '1px 5px' }}>Admin uniquement</span>}
+                          </div>
+                          {!isNewEvent && event?.invited_societes && event.invited_societes.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+                              {event.invited_societes.map(s => (
+                                <span key={s.id} style={{ background: '#FFF3E0', color: '#E65100', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #FFCC80' }}>🏢 {s.nomsociete}</span>
+                              ))}
+                            </div>
+                          )}
+                          {renderSocieteSearch(!!event?.id)}
+                        </div>
+
+                        {/* Société externe */}
+                        <div style={{ background: '#fafafa', border: '1px solid #e8e8e8', borderRadius: '10px', padding: '10px' }}>
+                          <div style={{ fontSize: '11px', fontWeight: 600, color: '#555', marginBottom: '6px' }}>📧 Inviter une société externe</div>
+                          {!event?.id && (
+                            <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px', background: '#fff8e1', padding: '4px 8px', borderRadius: '4px' }}>
+                              ℹ️ L'invitation sera envoyée après la création
+                            </div>
+                          )}
+                          {externeEmailsList.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+                              {externeEmailsList.map((em, i) => (
+                                <span key={i} style={{ background: '#E8F5E9', color: '#2E7D32', borderRadius: '14px', padding: '3px 8px', fontSize: '11px', border: '1px solid #A5D6A7', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                  {em}
+                                  <button type="button" onClick={() => setExterneEmailsList(prev => prev.filter((_, j) => j !== i))}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2E7D32', fontSize: '11px', padding: 0 }}>✕</button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <input type="email" value={externeEmail} onChange={e => setExterneEmail(e.target.value)}
+                              placeholder="contact@entreprise.fr"
+                              style={{ flex: 1, padding: '8px 10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '12px', outline: 'none', minWidth: 0 }} />
+                            <button type="button"
+                              onClick={event?.id ? handleInviterExterne : handleAddExterneEmail}
+                              disabled={isSendingExterne || !externeEmail.trim()}
+                              style={{ padding: '8px 12px', background: isSendingExterne ? '#ccc' : '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                              {isSendingExterne ? '...' : (event?.id ? '📨 Envoyer' : '+ Ajouter')}
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
 
-                {/* ── LIEU ───────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">📍 Lieu {selectedCategory?.requires_location && '*'}</label>
-                  <LocationAutocomplete value={location} onChange={setLocation}
-                    placeholder="Ex: 12 rue de la Paix, Paris" required={selectedCategory?.requires_location} />
-                  {selectedCategory?.requires_location && (
-                    <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
-                      Cette catégorie nécessite un lieu
-                    </div>
-                  )}
-                </div>
-
-                {/* ── HEURES ─────────────────────────────── */}
-                <TimeRangePicker
-                  startTime={startTime} endTime={endTime}
-                  onStartTimeChange={setStartTime} onEndTimeChange={setEndTime}
-                  defaultDuration={60}
-                />
-
-                {/* ── RAPPELS ────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">🔔 Rappels</label>
-                  <div className="reminders-list">
-                    {reminders.map((reminder, index) => (
-                      <div key={index} className="reminder-item">
-                        <select value={reminder.value} onChange={(e) => handleReminderChange(index, 'value', e.target.value)} className="reminder-select">
-                          <option value="5">5 minutes avant</option>
-                          <option value="10">10 minutes avant</option>
-                          <option value="15">15 minutes avant</option>
-                          <option value="30">30 minutes avant</option>
-                          <option value="60">1 heure avant</option>
-                          <option value="120">2 heures avant</option>
-                          <option value="1440">1 jour avant</option>
-                          <option value="2880">2 jours avant</option>
-                          <option value="10080">1 semaine avant</option>
-                        </select>
-                        <select value={reminder.method} onChange={(e) => handleReminderChange(index, 'method', e.target.value)} className="reminder-select">
-                          <option value="email">📧 Email</option>
-                          {/* <option value="notification">🔔 Notification</option> */}
-                        </select>
-                        <button type="button" onClick={() => handleRemoveReminder(index)} className="reminder-remove-btn">✕</button>
-                      </div>
-                    ))}
-                  </div>
-                  <button type="button" onClick={handleAddReminder} className="calendar-btn-add-reminder">+ Ajouter un rappel</button>
-                </div>
-
-                {/* ── COULEUR ────────────────────────────── */}
-                <div className="calendar-form-group">
-                  <label className="calendar-form-label">Couleur</label>
-                  <div className="calendar-color-picker">
-                    {colorOptions.map((option) => (
-                      <button key={option.value} type="button"
-                        className={`calendar-color-option ${color === option.value ? 'active' : ''}`}
-                        style={{ backgroundColor: option.value }} onClick={() => setColor(option.value)} />
-                    ))}
-                  </div>
-                </div>
-
-                </> /* fin étape 2 */ }
               </form>
 
             ) : (
@@ -832,17 +802,15 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
           {/* FOOTER */}
           <div className="calendar-modal-footer">
             {isEditing ? (
-              step === 1 ? (
+              scope === 'collaborative' && activeTab === 'infos' ? (
+                /* Avec d'autres + Tab Infos → forcer à aller sur Invités */
+                <button className="calendar-btn-primary" onClick={() => setActiveTab('invites')}>
+                  Continuer → Invités
+                </button>
+              ) : (
+                /* Moi seul (tab 1) OU Avec d'autres tab Invités → Annuler + Enregistrer */
                 <>
                   <button className="calendar-btn-secondary" onClick={onClose}>Annuler</button>
-                  <button className="calendar-btn-primary" onClick={() => {
-                    if (!title.trim()) { alert('Le titre est requis'); return; }
-                    setStep(2);
-                  }}>Suivant →</button>
-                </>
-              ) : (
-                <>
-                  <button className="calendar-btn-secondary" onClick={() => setStep(1)}>← Précédent</button>
                   <button className="calendar-btn-primary" onClick={handleSave}>Enregistrer</button>
                 </>
               )
@@ -866,39 +834,44 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
           {/* STYLES */}
           <style>{`
-            .scope-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            .scope-option { display: block; padding: 14px; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-            .scope-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-            .scope-option input[type="radio"] { display: none; }
-            .invite-participants-group { display: flex; gap:10px; align-items:center !important; }
-            .scope-content { display: flex; align-items: center; gap: 14px; }
-            .scope-icon { font-size: 32px; }
-            .scope-text { flex: 1; text-align: left; }
-            .scope-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; color: #333; }
-            .scope-desc { font-size: 12px; color: #666; }
-            .calendar-form-select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white; cursor: pointer; }
-            .calendar-form-select option { font-size:12px; font-weight:350; width: 100%; }
-            .calendar-btn-invite-full { width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); color: white; border: none; border-radius: 10px; font-weight: 500; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25); }
-            .calendar-btn-invite-full:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(76, 175, 80, 0.35); }
-            .calendar-btn-invite-full .icon { font-size: 20px; }
-            .calendar-btn-invite-full .badge-count { background: rgba(255,255,255,0.25); padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+            /* ── Onglets ── */
+            .cm-tabs { display: flex; border-bottom: 2px solid #f0f0f0; margin-bottom: 12px; gap: 0; }
+            .cm-tab { flex: 1; padding: 9px 6px; background: none; border: none; font-size: 13px; font-weight: 500; color: #999; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+            .cm-tab-active { color: #E77131; border-bottom-color: #E77131; }
+            .cm-tab-badge { background: #E77131; color: white; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+            /* ── Contenu onglet ── */
+            .cm-tab-content { display: flex; flex-direction: column; gap: 8px; }
+            /* ── Ligne label + champ ── */
+            .cm-field-row { display: flex; align-items: center; gap: 8px; }
+            .cm-field-row-top { align-items: flex-start; }
+            .cm-field-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; width: 68px; flex-shrink: 0; }
+            .cm-input { flex: 1; padding: 8px 10px !important; font-size: 13px !important; }
+            /* ── Pills portée ── */
+            .cm-scope-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+            .cm-pill { padding: 5px 12px; border: 1.5px solid #ddd; border-radius: 20px; background: white; font-size: 12px; cursor: pointer; color: #555; font-weight: 500; transition: all 0.15s; }
+            .cm-pill-blue { border-color: #42A5F5; background: #E3F2FD; color: #1565C0; }
+            .cm-pill-green { border-color: #4CAF50; background: #E8F5E9; color: #2E7D32; }
+            /* ── Bouton inviter ── */
+            .calendar-btn-invite-full { width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); color: white; border: none; border-radius: 8px; font-weight: 500; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+            .calendar-btn-invite-full .icon { font-size: 16px; }
+            .calendar-btn-invite-full .badge-count { background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+            /* ── Autres ── */
             .badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 14px; color: white; font-size: 11px; font-weight: 500; }
             .event-info-header { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-            .calendar-btn-invite { padding: 10px 16px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-weight: 450; }
-            .calendar-color-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; justify-items: center !important; align-items: center !important; }
-            .calendar-color-option { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; flex-shrink: 0 !important; }
-            .calendar-color-option:hover { transform: scale(1.1); }
-            .calendar-color-option.active { border-color: #333; box-shadow: 0 0 0 2px white, 0 0 0 4px #333; }
-            .reminders-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-            .reminder-item { display: flex; gap: 8px; align-items: center; }
-            .reminder-select { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white; cursor: pointer; }
-            .reminder-select:focus { outline: none; border-color: #E77131; box-shadow: 0 0 0 3px rgba(231, 113, 49, 0.1); }
-            .reminder-remove-btn { width: 32px; height: 32px; border: none; background: #f5f5f5; border-radius: 50%; cursor: pointer; color: #999; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-            .reminder-remove-btn:hover { background: #ffebee; color: #ef5350; }
-            .calendar-btn-add-reminder { width: 100%; padding: 10px; border: 2px dashed #ddd; background: white; border-radius: 6px; color: #666; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-            .calendar-btn-add-reminder:hover { border-color: #E77131; color: #E77131; background: #FFF3E0; }
-            @media (max-width: 768px) {
-              .calendar-color-option { width:35px !important; height:35px !important; cursor: pointer; transition: all 0.2s; border-radius: 50%; aspect-ratio: 1 / 1; }
+            .calendar-btn-invite { padding: 8px 14px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-weight: 500; font-size: 13px; }
+            .calendar-form-select { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white; cursor: pointer; }
+            .calendar-form-select option { font-size: 12px; }
+            /* ── Responsive mobile ── */
+            @media (max-width: 500px) {
+              .cm-field-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+              .cm-field-label { width: auto; }
+              .cm-input { width: 100%; box-sizing: border-box; }
+              .cm-scope-pills { width: 100%; }
+              .cm-pill { flex: 1; text-align: center; }
+              .calendar-modal-content { width: 98% !important; }
+              .calendar-modal-header { padding: 14px 16px; }
+              .calendar-modal-body { padding: 12px; }
+              .calendar-modal-footer { padding: 10px 14px; }
             }
           `}</style>
         </div>
