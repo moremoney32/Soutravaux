@@ -962,12 +962,18 @@
     padding-top: 14px;
   }
 
+  .calendar-week-view {
+    overflow-x: auto;
+  }
+
   .calendar-week-header {
-    grid-template-columns: 50px repeat(7, 1fr);
+    grid-template-columns: 50px repeat(7, minmax(44px, 1fr));
+    min-width: 360px;
   }
 
   .calendar-week-grid {
-    grid-template-columns: 50px repeat(7, 1fr);
+    grid-template-columns: 50px repeat(7, minmax(44px, 1fr));
+    min-width: 360px;
   }
 
   .calendar-day-header {
@@ -995,17 +1001,62 @@
   }
 
   .calendar-header {
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 8px 12px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 8px 10px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .calendar-header-left {
+    gap: 8px;
+  }
+
+  .calendar-logo-text {
+    display: none; /* cache le texte "Agenda" sur mobile, garde l'icône */
+  }
+
+  .calendar-logo i {
+    font-size: 20px;
   }
 
   .calendar-header-center {
-    gap: 8px;
+    gap: 6px;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .calendar-month-year {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .calendar-header-right {
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  /* Masquer le badge Vue sur mobile — il est dans le menu Filtres */
+  .calendar-vue-badge-desktop {
+    display: none;
+  }
+
+  .calendar-btn-today {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .calendar-view-dropdown select {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  /* Pas de scroll horizontal - sans bloquer les dropdowns */
+  .calendar-container {
+    max-width: 100vw;
   }
 }
 
@@ -1241,6 +1292,55 @@
   background: var(--color-light-gray);
   flex-wrap: wrap;
   justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* ── MOBILE : footer collé en bas de l'écran ── */
+@media (max-width: 500px) {
+  .calendar-modal-overlay {
+    padding-top: 0;
+    align-items: flex-start;
+  }
+
+  .calendar-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    max-height: 100dvh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .calendar-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 4px;
+    background: white;
+  }
+
+  .calendar-modal-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: var(--color-light-gray);
+    border-top: 2px solid var(--color-border);
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .calendar-btn-primary,
+  .calendar-btn-secondary,
+  .calendar-btn-danger {
+    flex: 1;
+    justify-content: center;
+    padding: 13px 10px;
+    font-size: 14px;
+  }
 }
 
 .calendar-modal-footer-spacer {

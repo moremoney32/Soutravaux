@@ -628,6 +628,9 @@ const GoogleCalendar: React.FC = () => {
   const [isLoadingCollaborators, setIsLoadingCollaborators] = useState(false);
   const [userRole, setUserRole] = useState<'admin' | 'collaborator' | null>(null);
 
+  // Bottom sheet collaborateurs (mobile)
+  const [showCollabSheet, setShowCollabSheet] = useState(false);
+
   // ✅ NOUVEAU : Filtres
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
@@ -820,8 +823,10 @@ const GoogleCalendar: React.FC = () => {
         const endDate = weekEnd.toISOString().split('T')[0];
 
         const response = await fetch(
-          `https://staging.solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
+        `https://staging.solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
+         //`http://localhost:3000/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
         );
+        // );
         const result = await response.json();
 
         if (result.success && result.role) {
@@ -1005,9 +1010,19 @@ const GoogleCalendar: React.FC = () => {
       <div className="calendar-main">
         <div className="calendar-header">
           <div className="calendar-header-left">
-            <div className="calendar-logo">
+            <div
+              className="calendar-logo"
+              onClick={() => userRole === 'admin' && collaborators.length > 0 && setShowCollabSheet(true)}
+              style={{ cursor: userRole === 'admin' && collaborators.length > 0 ? 'pointer' : 'default', position: 'relative' }}
+              title="Voir les agendas des collaborateurs"
+            >
               <i className="fas fa-calendar"></i>
-              <span>Agenda</span>
+              <span className="calendar-logo-text">Agenda</span>
+              {selectedCollaboratorIds.length > 0 && (
+                <span style={{ position: 'absolute', top: '-4px', right: '-8px', background: '#E77131', color: 'white', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>
+                  {selectedCollaboratorIds.length}
+                </span>
+              )}
             </div>
           </div>
 
@@ -1028,12 +1043,12 @@ const GoogleCalendar: React.FC = () => {
 
           <div className="calendar-header-right">
 
-            {/* ✅ Badge vue collaborateur */}
+            {/* ✅ Badge vue collaborateur (caché sur mobile → accessible via Filtres) */}
             {userRole === 'admin' && selectedCollaboratorIds.length > 0 && (
-              <div style={{
+              <div className="calendar-vue-badge-desktop" style={{
                 padding: '8px 16px', background: '#E8F5E9',
                 borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-                color: '#2E7D32', marginRight: '12px'
+                color: '#2E7D32', marginRight: '12px', whiteSpace: 'nowrap'
               }}>
                 👁️ Vue : {selectedCollaboratorIds
                     .map(id => collaborators.find(c => c.membre_id === id)?.prenom)
@@ -1073,15 +1088,20 @@ const GoogleCalendar: React.FC = () => {
               {showFilterMenu && (
                 <>
                   <div
-                    style={{ position: 'fixed', inset: 0, zIndex: 998 }}
+                    style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
                     onClick={() => setShowFilterMenu(false)}
                   />
                   <div style={{
-                    position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+                    position: window.innerWidth <= 768 ? 'fixed' : 'absolute',
+                    top: window.innerWidth <= 768 ? '60px' : 'calc(100% + 8px)',
+                    left: window.innerWidth <= 768 ? '8px' : 'auto',
+                    right: window.innerWidth <= 768 ? '8px' : '0',
                     background: 'white', borderRadius: '12px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                    border: '1px solid #eee', width: '300px',
-                    zIndex: 999, padding: '16px'
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                    border: '1px solid #eee',
+                    width: window.innerWidth <= 768 ? 'auto' : '340px',
+                    maxHeight: '75vh', overflowY: 'auto',
+                    zIndex: 99999, padding: '16px'
                   }}>
 
                     {/* Header menu */}
@@ -1297,6 +1317,111 @@ const GoogleCalendar: React.FC = () => {
           onInvite={handleInviteStandalone}
           initialSelectedEmails={[]}
         />
+      )}
+
+      {/* ── PANNEAU LATÉRAL COLLABORATEURS (mobile) ──────────────────── */}
+      {showCollabSheet && (
+        <>
+          <style>{`
+            @keyframes slideInRight {
+              from { transform: translateX(100%); }
+              to   { transform: translateX(0); }
+            }
+          `}</style>
+
+          {/* Zone cliquable à gauche = ferme le panneau (calendrier visible derrière) */}
+          <div
+            onClick={() => setShowCollabSheet(false)}
+            style={{
+              position: 'fixed', inset: 0,
+              background: 'rgba(0,0,0,0.15)',
+              zIndex: 8000
+            }}
+          />
+
+          {/* Panneau latéral (droite) */}
+          <div style={{
+            position: 'fixed', top: 0, right: 0,
+            width: '68%',
+            height: '100%',
+            background: 'white',
+            boxShadow: '-6px 0 28px rgba(0,0,0,0.18)',
+            zIndex: 8001,
+            display: 'flex', flexDirection: 'column',
+            animation: 'slideInRight 0.26s ease-out'
+          }}>
+
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '14px 16px',
+              borderBottom: '1px solid #eee',
+              background: '#f8f9fa'
+            }}>
+              <span style={{ fontWeight: 700, fontSize: '14px', color: '#333' }}>
+                👥 Collaborateurs
+              </span>
+              <button
+                onClick={() => setShowCollabSheet(false)}
+                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#888', lineHeight: 1, padding: '0 4px' }}
+              >×</button>
+            </div>
+
+            {/* Sous-titre */}
+            <p style={{ margin: '8px 16px 4px', fontSize: '11px', color: '#999' }}>
+              Appuyez pour filtrer l'agenda
+            </p>
+
+            {/* Liste collaborateurs */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {collaborators.length === 0 ? (
+                <p style={{ color: '#999', fontSize: '13px', textAlign: 'center', marginTop: '20px' }}>
+                  Aucun collaborateur
+                </p>
+              ) : (
+                collaborators.map(collab => {
+                  const isSelected = selectedCollaboratorIds.includes(collab.membre_id);
+                  const initials = `${collab.prenom?.[0] ?? ''}${(collab as any).nom?.[0] ?? ''}`.toUpperCase() || '?';
+                  return (
+                    <button
+                      key={collab.membre_id}
+                      onClick={() => handleToggleCollaborator(collab.membre_id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '10px 12px',
+                        border: `2px solid ${isSelected ? '#E77131' : '#eee'}`,
+                        borderRadius: '10px',
+                        background: isSelected ? '#FFF3E0' : 'white',
+                        cursor: 'pointer', textAlign: 'left',
+                        transition: 'all 0.15s ease',
+                        width: '100%'
+                      }}
+                    >
+                      {/* Avatar */}
+                      <div style={{
+                        width: '32px', height: '32px', minWidth: '32px',
+                        borderRadius: '50%',
+                        background: isSelected ? '#E77131' : '#bbb',
+                        color: 'white', fontSize: '11px', fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        {initials}
+                      </div>
+                      {/* Nom */}
+                      <span style={{ flex: 1, fontSize: '13px', fontWeight: 500, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {collab.prenom} {(collab as any).nom ?? ''}
+                      </span>
+                      {/* Checkmark */}
+                      {isSelected && (
+                        <span style={{ color: '#E77131', fontWeight: 700, fontSize: '15px', flexShrink: 0 }}>✓</span>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

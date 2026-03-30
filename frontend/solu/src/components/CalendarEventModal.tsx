@@ -863,15 +863,18 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
             .calendar-form-select option { font-size: 12px; }
             /* ── Responsive mobile ── */
             @media (max-width: 500px) {
-              .cm-field-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-              .cm-field-label { width: auto; }
-              .cm-input { width: 100%; box-sizing: border-box; }
+              .cm-field-row { flex-direction: column; align-items: flex-start; gap: 3px; }
+              .cm-field-label { width: auto; font-size: 10px; }
+              .cm-input { width: 100% !important; box-sizing: border-box; }
               .cm-scope-pills { width: 100%; }
-              .cm-pill { flex: 1; text-align: center; }
-              .calendar-modal-content { width: 98% !important; }
-              .calendar-modal-header { padding: 14px 16px; }
-              .calendar-modal-body { padding: 12px; }
-              .calendar-modal-footer { padding: 10px 14px; }
+              .cm-pill { flex: 1; text-align: center; padding: 7px 6px; }
+              .cm-tabs { gap: 0; }
+              .cm-tab { font-size: 12px; padding: 10px 4px; }
+              .cm-tab-content { gap: 10px; }
+              .calendar-btn-invite-full { padding: 13px 12px; font-size: 14px; }
+              .calendar-btn-invite-full .icon { font-size: 18px; }
+              /* Pas de scroll horizontal */
+              .cm-tab-content, .cm-field-row { overflow-x: hidden; max-width: 100%; }
             }
           `}</style>
         </div>
