@@ -1315,22 +1315,27 @@
 
   .calendar-modal-body {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 4px;
+    /* espace pour ne pas être masqué par le footer fixe */
+    padding-bottom: 80px;
     background: white;
   }
 
   .calendar-modal-footer {
-    position: sticky;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 9999;
     background: var(--color-light-gray);
-    border-top: 2px solid var(--color-border);
+    border-top: 2px solid #ddd;
     padding: 12px 16px;
+    /* gestion encoche iPhone */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     gap: 10px;
+    box-shadow: 0 -3px 12px rgba(0,0,0,0.10);
   }
 
   .calendar-btn-primary,
