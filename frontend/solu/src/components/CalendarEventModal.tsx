@@ -620,7 +620,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     {/* Couleur compacte */}
                     <div className="cm-field-row">
                       <span className="cm-field-label">Couleur</span>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'white', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: 'white', flexWrap: 'wrap',marginTop:"10px" }}>
                         {colorOptions.map((option) => (
                           <button key={option.value} type="button"
                             onClick={() => setColor(option.value)}
