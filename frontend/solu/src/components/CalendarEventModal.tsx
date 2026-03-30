@@ -638,7 +638,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     {scope !== 'collaborative' ? (
                       <div style={{ textAlign: 'center', padding: '30px 20px', color: '#aaa' }}>
                         <div style={{ fontSize: '32px', marginBottom: '10px' }}>🙋</div>
-                        <p style={{ fontSize: '13px', margin: 0 }}>Passez en mode <strong>"Avec d'autres"</strong> dans l'onglet Informations pour inviter des collaborateurs ou sociétés.</p>
+                        <p style={{ fontSize: '13px', margin: 0,lineHeight:"1.5" }}>Passez en mode <strong>"Avec d'autres"</strong> dans l'onglet Informations pour inviter des collaborateurs ou sociétés.</p>
                       </div>
                     ) : (
                       <>
