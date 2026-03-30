@@ -7,7 +7,8 @@
     /* Environnement */
     "target": "ES2020",            // Version JS générée (compatible Node 14+)
     "module": "commonjs",          // Format utilisé par Node.js
-    "moduleResolution": "node16",   // Résolution des modules à la façon Node
+    "moduleResolution": "node",    // Résolution des modules à la façon Node
+    "ignoreDeprecations": "5.0",   // Silence deprecation node/node10
     "esModuleInterop": true,       // Permet d'importer 'express' correctement
     "forceConsistentCasingInFileNames": true, // Sensible à la casse
 
