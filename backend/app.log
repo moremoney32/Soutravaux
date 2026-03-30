@@ -1,0 +1,29 @@
+[2026-03-30T17:00:36.121Z] C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+[2026-03-30T17:00:36.161Z] TSError: ⨯ Unable to compile TypeScript:
+[96msrc/services/RelanceCron.ts[0m:[93m42[0m:[93m49[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ to: any; recipientName: any; reference: any; pdfPath: string; societe: { name: any; email: any; }; membre: { prenom: any; nom: any; email: any; }; urgence: any; date_limite_retour: string | undefined; isRelance: true; }' is not assignable to parameter of type 'SendDemandePrixEmailParams'.
+  Type '{ to: any; recipientName: any; reference: any; pdfPath: string; societe: { name: any; email: any; }; membre: { prenom: any; nom: any; email: any; }; urgence: any; date_limite_retour: string | undefined; isRelance: true; }' is missing the following properties from type 'SendDemandePrixEmailParams': demandeId, societeId
+
+[7m 42[0m           const ok = await sendDemandePrixEmail({
+[7m   [0m [91m                                                ~[0m
+[7m 43[0m             to: dest.email_envoye_a,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 58[0m             isRelance: true   // ← indique que c'est une relance → template différent
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 59[0m           });
+[7m   [0m [91m~~~~~~~~~~~[0m
+
+    at createTSError [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:859:12[90m)[39m
+    at reportTSError [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:863:19[90m)[39m
+    at getOutput [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:1077:36[90m)[39m
+    at Object.compile [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:1433:41[90m)[39m
+    at Module.m._compile [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:1617:30[90m)[39m
+[90m    at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)[39m
+    at Object.require.extensions.<computed> [as .ts] [90m(C:\Users\Ngongang Franck\Desktop\Tchouta\solutravaux\backend\[39mnode_modules\[4mts-node[24m\src\index.ts:1621:12[90m)[39m
+[90m    at Module.load (node:internal/modules/cjs/loader:1275:32)[39m
+[90m    at Function.Module._load (node:internal/modules/cjs/loader:1096:12)[39m
+[90m    at Module.require (node:internal/modules/cjs/loader:1298:19)[39m {
+  diagnosticCodes: [ [33m2345[39m ]
+}

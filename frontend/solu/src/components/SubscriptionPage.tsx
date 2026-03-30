@@ -15,7 +15,7 @@ import PricingFooter from './PricingFooter';
 const baseUrlTest =
   window.location.hostname === "localhost"
     ? "http://localhost:3000/api"
-    : "https://solutravo.zeta-app.fr/api";
+    : "https://staging.solutravo.zeta-app.fr/api";
 
 // FONCTIONS HELPERS
 const getIconComponent = (iconName?: string) => {
@@ -148,8 +148,8 @@ const SubscriptionPage: React.FC = () => {
         plan_id: planId
       };
       //https://backendstaging.solutravo-compta.fr/api/stripe/customer
-       const res = await fetch("https://integration-api.solutravo-app.fr/api/stripe/checkout", {
-      //const res = await fetch("https://backendstaging.solutravo-compta.fr/api/stripe/customer", {
+       //const res = await fetch("https://integration-api.solutravo-app.fr/api/stripe/checkout", {
+      const res = await fetch("https://backendstaging.solutravo-compta.fr/api/stripe/customer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -302,8 +302,8 @@ const SubscriptionPage: React.FC = () => {
   // window.history.replaceState({}, '', cleanUrl);
   if (!membre_id || !societe_id) {
       console.log("IDs manquants, redirection vers le dashboard");
-      window.location.href = "https://app.solutravo-app.fr/dashboard";
-      // window.location.href = "https://staging.solutravo-compta.fr/dashboard";
+      //window.location.href = "https://app.solutravo-app.fr/dashboard";
+       window.location.href = "https://staging.solutravo-compta.fr/dashboard";
       return;
     }
     fetchData();
@@ -335,8 +335,8 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const handleNext = () => {
-     //const redirectUrl = "https://staging.solutravo-compta.fr/dashboard";
-     const redirectUrl = "https://app.solutravo-app.fr/dashboard";
+     const redirectUrl = "https://staging.solutravo-compta.fr/dashboard";
+     //const redirectUrl = "https://app.solutravo-app.fr/dashboard";
     setTimeout(() => {
       window.location.href = redirectUrl;
     }, 300);
