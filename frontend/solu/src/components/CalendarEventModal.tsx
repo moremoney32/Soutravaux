@@ -632,7 +632,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   </div>
                 )}
 
-                {/* ══ ONGLET 2 : INVITÉS ══ */}
+                {/* ══ ONGLET 2 : INVITÉS... ══ */}
                 {activeTab === 'invites' && (
                   <div className="cm-tab-content">
                     {scope !== 'collaborative' ? (
