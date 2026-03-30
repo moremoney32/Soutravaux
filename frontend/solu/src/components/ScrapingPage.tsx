@@ -462,7 +462,7 @@ const ScrapingPage: React.FC = () => {
                                 <i className="fas fa-briefcase"></i> Activité
                             </label>
                             <CustomSelect
-                                options={activites.map(a => ({ code: a.id, nom: a.nom }))}
+                                options={activites.map(a => ({ code: a.nom, nom: a.nom }))}
                                 value={filters.activite}
                                 onChange={(value) => handleFilterChange('activite', value as string)}
                                 placeholder="Toutes les activités"
