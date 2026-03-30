@@ -203,8 +203,8 @@ export const createDemandeController = async (
     });
 
     // 7. Email de confirmation à l'émetteur
-     const pdfUrl = `https://staging.solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
-    //const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
+     //const pdfUrl = `https://staging.solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
+    const pdfUrl = `https://solutravo.zeta-app.fr/api/demandes-prix/${demandeId}/pdf?societe_id=${input.societe_id}`;
 
     res.status(201).json({
       success: true,
