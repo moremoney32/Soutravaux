@@ -15,7 +15,7 @@ interface Collaborator {
   expires_at: string | null;
 }
 
-// ✅ PROPS POUR INVITATION DES COLLABORATEURS
+// ✅ PROPS POUR INVITATION DES COLLABORATEURS...
 interface InviteAttendeesModalProps {
   isOpen: boolean;
   onClose: () => void;
