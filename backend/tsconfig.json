@@ -27,7 +27,8 @@
     "noFallthroughCasesInSwitch": true, // Pas de "case" qui tombe au suivant
 
     /* Debug */
-    "sourceMap": true              // Génère les .map pour déboguer en TS
+    "sourceMap": true,             // Génère les .map pour déboguer en TS
+    "skipLibCheck": true           // Ignore les erreurs dans node_modules
   },
   "include": ["src", "server.ts"],              // Inclut uniquement ton dossier src
   "exclude": ["node_modules", "dist"] // Ignore build + dépendances
