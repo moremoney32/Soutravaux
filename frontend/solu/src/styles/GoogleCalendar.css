@@ -704,13 +704,15 @@
 }
 
 .calendar-day-header {
-  padding: 12px 8px;
+  padding: 8px 4px;
   text-align: center;
   border-right: 1px solid var(--color-border);
   background: white;
   display: flex !important;
-  gap:12px;
+  flex-direction: column !important;
+  gap: 3px;
   align-items: center !important;
+  justify-content: center;
 }
 
 .calendar-day-header-today {
@@ -733,7 +735,8 @@
   /* font-size: 18px; */
    font-size: 16px;
   color: var(--color-gray-primary);
-  margin-top: 4px;
+  margin-top: 0;
+  line-height: 1;
 }
 
 .calendar-day-number-today {
@@ -967,25 +970,36 @@
   }
 
   .calendar-week-header {
-    grid-template-columns: 50px repeat(7, minmax(44px, 1fr));
-    min-width: 360px;
+    grid-template-columns: 36px repeat(7, 1fr);
   }
 
   .calendar-week-grid {
-    grid-template-columns: 50px repeat(7, minmax(44px, 1fr));
-    min-width: 360px;
+    grid-template-columns: 36px repeat(7, 1fr);
   }
 
+  /* Empilage vertical : nom au-dessus, chiffre en dessous */
   .calendar-day-header {
-    padding: 8px 4px;
+    flex-direction: column !important;
+    gap: 2px !important;
+    padding: 5px 2px !important;
+    justify-content: center;
   }
 
   .calendar-day-name {
-    font-size: 10px;
+    font-size: 9px;
+    letter-spacing: 0;
   }
 
   .calendar-day-number {
-    font-size: 14px;
+    font-size: 12px;
+    margin-top: 0;
+    line-height: 1;
+  }
+
+  .calendar-day-number-today {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
   }
 
   .calendar-time-slot {
@@ -997,7 +1011,8 @@
   }
 
   .calendar-time-label {
-    font-size: 9px;
+    font-size: 8px;
+    padding-right: 3px;
   }
 
   .calendar-header {

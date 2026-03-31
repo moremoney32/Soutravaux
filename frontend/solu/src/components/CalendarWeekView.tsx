@@ -40,7 +40,7 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
   }, [weekStart]);
 
   const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
-  const dayNames = ['LUN.', 'MAR.', 'MER.', 'JEU.', 'VEN.', 'SAM.', 'DIM.'];
+  const dayNames = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
   const today = useMemo(() => new Date(), []);
 
   // ✅ NOUVEAU : Vérifier si aujourd'hui est dans la semaine affichée
