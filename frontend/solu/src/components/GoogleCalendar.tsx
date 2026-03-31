@@ -568,6 +568,7 @@ import {
   fetchEvents,
   fetchCategories,
   createCategory,
+  deleteCategory,
   createCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
@@ -823,7 +824,7 @@ const GoogleCalendar: React.FC = () => {
         const endDate = weekEnd.toISOString().split('T')[0];
 
         const response = await fetch(
-        `https://solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
+        `https://staging.solutravo.zeta-app.fr/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
          //`http://localhost:3000/api/calendar/events?societe_id=${societeId}&membre_id=${membreId}&start_date=${startDate}&end_date=${endDate}`
         );
         // );
@@ -865,6 +866,16 @@ const GoogleCalendar: React.FC = () => {
       return newCategory;
     } catch (error) {
       console.error('Erreur création catégorie:', error);
+      throw error;
+    }
+  }, [societeId]);
+
+  const handleDeleteCategory = useCallback(async (categoryId: number): Promise<void> => {
+    try {
+      await deleteCategory(categoryId, societeId);
+      setCategories(prev => prev.filter(c => c.id !== categoryId));
+    } catch (error) {
+      console.error('Erreur suppression catégorie:', error);
       throw error;
     }
   }, [societeId]);
@@ -1302,6 +1313,7 @@ const GoogleCalendar: React.FC = () => {
         categories={categories}
         onFetchCategories={loadCategories}
         onCreateCategory={handleCreateCategory}
+        onDeleteCategory={handleDeleteCategory}
         currentMembreId={membreId}
         currentSocieteId={societeId}
         userRole={userRole}

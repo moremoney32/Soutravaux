@@ -129,8 +129,8 @@ const CampagneDetails = () => {
   const blockUnblockContacts = async (phoneNumbers: string[], shouldBlock: boolean) => {
     try {
       const response = await fetch(
-         'https://integration-api.solutravo-app.fr/api/contacts/block',
-       // 'https://backendstaging.solutravo-compta.fr/api/contacts/block',
+         //'https://integration-api.solutravo-app.fr/api/contacts/block',
+        'https://backendstaging.solutravo-compta.fr/api/contacts/block',
         {
           method: 'POST',
           headers: {

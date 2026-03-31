@@ -27,7 +27,7 @@ import { getActivitesController, getDepartementsController, getPreSocietesContro
 import sseRoutes from './sse.routes';
 // import { scrapeGoogleMapsController } from "../controllers/ScraperControllerOptimized";
 import { countContactsController, getContactListByIdController, getContactListsController, getContactsFromListsController, getPhoneNumbersController } from "../controllers/ContactListController";
-import { createCategoryController,  createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, inviterSocieteController, inviterSocieteExterneController, respondToInviteController, searchSocietesController, updateEventController } from "../controllers/CalendarController";
+import { createCategoryController, deleteCategoryController, createEventController,  deleteEventController, getAttendeesController, getCategoriesController, getEventsController, inviteAttendeesController, inviterSocieteController, inviterSocieteExterneController, respondToInviteController, searchSocietesController, updateEventController } from "../controllers/CalendarController";
 import { getCollaboratorsBySocieteController, checkCollaboratorController, getSocietesByMemberController, assignCollaboratorController, removeCollaboratorController } from "../controllers/CollaboratorsController";
 import { archiverDemandeController, createDemandeController, downloadPDFController, getBibliothequesController, getCatalogueController, getCategoriesControllerPrice, getDemandeByIdController, getDemandesController, getFournisseursController, getProduitsBibliothequeController, updateStatutDestinataireController, uploadPJ, viewDemandePageController } from "../controllers/DemandesPrixControllers";
 
@@ -239,6 +239,7 @@ router.get('/calendar/societes', getPreSocietesController);
 
 router.get('/calendar/categories', getCategoriesController);
 router.post('/calendar/categories', createCategoryController);
+router.delete('/calendar/categories/:id', deleteCategoryController);
 
 /**
  * ROUTES COLLABORATEURS

@@ -272,7 +272,7 @@ const BibliothequeNavigationModal: React.FC<BibliothequeNavigationModalProps> = 
     const renderProductImage = (produit: Produit) => {
         const filename = produit.image?.split('/').pop();
         const imageUrl = filename
-            ? `https://solutravo.zeta-app.fr/public/uploads/catalogue/image/${filename}`
+            ? `https://staging.solutravo.zeta-app.fr/public/uploads/catalogue/image/${filename}`
             : null;
         return (
             <img

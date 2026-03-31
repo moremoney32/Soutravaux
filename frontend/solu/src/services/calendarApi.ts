@@ -2,7 +2,7 @@
 
 // services/calendarApi.ts - VERSION AVEC MEMBRE_ID
 
-const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 //const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface EventCategory {
@@ -132,6 +132,18 @@ export async function createCategory(
   }
 
   return result.data;
+}
+
+export async function deleteCategory(categoryId: number, societeId: number): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/calendar/categories/${categoryId}?societe_id=${societeId}`, {
+    method: 'DELETE',
+  });
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || 'Erreur suppression catégorie');
+  }
 }
 
 // ✅ MODIFIÉ : Ajouter membre_id

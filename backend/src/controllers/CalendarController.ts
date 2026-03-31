@@ -14,7 +14,7 @@ import {
   searchSocietes,
   inviterSocieteExterne
 } from '../services/CalendarService';
-import { createCategory, getCategories } from '../services/CategoryService';
+import { createCategory, deleteCategory, getCategories } from '../services/CategoryService';
 import { verifyAccess } from '../services/AuthorizationService';
 
 /**
@@ -436,7 +436,36 @@ export const createCategoryController = async (
   };
 
 
-  export const searchSocietesController = async (
+/**
+ * DELETE /api/calendar/categories/:id
+ */
+export const deleteCategoryController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const categoryId = Number(req.params.id);
+    const societeId = Number(req.query.societe_id);
+
+    if (!categoryId || !societeId) {
+      res.status(400).json({ success: false, message: 'id et societe_id requis' });
+      return;
+    }
+
+    await deleteCategory(categoryId, societeId);
+
+    res.status(200).json({ success: true, message: 'Catégorie supprimée' });
+  } catch (err: any) {
+    if (err.message.includes('introuvable') || err.message.includes('non supprimable')) {
+      res.status(404).json({ success: false, message: err.message });
+      return;
+    }
+    next(err);
+  }
+};
+
+export const searchSocietesController = async (
   req: Request,
   res: Response,
   next: NextFunction

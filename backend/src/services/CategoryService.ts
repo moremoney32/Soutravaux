@@ -81,6 +81,41 @@ export async function createCategory(data: CreateCategoryInput): Promise<EventCa
 }
 
 /**
+ * Supprimer une catégorie personnalisée (appartenant à la société)
+ */
+export async function deleteCategory(categoryId: number, societeId: number): Promise<void> {
+  const conn = await pool.getConnection();
+
+  try {
+    // Vérifier que la catégorie existe, n'est pas prédéfinie, et appartient à cette société
+    const [rows] = await conn.query<RowDataPacket[]>(
+      `SELECT id FROM event_categories WHERE id = ? AND is_predefined = FALSE AND created_by_societe_id = ?`,
+      [categoryId, societeId]
+    );
+
+    if (rows.length === 0) {
+      throw new Error('Catégorie introuvable ou non supprimable');
+    }
+
+    // Mettre les événements qui utilisaient cette catégorie à NULL
+    await conn.query(
+      `UPDATE calendar_events SET event_category_id = NULL WHERE event_category_id = ?`,
+      [categoryId]
+    );
+
+    await conn.query(`DELETE FROM event_categories WHERE id = ?`, [categoryId]);
+
+    console.log(`✅ Catégorie ID ${categoryId} supprimée`);
+
+  } catch (error: any) {
+    console.error('Erreur deleteCategory:', error);
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
+/**
  * Récupérer une catégorie par ID
  */
 export async function getCategoryById(categoryId: number): Promise<EventCategory | null> {

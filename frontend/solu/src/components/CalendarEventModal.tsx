@@ -20,6 +20,7 @@ interface CalendarEventModalProps {
   categories?: EventCategory[];
   onFetchCategories?: () => Promise<void>;
   onCreateCategory?: (label: string, icon?: string, color?: string, requires_location?: boolean) => Promise<EventCategory>;
+  onDeleteCategory?: (categoryId: number) => Promise<void>;
   currentMembreId?: number;
   currentSocieteId?: number;
   userRole?: 'admin' | 'collaborator' | null;
@@ -50,6 +51,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   isNewEvent = false,
   categories = [],
   onCreateCategory,
+  onDeleteCategory,
   currentMembreId,
   currentSocieteId,
   userRole = null
@@ -75,10 +77,14 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   console.log('Selected Attendees:', inviteMethod);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreateCategoryInput, setShowCreateCategoryInput] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [categoryDropdownPos, setCategoryDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const categoryTriggerRef = useRef<HTMLDivElement>(null);
   const [newCategoryLabel, setNewCategoryLabel] = useState('');
   const [newCategoryIcon, setNewCategoryIcon] = useState('📌');
   const [newCategoryColor, setNewCategoryColor] = useState('#E77131');
   const [newCategoryRequiresLocation, setNewCategoryRequiresLocation] = useState(false);
+  const [newCategoryError, setNewCategoryError] = useState('');
 
   // ✅ États invitation société
   const [searchQuery, setSearchQuery] = useState('');
@@ -382,7 +388,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   };
 
   const handleCreateCategory = async (): Promise<void> => {
-    if (!newCategoryLabel.trim()) { alert('Veuillez entrer un nom pour la catégorie'); return; }
+    if (!newCategoryLabel.trim()) { setNewCategoryError('Veuillez entrer un nom pour la catégorie'); return; }
+    setNewCategoryError('');
     if (onCreateCategory) {
       try {
         const newCategory = await onCreateCategory(newCategoryLabel.trim(), newCategoryIcon, newCategoryColor, newCategoryRequiresLocation);
@@ -393,8 +400,15 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
         setNewCategoryIcon('📌');
         setNewCategoryColor('#E77131');
         setNewCategoryRequiresLocation(false);
-      } catch (error) {
-        alert('Erreur lors de la création de la catégorie');
+        setNewCategoryError('');
+      } catch (error: any) {
+        const status = error?.response?.status || error?.status;
+        const msg = error?.response?.data?.message || error?.message || '';
+        if (status === 409 || msg.includes('existe déjà')) {
+          setNewCategoryError('Cette catégorie existe déjà');
+        } else {
+          setNewCategoryError('Erreur lors de la création de la catégorie');
+        }
       }
     }
   };
@@ -518,19 +532,71 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     {/* Catégorie */}
                     <div className="cm-field-row">
                       <span className="cm-field-label">Catégorie</span>
-                      <div style={{ display: 'flex', gap: '6px', flex: 1 }}>
-                        <select className="calendar-form-select" value={eventCategoryId || ''} onChange={(e) => {
-                          const value = e.target.value;
-                          if (value) { setEventCategoryId(Number(value)); setCustomCategoryLabel(''); }
-                          else setEventCategoryId(undefined);
-                        }} style={{ flex: 1, padding: '7px 10px', fontSize: '13px' }}>
-                          <option value="">-- Catégorie --</option>
-                          {categories.map((category) => (
-                            <option key={category.id} value={category.id}>{category.icon} {category.label}</option>
-                          ))}
-                        </select>
+                      <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
+                        {/* Déclencheur dropdown custom */}
+                        <div
+                          ref={categoryTriggerRef}
+                          onClick={() => {
+                            if (!showCategoryDropdown && categoryTriggerRef.current) {
+                              const rect = categoryTriggerRef.current.getBoundingClientRect();
+                              setCategoryDropdownPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+                            }
+                            setShowCategoryDropdown(prev => !prev);
+                          }}
+                          style={{ flex: 1, padding: '7px 10px', fontSize: '13px', border: '1px solid #ddd', borderRadius: '6px', background: 'white', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none', minWidth: 0 }}
+                        >
+                          <span style={{ color: eventCategoryId ? '#333' : '#999', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {eventCategoryId
+                              ? (() => { const cat = categories.find(c => c.id === eventCategoryId); return cat ? `${cat.icon} ${cat.label}` : '-- Catégorie --'; })()
+                              : '-- Catégorie --'}
+                          </span>
+                          <span style={{ fontSize: '10px', color: '#888', flexShrink: 0, marginLeft: '4px' }}>▼</span>
+                        </div>
+
+                        {/* Liste déroulante — position:fixed pour éviter le clipping du modal */}
+                        {showCategoryDropdown && categoryDropdownPos && (
+                          <>
+                            <div onClick={() => setShowCategoryDropdown(false)} style={{ position: 'fixed', inset: 0, zIndex: 9998 }} />
+                            <div style={{ position: 'fixed', top: categoryDropdownPos.top, left: categoryDropdownPos.left, width: categoryDropdownPos.width, background: 'white', border: '1px solid #ddd', borderRadius: '6px', boxShadow: '0 4px 16px rgba(0,0,0,0.18)', zIndex: 9999, maxHeight: '240px', overflowY: 'auto' }}>
+                              <div
+                                onClick={() => { setEventCategoryId(undefined); setShowCategoryDropdown(false); }}
+                                style={{ padding: '10px 14px', cursor: 'pointer', fontSize: '13px', color: '#999', borderBottom: '1px solid #f0f0f0' }}
+                              >-- Catégorie --</div>
+                              {categories.map(cat => (
+                                <div
+                                  key={cat.id}
+                                  style={{ display: 'flex', alignItems: 'center', fontSize: '13px', background: eventCategoryId === cat.id ? '#fff3e8' : 'transparent', borderBottom: '1px solid #f9f9f9' }}
+                                  onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = '#E77131'; el.querySelectorAll('span, button').forEach((c: Element) => { (c as HTMLElement).style.color = 'white'; }); }}
+                                  onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.background = eventCategoryId === cat.id ? '#fff3e8' : 'transparent'; el.querySelectorAll('span').forEach((c: Element) => { (c as HTMLElement).style.color = ''; }); el.querySelectorAll('button').forEach((c: Element) => { (c as HTMLElement).style.color = '#e53935'; }); }}
+                                >
+                                  <span
+                                    onClick={() => { setEventCategoryId(cat.id); setCustomCategoryLabel(''); setShowCategoryDropdown(false); }}
+                                    style={{ flex: 1, padding: '10px 14px', cursor: 'pointer' }}
+                                  >
+                                    {cat.icon} {cat.label}
+                                  </span>
+                                  {!cat.is_predefined && onDeleteCategory && (
+                                    <button
+                                      type="button"
+                                      onClick={async (e) => {
+                                        e.stopPropagation();
+                                        try {
+                                          await onDeleteCategory(cat.id);
+                                          if (eventCategoryId === cat.id) setEventCategoryId(undefined);
+                                        } catch { /* ignore */ }
+                                      }}
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e53935', fontSize: '16px', lineHeight: 1, padding: '10px 14px', fontWeight: 'bold', flexShrink: 0 }}
+                                      title="Supprimer cette catégorie"
+                                    >×</button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+
                         <button type="button" onClick={() => setShowCreateCategoryInput(!showCreateCategoryInput)}
-                          style={{ padding: '7px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                          style={{ padding: '7px 10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                           + Nouvelle
                         </button>
                       </div>
@@ -538,8 +604,11 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
                     {showCreateCategoryInput && (
                       <div style={{ background: '#f5f5f5', borderRadius: '8px', padding: '10px', border: '1px solid #ddd', marginTop: '-4px' }}>
-                        <input type="text" value={newCategoryLabel} onChange={(e) => setNewCategoryLabel(e.target.value)} placeholder="Nom de la catégorie"
-                          style={{ width: '100%', padding: '7px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '13px', boxSizing: 'border-box', marginBottom: '8px' }} />
+                        <input type="text" value={newCategoryLabel} onChange={(e) => { setNewCategoryLabel(e.target.value); setNewCategoryError(''); }} placeholder="Nom de la catégorie"
+                          style={{ width: '100%', padding: '7px', border: `1px solid ${newCategoryError ? '#e53935' : '#ddd'}`, borderRadius: '4px', fontSize: '13px', boxSizing: 'border-box', marginBottom: newCategoryError ? '4px' : '8px' }} />
+                        {newCategoryError && (
+                          <div style={{ color: '#e53935', fontSize: '12px', marginBottom: '8px' }}>{newCategoryError}</div>
+                        )}
                         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
                           {['📌', '💼', '🏗️', '🔧', '🤝', '📦', '⚙️', '📋', '🎓', '✏️', '🎯', '🚀'].map((icon) => (
                             <button key={icon} type="button" onClick={() => setNewCategoryIcon(icon)}
@@ -550,7 +619,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                         </div>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button type="button" onClick={handleCreateCategory} style={{ flex: 1, padding: '7px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Créer</button>
-                          <button type="button" onClick={() => { setShowCreateCategoryInput(false); setNewCategoryLabel(''); }} style={{ flex: 1, padding: '7px', backgroundColor: '#999', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Annuler</button>
+                          <button type="button" onClick={() => { setShowCreateCategoryInput(false); setNewCategoryLabel(''); setNewCategoryError(''); }} style={{ flex: 1, padding: '7px', backgroundColor: '#999', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Annuler</button>
                         </div>
                       </div>
                     )}
