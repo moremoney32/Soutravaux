@@ -300,15 +300,16 @@ export async function createEvent(
     // 1️⃣ INSERT EVENT
     // ==============================
     const [result] = await conn.query<any>(`
-      INSERT INTO calendar_events 
-      (societe_id, created_by_membre_id, title, description, event_date, start_time, end_time, location, color, status, event_type, scope, event_category_id, custom_category_label)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
+      INSERT INTO calendar_events
+      (societe_id, created_by_membre_id, title, description, event_date, end_date, start_time, end_time, location, color, status, event_type, scope, event_category_id, custom_category_label)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
     `, [
       data.societe_id,
       membreId,
       data.title,
       data.description || null,
       eventDate,
+      (data as any).end_date || null,
       data.start_time,
       data.end_time,
       data.location || null,
@@ -431,8 +432,12 @@ export async function createEvent(
               VALUES (?, ?, 'sent')
             `, [eventId, email]);
 
-            // Envoyer l'email de bienvenue
-            await envoyerEmailExterne(email, ev.title, nomInvitante, dateFormatee, heureFormatee, ev.location, ev.description);
+            // Envoyer l'email de bienvenue (non bloquant)
+            try {
+              await envoyerEmailExterne(email, ev.title, nomInvitante, dateFormatee, heureFormatee, ev.location, ev.description);
+            } catch (emailErr: any) {
+              console.warn(`⚠️ Email externe non envoyé à ${email}:`, emailErr.message);
+            }
           }
         }
       } finally {
@@ -488,6 +493,7 @@ export async function updateEvent(
     if (data.color) { updates.push('color=?'); params.push(data.color); }
     if (data.event_category_id !== undefined) { updates.push('event_category_id=?'); params.push(data.event_category_id); }
     if (data.custom_category_label !== undefined) { updates.push('custom_category_label=?'); params.push(data.custom_category_label); }
+    if ((data as any).end_date !== undefined) { updates.push('end_date=?'); params.push((data as any).end_date || null); }
 
     updates.push('updated_by_membre_id=?');
     params.push(membreId);

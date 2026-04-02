@@ -23,6 +23,7 @@ export interface CalendarEventAPI {
   title: string;
   description?: string;
   event_date: string;
+  end_date?: string;
   start_time: string;
   end_time: string;
   location?: string;
@@ -49,6 +50,7 @@ export interface CreateEventInput {
   title: string;
   description?: string;
   event_date: string;
+  end_date?: string;
   start_time: string;
   end_time: string;
   location?: string;
@@ -289,6 +291,7 @@ export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
 
       // ✅ RAPPELS — le champ clé qui manquait
       reminders: (apiEvent as any).reminders || [],
+      end_date: apiEvent.end_date || undefined,
       created_by_membre_id: (apiEvent as any).created_by_membre_id,
       invited_societes: (apiEvent as any).invited_societes || [],
       invited_externe_emails: (apiEvent as any).invited_externe_emails || [],
@@ -346,7 +349,8 @@ export function convertFrontendEventToAPI(
     scope: event.scope || 'personal',
     event_category_id: event.event_category_id || undefined,
     custom_category_label: event.custom_category_label || undefined,
-    reminders: event.reminders
+    reminders: event.reminders,
+    ...(event.end_date ? { end_date: event.end_date } : {})
   };
 
   if (event.scope === 'collaborative' && event.attendees && event.attendees.length > 0) {

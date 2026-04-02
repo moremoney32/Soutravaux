@@ -124,6 +124,37 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     onTimeSlotClick?.(clickDate, hour);
   };
 
+  // Événements multi-jours : ont un end_date différent de event_date
+  const multiDayEvents = useMemo(() => {
+    return events.filter(event => {
+      if (!event.end_date) return false;
+      const startDay = `${event.startTime.getFullYear()}-${String(event.startTime.getMonth()+1).padStart(2,'0')}-${String(event.startTime.getDate()).padStart(2,'0')}`;
+      return event.end_date > startDay && visibleCalendars.includes(event.calendar);
+    });
+  }, [events, visibleCalendars]);
+
+  // Calcule les colonnes du bandeau pour un événement multi-jours dans la semaine
+  const getMultiDaySpan = (event: CalendarEvent): { startCol: number; endCol: number } | null => {
+    const weekStartStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth()+1).padStart(2,'0')}-${String(weekStart.getDate()).padStart(2,'0')}`;
+    const weekEndDate = new Date(weekStart);
+    weekEndDate.setDate(weekEndDate.getDate() + 6);
+    const weekEndStr = `${weekEndDate.getFullYear()}-${String(weekEndDate.getMonth()+1).padStart(2,'0')}-${String(weekEndDate.getDate()).padStart(2,'0')}`;
+    const eventStartStr = `${event.startTime.getFullYear()}-${String(event.startTime.getMonth()+1).padStart(2,'0')}-${String(event.startTime.getDate()).padStart(2,'0')}`;
+    const eventEndStr = event.end_date!;
+    if (eventEndStr < weekStartStr || eventStartStr > weekEndStr) return null;
+    const clampedStart = eventStartStr < weekStartStr ? weekStartStr : eventStartStr;
+    const clampedEnd = eventEndStr > weekEndStr ? weekEndStr : eventEndStr;
+    const startCol = weekDays.findIndex(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return ds === clampedStart;
+    });
+    const endCol = weekDays.findIndex(d => {
+      const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return ds === clampedEnd;
+    });
+    return { startCol: startCol === -1 ? 0 : startCol, endCol: endCol === -1 ? 6 : endCol };
+  };
+
   return (
     <div className="calendar-week-view">
       {/* En-tête avec les jours de la semaine */}
@@ -148,7 +179,79 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         ))}
       </div>
 
-      {/* ✅ MODIFIÉ : Ajouter ref au container scrollable */}
+      {/* Bandeau événements multi-jours */}
+      {multiDayEvents.length > 0 && (() => {
+        // Calcule les spans visibles dans la semaine
+        const spanned = multiDayEvents
+          .map(ev => ({ ev, span: getMultiDaySpan(ev) }))
+          .filter(({ span }) => span !== null) as { ev: CalendarEvent; span: { startCol: number; endCol: number } }[];
+
+        // Assigne une lane (ligne) à chaque event pour éviter le chevauchement
+        const lanes: { startCol: number; endCol: number }[] = [];
+        const laneAssignments = spanned.map(({ span }) => {
+          const lane = lanes.findIndex(occupied =>
+            occupied === null || span.startCol > occupied.endCol || span.endCol < occupied.startCol
+          );
+          const assignedLane = lane === -1 ? lanes.length : lane;
+          lanes[assignedLane] = span;
+          return assignedLane;
+        });
+
+        const numLanes = Math.max(...laneAssignments, 0) + 1;
+        const laneH = 22;
+        const bannerH = numLanes * laneH + 4;
+
+        return (
+          <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', background: '#fafafa', height: `${bannerH}px` }}>
+            {/* Spacer colonne heures */}
+            <div style={{ width: '36px', flexShrink: 0 }}></div>
+            {/* Zone overlay des 7 jours */}
+            <div style={{ flex: 1, position: 'relative' }}>
+              {spanned.map(({ ev, span }, idx) => {
+                const lane = laneAssignments[idx];
+                const weekStartStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth()+1).padStart(2,'0')}-${String(weekStart.getDate()).padStart(2,'0')}`;
+                const weekEndDate = new Date(weekStart); weekEndDate.setDate(weekEndDate.getDate() + 6);
+                const weekEndStr = `${weekEndDate.getFullYear()}-${String(weekEndDate.getMonth()+1).padStart(2,'0')}-${String(weekEndDate.getDate()).padStart(2,'0')}`;
+                const eventStartStr = `${ev.startTime.getFullYear()}-${String(ev.startTime.getMonth()+1).padStart(2,'0')}-${String(ev.startTime.getDate()).padStart(2,'0')}`;
+                const startsInWeek = eventStartStr >= weekStartStr;
+                const endsInWeek = ev.end_date! <= weekEndStr;
+                const leftPct = (span.startCol / 7) * 100;
+                const widthPct = ((span.endCol - span.startCol + 1) / 7) * 100;
+                return (
+                  <div
+                    key={ev.id}
+                    onClick={() => onEventClick?.(ev)}
+                    title={ev.title}
+                    style={{
+                      position: 'absolute',
+                      top: `${lane * laneH + 2}px`,
+                      left: `calc(${leftPct}% + 2px)`,
+                      width: `calc(${widthPct}% - 4px)`,
+                      height: `${laneH - 2}px`,
+                      background: ev.color,
+                      color: 'white',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      borderRadius: `${startsInWeek ? '4px' : '0'} ${endsInWeek ? '4px' : '0'} ${endsInWeek ? '4px' : '0'} ${startsInWeek ? '4px' : '0'}`,
+                      padding: '2px 6px',
+                      cursor: 'pointer',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      boxSizing: 'border-box',
+                      lineHeight: `${laneH - 6}px`
+                    }}
+                  >
+                    {startsInWeek && ev.title}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Ajouter ref au container scrollable */}
       <div className="calendar-week-grid" ref={gridRef}>
         {/* Colonne des heures */}
         <div className="calendar-time-column">

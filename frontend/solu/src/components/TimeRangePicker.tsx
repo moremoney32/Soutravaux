@@ -230,6 +230,7 @@ interface TimeRangePickerProps {
   onStartTimeChange: (time: string) => void;
   onEndTimeChange: (time: string) => void;
   defaultDuration?: number;
+  startExtra?: React.ReactNode;
 }
 
 const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
@@ -237,7 +238,8 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
   endTime,
   onStartTimeChange,
   onEndTimeChange,
-  defaultDuration = 60
+  defaultDuration = 60,
+  startExtra
 }) => {
 
   const calculateDuration = (start: string, end: string): number => {
@@ -372,6 +374,7 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
           boxSizing: 'border-box', marginTop: '5px'
         }}
       />
+      {startExtra && <div style={{ marginTop: '5px' }}>{startExtra}</div>}
     </div>
 
     {/* ── HEURE FIN — input libre + boutons rapides ── */}

@@ -22,6 +22,7 @@ export interface CalendarEvent {
   description?: string;
   startTime: Date;
   endTime: Date;
+  end_date?: string;          // YYYY-MM-DD — présent si événement multi-jours
   color: string;
   calendar: string;
   location?: string;

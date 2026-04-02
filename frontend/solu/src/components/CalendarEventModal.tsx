@@ -24,6 +24,7 @@ interface CalendarEventModalProps {
   currentMembreId?: number;
   currentSocieteId?: number;
   userRole?: 'admin' | 'collaborator' | null;
+  initialDate?: Date;
 }
 
 interface Reminder {
@@ -54,7 +55,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   onDeleteCategory,
   currentMembreId,
   currentSocieteId,
-  userRole = null
+  userRole = null,
+  initialDate
 }) => {
   // ═══════════════════════════════════════════════
   // ÉTATS
@@ -78,6 +80,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreateCategoryInput, setShowCreateCategoryInput] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [isMultiDay, setIsMultiDay] = useState(false);
+  const [multiDayEndDate, setMultiDayEndDate] = useState('');
   const [categoryDropdownPos, setCategoryDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const categoryTriggerRef = useRef<HTMLDivElement>(null);
   const [newCategoryLabel, setNewCategoryLabel] = useState('');
@@ -280,8 +284,15 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       if (event.reminders && event.reminders.length > 0) {
         setReminders(event.reminders);
       } else {
-        // setReminders([{ value: '60', method: 'email' }]);
         setReminders([]);
+      }
+
+      if (event.end_date) {
+        setIsMultiDay(true);
+        setMultiDayEndDate(event.end_date);
+      } else {
+        setIsMultiDay(false);
+        setMultiDayEndDate('');
       }
 
     } else if (isNewEvent && isOpen) {
@@ -297,6 +308,8 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setInviteMethod('email');
       setIsEditing(true);
       setReminders([{ value: '60', method: 'email' }]);
+      setIsMultiDay(false);
+      setMultiDayEndDate('');
       setSelectedSocietes([]);
       setSearchQuery('');
       setShowSocieteSearch(false);
@@ -304,7 +317,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setExterneEmail('');
       setExterneEmailsList([]);
 
-      const now = new Date();
+      const now = initialDate || new Date();
       const totalMinutes = now.getHours() * 60 + now.getMinutes();
       const roundedStart = Math.ceil(totalMinutes / 15) * 15;
       const safeStart = roundedStart >= 24 * 60 ? 23 * 60 : roundedStart;
@@ -345,6 +358,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       custom_category_label: customCategoryLabel || undefined,
       attendees: scope === 'collaborative' ? selectedAttendees : [],
       reminders,
+      end_date: isMultiDay && multiDayEndDate ? multiDayEndDate : undefined,
       invited_societe_ids: selectedSocietes.map(s => s.id) as any,
       ...(externeEmailsList.length > 0 ? { invited_externe_emails: externeEmailsList } as any : {})
     };
@@ -651,8 +665,31 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                     <div className="cm-field-row">
                       <span className="cm-field-label">🕐 Horaires</span>
                       <div style={{ flex: 1 }}>
-                        <TimeRangePicker startTime={startTime} endTime={endTime}
-                          onStartTimeChange={setStartTime} onEndTimeChange={setEndTime} defaultDuration={60} />
+                        <TimeRangePicker
+                          startTime={startTime} endTime={endTime}
+                          onStartTimeChange={setStartTime} onEndTimeChange={setEndTime}
+                          defaultDuration={60}
+                          startExtra={
+                            <button
+                              type="button"
+                              onClick={() => { setIsMultiDay(p => !p); setMultiDayEndDate(''); }}
+                              style={{ fontSize: '11px', padding: '3px 10px', border: `1px solid ${isMultiDay ? '#E77131' : '#ddd'}`, borderRadius: '12px', background: isMultiDay ? '#fff3e8' : 'white', color: isMultiDay ? '#E77131' : '#999', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: isMultiDay ? 600 : 400 }}
+                            >
+                              📅 Multi-jours{isMultiDay ? ' ✓' : ''}
+                            </button>
+                          }
+                        />
+                        {isMultiDay && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                            <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>Fin le :</span>
+                            <input
+                              type="date"
+                              value={multiDayEndDate}
+                              onChange={e => setMultiDayEndDate(e.target.value)}
+                              style={{ flex: 1, padding: '5px 8px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '13px' }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -791,7 +828,15 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
 
                   {/* Date + heure — même ligne */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px' }}><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                    {event?.end_date ? (
+                      <span style={{ fontSize: '14px' }}>
+                        <strong>📅</strong> {event.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                        <span style={{ color: '#E77131', margin: '0 6px' }}>→</span>
+                        {new Date(event.end_date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '14px' }}><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                    )}
                     <span style={{ color: '#ddd' }}>·</span>
                     <span style={{ fontSize: '14px' }}><strong>🕐</strong> {startTime} – {endTime}</span>
                   </div>
