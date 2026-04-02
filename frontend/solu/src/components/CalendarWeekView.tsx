@@ -202,11 +202,11 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
         const bannerH = numLanes * laneH + 4;
 
         return (
-          <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', background: '#fafafa', height: `${bannerH}px` }}>
-            {/* Spacer colonne heures */}
-            <div style={{ width: '36px', flexShrink: 0 }}></div>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', background: '#fafafa', height: `${bannerH}px`, overflow: 'hidden' }}>
+            {/* Spacer colonne heures — doit correspondre au 60px du CSS grid */}
+            <div style={{ width: '60px', flexShrink: 0 }}></div>
             {/* Zone overlay des 7 jours */}
-            <div style={{ flex: 1, position: 'relative' }}>
+            <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
               {spanned.map(({ ev, span }, idx) => {
                 const lane = laneAssignments[idx];
                 const weekStartStr = `${weekStart.getFullYear()}-${String(weekStart.getMonth()+1).padStart(2,'0')}-${String(weekStart.getDate()).padStart(2,'0')}`;

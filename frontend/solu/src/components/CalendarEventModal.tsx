@@ -82,6 +82,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [isMultiDay, setIsMultiDay] = useState(false);
   const [multiDayEndDate, setMultiDayEndDate] = useState('');
+  const [multiDayEndTime, setMultiDayEndTime] = useState('');
   const [categoryDropdownPos, setCategoryDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const categoryTriggerRef = useRef<HTMLDivElement>(null);
   const [newCategoryLabel, setNewCategoryLabel] = useState('');
@@ -290,9 +291,12 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       if (event.end_date) {
         setIsMultiDay(true);
         setMultiDayEndDate(event.end_date);
+        // heure de fin = heure stockée dans endTime (qui vient du dernier jour)
+        setMultiDayEndTime(event.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
       } else {
         setIsMultiDay(false);
         setMultiDayEndDate('');
+        setMultiDayEndTime('');
       }
 
     } else if (isNewEvent && isOpen) {
@@ -310,6 +314,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
       setReminders([{ value: '60', method: 'email' }]);
       setIsMultiDay(false);
       setMultiDayEndDate('');
+      setMultiDayEndTime('');
       setSelectedSocietes([]);
       setSearchQuery('');
       setShowSocieteSearch(false);
@@ -340,15 +345,25 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
     if (!title.trim()) { alert('Le titre est requis'); return; }
 
     const [startHour, startMin] = startTime.split(':').map(Number);
-    const [endHour, endMin] = endTime.split(':').map(Number);
     const baseDate = event?.startTime || new Date();
+
+    // Pour multi-jours : endTime est sur la date de fin avec l'heure de fin du dernier jour
+    let computedEndTime: Date;
+    if (isMultiDay && multiDayEndDate && multiDayEndTime) {
+      const [endHour, endMin] = multiDayEndTime.split(':').map(Number);
+      const endBase = new Date(multiDayEndDate + 'T00:00:00');
+      computedEndTime = new Date(endBase.getFullYear(), endBase.getMonth(), endBase.getDate(), endHour, endMin);
+    } else {
+      const [endHour, endMin] = endTime.split(':').map(Number);
+      computedEndTime = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), endHour, endMin);
+    }
 
     const updatedEvent: CalendarEvent = {
       id: event?.id || `event-${Date.now()}`,
       title: title.trim(),
       description: description.trim() || undefined,
       startTime: new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), startHour, startMin),
-      endTime: new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), endHour, endMin),
+      endTime: computedEndTime,
       color,
       calendar: event?.calendar || 'personal',
       location: location.trim() || undefined,
@@ -672,21 +687,28 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                           startExtra={
                             <button
                               type="button"
-                              onClick={() => { setIsMultiDay(p => !p); setMultiDayEndDate(''); }}
+                              onClick={() => { setIsMultiDay(p => { if (!p) setMultiDayEndTime(endTime); else { setMultiDayEndDate(''); setMultiDayEndTime(''); } return !p; }); }}
                               style={{ fontSize: '11px', padding: '3px 10px', border: `1px solid ${isMultiDay ? '#E77131' : '#ddd'}`, borderRadius: '12px', background: isMultiDay ? '#fff3e8' : 'white', color: isMultiDay ? '#E77131' : '#999', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: isMultiDay ? 600 : 400 }}
                             >
-                              📅 Multi-jours{isMultiDay ? ' ✓' : ''}
+                              📅 Sur plusieurs jours{isMultiDay ? ' ✓' : ''}
                             </button>
                           }
                         />
                         {isMultiDay && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
                             <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>Fin le :</span>
                             <input
                               type="date"
                               value={multiDayEndDate}
                               onChange={e => setMultiDayEndDate(e.target.value)}
-                              style={{ flex: 1, padding: '5px 8px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '13px' }}
+                              style={{ flex: 1, minWidth: '120px', padding: '5px 8px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '13px' }}
+                            />
+                            <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>à</span>
+                            <input
+                              type="time"
+                              value={multiDayEndTime}
+                              onChange={e => setMultiDayEndTime(e.target.value)}
+                              style={{ width: '100px', padding: '5px 8px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '13px' }}
                             />
                           </div>
                         )}
@@ -838,7 +860,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                       <span style={{ fontSize: '14px' }}><strong>📅</strong> {event?.startTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                     )}
                     <span style={{ color: '#ddd' }}>·</span>
-                    <span style={{ fontSize: '14px' }}><strong>🕐</strong> {startTime} – {endTime}</span>
+                    <span style={{ fontSize: '14px' }}><strong>🕐</strong> {event?.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} – {event?.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
 
                   {/* Titre */}

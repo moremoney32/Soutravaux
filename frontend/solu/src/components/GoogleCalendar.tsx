@@ -370,13 +370,18 @@ const GoogleCalendar: React.FC = () => {
         if (newEventDate) {
           const startHours = eventToCreate.startTime.getHours();
           const startMinutes = eventToCreate.startTime.getMinutes();
-          const endHours = eventToCreate.endTime.getHours();
-          const endMinutes = eventToCreate.endTime.getMinutes();
 
           eventToCreate.startTime = new Date(newEventDate);
           eventToCreate.startTime.setHours(startHours, startMinutes, 0, 0);
-          eventToCreate.endTime = new Date(newEventDate);
-          eventToCreate.endTime.setHours(endHours, endMinutes, 0, 0);
+
+          // Pour les events multi-jours, endTime contient déjà la bonne date (dernier jour)
+          // et la bonne heure — on ne l'écrase pas
+          if (!eventToCreate.end_date) {
+            const endHours = eventToCreate.endTime.getHours();
+            const endMinutes = eventToCreate.endTime.getMinutes();
+            eventToCreate.endTime = new Date(newEventDate);
+            eventToCreate.endTime.setHours(endHours, endMinutes, 0, 0);
+          }
         }
         const apiData = convertFrontendEventToAPI(eventToCreate, societeId, membreId);
         // await createCalendarEvent(apiData);
