@@ -1039,7 +1039,7 @@ export async function envoyerEmailExterne(
         <p style="font-size:16px;margin:0 0 10px;color:#222;font-weight:600;">Bonjour,</p>
 
         <p style="font-size:15px;margin:0 0 26px;color:#555;line-height:1.8;">
-          L'entreprise  <strong style="color:#E77131;">${nomInvitante}</strong> vous a ajouté à un évènement sur son agenda Solutravo et vous autorise à le consulter.
+          L'entreprise <strong style="color:#E77131;">${nomInvitante}</strong> vous a ajouté à <strong style="color:#E77131;">${eventTitle}</strong> sur son agenda <strong style="color:#E77131;">SOLUTRAVO</strong>.
         </p>
 
         <!-- Carte événement -->

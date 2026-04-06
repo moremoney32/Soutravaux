@@ -847,6 +847,13 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                   )}
                 </div>
 
+                {isPastEvent && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FFF8E1', border: '1px solid #FFE082', borderRadius: '8px', padding: '8px 12px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '16px' }}>📋</span>
+                    <span style={{ fontSize: '12px', color: '#F57F17' }}>Cet événement est passé — vous modifiez un historique.</span>
+                  </div>
+                )}
+
                 <div className="calendar-event-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
                   {/* Date + heure — même ligne */}
@@ -954,7 +961,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
             ) : (
               <>
                 <button className="calendar-btn-secondary" onClick={onClose}>Fermer</button>
-                {!isPastEvent && isOwner && (
+                {isOwner && (
                   <>
                     <button className="calendar-btn-danger" onClick={handleDelete}>Supprimer</button>
                     {scope === 'collaborative' && (
