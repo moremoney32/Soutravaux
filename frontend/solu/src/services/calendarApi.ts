@@ -265,7 +265,15 @@ export function convertAPIEventToFrontend(apiEvent: CalendarEventAPI): any {
     const endTimeParsed   = parseTimeString(apiEvent.end_time);
 
     const startDate = new Date(year, month - 1, day, startTimeParsed.hour, startTimeParsed.minute);
-    const endDate   = new Date(year, month - 1, day, endTimeParsed.hour, endTimeParsed.minute);
+
+    // Multi-jours : endTime sur la date de fin, pas la date de début
+    let endDate: Date;
+    if (apiEvent.end_date) {
+      const [eYear, eMonth, eDay] = apiEvent.end_date.split('-').map(Number);
+      endDate = new Date(eYear, eMonth - 1, eDay, endTimeParsed.hour, endTimeParsed.minute);
+    } else {
+      endDate = new Date(year, month - 1, day, endTimeParsed.hour, endTimeParsed.minute);
+    }
 
     return {
       id:          String(apiEvent.id),

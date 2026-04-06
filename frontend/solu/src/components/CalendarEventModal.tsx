@@ -126,7 +126,15 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
    console.log(showSocieteSearch)
    console.log(showExternePopup)
 
-  const isPastEvent = event ? event.endTime < new Date() : false;
+  const isPastEvent = event ? (() => {
+    // Pour les multi-jours, comparer la date de fin (end_date) entière, pas juste l'heure
+    if (event.end_date) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const endDay = new Date(event.end_date + 'T00:00:00');
+      return endDay < today;
+    }
+    return event.endTime < new Date();
+  })() : false;
   const eventStatus = event?.status || 'pending';
 
   const statusDisplay = {
