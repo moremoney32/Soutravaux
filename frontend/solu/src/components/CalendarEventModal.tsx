@@ -684,6 +684,7 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                           startTime={startTime} endTime={endTime}
                           onStartTimeChange={setStartTime} onEndTimeChange={setEndTime}
                           defaultDuration={60}
+                          hideEnd={isMultiDay}
                           startExtra={
                             <button
                               type="button"

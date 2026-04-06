@@ -231,6 +231,7 @@ interface TimeRangePickerProps {
   onEndTimeChange: (time: string) => void;
   defaultDuration?: number;
   startExtra?: React.ReactNode;
+  hideEnd?: boolean;
 }
 
 const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
@@ -239,7 +240,8 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
   onStartTimeChange,
   onEndTimeChange,
   defaultDuration = 60,
-  startExtra
+  startExtra,
+  hideEnd = false
 }) => {
 
   const calculateDuration = (start: string, end: string): number => {
@@ -377,8 +379,8 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
       {startExtra && <div style={{ marginTop: '5px' }}>{startExtra}</div>}
     </div>
 
-    {/* ── HEURE FIN — input libre + boutons rapides ── */}
-    <div className="calendar-form-group">
+    {/* ── HEURE FIN — masqué si multi-jours ── */}
+    <div className="calendar-form-group" style={{ display: hideEnd ? 'none' : undefined }}>
       <label className="calendar-form-label">
         Fin {currentDuration > 0 && (
           <span style={{ fontWeight: 400, color: '#999', fontSize: '11px', marginLeft: '6px' }}>
