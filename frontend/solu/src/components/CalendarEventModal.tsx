@@ -693,6 +693,11 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
                           onStartTimeChange={setStartTime} onEndTimeChange={setEndTime}
                           defaultDuration={60}
                           hideEnd={isMultiDay}
+                          startDateStr={(() => {
+                            const d = event?.startTime || initialDate;
+                            if (!d) return undefined;
+                            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+                          })()}
                           startExtra={
                             <button
                               type="button"

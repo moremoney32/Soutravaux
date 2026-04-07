@@ -232,6 +232,7 @@ interface TimeRangePickerProps {
   defaultDuration?: number;
   startExtra?: React.ReactNode;
   hideEnd?: boolean;
+  startDateStr?: string;
 }
 
 const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
@@ -241,7 +242,8 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
   onEndTimeChange,
   defaultDuration = 60,
   startExtra,
-  hideEnd = false
+  hideEnd = false,
+  startDateStr
 }) => {
 
   const calculateDuration = (start: string, end: string): number => {
@@ -364,7 +366,14 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({
 
     {/* ── HEURE DÉBUT — input libre ─────────────── */}
     <div className="calendar-form-group">
-      <label className="calendar-form-label">Début</label>
+      <label className="calendar-form-label">
+        Début
+        {startDateStr && (
+          <span style={{ fontWeight: 400, color: '#E77131', fontSize: '11px', marginLeft: '6px' }}>
+            {startDateStr}
+          </span>
+        )}
+      </label>
       <input
         type="time"
         value={startTime}
