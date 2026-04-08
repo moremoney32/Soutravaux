@@ -350,7 +350,17 @@ const CalendarEventModal: React.FC<CalendarEventModalProps> = ({
   // HANDLERS SAVE / DELETE
   // ═══════════════════════════════════════════════
   const handleSave = (): void => {
-    if (!title.trim()) { alert('Le titre est requis'); return; }
+    const missingFields: string[] = [];
+    if (!title.trim()) missingFields.push('Titre');
+    if (!startTime) missingFields.push('Heure de début');
+    if (!endTime && !isMultiDay) missingFields.push('Heure de fin');
+    if (isMultiDay && (!multiDayEndDate || !multiDayEndTime)) missingFields.push('Date/heure de fin (multi-jours)');
+
+    if (missingFields.length > 0) {
+      alert(`Données manquantes — veuillez remplir les champs suivants dans l'onglet Informations :\n• ${missingFields.join('\n• ')}`);
+      setActiveTab('infos');
+      return;
+    }
 
     const [startHour, startMin] = startTime.split(':').map(Number);
     const baseDate = event?.startTime || new Date();
