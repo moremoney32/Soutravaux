@@ -2,7 +2,7 @@
 
 // services/calendarApi.ts - VERSION AVEC MEMBRE_ID
 
-const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 //const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface EventCategory {

@@ -8,8 +8,8 @@ import type {
 } from '../types/pushNotifications';
 
 
- const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
-//const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
+ //const API_BASE_URL = 'https://solutravo.zeta-app.fr/api';
+const API_BASE_URL = 'https://staging.solutravo.zeta-app.fr/api';
 
 // ===== TYPES POUR LES RÉPONSES API =====
 interface ApiResponse<T> {

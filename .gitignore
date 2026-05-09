@@ -1,3 +1,17 @@
-./md
-./CLAUDE.md
-./README.md
+# Markdown
+*.md
+
+# Claude
+CLAUDE.md
+.claude/
+
+# Environnement
+.env
+*.env.local
+
+# Dépendances
+node_modules/
+
+# Build
+dist/
+build/

@@ -77,16 +77,16 @@ const ImageWithLoader = ({
     
     // Si l'URL contient localhost, la remplacer
     if (url.includes('localhost')) {
-      // const correctedUrl = url.replace(/http:\/\/localhost:\d+/, 'https://solutravo.zeta-app.fr');
-       const correctedUrl = url.replace(/http:\/\/localhost:\d+/, 'https://solutravo.zeta-app.fr');
+      // const correctedUrl = url.replace(/http:\/\/localhost:\d+/, 'https://staging.solutravo.zeta-app.fr');
+       const correctedUrl = url.replace(/http:\/\/localhost:\d+/, 'https://staging.solutravo.zeta-app.fr');
       console.log('🔧 URL corrigée:', url, '→', correctedUrl);
       return correctedUrl;
     }
     
     // Si l'URL est relative (commence par /), la rendre absolue
     if (url.startsWith('/uploads')) {
-      // const absoluteUrl = `https://solutravo.zeta-app.fr${url}`;
-       const absoluteUrl = `https://solutravo.zeta-app.fr${url}`;
+      // const absoluteUrl = `https://staging.solutravo.zeta-app.fr${url}`;
+       const absoluteUrl = `https://staging.solutravo.zeta-app.fr${url}`;
       console.log('🔧 URL relative convertie:', url, '→', absoluteUrl);
       return absoluteUrl;
     }
