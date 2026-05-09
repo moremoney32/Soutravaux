@@ -25,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
+app.use("/logos", express.static(path.join(process.cwd(), "src", "assets", "logos")));
 
 // Exposer les PDFs générés pour téléchargement
 app.use('/pdfs', express.static(path.join(process.cwd(), 'storage', 'pdfs')));
