@@ -63,7 +63,7 @@
 import { Request, Response } from "express";
 import axios from "axios";
 
-// ✅ FONCTION UTILITAIRE : Nettoyer les valeurs "[ND]" → ""
+// FONCTION UTILITAIRE : Nettoyer les valeurs "[ND]" → ""
 function cleanInseeValue(value: string | undefined | null): string {
   if (!value || value.trim() === '') {
     return '';
@@ -112,7 +112,7 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
             }
         );
 
-        // ✅ MAPPING + NETTOYAGE DES "[ND]"
+        //  MAPPING + NETTOYAGE DES "[ND]"
         let results = response.data.etablissements?.map((e: any) => {
             // Extraire les valeurs brutes
             const nom = e.uniteLegale?.denominationUniteLegale || e.uniteLegale?.nomUsageUniteLegale;
@@ -129,7 +129,7 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
             const codePostal = e.adresseEtablissement?.codePostalEtablissement;
             const pays = e.adresseEtablissement?.libellePaysEtablissement;
             
-            // ✅ Nettoyer chaque composant de l'adresse
+            //  Nettoyer chaque composant de l'adresse
             const numeroVoieCleaned = cleanInseeValue(numeroVoie);
             const typeVoieCleaned = cleanInseeValue(typeVoie);
             const libelleVoieCleaned = cleanInseeValue(libelleVoie);
@@ -146,7 +146,7 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
                 siren: cleanInseeValue(siren),
                 siret: cleanInseeValue(siret),
                 activite: cleanInseeValue(activite),
-                adresse: adresseParts.trim(), // ✅ Adresse nettoyée
+                adresse: adresseParts.trim(), 
                 ville: cleanInseeValue(ville),
                 codePostal: cleanInseeValue(codePostal),
                 pays: cleanInseeValue(pays),
@@ -162,12 +162,12 @@ export const SearchCompanies = async (req: Request, res: Response): Promise<void
             );
         }
 
-        console.log(`✅ ${results.length} entreprise(s) trouvée(s) (nettoyées)`);
+        console.log(` ${results.length} entreprise(s) trouvée(s) (nettoyées)`);
         
         res.json(results);
         
     } catch (err: any) {
-        console.error("❌ Erreur API INSEE:", err.response?.data || err.message);
+        console.error(" Erreur API INSEE:", err.response?.data || err.message);
         res.status(500).json({ error: "Erreur lors de la recherche d'entreprises" });
     }
 };

@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { Request, Response} from "express";
-import { AnnonceurControllers, FournisseurControllers, UserControllers, UserControllersVerifyCode,completeController, resendCodeController } from "../controllers/UserControllers";
+import { AnnonceurControllers, FournisseurControllers, SimpleInscriptionController, UserControllers, UserControllersVerifyCode, completeController, resendCodeController } from "../controllers/UserControllers";
 import { SearchCompanies } from "../controllers/CompanyController";
 import { createPlan, deletePlan, GetPlansByRole, getSettings, updatePlan, updateSettings } from "../controllers/PlanRoleContollers";
  import { CheckSubscription } from "../controllers/CheckSubscriptionControllers";
@@ -34,6 +34,7 @@ import { archiverDemandeController, createDemandeController, downloadPDFControll
 const router: Router = express.Router();
 router.use('/sse', sseRoutes);
 
+router.post("/auth/inscription", SimpleInscriptionController);
 router.post("/register", UserControllers);
 router.post("/registerAnnonceur",AnnonceurControllers);
 router.post("/registerFournisseur", FournisseurControllers);

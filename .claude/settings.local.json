@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:help.scrap.io)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx skills *)",
+      "PowerShell(Get-Content *)",
+      "Bash(npx vite *)",
+      "Bash(xargs grep -l \"email\\\\|mail\\\\|sender\")",
+      "Bash(npm run *)",
+      "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"C:\\\\Users\\\\Ngongang Franck\\\\Desktop\\\\Tchouta\\\\solutravaux\\\\backend\\\\src\\\\assets\\\\logos\\\\solutravo.png\"\\); $b64 = [Convert]::ToBase64String\\($bytes\\); Write-Output \"data:image/png;base64,$b64\")",
+      "PowerShell(Out-File *)"
     ]
   }
 }

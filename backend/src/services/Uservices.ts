@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import axios from "axios";
 
+
 type UserRegisterInput = {
   role: string;
   email: string;
@@ -249,38 +250,7 @@ export async function VerifyCode({ email, code }: VerifyInput) {
   return { email };
 }
 
-//  COMPLETE REGISTRATION 
-// export async function CompleteRegistration({ email, passe }: CompleteRegistrationInput) {
-//   if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
-//     const err = new Error("Mot de passe trop faible");
-//     (err as any).statusCode = 422;
-//     throw err;
-//   }
 
-//   const [rows] = await pool.query("SELECT * FROM membres WHERE email = ?", [email]);
-//   const user: any = (rows as any)[0];
-//   if (!user) {
-//     const err = new Error("Utilisateur introuvable");
-//     (err as any).statusCode = 404;
-//     throw err;
-//   }
-
-//   if (!user.isVerified) {
-//     const err = new Error("Compte non vérifié (OTP manquant)");
-//     (err as any).statusCode = 410;
-//     throw err;
-//   }
-
-//   const hashed = await bcrypt.hash(passe, 10);
-
-//   await pool.query(
-//     "UPDATE membres SET passe = ?, date_modification = NOW() WHERE email = ?",
-//     [hashed, email]
-//   );
-
-//   const [updatedRows] = await pool.query("SELECT id, email, prenom FROM membres WHERE email = ?", [email]);
-//   return (updatedRows as any)[0];
-// }
 
 export async function CompleteRegistration({ email, passe }: CompleteRegistrationInput) {
   if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
@@ -712,11 +682,6 @@ export async function AnnonceurRegister(data: AnnonceurRegisterInput) {
         (e as any).statusCode = 409;
         throw e;
       }
-      // if (err.sqlMessage.includes("societes.siret")) {
-      //   const e = new Error("Ce SIRET est déjà associé à une société.");
-      //   (e as any).statusCode = 409;
-      //   throw e;
-      // }
        if (err.sqlMessage.includes("societes.siret") || err.sqlMessage.includes("presocietes.siret")) {
       const e = new Error("Ce SIRET est déjà associé à une société.");
       (e as any).statusCode = 409;
@@ -1155,4 +1120,100 @@ export interface FournisseurRegisterInput {
     cp?: string;
     ville?: string;
     rue?: string;
+}
+
+type SimpleRegisterInput = {
+  nom: string;
+  prenom: string;
+  email: string;
+  phonenumber: string;
+  name: string;
+  size?: string;
+  passe: string;
+};
+
+export async function SimpleRegister(data: SimpleRegisterInput) {
+  const { nom, prenom, email, phonenumber, name, size, passe } = data;
+
+  if (!email || !validator.isEmail(email)) {
+    const err = new Error("Email invalide");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!prenom) {
+    const err = new Error("Le prénom est obligatoire");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!nom) {
+    const err = new Error("Le nom est obligatoire");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!name) {
+    const err = new Error("Le nom de l'entreprise est obligatoire");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!phonenumber) {
+    const err = new Error("Le numéro de téléphone est obligatoire");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!passe) {
+    const err = new Error("Le mot de passe est obligatoire");
+    (err as any).statusCode = 400;
+    throw err;
+  }
+  if (!validator.isStrongPassword(passe, { minLength: 8, minUppercase: 1, minNumbers: 1 })) {
+    const err = new Error("Mot de passe trop faible (8 caractères min, 1 majuscule, 1 chiffre)");
+    (err as any).statusCode = 422;
+    throw err;
+  }
+
+  const cleanPhone = phonenumber.replace(/[\s\-\(\)\.]/g, "");
+  if (!/^(0[1-9]\d{8}|(\+33|0033)[1-9]\d{8})$/.test(cleanPhone)) {
+    const err = new Error("Numéro de téléphone invalide. Format attendu : 0612345678 ou +33612345678");
+    (err as any).statusCode = 422;
+    throw err;
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [exists] = await conn.query("SELECT id FROM membres WHERE email = ?", [email]);
+    if ((exists as any).length > 0) {
+      const err = new Error("Cet email est déjà utilisé.");
+      (err as any).statusCode = 409;
+      throw err;
+    }
+
+    const hashedPassword = await bcrypt.hash(passe, 10);
+
+    const [resMembre] = await conn.query(
+      `INSERT INTO membres (email, prenom, nom, phonenumber, passe, type, statut, isVerified, ref)
+       VALUES (?, ?, ?, ?, ?, 'membre', 'actif', 1, UUID())`,
+      [email, prenom, nom, cleanPhone, hashedPassword]
+    );
+    const membreId = (resMembre as any).insertId;
+
+    await conn.query(
+      `INSERT INTO presocietes (name, size, role, phonenumber, membre_id) VALUES (?, ?, 'artisan', ?, ?)`,
+      [name, size ?? null, cleanPhone, membreId]
+    );
+
+    await conn.commit();
+    return { email, membreId };
+  } catch (err: any) {
+    await conn.rollback();
+    if (err.code === "ER_DUP_ENTRY") {
+      const e = new Error("Cet email est déjà utilisé.");
+      (e as any).statusCode = 409;
+      throw e;
+    }
+    throw err;
+  } finally {
+    conn.release();
+  }
 }

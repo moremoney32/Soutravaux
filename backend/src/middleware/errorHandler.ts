@@ -12,7 +12,16 @@ export function errorHandler(
   if (err.userMessage) {
     res.status(err.statusCode || 400).json({
       success: false,
-      message: err.userMessage   // ← message clair pour le frontend/client
+      message: err.userMessage
+    });
+    return;
+  }
+
+  // Erreurs métier levées depuis les services (statusCode + message, sans err.code SQL)
+  if (err.statusCode && err.message && !err.code) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
     });
     return;
   }
