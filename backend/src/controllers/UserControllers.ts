@@ -112,7 +112,7 @@ export const SimpleInscriptionController = async (req: Request, res: Response, n
           <!-- HEADER -->
           <tr>
             <td style="background:#ffffff;border-radius:14px 14px 0 0;padding:28px 40px;text-align:center;border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8;border-top:1px solid #e8e8e8;">
-              <img src="https://staging.solutravo.zeta-app.fr/logos/solutravo.png" alt="Solutravo" style="height:40px;object-fit:contain;" />
+              <img src="https://staging.solutravo-compta.fr/public/assets/img/logo.png?v=1762521474" alt="Solutravo" style="display:block;margin:0 auto;height:40px;object-fit:contain;" />
             </td>
           </tr>
 
